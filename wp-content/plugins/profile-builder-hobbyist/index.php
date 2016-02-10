@@ -135,7 +135,7 @@ function wppb_hobbyist_plugin_init() {
         }
          
         // end of custom added field
-        
+
         if (file_exists(WPPB_PLUGIN_DIR . '/features/admin-approval/admin-approval.php')) {
             include_once(WPPB_PLUGIN_DIR . '/features/admin-approval/admin-approval.php');
             include_once(WPPB_PLUGIN_DIR . '/features/admin-approval/class-admin-approval.php');
