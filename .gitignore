@@ -1,0 +1,55 @@
+#ignore OS generated logs
+
+php_error_log
+error_log
+success_log
+access_log
+
+# ignore Editor files
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+
+# ignore log files and databases
+*.log
+*.sql
+*.sqlite
+
+# ignore compiled files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# ignore packaged files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.swp
+*.lnk
+
+#ignore favico.ico
+favico.ico
+
+#ignore wordpress upload folder
+/wp-content/uploads
+/wp-content/upload
+/wp-content/images
+/wp-content/image
+
+#ignore wordpress wp-config.php
+wp-config.php
+
+#ignore .htaccess
+.htaccess
+
+# ignore node/grunt dependency directories
+node_modules/
+
