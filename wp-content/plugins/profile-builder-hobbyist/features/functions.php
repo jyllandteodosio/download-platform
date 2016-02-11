@@ -268,6 +268,12 @@ function wppb_print_cpt_script( $hook ){
         wp_enqueue_script( 'thickbox' );
     }
 
+    // Added by Dianne D.R. - include front end specific styles in custom profile builder tabs
+    if (( $hook == 'profile-builder_page_profile-builder-add-user' ) ||
+		( $hook == 'profile-builder_page_profile-builder-edit-user' ) ) {
+			wp_enqueue_style( 'wppb-back-end-style', WPPB_PLUGIN_URL . 'assets/css/style-front-end.css', false, PROFILE_BUILDER_VERSION );
+	}
+
 	if ( isset( $_GET['post_type'] ) || isset( $_GET['post'] ) ){
 		if ( isset( $_GET['post_type'] ) )
 			$post_type = $_GET['post_type'];
