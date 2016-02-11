@@ -269,8 +269,7 @@ function wppb_print_cpt_script( $hook ){
     }
 
     // Added by Dianne D.R. - include front end specific styles in custom profile builder tabs
-    if (( $hook == 'profile-builder_page_profile-builder-add-user' ) ||
-		( $hook == 'profile-builder_page_profile-builder-edit-user' ) ) {
+    if (( $hook == 'profile-builder_page_profile-builder-add-user' ) ) {
 			wp_enqueue_style( 'wppb-back-end-style', WPPB_PLUGIN_URL . 'assets/css/style-front-end.css', false, PROFILE_BUILDER_VERSION );
 	}
 
