@@ -386,22 +386,13 @@ class WpmpR_Overview{
 <div class="row">
     <div class="col-sm-12 col-md-12">
         <div class="panel panel-primary">
-            <div class="panel-heading" id="maindiv_heading">Sales By Months</div>
+            <div class="panel-heading" id="maindiv_heading">Sales For Last Year</div>
             <div class="panel-body">
-                <ul class="nav nav-pills pull-right"> 
-                    <li class="active"><a href="#" class="change_graph" for="byMonths">Sales For Last Year</a></li>
-                    <li><a href="#" class="change_graph" for="byDays">Sales For Last Month</a></li>
-                    <li><a href="#" class="change_graph" for="byWeeks">Sales For Last Week</a></li>
-                    <li><a href="#" class="change_graph" for="topProd">Top Products</a></li>
-                </ul>
-                
+
                 <br class="clearfix">
                 <br> <br>
                 
                 <div id="byMonths" class="graph_main"></div>
-                <div id="byDays" class="graph_main" style="display: none;"></div>
-                <div id="byWeeks" class="graph_main"  style="display: none;"></div>
-                <div id="topProd" class="graph_main"  style="display: none;"></div>
                 
                 <script type="text/javascript">
                 /////Graph by Month/////////////
@@ -439,6 +430,48 @@ class WpmpR_Overview{
                         });
                 }
 
+                    jQuery(function($){
+                        $('.change_graph').click(function(){
+                            $('.graph_main').hide();
+                            var id = $(this).attr('for');
+                            $('#'+id).fadeIn();
+                            //alert(id);
+                            var fn = window[id];
+                            // is object a function?
+                            if (typeof fn === "function") fn();
+                            
+                            $(this).parent().parent().find('li.active').removeClass('active');
+                            $(this).parent().addClass('active');
+                            $('#maindiv_heading').html($(this).html());
+                            return false;
+                        });
+                        
+                        byMonths();
+                        
+                    });
+                    
+                </script>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading" id="maindiv_heading">Sales By Week</div>
+            <div class="panel-body">
+                
+                <br class="clearfix">
+                <br> <br>
+                
+                <div id="byDays" class="graph_main" style=""></div>
+                
+                <script type="text/javascript">
+                /////Graph by Month/////////////
+
                 /////Graph by Days/////////////
                 function byDays(){
                     var byDays = [<?php 
@@ -474,6 +507,49 @@ class WpmpR_Overview{
                     });
                 }
                  
+                     
+                    jQuery(function($){
+                        $('.change_graph').click(function(){
+                            $('.graph_main').hide();
+                            var id = $(this).attr('for');
+                            $('#'+id).fadeIn();
+                            //alert(id);
+                            var fn = window[id];
+                            // is object a function?
+                            if (typeof fn === "function") fn();
+                            
+                            $(this).parent().parent().find('li.active').removeClass('active');
+                            $(this).parent().addClass('active');
+                            $('#maindiv_heading').html($(this).html());
+                            return false;
+                        });
+                        
+                        byDays();
+                        
+                    });
+                    
+                </script>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading" id="maindiv_heading">Sales By Days</div>
+            <div class="panel-body">
+                
+                <br class="clearfix">
+                <br> <br>
+                
+                <div id="byWeeks" class="graph_main" style=""></div>
+                
+                <script type="text/javascript">
+                /////Graph by Month/////////////
+
                 /////Graph by Weeks/////////////
                 function byWeeks(){
                     var weeks = [<?php 
@@ -508,8 +584,52 @@ class WpmpR_Overview{
                         }
                     });
                 }
+                 
+                     
+                    jQuery(function($){
+                        $('.change_graph').click(function(){
+                            $('.graph_main').hide();
+                            var id = $(this).attr('for');
+                            $('#'+id).fadeIn();
+                            //alert(id);
+                            var fn = window[id];
+                            // is object a function?
+                            if (typeof fn === "function") fn();
+                            
+                            $(this).parent().parent().find('li.active').removeClass('active');
+                            $(this).parent().addClass('active');
+                            $('#maindiv_heading').html($(this).html());
+                            return false;
+                        });
+                        
+                        byWeeks();
+                        
+                    });
+                    
+                </script>
                 
-                /////Graph Top Products/////////////
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading" id="maindiv_heading">Top Products</div>
+            <div class="panel-body">
+                
+                <br class="clearfix">
+                <br> <br>
+                
+                <div id="topProd" class="graph_main" style=""></div>
+                
+                <script type="text/javascript">
+                /////Graph by Month/////////////
+
+                /////Graph by Weeks/////////////
                 function topProd(){
                     var topProd = [<?php 
                         if(isset($this->var['top_products'])){
@@ -537,6 +657,7 @@ class WpmpR_Overview{
                         legend:{ show:true } 
                     });
                 }
+                 
                      
                     jQuery(function($){
                         $('.change_graph').click(function(){
@@ -554,7 +675,7 @@ class WpmpR_Overview{
                             return false;
                         });
                         
-                        byMonths();
+                        topProd();
                         
                     });
                     
