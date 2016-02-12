@@ -14,3 +14,4 @@ function confirmDelete( nonceField, currentUser, customFieldID, customFieldName,
 	});			
   }
 }
+
