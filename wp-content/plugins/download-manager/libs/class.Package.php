@@ -55,6 +55,8 @@ class Package {
             $vars['play_button'] = self::audioPlayer($vars);
         if(strpos("_".$template,'[file_list_extended]'))
             $vars['file_list_extended'] = \WPDM\libs\FileList::Box($vars);
+        if(strpos("_".$template,'[file_list_custom]'))
+            $vars['file_list_custom'] = \WPDM\libs\FileList::Custom($vars);
         $vars['link_label'] = isset($vars['link_label']) ? $vars['link_label'] : __('Download', 'wpdmpro');
         $vars['page_link'] = "<a href='" . get_permalink($vars['ID']) . "'>{$vars['title']}</a>";
         $vars['page_url'] = get_permalink($vars['ID']);
