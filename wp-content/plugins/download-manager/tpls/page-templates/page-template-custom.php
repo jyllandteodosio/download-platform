@@ -6,6 +6,12 @@
 <div class="col-md-12">
 [description]
 <br />
+<h3>Cast</h3>
+[acf_cast]
+<br><br>
+<h3>Legal Notice</h3>
+[acf_legal_notice]
+<br><br>
 [file_list_custom]
 <br>
 

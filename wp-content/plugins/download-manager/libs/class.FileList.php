@@ -338,7 +338,6 @@ class FileList
     {
         global $current_user;
 
-
         $file['files'] = maybe_unserialize($file['files']);
         $fhtml = '';
         $idvdl = \WPDM\Package::isSingleFileDownloadAllowed($file['ID']); //isset($file['individual_file_download']) ? $file['individual_file_download'] : 0;
@@ -353,16 +352,6 @@ class FileList
         $_SESSION['wpdmfilelistcd_'.$file['ID']] = 1;
 
         if(($xd>0 && $xd<time()) || ($pd>0 && $pd>time()))  $idvdl = 0;
-
-        $dir = isset($file['package_dir'])?$file['package_dir']:'';
-        $dfiles = array();
-        if($dir!=''){
-            $dfiles = wpdm_get_files($dir, false);
-
-        }
-        echo "<pre>";
-        print_r($dfiles); die();
-        echo "</pre>";
 
         $file['access'] = wpdm_allowed_roles($file['ID']);
 
@@ -382,7 +371,6 @@ class FileList
             if ($idvdl && ($pwdlock || !$olock)) { $dlcol = "<th align=center>".__("Download","wpdmpro")."</th>"; $swl = 1; }
             $allfiles = is_array($file['files'])?$file['files']:array();
 
-
             //$allfiles = array_merge($allfiles, $dfiles);
             $fhtml = "<div class='row' id='xfilelist'>";
             if (is_array($allfiles)) {
@@ -394,9 +382,9 @@ class FileList
                     if (!isset($fileinfo[$sfile]) || !@is_array($fileinfo[$sfile])) $fileinfo[$sfile] = array();
                     if (!@is_array($fileinfo[$fileID])) $fileinfo[$fileID] = array();
 
+
                     $filePass = isset($fileinfo[$sfile]['password'])?$fileinfo[$sfile]['password']:(isset($fileinfo[$fileID]['password'])?$fileinfo[$fileID]['password']:'');
                     $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
-
 
                     if ($filePass == '' && $pwdlock) $filePass = $file['password'];
 
@@ -411,12 +399,13 @@ class FileList
 
                     if($ext == '' || !file_exists(WPDM_BASE_DIR.'assets/file-type-icons/'.$ext.'.png')) $ext = '_blank';
 
+                    // Set the thumbnail image
                     if(in_array($ext, $imgext))
                         $thumb = wpdm_dynamic_thumb($filepath, array(88, 88));
                     if($thumb)
-                        $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer footer-info'>".wpdm_file_size($sfile)."</div><div class='panel-footer'>";
+                        $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
                     else
-                        $fhtml .= "<div class='panel-body text-center'><img class='file-ico' src='".WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png'."' alt='{$fileTitle}' /></div><div class='panel-footer footer-info'>".wpdm_file_size($sfile)."</div><div class='panel-footer'>";
+                        $fhtml .= "<div class='panel-body text-center'><img class='file-ico' src='".WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png'."' alt='{$fileTitle}' /></div><div class='panel-footer'>";
 
 
                     if ($swl) {
@@ -425,8 +414,11 @@ class FileList
                             $fhtml .= "<div class='input-group'><input  onkeypress='jQuery(this).removeClass(\"input-error\");' size=10 type='password' value='' id='pass_{$file['ID']}_{$ind}' placeholder='Password' name='pass' class='form-control input-sm inddlps' />";
                         if ($filePass != '' && $pwdlock)
                             $fhtml .= "<span class='input-group-btn'><button class='inddl btn btn-primary btn-sm' file='{$sfile}' rel='" . wpdm_download_url($file) . "&ind=" . $ind . "' pass='#pass_{$file['ID']}_{$ind}'><i class='fa fa-download'></i></button></span></div>";
-                        else
-                            $fhtml .= "<a class='btn btn-primary btn-sm btn-block' href='" . wpdm_download_url($file) . "&ind=" . $ind . "'><span class='pull-left'><i class='fa fa-download'></i></span>&nbsp;".__("Download","wpdmpro")."</a>";
+                        else {
+                            // download btn
+                            // $fhtml .= "<a class='btn btn-primary btn-sm btn-block' href='" . wpdm_download_url($file) . "&ind=" . $ind . "'><span class='pull-left'><i class='fa fa-download'></i></span>&nbsp;".__("Download","wpdmpro")."</a>";
+                            $fhtml .= "<a class='btn btn-primary btn-sm btn-block' href='" . wpdm_download_url($file) . "&ind=" . $ind . "'><span class='pull-left'><i class='fa fa-download'></i></span>&nbsp;".__("Add to Cart","wpdmpro")."</a>";
+                        }
                     }
 
 
@@ -435,63 +427,7 @@ class FileList
 
             }
 
-            if (is_array($dfiles)) {
-
-                foreach ($dfiles as $ind => $sfile) {
-
-                    $ind = \WPDM_Crypt::Encrypt($sfile);
-
-                    $fhtml .= "<div class='col-md-4 col-sm-6 col-xs-6'><div class='panel panel-default'>";
-                    if (!isset($fileinfo[$sfile]) || !@is_array($fileinfo[$sfile])) $fileinfo[$sfile] = array();
-                    if(!isset($fileinfo[$sfile]['password'])) $fileinfo[$sfile]['password'] = "";
-
-                    if ($fileinfo[$sfile]['password'] == '' && $pwdlock) $fileinfo[$sfile]['password'] = $file['password'];
-                    $ttl = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title']!="" ? $fileinfo[$sfile]['title'] : preg_replace("/([0-9]+)_/", "", wpdm_basename($sfile));
-
-                    $cttl = (is_dir($sfile))?"<a href='#' class='wpdm-indir' data-dir='{$ttl}' data-pid='{$file['ID']}'>{$ttl}/</a>": $ttl;
-
-                    $fhtml .= "<div class='panel-heading ttip' title='{$ttl}'>{$cttl}</div>";
-
-                    $imgext = array('png','jpg','jpeg', 'gif');
-                    $ext = explode(".", $sfile);
-                    $ext = end($ext);
-                    $ext = strtolower($ext);
-                    if(is_dir($sfile)) { $ext = 'folder'; }
-                    $filepath = file_exists($sfile)?$sfile:UPLOAD_DIR.$sfile;
-                    $thumb = "";
-                    $showt = 1;
-                    if(in_array($ext, $imgext) && apply_filters('file_list_extended_show_thumbs', $showt))
-                        $thumb = wpdm_dynamic_thumb($filepath, array(88, 88));
-
-                    $fticon = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
-
-                    if(!file_exists(WPDM_BASE_DIR.'assets/file-type-icons/'.$ext.'.png'))
-                        $fticon = WPDM_BASE_URL.'assets/file-type-icons/ini.png';
-
-                    if($thumb)
-                        $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$ttl}' /></div><div class='panel-footer footer-info'>".wpdm_file_size($sfile)."</div><div class='panel-footer'>";
-                    else
-                        $fhtml .= "<div class='panel-body text-center'><img class='file-ico' src='".$fticon."' alt='{$ttl}' /></div><div class='panel-footer footer-info'>".wpdm_file_size($sfile)."</div><div class='panel-footer'>";
-
-
-                    if ($swl) {
-                        $fileinfo[$sfile]['password'] = $fileinfo[$sfile]['password'] == '' ? $file['password'] : $fileinfo[$sfile]['password'];
-                        if ($fileinfo[$sfile]['password'] != '' && $pwdlock  && !is_dir($sfile))
-                            $fhtml .= "<div class='input-group'><input  onkeypress='jQuery(this).removeClass(\"input-error\");' size=10 type='password' value='' id='pass_{$file['ID']}_{$ind}' placeholder='Password' name='pass' class='form-control input-sm inddlps' />";
-                        if ($fileinfo[$sfile]['password'] != '' && $pwdlock  && !is_dir($sfile))
-                            $fhtml .= "<span class='input-group-btn'><button class='inddl btn btn-primary btn-sm' file='{$sfile}' rel='" . wpdm_download_url($file) . "&ind=" . $ind . "' pass='#pass_{$file['ID']}_{$ind}'><i class='fa fa-download'></i></button></span></div>";
-                        else  if(!is_dir($sfile))
-                            $fhtml .= "<a class='btn btn-primary btn-sm btn-block' href='" . wpdm_download_url($file) . "&ind=" . $ind . "'><span class='pull-left'><i class='fa fa-download'></i></span>&nbsp;".__("Download","wpdmpro")."</a>";
-                        else
-                            $fhtml .= "<a class='btn btn-primary btn-sm btn-block wpdm-indir' href='#'  data-dir='{$ttl}' data-pid='{$file['ID']}'><span class='pull-left'><i class='fa fa-folder'></i></span> &nbsp;".__("Browse","wpdmpro")."</a>";
-
-                    }
-
-
-                    $fhtml .= "</div></div></div>";
-                }
-
-            }
+            
             $fhtml .= "</div>";
             $siteurl = home_url('/');
             $fhtml .= "<script type='text/javascript' language='JavaScript'> jQuery('.inddl').click(function(){ var tis = this; jQuery.post('{$siteurl}',{wpdmfileid:'{$file['ID']}',wpdmfile:jQuery(this).attr('file'),actioninddlpvr:1,filepass:jQuery(jQuery(this).attr('pass')).val()},function(res){ res = res.split('|'); var ret = res[1]; if(ret=='error') jQuery(jQuery(tis).attr('pass')).addClass('input-error'); if(ret=='ok') location.href=jQuery(tis).attr('rel')+'&_wpdmkey='+res[2];});}); </script> ";

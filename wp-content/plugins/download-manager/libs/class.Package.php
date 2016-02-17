@@ -23,11 +23,27 @@ class Package {
 
         $vars = get_post($ID, ARRAY_A);
 
+        // echo "<pre>";
+        // print_r($vars); die();
+        // echo "</pre>";
+
         $vars['title'] = stripcslashes($vars['post_title']);
         $vars['description'] = stripcslashes($vars['post_content']);
         $vars['description'] = wpautop(stripslashes($vars['description']));
         $vars['description'] = do_shortcode(stripslashes($vars['description']));
         $vars['excerpt'] = stripcslashes(strip_tags($vars['post_excerpt']));
+        // Added by Dianne D.R. - custom shortcodes
+        $vars['acf_show_reference_name'] = get_field( "show_reference_name" );
+        $vars['acf_cast'] = get_field( "cast" );
+        $vars['acf_legal_notice'] = get_field( "legal_notice" );
+        $vars['acf_promo_files'] = get_field( "add_promo_files" );
+        
+        // echo "<pre>";
+        // if( have_rows('add_promo_files') ):
+        //     echo "string";
+        // endif;
+        // print_r($vars['acf_promo_files']); die();
+        // echo "</pre>";
 
         //Featured Image
         $src = wp_get_attachment_image_src(get_post_thumbnail_id($vars['ID']), 'full', false, '');
