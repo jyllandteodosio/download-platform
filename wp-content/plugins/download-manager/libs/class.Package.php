@@ -37,6 +37,7 @@ class Package {
         $vars['acf_cast'] = get_field( "cast" );
         $vars['acf_legal_notice'] = get_field( "legal_notice" );
         $vars['acf_promo_files'] = get_field( "add_promo_files" );
+
         
         // echo "<pre>";
         // if( have_rows('add_promo_files') ):
@@ -71,11 +72,12 @@ class Package {
             $vars['play_button'] = self::audioPlayer($vars);
         if(strpos("_".$template,'[file_list_extended]'))
             $vars['file_list_extended'] = \WPDM\libs\FileList::Box($vars);
-        if(strpos("_".$template,'[file_list_custom]'))
-            $vars['file_list_custom'] = \WPDM\libs\FileList::Custom($vars);
         $vars['link_label'] = isset($vars['link_label']) ? $vars['link_label'] : __('Download', 'wpdmpro');
         $vars['page_link'] = "<a href='" . get_permalink($vars['ID']) . "'>{$vars['title']}</a>";
         $vars['page_url'] = get_permalink($vars['ID']);
+
+        // Added by Dianne D.R. - custom shortcodes for file segregations
+        if(strpos("_".$template,'[image_key_art]')) $vars['image_key_art'] = \WPDM\libs\FileList::ImageKeyArt($vars);
 
 
         if(!isset($vars['btnclass']))

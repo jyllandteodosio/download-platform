@@ -12,8 +12,15 @@
 <h3>Legal Notice</h3>
 [acf_legal_notice]
 <br><br>
-[file_list_custom]
-<br>
+
+<h3>Images</h3>
+<h4>Key Art</h4>
+[image_key_art]
+<br><br>
+
+<h4>Key Art</h4>
+[image_key_art]
+<br><br>
 
 </div>
 

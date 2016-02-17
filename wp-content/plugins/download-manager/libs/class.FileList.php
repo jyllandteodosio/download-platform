@@ -326,118 +326,101 @@ class FileList
     }
 
 
+    // Added by Dianne D.R. - custom functions
+    private static $html_div_outer_container = "<div class='row' id='xfilelist'>";
+    private static $html_div_panel_container = "<div class='col-md-4 col-sm-6 col-xs-6'>";
+    private static $html_div_panel = "<div class='panel panel-default'>";
+    private static $html_div_close = "</div>";
+    private static $prefix_list = array(
+                                    'key_art'           => 'key', 
+                                    'episodic_stills'   => 'epi', 
+                                    'gallery'           => 'gal', 
+                                    'logos'             => 'log');
 
-
-     /**
-     * @usage Callback function for [file_list_custom] tag
+    /**
+     * @usage Callback function for [image_key_art] tag
      * @param $file
      * @return string
-     * @usage Generate file list with preview
+     * @usage Generate file list with preview - key art images
      */
-    public static function Custom($file)
+    public static function ImageKeyArt($file)
     {
-        global $current_user;
-
         $file['files'] = maybe_unserialize($file['files']);
         $fhtml = '';
-        $idvdl = \WPDM\Package::isSingleFileDownloadAllowed($file['ID']); //isset($file['individual_file_download']) ? $file['individual_file_download'] : 0;
-        
-        // Download availability and expire date - needed in category view
-        $pd = isset($file['publish_date'])&&$file['publish_date']!=""?strtotime($file['publish_date']):0;
-        $xd = isset($file['expire_date'])&&$file['expire_date']!=""?strtotime($file['expire_date']):0;
 
-        // Gets the current role of the user who access the page
-        $cur = is_user_logged_in()?$current_user->roles:array('guest');
-        
-        $_SESSION['wpdmfilelistcd_'.$file['ID']] = 1;
+        if(self::checkPackageDownloadAvailability($file)){
+            if (count($file['files']) > 0) {
+                // returns a string of attached files with id->title,password
+                $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
 
-        if(($xd>0 && $xd<time()) || ($pd>0 && $pd>time()))  $idvdl = 0;
+                $allfiles = is_array($file['files'])?$file['files']:array();
 
-        $file['access'] = wpdm_allowed_roles($file['ID']);
+                // Start structuring the container html of file list
+                $fhtml = self::$html_div_outer_container;
+                    if (is_array($allfiles)) {
+                        foreach ($allfiles as $fileID => $sfile) {
+                            // Checks if file is an image file and having the desired file name prefix
+                            if(self::checkIfImageFile($sfile) && self::checkFileNamePrefix(self::$prefix_list['key_art'], $sfile)){
+                                $ind = \WPDM_Crypt::Encrypt($sfile);
+                                $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
+                                $filepath = file_exists($sfile)?$sfile:UPLOAD_DIR.$sfile;
+                                $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
 
-        if (count($file['files']) > 0 || count($dfiles) > 0) {
-
-            $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
-            $pwdlock = isset($file['password_lock']) ? $file['password_lock'] : 0;
-
-            //Check if any other lock option apllied for this package
-            $olock = wpdm_is_locked($file['ID']) ? 1 : 0;
-            $swl = 0;
-            if(!isset($file['quota'])||$file['quota']<=0) $file['quota'] = 9999999999999;
-            if(is_user_logged_in()) $cur[] = 'guest';
-            if(!isset($file['access']) || count($file['access'])==0 || !wpdm_user_has_access($file['ID']) || wpdm_is_download_limit_exceed($file['ID']) || $file['quota'] <= $file['download_count']) $olock = 1;
-            $pwdcol = $dlcol = '';
-            if ($pwdlock && $idvdl) $pwdcol = "<th>".__("Password","wpdmpro")."</th>";
-            if ($idvdl && ($pwdlock || !$olock)) { $dlcol = "<th align=center>".__("Download","wpdmpro")."</th>"; $swl = 1; }
-            $allfiles = is_array($file['files'])?$file['files']:array();
-
-            //$allfiles = array_merge($allfiles, $dfiles);
-            $fhtml = "<div class='row' id='xfilelist'>";
-            if (is_array($allfiles)) {
-
-                foreach ($allfiles as $fileID => $sfile) {
-                    $fhtml .= "<div class='col-md-4 col-sm-6 col-xs-6'><div class='panel panel-default'>";
-                    $ind = \WPDM_Crypt::Encrypt($sfile);
-
-                    if (!isset($fileinfo[$sfile]) || !@is_array($fileinfo[$sfile])) $fileinfo[$sfile] = array();
-                    if (!@is_array($fileinfo[$fileID])) $fileinfo[$fileID] = array();
-
-
-                    $filePass = isset($fileinfo[$sfile]['password'])?$fileinfo[$sfile]['password']:(isset($fileinfo[$fileID]['password'])?$fileinfo[$fileID]['password']:'');
-                    $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
-
-                    if ($filePass == '' && $pwdlock) $filePass = $file['password'];
-
-                    $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
-
-                    $imgext = array('png','jpg','jpeg', 'gif');
-                    $ext = explode(".", $sfile);
-                    $ext = end($ext);
-                    $ext = strtolower($ext);
-                    $filepath = file_exists($sfile)?$sfile:UPLOAD_DIR.$sfile;
-                    $thumb = "";
-
-                    if($ext == '' || !file_exists(WPDM_BASE_DIR.'assets/file-type-icons/'.$ext.'.png')) $ext = '_blank';
-
-                    // Set the thumbnail image
-                    if(in_array($ext, $imgext))
-                        $thumb = wpdm_dynamic_thumb($filepath, array(88, 88));
-                    if($thumb)
-                        $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
-                    else
-                        $fhtml .= "<div class='panel-body text-center'><img class='file-ico' src='".WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png'."' alt='{$fileTitle}' /></div><div class='panel-footer'>";
-
-
-                    if ($swl) {
-
-                        if ($filePass != '' && $pwdlock)
-                            $fhtml .= "<div class='input-group'><input  onkeypress='jQuery(this).removeClass(\"input-error\");' size=10 type='password' value='' id='pass_{$file['ID']}_{$ind}' placeholder='Password' name='pass' class='form-control input-sm inddlps' />";
-                        if ($filePass != '' && $pwdlock)
-                            $fhtml .= "<span class='input-group-btn'><button class='inddl btn btn-primary btn-sm' file='{$sfile}' rel='" . wpdm_download_url($file) . "&ind=" . $ind . "' pass='#pass_{$file['ID']}_{$ind}'><i class='fa fa-download'></i></button></span></div>";
-                        else {
-                            // download btn
-                            // $fhtml .= "<a class='btn btn-primary btn-sm btn-block' href='" . wpdm_download_url($file) . "&ind=" . $ind . "'><span class='pull-left'><i class='fa fa-download'></i></span>&nbsp;".__("Download","wpdmpro")."</a>";
-                            $fhtml .= "<a class='btn btn-primary btn-sm btn-block' href='" . wpdm_download_url($file) . "&ind=" . $ind . "'><span class='pull-left'><i class='fa fa-download'></i></span>&nbsp;".__("Add to Cart","wpdmpro")."</a>";
+                                $fhtml .= self::$html_div_panel_container;
+                                    $fhtml .= self::$html_div_panel ;
+                                        // To update when front-end design is final
+                                        $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
+                                        $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
+                                        $fhtml .= "<a class='btn btn-primary btn-sm btn-block' href='" . wpdm_download_url($file) . "&ind=" . $ind . "'><span class='pull-left'><i class='fa fa-download'></i></span>&nbsp;".__("Add to Cart","wpdmpro")."</a></div>";
+                                    $fhtml .= self::$html_div_close;
+                                $fhtml .= self::$html_div_close; 
+                            }
                         }
                     }
-
-
-                    $fhtml .= "</div></div></div>";
-                }
-
+                $fhtml .= self::$html_div_close;
             }
-
-            
-            $fhtml .= "</div>";
-            $siteurl = home_url('/');
-            $fhtml .= "<script type='text/javascript' language='JavaScript'> jQuery('.inddl').click(function(){ var tis = this; jQuery.post('{$siteurl}',{wpdmfileid:'{$file['ID']}',wpdmfile:jQuery(this).attr('file'),actioninddlpvr:1,filepass:jQuery(jQuery(this).attr('pass')).val()},function(res){ res = res.split('|'); var ret = res[1]; if(ret=='error') jQuery(jQuery(tis).attr('pass')).addClass('input-error'); if(ret=='ok') location.href=jQuery(tis).attr('rel')+'&_wpdmkey='+res[2];});}); </script> ";
-
-
+        }else{
+            $fhtml .= "This package is not available for download";
         }
-
-
         return $fhtml;
+    }
 
+    /**
+     * @usage function to check the file name prefix [key,epi etc.]
+     * @param $desired_prefix, $sfile
+     * @return bool
+     * @usage returns 1 if file prefix matched with the desired prefix, otherwise 0
+     */
+    public static function checkFileNamePrefix($desired_prefix, $sfile){
+        $prefix = explode("_", $sfile);
+        $prefix = strtolower(array_slice($prefix, 0, 1)[0]);
+        return $prefix == $desired_prefix ? 1 : 0;
+    }
+
+    /**
+     * @usage function to check if image file [png,jpg,jpeg, gif]
+     * @param $sfile
+     * @return bool
+     * @usage returns 1 if file is image file, otherwise 0
+     */
+    public static function checkIfImageFile($sfile){
+        $imgext = array('png','jpg','jpeg', 'gif');
+        $ext = explode(".", $sfile);
+        $ext = end($ext);
+        $ext = strtolower($ext);
+        return in_array($ext, $imgext) ? 1 : 0;
+    }
+
+    /**
+     * @usage function to check if package is available for download through the publish and expire field
+     * @param $file
+     * @return bool
+     * @usage returns 1 if file is available for download, otherwise 0
+     */
+    public static function checkPackageDownloadAvailability($file){
+        $pd = isset($file['publish_date'])&&$file['publish_date']!=""?strtotime($file['publish_date']):0;
+        $xd = isset($file['expire_date'])&&$file['expire_date']!=""?strtotime($file['expire_date']):0;
+        return !($xd>0 && $xd<time()) && !($pd>0 && $pd>time()) ? 1 : 0;
     }
 
 }
