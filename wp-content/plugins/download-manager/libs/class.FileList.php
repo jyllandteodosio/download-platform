@@ -374,7 +374,8 @@ class FileList
                                         // To update when front-end design is final
                                         $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
                                         $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
-                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'><span class='pull-left'><i class='fa fa-download'></i></span>&nbsp;".__("Add to Cart","wpdmpro")."</button></div>";
+                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
+                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
                                     $fhtml .= self::$html_div_close;
                                 $fhtml .= self::$html_div_close; 
                             }
@@ -384,22 +385,48 @@ class FileList
                 $siteurl = admin_url('/admin-ajax.php');
                 $fhtml .= " <script type='text/javascript' language = 'JavaScript'>
                                 jQuery(document).ready(function(){
-                                    jQuery('.btn-add-to-cart').click(function(){
-                                        var ajaxurl = '{$siteurl}';
+                                    var ajaxurl = '{$siteurl}';
+                                    
+                                    jQuery('.btn-add-to-cart').click(function(event){
+                                        var button = jQuery(this);
                                         jQuery.post(
                                             ajaxurl, 
-                                            {'action': 'add_to_cart',
-                                                'file-id' : jQuery(this).attr('data-file-id'),
+                                            {   'action': 'add_to_cart',
+                                                'file-id'   : jQuery(this).attr('data-file-id'),
                                                 'file-path' : jQuery(this).attr('data-file-path'),
-                                                'post-id' : jQuery(this).attr('data-post-id'),
+                                                'post-id'   : jQuery(this).attr('data-post-id'),
                                                 'file-type' : jQuery(this).attr('data-file-type'),
-                                                'user-id' : jQuery(this).attr('data-user-id')
+                                                'user-id'   : jQuery(this).attr('data-user-id')
                                             },
                                             function(response) {
-                                                console.log('Got this from the server: ' + response);
+                                                if(response == 'success'){
+                                                    button.text('ADDED');
+                                                    button.prop('disabled',true);
+                                                }else if (response == 'failed') {
+                                                    console.log('insert failed');
+                                                }
                                             }
                                         );
                                     });
+
+                                    jQuery('.btn-remove-to-cart').click(function(event){
+                                        var button = jQuery(this);
+                                        jQuery.post(
+                                            ajaxurl, 
+                                            {   'action': 'remove_to_cart',
+                                                'file-id'   : jQuery(this).attr('data-file-id'),
+                                                'user-id'   : jQuery(this).attr('data-user-id')
+                                            },
+                                            function(response) {
+                                                if(response == 'success'){
+                                                    //button.addClass('hidden');
+                                                }else if (response == 'failed') {
+                                                    console.log('delete failed');
+                                                }
+                                            }
+                                        );
+                                    });
+
                                 });
                             </script>";
             }
