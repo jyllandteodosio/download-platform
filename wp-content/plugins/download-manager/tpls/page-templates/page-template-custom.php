@@ -15,16 +15,15 @@
 
 <h3>Images</h3>
 <h4>Key Art</h4>
-[image_key_art]
+[images_key_art]
 <br><br>
 
-<h4>Key Art</h4>
-[image_key_art]
-<br><br>
 
 </div>
 
 </div>
+
+
 
 
 

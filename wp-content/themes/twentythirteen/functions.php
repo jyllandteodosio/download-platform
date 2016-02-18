@@ -550,3 +550,70 @@ function twentythirteen_customize_preview_js() {
 	wp_enqueue_script( 'twentythirteen-customizer', get_template_directory_uri() . '/js/theme-customizer.js', array( 'customize-preview' ), '20141120', true );
 }
 add_action( 'customize_preview_init', 'twentythirteen_customize_preview_js' );
+
+
+
+/**
+ * Ajax function to update custom cart table
+ */
+function add_to_cart(){
+    global $wpdb;
+    if (!isset($wpdb->custom_cart)) {
+	    $wpdb->custom_cart = $wpdb->prefix . 'custom_cart';
+	}
+
+    $cart_data['file_id'] 		= $_POST['file-id'];
+    $cart_data['file_path'] 		= $_POST['file-path'];
+    $cart_data['post_id'] 		= $_POST['post-id'];
+    $cart_data['file_type'] 		= $_POST['file-type'];
+    $cart_data['user_id'] 		= $_POST['user-id'];
+
+    $cart_array = structure_cart_data($cart_data);
+
+    $cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']}" );
+
+	if($cart_entry_count == 0 ){
+    	$serialized_cart = serialize($cart_array);
+
+	    $return_value = $wpdb->insert(
+	        $wpdb->custom_cart,
+	        array(
+	            'user_id' => $cart_data['user_id'],
+	            'meta_file' => $serialized_cart,
+	            'created_at' => date('Y-m-d H:i:s')
+	        )
+	    );
+	}else {
+    	$cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']}" )[0];
+
+		$unserialized_cart = unserialize($cart_entry);
+   		$serialized_cart = serialize(array_merge($unserialized_cart, $cart_array));
+
+		$wpdb->update( 
+			$wpdb->custom_cart, 
+			array( 
+				'meta_file' => $serialized_cart
+			), 
+			array( 'user_id' => $cart_data['user_id'] )
+		);
+	}
+    print_r( $cart_entry_count);
+    die();
+}
+add_action('wp_ajax_add_to_cart', 'add_to_cart');
+add_action('wp_ajax_nopriv_add_to_cart', 'add_to_cart');
+
+/**
+ * function to structure cart data into serialization ready array
+ */
+function structure_cart_data($cart_data){
+	$cart_array = array (
+    		$cart_data['file_id'] => array (
+	    			'file_path' => $cart_data['file_path'],
+	    			'post_id' => $cart_data['post_id'],
+		    		'file_type' => $cart_data['file_type'],
+		    		'user_id' => $cart_data['user_id']
+    			)
+    	);
+	return $cart_array;
+}

@@ -338,7 +338,7 @@ class FileList
                                     'logos'             => 'log');
 
     /**
-     * @usage Callback function for [image_key_art] tag
+     * @usage Callback function for [images_key_art] tag
      * @param $file
      * @return string
      * @usage Generate file list with preview - key art images
@@ -350,7 +350,6 @@ class FileList
 
         if(self::checkPackageDownloadAvailability($file)){
             if (count($file['files']) > 0) {
-                // returns a string of attached files with id->title,password
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
 
                 $allfiles = is_array($file['files'])?$file['files']:array();
@@ -359,11 +358,15 @@ class FileList
                 $fhtml = self::$html_div_outer_container;
                     if (is_array($allfiles)) {
                         foreach ($allfiles as $fileID => $sfile) {
+                            $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
+                            
                             // Checks if file is an image file and having the desired file name prefix
-                            if(self::checkIfImageFile($sfile) && self::checkFileNamePrefix(self::$prefix_list['key_art'], $sfile)){
+                            if(self::checkIfImageFile($sfile) && self::checkFileNamePrefix(self::$prefix_list['key_art'], $fileTitle)){
                                 $ind = \WPDM_Crypt::Encrypt($sfile);
-                                $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
+                                $postID = $file['ID'];
+                                $userID = get_current_user_id( );
                                 $filepath = file_exists($sfile)?$sfile:UPLOAD_DIR.$sfile;
+                                $fileType = 'image';
                                 $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
 
                                 $fhtml .= self::$html_div_panel_container;
@@ -371,13 +374,34 @@ class FileList
                                         // To update when front-end design is final
                                         $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
                                         $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
-                                        $fhtml .= "<a class='btn btn-primary btn-sm btn-block' href='" . wpdm_download_url($file) . "&ind=" . $ind . "'><span class='pull-left'><i class='fa fa-download'></i></span>&nbsp;".__("Add to Cart","wpdmpro")."</a></div>";
+                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'><span class='pull-left'><i class='fa fa-download'></i></span>&nbsp;".__("Add to Cart","wpdmpro")."</button></div>";
                                     $fhtml .= self::$html_div_close;
                                 $fhtml .= self::$html_div_close; 
                             }
                         }
                     }
                 $fhtml .= self::$html_div_close;
+                $siteurl = admin_url('/admin-ajax.php');
+                $fhtml .= " <script type='text/javascript' language = 'JavaScript'>
+                                jQuery(document).ready(function(){
+                                    jQuery('.btn-add-to-cart').click(function(){
+                                        var ajaxurl = '{$siteurl}';
+                                        jQuery.post(
+                                            ajaxurl, 
+                                            {'action': 'add_to_cart',
+                                                'file-id' : jQuery(this).attr('data-file-id'),
+                                                'file-path' : jQuery(this).attr('data-file-path'),
+                                                'post-id' : jQuery(this).attr('data-post-id'),
+                                                'file-type' : jQuery(this).attr('data-file-type'),
+                                                'user-id' : jQuery(this).attr('data-user-id')
+                                            },
+                                            function(response) {
+                                                console.log('Got this from the server: ' + response);
+                                            }
+                                        );
+                                    });
+                                });
+                            </script>";
             }
         }else{
             $fhtml .= "This package is not available for download";
@@ -385,15 +409,16 @@ class FileList
         return $fhtml;
     }
 
+    
     /**
      * @usage function to check the file name prefix [key,epi etc.]
      * @param $desired_prefix, $sfile
      * @return bool
      * @usage returns 1 if file prefix matched with the desired prefix, otherwise 0
      */
-    public static function checkFileNamePrefix($desired_prefix, $sfile){
-        $prefix = explode("_", $sfile);
-        $prefix = strtolower(array_slice($prefix, 0, 1)[0]);
+    public static function checkFileNamePrefix($desired_prefix, $fileTitle){
+        $prefix = substr($fileTitle, 0, 3);
+        $prefix = strtolower($prefix);
         return $prefix == $desired_prefix ? 1 : 0;
     }
 

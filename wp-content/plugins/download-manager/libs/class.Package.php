@@ -77,7 +77,7 @@ class Package {
         $vars['page_url'] = get_permalink($vars['ID']);
 
         // Added by Dianne D.R. - custom shortcodes for file segregations
-        if(strpos("_".$template,'[image_key_art]')) $vars['image_key_art'] = \WPDM\libs\FileList::ImageKeyArt($vars);
+        if(strpos("_".$template,'[images_key_art]')) $vars['images_key_art'] = \WPDM\libs\FileList::ImageKeyArt($vars);
 
 
         if(!isset($vars['btnclass']))
