@@ -36,7 +36,7 @@ class Package {
         $vars['acf_show_reference_name'] = get_field( "show_reference_name" );
         $vars['acf_cast'] = get_field( "cast" );
         $vars['acf_legal_notice'] = get_field( "legal_notice" );
-        $vars['acf_promo_files'] = get_field( "add_promo_files" );
+        $vars['acf_promo_files'] = serialize(get_field( "add_promo_files" ));
 
         
         // echo "<pre>";
@@ -78,6 +78,8 @@ class Package {
 
         // Added by Dianne D.R. - custom shortcodes for file segregations
         if(strpos("_".$template,'[images_key_art]')) $vars['images_key_art'] = \WPDM\libs\FileList::ImageKeyArt($vars);
+        if(strpos("_".$template,'[documents]')) $vars['documents'] = \WPDM\libs\FileList::Documents($vars);
+        if(strpos("_".$template,'[promos]')) $vars['promos'] = \WPDM\libs\FileList::Promos($vars);
 
 
         if(!isset($vars['btnclass']))

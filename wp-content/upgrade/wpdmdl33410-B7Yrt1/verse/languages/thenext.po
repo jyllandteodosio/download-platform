@@ -1,0 +1,208 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TheNext\n"
+"POT-Creation-Date: 2015-06-21 13:18+0600\n"
+"PO-Revision-Date: 2015-06-21 13:20+0600\n"
+"Last-Translator: wpeden.com <contact@wpeden.com>\n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.8\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: C:\\xampp\\htdocs\\next\\wp-content\\themes\\thenext\n"
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/404.php:14
+msgid "404, Page not found!"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/404.php:16
+msgid ""
+"Nothing found here! Please use navigation above or search to find what you "
+"are looking for."
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/admin/OptionFields.class.php:294
+msgid "Do Not Apply"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/admin/ThemeEngine.class.php:221
+msgid "Theme Options"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/admin/ThemeEngine.class.php:475
+msgid "Invalid Email Address"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/author.php:38
+msgid "About"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/author.php:46
+msgid "Contact Author"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/author.php:52
+msgid "Your Name:"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/author.php:54
+msgid "Your Email:"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/author.php:56
+msgid "Subject:"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/author.php:58
+msgid "Message:"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/author.php:60
+msgid "Submit"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/comments.php:3
+msgid ""
+"This post is password protected. Enter the password to view any comments."
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/comments.php:11
+msgid "Discussion"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/comments.php:44
+msgid "Comments are closed."
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/content.php:14
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/single.php:39
+msgid "Posted on"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/content.php:18
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/single.php:43
+msgid "By"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/content.php:22
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/single.php:47
+msgid "In"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/content.php:26
+msgid "no comments"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/content.php:26
+msgid "one comment"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/content.php:26
+#, php-format
+msgid "% comments"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/homepage-top.php:33
+msgid "Full Story"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/Framework.class.php:117
+msgid "Search..."
+msgstr ""
+
+#. translators: %s: title of menu item which is invalid
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:112
+#, php-format
+msgid "%s (Invalid)"
+msgstr ""
+
+#. translators: %s: title of menu item in draft status
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:116
+#, php-format
+msgid "%s (Pending)"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:157
+msgid "Edit Menu Item"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:166
+msgid "URL"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:173
+msgid "Navigation Label"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:179
+msgid "Title Attribute"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:186
+msgid "Open link in a new window/tab"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:191
+msgid "CSS Classes (optional)"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:197
+msgid "Link Relationship (XFN)"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:203
+msgid "Description"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:205
+msgid ""
+"The description will be displayed in the menu if the current theme supports "
+"it."
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:211
+msgid "Menu Icon"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:251
+#, php-format
+msgid "Original: %s"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:264
+msgid "Remove"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/libs/menu-item-icon.php:265
+msgid "Cancel"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/search-templates/page.php:12
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/search-templates/post.php:11
+msgid "Nothing Found!"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/search-templates/page.php:13
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/search-templates/post.php:12
+msgid "Try Different Search Term"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/single.php:53
+msgid "Previous"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/single.php:55
+msgid "Next"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/single.php:65
+msgid "Post Tags"
+msgstr ""
+
+#: C:\xampp\htdocs\next\wp-content\themes\thenext/single.php:73
+msgid "About The Author"
+msgstr ""

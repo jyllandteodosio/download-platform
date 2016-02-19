@@ -656,3 +656,20 @@ function remove_to_cart(){
 }
 add_action('wp_ajax_remove_to_cart', 'remove_to_cart');
 add_action('wp_ajax_nopriv_remove_to_cart', 'remove_to_cart');
+
+
+
+function get_custom_cart_contents(){
+	global $wpdb;
+    if (!isset($wpdb->custom_cart)) {
+	    $wpdb->custom_cart = $wpdb->prefix . 'custom_cart';
+	}
+
+	$userID = get_current_user_id( );
+	$myCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID}" );
+
+
+	$myCart = unserialize($myCart->meta_file);
+
+	return $myCart;
+}

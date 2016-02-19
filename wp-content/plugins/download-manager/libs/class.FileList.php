@@ -348,7 +348,7 @@ class FileList
         $file['files'] = maybe_unserialize($file['files']);
         $fhtml = '';
 
-        if(self::checkPackageDownloadAvailability($file)){
+        if(self::checkPackageDownloadAvailability($file['publish_date'], $file['expire_date'])){
             if (count($file['files']) > 0) {
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
 
@@ -386,7 +386,7 @@ class FileList
                 $fhtml .= " <script type='text/javascript' language = 'JavaScript'>
                                 jQuery(document).ready(function(){
                                     var ajaxurl = '{$siteurl}';
-                                    
+
                                     jQuery('.btn-add-to-cart').click(function(event){
                                         var button = jQuery(this);
                                         jQuery.post(
@@ -469,10 +469,127 @@ class FileList
      * @return bool
      * @usage returns 1 if file is available for download, otherwise 0
      */
-    public static function checkPackageDownloadAvailability($file){
-        $pd = isset($file['publish_date'])&&$file['publish_date']!=""?strtotime($file['publish_date']):0;
-        $xd = isset($file['expire_date'])&&$file['expire_date']!=""?strtotime($file['expire_date']):0;
+    public static function checkPackageDownloadAvailability($start_date, $end_date){
+        $pd = isset($start_date)&&$start_date!=""?strtotime($start_date):0;
+        $xd = isset($end_date)&&$end_date!=""?strtotime($end_date):0;
         return !($xd>0 && $xd<time()) && !($pd>0 && $pd>time()) ? 1 : 0;
+    }
+
+
+
+    /**
+     * @usage Callback function for [images_key_art] tag
+     * @param $file
+     * @return string
+     * @usage Generate file list with preview - key art images
+     */
+    public static function Documents($file)
+    {
+        $file['files'] = maybe_unserialize($file['files']);
+        $fhtml = '';
+
+        if(self::checkPackageDownloadAvailability($file['publish_date'], $file['expire_date'])){
+            if (count($file['files']) > 0) {
+                $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
+
+                $allfiles = is_array($file['files'])?$file['files']:array();
+
+                // Start structuring the container html of file list
+                $fhtml = self::$html_div_outer_container;
+                    if (is_array($allfiles)) {
+                        foreach ($allfiles as $fileID => $sfile) {
+                            $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
+                            
+                            // Checks if file is an image file and having the desired file name prefix
+                            // if(self::checkIfImageFile($sfile) && self::checkFileNamePrefix(self::$prefix_list['key_art'], $fileTitle)){
+                                $ind = \WPDM_Crypt::Encrypt($sfile);
+                                $postID = $file['ID'];
+                                $userID = get_current_user_id( );
+                                $filepath = file_exists($sfile)?$sfile:UPLOAD_DIR.$sfile;
+                                $fileType = 'document';
+                                $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
+
+                                // if(!self::checkIfImageFile($sfile))
+                                // $thumb = wpdm_dynamic_thumb($filepath, array(88, 88));
+                                // if($thumb)
+                                //     $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer footer-info'>".wpdm_file_size($sfile)."</div><div class='panel-footer'>";
+                                // else
+                                //     $fhtml .= "<div class='panel-body text-center'><img class='file-ico' src='".WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png'."' alt='{$fileTitle}' /></div><div class='panel-footer footer-info'>".wpdm_file_size($sfile)."</div><div class='panel-footer'>";
+
+
+                                $fhtml .= self::$html_div_panel_container;
+                                    $fhtml .= self::$html_div_panel ;
+                                        // To update when front-end design is final
+                                        $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
+                                        $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
+                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
+                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
+                                    $fhtml .= self::$html_div_close;
+                                $fhtml .= self::$html_div_close; 
+                            // }
+                        }
+                    }
+                $fhtml .= self::$html_div_close;
+            }
+        }else{
+            $fhtml .= "This package is not available for download";
+        }
+        return $fhtml;
+    }
+
+
+
+
+    /**
+     * @usage Callback function for [images_key_art] tag
+     * @param $file
+     * @return string
+     * @usage Generate file list with preview - key art images
+     */
+    public static function Promos($file)
+    {
+        // return serialize(get_field( "add_promo_files" ));
+
+        $file['files'] = maybe_unserialize($file['files']);
+        $fhtml = '';
+
+        if(self::checkPackageDownloadAvailability($file['publish_date'], $file['expire_date'])){
+            if (count($file['files']) > 0) {
+                $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
+
+                $allfiles = get_field( "add_promo_files" );is_array($file['files'])?$file['files']:array();
+
+                // Start structuring the container html of file list
+                $fhtml = self::$html_div_outer_container;
+                    if (is_array($allfiles)) {
+                        foreach ($allfiles as $fileID => $sfile) {
+                            if(self::checkPackageDownloadAvailability($sfile['promo_start'], $sfile['promo_end'])){
+                                $fileTitle = $sfile['file_name'];//isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
+                                $ind = \WPDM_Crypt::Encrypt($sfile);
+                                $postID = $file['ID'];
+                                $userID = get_current_user_id( );
+                                $filepath = $sfile['attached_file'];
+                                $fileType = 'promo';
+                                $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
+
+                                $fhtml .= self::$html_div_panel_container;
+                                    $fhtml .= self::$html_div_panel ;
+                                        // To update when front-end design is final
+                                        $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
+                                        $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
+                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
+                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
+                                    $fhtml .= self::$html_div_close;
+                                $fhtml .= self::$html_div_close; 
+                            }
+                        }
+                    }
+                $fhtml .= self::$html_div_close;
+            }
+        }else{
+            $fhtml .= "This package is not available for download";
+        }
+        return $fhtml;
     }
 
 }

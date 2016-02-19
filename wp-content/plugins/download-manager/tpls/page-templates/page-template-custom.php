@@ -19,6 +19,17 @@
 <br><br>
 
 
+<h3>Documents</h3>
+[documents-notworking]
+<br><br>
+
+<h3>Promos</h3>
+[promos]
+<br><br>
+
+
+
+
 </div>
 
 </div>
