@@ -14,6 +14,14 @@ class Package {
         return $this;
     }
 
+    // String helper
+    // @todo:: put this in a new Helper class
+    function constains($string, $needles){
+
+
+    }
+
+
     function Prepare($ID = null, $template = null)
     {
 
@@ -77,9 +85,20 @@ class Package {
         $vars['page_url'] = get_permalink($vars['ID']);
 
         // Added by Dianne D.R. - custom shortcodes for file segregations
-        if(strpos("_".$template,'[images_key_art]')) $vars['images_key_art'] = \WPDM\libs\FileList::ImageKeyArt($vars);
-        if(strpos("_".$template,'[documents]')) $vars['documents'] = \WPDM\libs\FileList::Documents($vars);
+        if(strpos("_".$template,'[file_category,key]')) $vars['file_category,key'] = \WPDM\libs\FileList::CategorizedFileList($vars, "key");
+        if(strpos("_".$template,'[file_category,epi]')) $vars['file_category,epi'] = \WPDM\libs\FileList::CategorizedFileList($vars, "epi");
+        if(strpos("_".$template,'[file_category,gal]')) $vars['file_category,gal'] = \WPDM\libs\FileList::CategorizedFileList($vars, "gal");
+        if(strpos("_".$template,'[file_category,log]')) $vars['file_category,log'] = \WPDM\libs\FileList::CategorizedFileList($vars, "log");
+        if(strpos("_".$template,'[file_category,oth]')) $vars['file_category,oth'] = \WPDM\libs\FileList::CategorizedFileList($vars, "oth");
+        
+        if(strpos("_".$template,'[file_category,syn]')) $vars['file_category,syn'] = \WPDM\libs\FileList::CategorizedFileList($vars, "syn");
+        if(strpos("_".$template,'[file_category,epk]')) $vars['file_category,epk'] = \WPDM\libs\FileList::CategorizedFileList($vars, "epk");
+        if(strpos("_".$template,'[file_category,fac]')) $vars['file_category,fac'] = \WPDM\libs\FileList::CategorizedFileList($vars, "fac");
+        if(strpos("_".$template,'[file_category,fon]')) $vars['file_category,fon'] = \WPDM\libs\FileList::CategorizedFileList($vars, "fon");
+        if(strpos("_".$template,'[file_category,doth]')) $vars['file_category,doth'] = \WPDM\libs\FileList::CategorizedFileList($vars, "doth");
+        
         if(strpos("_".$template,'[promos]')) $vars['promos'] = \WPDM\libs\FileList::Promos($vars);
+        if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = \WPDM\libs\FileList::getScriptFile();
 
 
         if(!isset($vars['btnclass']))

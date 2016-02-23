@@ -335,7 +335,15 @@ class FileList
                                     'key_art'           => 'key', 
                                     'episodic_stills'   => 'epi', 
                                     'gallery'           => 'gal', 
-                                    'logos'             => 'log');
+                                    'logos'             => 'log',
+                                    'others'            => 'oth',
+
+                                    'synopses'          => 'syn',
+                                    'transcripts'       => 'epk',
+                                    'fact_sheet'        => 'fac',
+                                    'fonts'             => 'fon',
+                                    'document_others'   => 'doth'
+                                    );
 
     /**
      * @usage Callback function for [images_key_art] tag
@@ -343,47 +351,88 @@ class FileList
      * @return string
      * @usage Generate file list with preview - key art images
      */
-    public static function ImageKeyArt($file)
-    {
+    public static function CategorizedFileList($file, $prefix = null){
         $file['files'] = maybe_unserialize($file['files']);
         $fhtml = '';
 
         if(self::checkPackageDownloadAvailability($file['publish_date'], $file['expire_date'])){
             if (count($file['files']) > 0) {
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
-
-                $allfiles = is_array($file['files'])?$file['files']:array();
-
+                $allfiles = is_array($file['files']) ? $file['files'] : array();
                 // Start structuring the container html of file list
-                $fhtml = self::$html_div_outer_container;
-                    if (is_array($allfiles)) {
-                        foreach ($allfiles as $fileID => $sfile) {
-                            $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
-                            
-                            // Checks if file is an image file and having the desired file name prefix
-                            if(self::checkIfImageFile($sfile) && self::checkFileNamePrefix(self::$prefix_list['key_art'], $fileTitle)){
-                                $ind = \WPDM_Crypt::Encrypt($sfile);
-                                $postID = $file['ID'];
-                                $userID = get_current_user_id( );
-                                $filepath = file_exists($sfile)?$sfile:UPLOAD_DIR.$sfile;
-                                $fileType = 'image';
-                                $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
+                if (is_array($allfiles)) {
+                    foreach ($allfiles as $fileID => $sfile) {
+                        $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
+                         
+                        $thumb = "";
+                        if(checkFileType($sfile, 'image')){
+                            $filepath = getFilePath($sfile);
+                            $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
 
-                                $fhtml .= self::$html_div_panel_container;
-                                    $fhtml .= self::$html_div_panel ;
-                                        // To update when front-end design is final
-                                        $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
-                                        $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
-                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
-                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
-                                    $fhtml .= self::$html_div_close;
-                                $fhtml .= self::$html_div_close; 
+                            //KEY
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
+                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'image', $thumb);
+                            }
+
+                            //EPI
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
+                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'image', $thumb);
+                            }
+
+                            // GAL
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['gallery']){
+                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'image', $thumb);
+                            }
+
+                            // LOG
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos']){
+                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'image', $thumb);
+                            }
+                            // OTHERS
+                            if( !contains($fileTitle, self::$prefix_list['key_art']) && !contains($fileTitle, self::$prefix_list['episodic_stills']) && !contains($fileTitle, self::$prefix_list['gallery']) && !contains($fileTitle, self::$prefix_list['logos']) && $prefix == self::$prefix_list['others']){
+                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'image', $thumb);
+                            }
+                            
+                        }else{
+                            // SYN
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['synopses']){
+                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'document');
+                            }
+                            // EPK
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['transcripts']){
+                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'document');
+                            }
+                            // FAC
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fact_sheet']){
+                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'document');
+                            }
+                            // FON
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fonts']){
+                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'document');
+                            }
+                            // DOTH
+                            if( !contains($fileTitle, self::$prefix_list['synopses']) && !contains($fileTitle, self::$prefix_list['transcripts']) && !contains($fileTitle, self::$prefix_list['fact_sheet']) && !contains($fileTitle, self::$prefix_list['fonts']) && $prefix == self::$prefix_list['document_others']){
+                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'document');
                             }
                         }
                     }
-                $fhtml .= self::$html_div_close;
-                $siteurl = admin_url('/admin-ajax.php');
-                $fhtml .= " <script type='text/javascript' language = 'JavaScript'>
+                }
+            }
+        }else{
+            $fhtml .= "This package is not available for download";
+        }
+        return $fhtml;
+    }
+
+    /**
+     * @usage function to generate show custom script
+     * @param none
+     * @return html script
+     * @usage returns html script format
+     */
+    public static function getScriptFile(){
+        $siteurl = admin_url('/admin-ajax.php');
+        $fhtml .= " <script type='text/javascript' language = 'JavaScript'>
                                 jQuery(document).ready(function(){
                                     var ajaxurl = '{$siteurl}';
 
@@ -429,38 +478,38 @@ class FileList
 
                                 });
                             </script>";
-            }
-        }else{
-            $fhtml .= "This package is not available for download";
-        }
         return $fhtml;
     }
 
-    
     /**
-     * @usage function to check the file name prefix [key,epi etc.]
-     * @param $desired_prefix, $sfile
-     * @return bool
-     * @usage returns 1 if file prefix matched with the desired prefix, otherwise 0
+     * @usage function to generate per panel of file
+     * @param $sfile, $fileID, $fileTitle
+     * @return html
+     * @usage returns html format of displayed file panel
      */
-    public static function checkFileNamePrefix($desired_prefix, $fileTitle){
-        $prefix = substr($fileTitle, 0, 3);
-        $prefix = strtolower($prefix);
-        return $prefix == $desired_prefix ? 1 : 0;
-    }
+    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null) {
+        $fhtml = "";
+        $postID = $file['ID'];
+        $userID = get_current_user_id( );
+        $filepath = getFilePath($sfile);
 
-    /**
-     * @usage function to check if image file [png,jpg,jpeg, gif]
-     * @param $sfile
-     * @return bool
-     * @usage returns 1 if file is image file, otherwise 0
-     */
-    public static function checkIfImageFile($sfile){
-        $imgext = array('png','jpg','jpeg', 'gif');
-        $ext = explode(".", $sfile);
-        $ext = end($ext);
-        $ext = strtolower($ext);
-        return in_array($ext, $imgext) ? 1 : 0;
+        if($thumb){
+            $file_thumb = "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div>";
+        }else{
+            $ext = getFileExtension($sfile);
+            $file_thumb = "<div class='panel-body text-center'><img class='file-ico' src='".WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png'."' alt='{$fileTitle}' /></div>";
+        }
+                                    
+        $fhtml .= self::$html_div_panel_container;
+            $fhtml .= self::$html_div_panel ;
+            // To update when front-end design is final
+            $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
+            $fhtml .= $file_thumb;
+            $fhtml .= "<div class='panel-footer'>";
+            $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
+            $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
+        $fhtml .= self::$html_div_close;
+        return $fhtml;
     }
 
     /**
@@ -474,70 +523,6 @@ class FileList
         $xd = isset($end_date)&&$end_date!=""?strtotime($end_date):0;
         return !($xd>0 && $xd<time()) && !($pd>0 && $pd>time()) ? 1 : 0;
     }
-
-
-
-    /**
-     * @usage Callback function for [images_key_art] tag
-     * @param $file
-     * @return string
-     * @usage Generate file list with preview - key art images
-     */
-    public static function Documents($file)
-    {
-        $file['files'] = maybe_unserialize($file['files']);
-        $fhtml = '';
-
-        if(self::checkPackageDownloadAvailability($file['publish_date'], $file['expire_date'])){
-            if (count($file['files']) > 0) {
-                $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
-
-                $allfiles = is_array($file['files'])?$file['files']:array();
-
-                // Start structuring the container html of file list
-                $fhtml = self::$html_div_outer_container;
-                    if (is_array($allfiles)) {
-                        foreach ($allfiles as $fileID => $sfile) {
-                            $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
-                            
-                            // Checks if file is an image file and having the desired file name prefix
-                            // if(self::checkIfImageFile($sfile) && self::checkFileNamePrefix(self::$prefix_list['key_art'], $fileTitle)){
-                                $ind = \WPDM_Crypt::Encrypt($sfile);
-                                $postID = $file['ID'];
-                                $userID = get_current_user_id( );
-                                $filepath = file_exists($sfile)?$sfile:UPLOAD_DIR.$sfile;
-                                $fileType = 'document';
-                                $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
-
-                                // if(!self::checkIfImageFile($sfile))
-                                // $thumb = wpdm_dynamic_thumb($filepath, array(88, 88));
-                                // if($thumb)
-                                //     $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer footer-info'>".wpdm_file_size($sfile)."</div><div class='panel-footer'>";
-                                // else
-                                //     $fhtml .= "<div class='panel-body text-center'><img class='file-ico' src='".WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png'."' alt='{$fileTitle}' /></div><div class='panel-footer footer-info'>".wpdm_file_size($sfile)."</div><div class='panel-footer'>";
-
-
-                                $fhtml .= self::$html_div_panel_container;
-                                    $fhtml .= self::$html_div_panel ;
-                                        // To update when front-end design is final
-                                        $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
-                                        $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
-                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
-                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
-                                    $fhtml .= self::$html_div_close;
-                                $fhtml .= self::$html_div_close; 
-                            // }
-                        }
-                    }
-                $fhtml .= self::$html_div_close;
-            }
-        }else{
-            $fhtml .= "This package is not available for download";
-        }
-        return $fhtml;
-    }
-
-
 
 
     /**
@@ -558,7 +543,7 @@ class FileList
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
 
                 $allfiles = get_field( "add_promo_files" );is_array($file['files'])?$file['files']:array();
-
+                // echo "<pre>";print_r(get_field( "add_promo_files" ));echo "</pre>";die();
                 // Start structuring the container html of file list
                 $fhtml = self::$html_div_outer_container;
                     if (is_array($allfiles)) {
@@ -579,7 +564,7 @@ class FileList
                                         $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
                                         $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
                                         $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
-                                    $fhtml .= self::$html_div_close;
+                                    // $fhtml .= self::$html_div_close;
                                 $fhtml .= self::$html_div_close; 
                             }
                         }
