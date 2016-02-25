@@ -55,8 +55,7 @@
 
 
 <h3>Promos</h3>
-
-[promos]
+[file_category,promo]
 <br><br>
 
 

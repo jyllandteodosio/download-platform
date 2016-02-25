@@ -46,14 +46,6 @@ class Package {
         $vars['acf_legal_notice'] = get_field( "legal_notice" );
         $vars['acf_promo_files'] = serialize(get_field( "add_promo_files" ));
 
-        
-        // echo "<pre>";
-        // if( have_rows('add_promo_files') ):
-        //     echo "string";
-        // endif;
-        // print_r($vars['acf_promo_files']); die();
-        // echo "</pre>";
-
         //Featured Image
         $src = wp_get_attachment_image_src(get_post_thumbnail_id($vars['ID']), 'full', false, '');
         $vars['preview'] = $src['0'];
@@ -97,6 +89,8 @@ class Package {
         if(strpos("_".$template,'[file_category,fon]')) $vars['file_category,fon'] = \WPDM\libs\FileList::CategorizedFileList($vars, "fon");
         if(strpos("_".$template,'[file_category,doth]')) $vars['file_category,doth'] = \WPDM\libs\FileList::CategorizedFileList($vars, "doth");
         
+        if(strpos("_".$template,'[file_category,promo]')) $vars['file_category,promo'] = \WPDM\libs\FileList::CategorizedFileList($vars, "promo");
+
         if(strpos("_".$template,'[promos]')) $vars['promos'] = \WPDM\libs\FileList::Promos($vars);
         if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = \WPDM\libs\FileList::getScriptFile();
 

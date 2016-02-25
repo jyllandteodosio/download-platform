@@ -332,12 +332,13 @@ class FileList
     private static $html_div_panel = "<div class='panel panel-default'>";
     private static $html_div_close = "</div>";
     private static $prefix_list = array(
+                                    /* PREFIX FOR SHOW IMAGES*/
                                     'key_art'           => 'key', 
                                     'episodic_stills'   => 'epi', 
                                     'gallery'           => 'gal', 
                                     'logos'             => 'log',
                                     'others'            => 'oth',
-
+                                    /* PREFIX FOR SHOW DOCUMENTS */
                                     'synopses'          => 'syn',
                                     'transcripts'       => 'epk',
                                     'fact_sheet'        => 'fac',
@@ -358,61 +359,67 @@ class FileList
         if(self::checkPackageDownloadAvailability($file['publish_date'], $file['expire_date'])){
             if (count($file['files']) > 0) {
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
-                $allfiles = is_array($file['files']) ? $file['files'] : array();
+                $allfiles = $prefix != "promo" ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
+      
                 // Start structuring the container html of file list
                 if (is_array($allfiles)) {
-                    foreach ($allfiles as $fileID => $sfile) {
-                        $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
-                         
+                    foreach ($allfiles as $fileID => $sfileOriginal) {
+                        $fileTitle = $prefix != "promo" ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
+                        $sfile = $prefix != "promo" ? $sfileOriginal : $sfileOriginal['attached_file'];
                         $thumb = "";
-                        if(checkFileType($sfile, 'image')){
+                        if(checkFileType($sfile, 'image') && $prefix != "promo"){
                             $filepath = getFilePath($sfile);
                             $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
 
                             //KEY
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
-                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
                             }
 
                             //EPI
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
-                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
                             }
 
                             // GAL
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['gallery']){
-                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
                             }
 
                             // LOG
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos']){
-                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
                             }
                             // OTHERS
                             if( !contains($fileTitle, self::$prefix_list['key_art']) && !contains($fileTitle, self::$prefix_list['episodic_stills']) && !contains($fileTitle, self::$prefix_list['gallery']) && !contains($fileTitle, self::$prefix_list['logos']) && $prefix == self::$prefix_list['others']){
-                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
                             }
                             
-                        }else{
+                        }
+                        else if ( $prefix == "promo" ){
+                            $thumb = $sfileOriginal['thumbnail'];
+                            $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'promo', $thumb);
+                        }
+                        else{
                             // SYN
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['synopses']){
-                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
                             }
                             // EPK
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['transcripts']){
-                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
                             }
                             // FAC
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fact_sheet']){
-                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
                             }
                             // FON
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fonts']){
-                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
                             }
                             // DOTH
                             if( !contains($fileTitle, self::$prefix_list['synopses']) && !contains($fileTitle, self::$prefix_list['transcripts']) && !contains($fileTitle, self::$prefix_list['fact_sheet']) && !contains($fileTitle, self::$prefix_list['fonts']) && $prefix == self::$prefix_list['document_others']){
-                                $fhtml .= self::generateFilePanel($sfile, $file['ID'], $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
                             }
                         }
                     }
@@ -421,6 +428,37 @@ class FileList
         }else{
             $fhtml .= "This package is not available for download";
         }
+        return $fhtml;
+    }
+
+    /**
+     * @usage function to generate per panel of file
+     * @param $sfile, $fileID, $fileTitle
+     * @return html
+     * @usage returns html format of displayed file panel
+     */
+    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null) {
+        $fhtml = "";
+        $postID = get_the_id();
+        $userID = get_current_user_id( );
+        $filepath = $fileType != "promo" ? getFilePath($sfile) : $sfile;
+
+        if($thumb){
+            $file_thumb = "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div>";
+        }else{
+            $ext = getFileExtension($sfile);
+            $file_thumb = "<div class='panel-body text-center'><img class='file-ico' src='".WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png'."' alt='{$fileTitle}' /></div>";
+        }
+                                    
+        $fhtml .= self::$html_div_panel_container;
+            $fhtml .= self::$html_div_panel ;
+            // To update when front-end design is final
+            $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
+            $fhtml .= $file_thumb;
+            $fhtml .= "<div class='panel-footer'>";
+            $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
+            $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
+        $fhtml .= self::$html_div_close;
         return $fhtml;
     }
 
@@ -445,7 +483,8 @@ class FileList
                                                 'file-path' : jQuery(this).attr('data-file-path'),
                                                 'post-id'   : jQuery(this).attr('data-post-id'),
                                                 'file-type' : jQuery(this).attr('data-file-type'),
-                                                'user-id'   : jQuery(this).attr('data-user-id')
+                                                'user-id'   : jQuery(this).attr('data-user-id'),
+                                                'thumb'     : jQuery(this).attr('data-thumb')
                                             },
                                             function(response) {
                                                 if(response == 'success'){
@@ -482,37 +521,6 @@ class FileList
     }
 
     /**
-     * @usage function to generate per panel of file
-     * @param $sfile, $fileID, $fileTitle
-     * @return html
-     * @usage returns html format of displayed file panel
-     */
-    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null) {
-        $fhtml = "";
-        $postID = $file['ID'];
-        $userID = get_current_user_id( );
-        $filepath = getFilePath($sfile);
-
-        if($thumb){
-            $file_thumb = "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div>";
-        }else{
-            $ext = getFileExtension($sfile);
-            $file_thumb = "<div class='panel-body text-center'><img class='file-ico' src='".WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png'."' alt='{$fileTitle}' /></div>";
-        }
-                                    
-        $fhtml .= self::$html_div_panel_container;
-            $fhtml .= self::$html_div_panel ;
-            // To update when front-end design is final
-            $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
-            $fhtml .= $file_thumb;
-            $fhtml .= "<div class='panel-footer'>";
-            $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
-            $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
-        $fhtml .= self::$html_div_close;
-        return $fhtml;
-    }
-
-    /**
      * @usage function to check if package is available for download through the publish and expire field
      * @param $file
      * @return bool
@@ -522,59 +530,6 @@ class FileList
         $pd = isset($start_date)&&$start_date!=""?strtotime($start_date):0;
         $xd = isset($end_date)&&$end_date!=""?strtotime($end_date):0;
         return !($xd>0 && $xd<time()) && !($pd>0 && $pd>time()) ? 1 : 0;
-    }
-
-
-    /**
-     * @usage Callback function for [images_key_art] tag
-     * @param $file
-     * @return string
-     * @usage Generate file list with preview - key art images
-     */
-    public static function Promos($file)
-    {
-        // return serialize(get_field( "add_promo_files" ));
-
-        $file['files'] = maybe_unserialize($file['files']);
-        $fhtml = '';
-
-        if(self::checkPackageDownloadAvailability($file['publish_date'], $file['expire_date'])){
-            if (count($file['files']) > 0) {
-                $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
-
-                $allfiles = get_field( "add_promo_files" );is_array($file['files'])?$file['files']:array();
-                // echo "<pre>";print_r(get_field( "add_promo_files" ));echo "</pre>";die();
-                // Start structuring the container html of file list
-                $fhtml = self::$html_div_outer_container;
-                    if (is_array($allfiles)) {
-                        foreach ($allfiles as $fileID => $sfile) {
-                            if(self::checkPackageDownloadAvailability($sfile['promo_start'], $sfile['promo_end'])){
-                                $fileTitle = $sfile['file_name'];//isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)));
-                                $ind = \WPDM_Crypt::Encrypt($sfile);
-                                $postID = $file['ID'];
-                                $userID = get_current_user_id( );
-                                $filepath = $sfile['attached_file'];
-                                $fileType = 'promo';
-                                $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
-
-                                $fhtml .= self::$html_div_panel_container;
-                                    $fhtml .= self::$html_div_panel ;
-                                        // To update when front-end design is final
-                                        $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
-                                        $fhtml .= "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div><div class='panel-footer'>";
-                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
-                                        $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
-                                    // $fhtml .= self::$html_div_close;
-                                $fhtml .= self::$html_div_close; 
-                            }
-                        }
-                    }
-                $fhtml .= self::$html_div_close;
-            }
-        }else{
-            $fhtml .= "This package is not available for download";
-        }
-        return $fhtml;
     }
 
 }
