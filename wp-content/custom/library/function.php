@@ -79,6 +79,7 @@ function add_to_cart(){
 	}
 
     $cart_data['file_id'] 		= $_POST['file-id'];
+    $cart_data['file_title'] 	= $_POST['file-title'];
     $cart_data['file_path'] 	= $_POST['file-path'];
     $cart_data['post_id'] 		= $_POST['post-id'];
     $cart_data['file_type'] 	= $_POST['file-type'];
@@ -124,6 +125,7 @@ add_action('wp_ajax_nopriv_add_to_cart', 'add_to_cart');
 function structure_cart_data($cart_data){
 	$cart_array = array (
     		$cart_data['file_id'] => array (
+	    			'file_title' => $cart_data['file_title'],
 	    			'file_path' => $cart_data['file_path'],
 	    			'post_id' => $cart_data['post_id'],
 		    		'file_type' => $cart_data['file_type'],
@@ -185,10 +187,10 @@ function get_custom_cart_contents(){
 
 	$userID = get_current_user_id( );
 	$myCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID}" );
-
+	// var_dump($myCart);die();
 
 	$myCart = unserialize($myCart->meta_file);
 
-	return $myCart;
+	return $myCart != null ? $myCart : array();
 }
 

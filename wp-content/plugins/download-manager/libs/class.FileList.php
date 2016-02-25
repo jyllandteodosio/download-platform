@@ -442,24 +442,46 @@ class FileList
         $postID = get_the_id();
         $userID = get_current_user_id( );
         $filepath = $fileType != "promo" ? getFilePath($sfile) : $sfile;
-
+        $buttonText = !self::checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added";
+        $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
+        $isFileRemovable = !self::checkFileInCart($fileID) ? "hidden" : "";
+        
         if($thumb){
-            $file_thumb = "<div class='panel-body text-center'><img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' /></div>";
+            $file_thumb = "<img class='file-thumb' src='{$thumb}' alt='{$fileTitle}' />";
         }else{
             $ext = getFileExtension($sfile);
-            $file_thumb = "<div class='panel-body text-center'><img class='file-ico' src='".WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png'."' alt='{$fileTitle}' /></div>";
+            $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
+            $file_thumb = "<img class='file-ico' src='{$thumb}' alt='{$fileTitle}' />";
         }
-                                    
-        $fhtml .= self::$html_div_panel_container;
-            $fhtml .= self::$html_div_panel ;
-            // To update when front-end design is final
-            $fhtml .= "<div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
-            $fhtml .= $file_thumb;
-            $fhtml .= "<div class='panel-footer'>";
-            $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-add-to-cart' data-file-id='{$fileID}' data-file-path='{$filepath}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>".__("Add to Cart","wpdmpro")."</button></div>";
-            $fhtml .= "<button class='btn btn-primary btn-sm btn-block btn-remove-to-cart' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button></div>";
-        $fhtml .= self::$html_div_close;
+
+        // FILE PANEL CONTAINER 
+        $fhtml .= " <div class='col-md-4 col-sm-6 col-xs-6'>";
+        $fhtml .= "     <div class='panel panel-default'>";
+        $fhtml .= "         <div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
+        $fhtml .= "         <div class='panel-body text-center'>";
+        $fhtml .=               $file_thumb;
+        $fhtml .= "         </div>";
+        $fhtml .= "         <div class='panel-footer'>";
+        $fhtml .= "             <button class='btn btn-primary btn-sm btn-block btn-add-to-cart {$fileID}' {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>{$buttonText}</button>";
+        $fhtml .= "         </div>";
+        $fhtml .= "         <button class='btn btn-primary btn-sm btn-block btn-remove-to-cart {$fileID} {$isFileRemovable}' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button>";
+        $fhtml .= "     </div>";
+        $fhtml .= " </div>";
         return $fhtml;
+    }
+
+    /**
+     * @usage function to check if a specific file is present in the cart
+     * @param $fileID
+     * @return bool
+     * @usage returns 1 if file is present in the cart, otherwise 0
+     */
+    public static function checkFileInCart($fileID){
+        $cart_array = get_custom_cart_contents();
+        if(!empty(array_filter($cart_array))){
+            return array_key_exists($fileID, $cart_array);
+        }
+        return 0;
     }
 
     /**
@@ -476,10 +498,12 @@ class FileList
 
                                     jQuery('.btn-add-to-cart').click(function(event){
                                         var button = jQuery(this);
+                                        var file_id = jQuery(this).attr('data-file-id');
                                         jQuery.post(
                                             ajaxurl, 
                                             {   'action': 'add_to_cart',
-                                                'file-id'   : jQuery(this).attr('data-file-id'),
+                                                'file-id'   : file_id,
+                                                'file-title': jQuery(this).attr('data-file-title'),
                                                 'file-path' : jQuery(this).attr('data-file-path'),
                                                 'post-id'   : jQuery(this).attr('data-post-id'),
                                                 'file-type' : jQuery(this).attr('data-file-type'),
@@ -488,8 +512,10 @@ class FileList
                                             },
                                             function(response) {
                                                 if(response == 'success'){
-                                                    button.text('ADDED');
-                                                    button.prop('disabled',true);
+                                                    button.text('ADDED').prop('disabled',true);
+                                                    /* Show remove button */
+                                                    jQuery('.btn-remove-to-cart.'+file_id).removeClass('hidden');
+                                                    
                                                 }else if (response == 'failed') {
                                                     console.log('insert failed');
                                                 }
@@ -499,6 +525,7 @@ class FileList
 
                                     jQuery('.btn-remove-to-cart').click(function(event){
                                         var button = jQuery(this);
+                                        var file_id = jQuery(this).attr('data-file-id');
                                         jQuery.post(
                                             ajaxurl, 
                                             {   'action': 'remove_to_cart',
@@ -507,7 +534,9 @@ class FileList
                                             },
                                             function(response) {
                                                 if(response == 'success'){
-                                                    //button.addClass('hidden');
+                                                    button.addClass('hidden');
+                                                    /* Show add button */
+                                                    jQuery('.btn-add-to-cart.'+file_id).text('".__("Add to Cart","wpdmpro")."').prop('disabled',false);
                                                 }else if (response == 'failed') {
                                                     console.log('delete failed');
                                                 }
