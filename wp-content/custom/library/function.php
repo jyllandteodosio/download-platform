@@ -187,7 +187,6 @@ function get_custom_cart_contents(){
 
 	$userID = get_current_user_id( );
 	$myCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID}" );
-	// var_dump($myCart);die();
 
 	$myCart = unserialize($myCart->meta_file);
 
