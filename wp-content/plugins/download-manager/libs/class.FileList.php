@@ -327,10 +327,6 @@ class FileList
 
 
     // Added by Dianne D.R. - custom functions
-    private static $html_div_outer_container = "<div class='row' id='xfilelist'>";
-    private static $html_div_panel_container = "<div class='col-md-4 col-sm-6 col-xs-6'>";
-    private static $html_div_panel = "<div class='panel panel-default'>";
-    private static $html_div_close = "</div>";
     private static $prefix_list = array(
                                     /* PREFIX FOR SHOW IMAGES*/
                                     'key_art'           => 'key', 
@@ -362,11 +358,13 @@ class FileList
                 $allfiles = $prefix != "promo" ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
       
                 // Start structuring the container html of file list
+                
                 if (is_array($allfiles)) {
                     foreach ($allfiles as $fileID => $sfileOriginal) {
                         $fileTitle = $prefix != "promo" ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
                         $sfile = $prefix != "promo" ? $sfileOriginal : $sfileOriginal['attached_file'];
                         $thumb = "";
+
                         if(checkFileType($sfile, 'image') && $prefix != "promo"){
                             $filepath = getFilePath($sfile);
                             $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
@@ -423,6 +421,7 @@ class FileList
                             }
                         }
                     }
+
                 }
             }
         }else{
@@ -454,7 +453,13 @@ class FileList
             $file_thumb = "<img class='file-ico' src='{$thumb}' alt='{$fileTitle}' />";
         }
 
+        // FORM : INPUT FIELDS - use by bulk add to cart
+        $cart_data = prepare_cart_data(null,$fileTitle,$sfile,$postID,$fileType,$userID,$thumb);
+        $serialized_cart = serialize($cart_data);
+        $fhtml .= "<input type='hidden' name='{$fileID}' value='{$serialized_cart}'>";
+
         // FILE PANEL CONTAINER 
+        /** Note: for add to cart and remove to cart button, dont use a button tag and input[submit] tag to avoid conflicts with our form tag. I use span here  */
         $fhtml .= " <div class='col-md-4 col-sm-6 col-xs-6'>";
         $fhtml .= "     <div class='panel panel-default'>";
         $fhtml .= "         <div class='panel-heading ttip' title='{$fileTitle}'>{$fileTitle}</div>";
@@ -462,9 +467,9 @@ class FileList
         $fhtml .=               $file_thumb;
         $fhtml .= "         </div>";
         $fhtml .= "         <div class='panel-footer'>";
-        $fhtml .= "             <button class='btn btn-primary btn-sm btn-block btn-add-to-cart {$fileID}' {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>{$buttonText}</button>";
+        $fhtml .= "             <span class='btn btn-primary btn-sm btn-block btn-add-to-cart {$fileID}' {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>{$buttonText}</span>";
         $fhtml .= "         </div>";
-        $fhtml .= "         <button class='btn btn-primary btn-sm btn-block btn-remove-to-cart {$fileID} {$isFileRemovable}' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</button>";
+        $fhtml .= "         <span class='btn btn-primary btn-sm btn-block btn-remove-to-cart {$fileID} {$isFileRemovable}' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</span>";
         $fhtml .= "     </div>";
         $fhtml .= " </div>";
         return $fhtml;
@@ -484,6 +489,9 @@ class FileList
         return 0;
     }
 
+
+
+
     /**
      * @usage function to generate show custom script
      * @param none
@@ -495,6 +503,33 @@ class FileList
         $fhtml .= " <script type='text/javascript' language = 'JavaScript'>
                                 jQuery(document).ready(function(){
                                     var ajaxurl = '{$siteurl}';
+                                    
+                                    jQuery('.table-files').submit(function(event) {
+                                        event.preventDefault();
+                                        var form = jQuery(this);
+                                        var form_submitted_id = form.attr('id');
+                                        console.log(form.attr('id'));
+                                        jQuery.post(
+                                            ajaxurl, 
+                                            {
+                                                'action': 'bulk_add_to_cart',
+                                                'data': form.serialize()
+                                            },function(response) {
+                                                console.log('the response:');
+                                                console.log(response);
+
+                                                if(response == 'success'){
+                                                    /* TODO: .prop in span not working */
+                                                    jQuery('#'+form_submitted_id+' .btn-add-to-cart').text('ADDED').prop('disabled',true);
+                                                    /* Show remove button */
+                                                    jQuery('#'+form_submitted_id+' .btn-remove-to-cart').removeClass('hidden');
+                                                    
+                                                }else if (response == 'failed') {
+                                                    console.log('insert failed');
+                                                }
+                                            }
+                                        );
+                                    });
 
                                     jQuery('.btn-add-to-cart').click(function(event){
                                         var button = jQuery(this);
@@ -511,7 +546,11 @@ class FileList
                                                 'thumb'     : jQuery(this).attr('data-thumb')
                                             },
                                             function(response) {
+                                                console.log('add:');
+                                                console.log(response);
+
                                                 if(response == 'success'){
+                                                    /* TODO: .prop in span not working */
                                                     button.text('ADDED').prop('disabled',true);
                                                     /* Show remove button */
                                                     jQuery('.btn-remove-to-cart.'+file_id).removeClass('hidden');
@@ -533,6 +572,8 @@ class FileList
                                                 'user-id'   : jQuery(this).attr('data-user-id')
                                             },
                                             function(response) {
+                                                console.log('remove:');
+                                                console.log(response);
                                                 if(response == 'success'){
                                                     button.addClass('hidden');
                                                     /* Show add button */
