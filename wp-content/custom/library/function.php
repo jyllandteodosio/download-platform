@@ -1,5 +1,16 @@
 <?php
 
+// add_action( 'wp_enqueue_scripts', 'enqueue_cart_scripts' );
+
+// function enqueue_cart_scripts() {
+
+//   wp_localize_script( 'diannecart', 'dianneajaxcart', array(
+//     'ajax_url' => admin_url( 'admin-ajax.php' ),
+//     'cartnonce' => wp_create_nonce('__cart_nonce__')
+//   ));
+
+// }
+
 	// add_action( 'wp_enqueue_scripts', 'enqueue_cart_scripts' );
  //    function enqueue_cart_scripts() {
 
@@ -146,31 +157,38 @@ function deleteToCustomCart(){
  * Ajax function to update custom cart table
  */
 function bulk_add_to_cart() {
-	global $wpdb;
-    if (!isset($wpdb->custom_cart)) {
-	    $wpdb->custom_cart = $wpdb->prefix . 'custom_cart';
-	}
+	$cartnonce = $_POST['cartnonce'];
+	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
 
-    $cart_data['file_data']		= unserializeForm($_POST['data']);
+		global $wpdb;
+	    if (!isset($wpdb->custom_cart)) {
+		    $wpdb->custom_cart = $wpdb->prefix . 'custom_cart';
+		}
 
-    foreach ( $cart_data['file_data'] as $key => $value) {
-    	$cart_data_serialized[$key]			= urldecode($value);
-    	$cart_data_unserialized[$key]		= unserialize($cart_data_serialized[$key]);
-    }
-    
-    $user_id = get_current_user_id( );
-    $cart_entry_count = getCustomCartCount();
+	    $cart_data['file_data']		= unserializeForm($_POST['data']);
 
-	if($cart_entry_count == 0 ){
-    	$serialized_cart = serialize($cart_data_unserialized);
-    	$return_value = insertToCustomCart($serialized_cart);
+	    foreach ( $cart_data['file_data'] as $key => $value) {
+	    	$cart_data_serialized[$key]			= urldecode($value);
+	    	$cart_data_unserialized[$key]		= unserialize($cart_data_serialized[$key]);
+	    }
+	    
+	    $user_id = get_current_user_id( );
+	    $cart_entry_count = getCustomCartCount();
 
+		if($cart_entry_count == 0 ){
+	    	$serialized_cart = serialize($cart_data_unserialized);
+	    	$return_value = insertToCustomCart($serialized_cart);
+
+		}else {
+			$cart_entry = fetchEntryFromCustomCart();
+
+			$unserialized_cart = unserialize($cart_entry);
+	   		$serialized_cart = serialize(array_merge($unserialized_cart, $cart_data_unserialized));
+	   		$return_value = updateToCustomCart($serialized_cart);
+		}
+		
 	}else {
-		$cart_entry = fetchEntryFromCustomCart();
-
-		$unserialized_cart = unserialize($cart_entry);
-   		$serialized_cart = serialize(array_merge($unserialized_cart, $cart_data_unserialized));
-   		$return_value = updateToCustomCart($serialized_cart);
+		$return_value = 0;
 	}
     echo $return_value == 1 ? "success" : "failed";
 	die();
@@ -191,26 +209,33 @@ function unserializeForm($str) {
 }
 
 function add_to_cart(){
-    global $wpdb;
-    if (!isset($wpdb->custom_cart)) {
-	    $wpdb->custom_cart = $wpdb->prefix . 'custom_cart';
-	}
-	 
-	$cart_data = prepare_cart_data($_POST['file-id'],$_POST['file-title'],$_POST['file-path'],$_POST['post-id'],$_POST['file-type'],$_POST['user-id'],$_POST['thumb']);
-    $cart_array = structure_cart_data($cart_data);
+	$cartnonce = $_POST['cartnonce'];
+	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
 
-    $cart_entry_count = getCustomCartCount();
-    
-	if($cart_entry_count == 0 ){
-    	$serialized_cart = serialize($cart_array);
-	    $return_value = insertToCustomCart($serialized_cart);
+	    global $wpdb;
+	    if (!isset($wpdb->custom_cart)) {
+		    $wpdb->custom_cart = $wpdb->prefix . 'custom_cart';
+		}
+	
+		$cart_data = prepare_cart_data($_POST['file-id'],$_POST['file-title'],$_POST['file-path'],$_POST['post-id'],$_POST['file-type'],$_POST['user-id'],$_POST['thumb']);
+	    $cart_array = structure_cart_data($cart_data);
 
+	    $cart_entry_count = getCustomCartCount();
+	    
+		if($cart_entry_count == 0 ){
+	    	$serialized_cart = serialize($cart_array);
+		    $return_value = insertToCustomCart($serialized_cart);
+
+		}else {
+			$cart_entry = fetchEntryFromCustomCart();
+			$unserialized_cart = unserialize($cart_entry);
+	   		$serialized_cart = serialize(array_merge($unserialized_cart, $cart_array));
+	   		$return_value = updateToCustomCart($serialized_cart);
+		}
 	}else {
-		$cart_entry = fetchEntryFromCustomCart();
-		$unserialized_cart = unserialize($cart_entry);
-   		$serialized_cart = serialize(array_merge($unserialized_cart, $cart_array));
-   		$return_value = updateToCustomCart($serialized_cart);
+		$return_value = 0;
 	}
+
     echo $return_value == 1 ? "success" : "failed";
     die();
 }
@@ -254,34 +279,40 @@ function structure_cart_data($cart_data){
  * Ajax function to remove item in custom cart table
  */
 function remove_to_cart(){
-    global $wpdb;
-    if (!isset($wpdb->custom_cart)) {
-	    $wpdb->custom_cart = $wpdb->prefix . 'custom_cart';
-	}
+	$cartnonce = $_POST['cartnonce'];
+	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
 
-    $cart_data['file_id'] 		= $_POST['file-id'];
-    $cart_data['user_id'] 		= $_POST['user-id'];
-
-    $cart_entry_count = getCustomCartCount();
-
-	if($cart_entry_count == 1 ){
-		$cart_entry = unserialize($wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']}" )[0]);
-		$meta_file_count = count($cart_entry);
-
-		if(array_key_exists($cart_data['file_id'],$cart_entry)) {
-			if($meta_file_count > 1){
-				unset($cart_entry[$cart_data['file_id']]);
-				$serialized_cart = serialize($cart_entry);
-				$return_value = updateToCustomCart($serialized_cart);
-			}else {
-				$return_value = deleteToCustomCart();
-			}
-			$return_value = "success";
+	    global $wpdb;
+	    if (!isset($wpdb->custom_cart)) {
+		    $wpdb->custom_cart = $wpdb->prefix . 'custom_cart';
 		}
-	}else {
-		$return_value = "failed";
-	}
 
+	    $cart_data['file_id'] 		= $_POST['file-id'];
+	    $cart_data['user_id'] 		= $_POST['user-id'];
+
+	    $cart_entry_count = getCustomCartCount();
+
+		if($cart_entry_count == 1 ){
+			$cart_entry = unserialize($wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']}" )[0]);
+			$meta_file_count = count($cart_entry);
+
+			if(array_key_exists($cart_data['file_id'],$cart_entry)) {
+				if($meta_file_count > 1){
+					unset($cart_entry[$cart_data['file_id']]);
+					$serialized_cart = serialize($cart_entry);
+					$return_value = updateToCustomCart($serialized_cart);
+				}else {
+					$return_value = deleteToCustomCart();
+				}
+				$return_value = "success";
+			}
+		}else {
+			$return_value = "failed";
+		}
+
+	}else {
+			$return_value = "failed";
+	}
     echo $return_value;
     die();
 }
@@ -304,3 +335,21 @@ function get_custom_cart_contents(){
 	return $myCart != null ? $myCart : array();
 }
 
+// add_action( 'wp_enqueue_scripts', 'button_click_ajax_scripts' );
+// function button_click_ajax_scripts() {
+
+//    if ( ! is_admin() ) {
+//        wp_enqueue_script( 'button_click_ajax', get_stylesheet_directory_uri() . '/js/button_click_ajax.js', array ( 'jquery' ), false, true );
+//        $params = array(
+//            'nonce' => wp_create_nonce( 'button_nonce' ),
+//            'ajaxURL' => admin_url( 'admin-ajax.php' ),
+//        ); 
+//        wp_localize_script( 'button_click_ajax', 'params', $params ); 
+//    }
+// }
+// add_action( 'wp_ajax_button_click_ajax_callback', 'button_click_ajax_callback' ); // only works if user logged in
+// function button_click_ajax_callback() {
+//     check_ajax_referer( 'button_nonce', 'security' );
+//     echo "success";
+//     die;
+// }

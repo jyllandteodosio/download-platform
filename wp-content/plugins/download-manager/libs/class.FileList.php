@@ -363,6 +363,7 @@ class FileList
                     foreach ($allfiles as $fileID => $sfileOriginal) {
                         $fileTitle = $prefix != "promo" ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
                         $sfile = $prefix != "promo" ? $sfileOriginal : $sfileOriginal['attached_file'];
+                        $fileID = $prefix != "promo" ? $fileID : $sfileOriginal['id'];
                         $thumb = "";
 
                         if(checkFileType($sfile, 'image') && $prefix != "promo"){
@@ -454,6 +455,7 @@ class FileList
         }
 
         // FORM : INPUT FIELDS - use by bulk add to cart
+        /* TODO: promo file file ID problem*/
         $cart_data = prepare_cart_data(null,$fileTitle,$sfile,$postID,$fileType,$userID,$thumb);
         $serialized_cart = serialize($cart_data);
         $fhtml .= "<input type='hidden' name='{$fileID}' value='{$serialized_cart}'>";
@@ -472,6 +474,7 @@ class FileList
         $fhtml .= "         <span class='btn btn-primary btn-sm btn-block btn-remove-to-cart {$fileID} {$isFileRemovable}' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</span>";
         $fhtml .= "     </div>";
         $fhtml .= " </div>";
+        
         return $fhtml;
     }
 
@@ -490,8 +493,6 @@ class FileList
     }
 
 
-
-
     /**
      * @usage function to generate show custom script
      * @param none
@@ -499,11 +500,15 @@ class FileList
      * @usage returns html script format
      */
     public static function getScriptFile(){
+
         $siteurl = admin_url('/admin-ajax.php');
+        $cartnonce = wp_create_nonce('__rtl_cart_nonce__');
+
         $fhtml .= " <script type='text/javascript' language = 'JavaScript'>
                                 jQuery(document).ready(function(){
                                     var ajaxurl = '{$siteurl}';
-                                    
+                                    var cartnonce = '{$cartnonce}';
+
                                     jQuery('.table-files').submit(function(event) {
                                         event.preventDefault();
                                         var form = jQuery(this);
@@ -512,8 +517,9 @@ class FileList
                                         jQuery.post(
                                             ajaxurl, 
                                             {
-                                                'action': 'bulk_add_to_cart',
-                                                'data': form.serialize()
+                                                'action'    : 'bulk_add_to_cart',
+                                                'data'      : form.serialize(),
+                                                'cartnonce' : cartnonce
                                             },function(response) {
                                                 console.log('the response:');
                                                 console.log(response);
@@ -543,7 +549,8 @@ class FileList
                                                 'post-id'   : jQuery(this).attr('data-post-id'),
                                                 'file-type' : jQuery(this).attr('data-file-type'),
                                                 'user-id'   : jQuery(this).attr('data-user-id'),
-                                                'thumb'     : jQuery(this).attr('data-thumb')
+                                                'thumb'     : jQuery(this).attr('data-thumb'),
+                                                'cartnonce'     : cartnonce
                                             },
                                             function(response) {
                                                 console.log('add:');
@@ -569,7 +576,8 @@ class FileList
                                             ajaxurl, 
                                             {   'action': 'remove_to_cart',
                                                 'file-id'   : jQuery(this).attr('data-file-id'),
-                                                'user-id'   : jQuery(this).attr('data-user-id')
+                                                'user-id'   : jQuery(this).attr('data-user-id'),
+                                                'cartnonce'     : cartnonce
                                             },
                                             function(response) {
                                                 console.log('remove:');
