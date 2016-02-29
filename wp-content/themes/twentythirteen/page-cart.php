@@ -8,8 +8,16 @@ get_header(); ?>
 
 
 echo "<pre>";
-        print_r(get_custom_cart_contents()); die();
-        echo "</pre>";
+    print_r(get_custom_cart_contents('image'));
+echo "</pre><br>";
+
+echo "<pre>";
+    print_r(get_custom_cart_contents('promo'));
+echo "</pre><br>";
+
+echo "<pre>";
+    print_r(get_custom_cart_contents('document'));
+echo "</pre><br>";
 
 ?>
 
