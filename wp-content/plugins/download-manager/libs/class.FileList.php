@@ -334,12 +334,22 @@ class FileList
                                     'gallery'           => 'gal', 
                                     'logos'             => 'log',
                                     'others'            => 'oth',
+                                    /* PREFIX FOR CHANNEL MATERIALS IMAGE*/
+                                    'channel_logos'     => 'cm_log', 
+                                    'channel_elements'  => 'cm_ele', 
+                                    'channel_others'    => 'cm_oth', 
                                     /* PREFIX FOR SHOW DOCUMENTS */
                                     'synopses'          => 'syn',
                                     'transcripts'       => 'epk',
                                     'fact_sheet'        => 'fac',
                                     'fonts'             => 'fon',
-                                    'document_others'   => 'doth'
+                                    'document_others'   => 'doth',
+                                    'promos'            => 'promo',
+                                    /* PREFIX FOR CHANNEL MATERIALS DOCUMENT */
+                                    'channel_epg'       => 'cm_epg',
+                                    'channel_highlights'=> 'cm_hig',
+                                    'channel_brand'     => 'cm_bra',
+                                    'channel_boiler'    => 'cm_boi'
                                     );
 
     /**
@@ -355,36 +365,35 @@ class FileList
         if(self::checkPackageDownloadAvailability($file['publish_date'], $file['expire_date'])){
             if (count($file['files']) > 0) {
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
-                $allfiles = $prefix != "promo" ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
+                $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
       
                 // Start structuring the container html of file list
                 
                 if (is_array($allfiles)) {
                     foreach ($allfiles as $fileID => $sfileOriginal) {
-                        $fileTitle = $prefix != "promo" ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
-                        $sfile = $prefix != "promo" ? $sfileOriginal : $sfileOriginal['attached_file'];
-                        $fileID = $prefix != "promo" ? $fileID : $sfileOriginal['id'];
+                        $fileTitle = $prefix != self::$prefix_list['promos'] ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
+                        $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
+                        $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
                         $thumb = "";
 
-                        if(checkFileType($sfile, 'image') && $prefix != "promo"){
+                        if(checkFileType($sfile, 'image') && $prefix != self::$prefix_list['promos']){
+
                             $filepath = getFilePath($sfile);
                             $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
 
+                            /* SHOW IMAGES ========================================================================== */
                             //KEY
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
                             }
-
                             //EPI
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
                             }
-
                             // GAL
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['gallery']){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
                             }
-
                             // LOG
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos']){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
@@ -393,13 +402,29 @@ class FileList
                             if( !contains($fileTitle, self::$prefix_list['key_art']) && !contains($fileTitle, self::$prefix_list['episodic_stills']) && !contains($fileTitle, self::$prefix_list['gallery']) && !contains($fileTitle, self::$prefix_list['logos']) && $prefix == self::$prefix_list['others']){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
                             }
+                            /* END SHOW IMAGES ======================================================================= */
+
+                            /* CHANNEL MATERIALS IMAGE ========================================================================== */
+                            // CM_LOG
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_logos']){
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                            }
+                            // CM_ELE
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_elements']){
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                            }
+                            // CM_OTH
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_others']){
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                            }
                             
                         }
-                        else if ( $prefix == "promo" ){
+                        else if ( $prefix == self::$prefix_list['promos'] ){
                             $thumb = $sfileOriginal['thumbnail'];
-                            $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'promo', $thumb);
+                            $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, self::$prefix_list['promos'], $thumb);
                         }
                         else{
+                            /* SHOW DOCUMENTS ===================================================================================== */
                             // SYN
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['synopses']){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
@@ -420,6 +445,26 @@ class FileList
                             if( !contains($fileTitle, self::$prefix_list['synopses']) && !contains($fileTitle, self::$prefix_list['transcripts']) && !contains($fileTitle, self::$prefix_list['fact_sheet']) && !contains($fileTitle, self::$prefix_list['fonts']) && $prefix == self::$prefix_list['document_others']){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
                             }
+                            /* END SHOW DOCUMENTS ================================================================================= */
+
+                            /* SHOW DOCUMENTS ===================================================================================== */
+                            // CM_EPG
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                            }
+                            // CM_HIG
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_highlights']){
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                            }
+                            // CM_BRA
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_brand']){
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                            }
+                            // CM_BOI
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_boiler']){
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                            }
+                            /* END SHOW DOCUMENTS ================================================================================= */
                         }
                     }
 
@@ -441,7 +486,7 @@ class FileList
         $fhtml = "";
         $postID = get_the_id();
         $userID = get_current_user_id( );
-        $filepath = $fileType != "promo" ? getFilePath($sfile) : $sfile;
+        $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
         $buttonText = !self::checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added";
         $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
         $isFileRemovable = !self::checkFileInCart($fileID) ? "hidden" : "";
@@ -455,7 +500,6 @@ class FileList
         }
 
         // FORM : INPUT FIELDS - use by bulk add to cart
-        /* TODO: promo file file ID problem*/
         $cart_data = prepare_cart_data(null,$fileTitle,$sfile,$postID,$fileType,$userID,$thumb);
         $serialized_cart = serialize($cart_data);
         $fhtml .= "<input type='hidden' name='{$fileID}' value='{$serialized_cart}'>";
