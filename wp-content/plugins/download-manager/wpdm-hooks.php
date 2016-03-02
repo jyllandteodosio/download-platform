@@ -55,7 +55,8 @@ if (is_admin()) {
 
     // Tags
 
-
+    // Custom - by Dianne D.R.
+    add_shortcode("wpdm_category_custom", "wpdm_category_custom");
 
 }
 

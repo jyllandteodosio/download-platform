@@ -304,3 +304,229 @@ function get_custom_cart_contents($fileType = null){
 
 	return $myCart != null ? $myCart : array();
 }
+
+// Show list page
+
+function custom_posts_where( $where){
+    global $wpdb;
+    if(isset($wpdb->letter_filter) && $wpdb->letter_filter != null && $wpdb->letter_filter != ''){
+    	$where .= " AND SUBSTRING( post_title, 1, 1 ) ='".$wpdb->letter_filter."' ";
+    }
+    return $where;
+}
+
+function wpdm_category_custom($params)
+{
+    $params['order_field'] = isset($params['order_by'])?$params['order_by']:'publish_date';
+    unset($params['order_by']);
+    if (isset($params['item_per_page']) && !isset($params['items_per_page'])) $params['items_per_page'] = $params['item_per_page'];
+    unset($params['item_per_page']);
+    return wpdm_embed_category_custom($params);
+}
+
+function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'IN' , 'items_per_page' => 10, 'title' => false, 'desc' => false, 'order_field' => 'create_date', 'order' => 'desc', 'paging' => false, 'toolbar' => 1, 'template' => '','cols'=>3, 'colspad'=>2, 'colsphone' => 1, 'letter_filter' => null))
+{
+    extract($params);
+    $fnparams = $params;
+    if(!isset($id)) return;
+    if(!isset($items_per_page)) $items_per_page = 10;
+    if(!isset($template)) $template = 'link-template-calltoaction3.php';
+    if(!isset($cols)) $cols = 3;
+    if(!isset($colspad)) $colspad = 2;
+    if(!isset($colsphone)) $colsphone = 1;
+    if(!isset($toolbar)) $toolbar = 1;
+    $taxo = 'wpdmcategory';
+    if(isset($tag) && $tag==1) $taxo = 'post_tag';
+    $cwd_class = "col-md-".(int)(12/$cols);
+    $cwdsm_class = "col-sm-".(int)(12/$colspad);
+    $cwdxs_class = "col-xs-".(int)(12/$colsphone);
+
+    $id = trim($id, ", ");
+    $cids = explode(",", $id);
+
+    global $wpdb, $current_user, $post, $wp_query;
+
+    $order_field = isset($order_field) ? $order_field : 'publish_date';
+    $order_field = isset($_GET['orderby']) ? $_GET['orderby'] : $order_field;
+    $order = isset($order) ? $order : 'desc';
+    $order = isset($_GET['order']) ? $_GET['order'] : $order;
+    $operator = isset($operator)?$operator:'IN';
+    $cpvar = 'cp_'.$cids[0];
+    $cp = wpdm_query_var($cpvar,'num');
+    if(!$cp) $cp = 1;
+    $wpdb->letter_filter = $letter_filter;
+
+    $params = array(
+        'post_type' => 'wpdmpro',
+        'paged' => $cp,
+        'posts_per_page' => $items_per_page,
+        'include_children' => false,
+        'tax_query' => array(array(
+            'taxonomy' => $taxo,
+            'field' => 'slug',
+            'terms' => $cids,
+            'operator' => $operator
+        ))
+    );
+
+    if (get_option('_wpdm_hide_all', 0) == 1) {
+        $params['meta_query'] = array(
+            array(
+            'key' => '__wpdm_access',
+            'value' => 'guest',
+            'compare' => 'LIKE'
+            )
+        );
+        if(is_user_logged_in()){
+            global $current_user;
+            $params['meta_query'][] = array(
+                'key' => '__wpdm_access',
+                'value' => $current_user->roles[0],
+                'compare' => 'LIKE'
+            );
+            $params['meta_query']['relation'] = 'OR';
+        }
+    }
+
+    if(isset($tags) && $tags != ''){
+        $params['tag'] = $tags;
+    }
+
+    $params['orderby'] = $order_field;
+    $params['order'] = $order;
+    $params = apply_filters("wpdm_embed_category_query_params", $params);
+    add_filter( 'posts_where' , 'custom_posts_where' );
+    $packs = new WP_Query($params);
+    remove_filter( 'posts_where' , 'custom_posts_where' );
+
+    $total = $packs->found_posts;
+    $pages = ceil($total / $items_per_page);
+    $page = isset($_GET[$cpvar]) ? $_GET[$cpvar] : 1;
+    $start = ($page - 1) * $items_per_page;
+
+    if (!isset($paging) || $paging == 1) {
+        $pag = new \WPDM\libs\Pagination();
+        $pag->items($total);
+        $pag->nextLabel(' &#9658; ');
+        $pag->prevLabel(' &#9668; ');
+        $pag->limit($items_per_page);
+        $pag->currentPage($page);
+    }
+
+    $burl = get_permalink();
+    $url = $_SERVER['REQUEST_URI']; //get_permalink();
+    $url = strpos($url, '?') ? $url . '&' : $url . '?';
+    $url = preg_replace("/[\&]*{$cpvar}=[0-9]+[\&]*/", "", $url);
+    $url = strpos($url, '?') ? $url . '&' : $url . '?';
+    if (!isset($paging) || $paging == 1)
+        $pag->urlTemplate($url . "$cpvar=[%PAGENO%]");
+
+
+    $html = '';
+    $templates = maybe_unserialize(get_option("_fm_link_templates", true));
+
+    if(isset($templates[$template])) $template = $templates[$template]['content'];
+
+    global $post;
+    while($packs->have_posts()) { $packs->the_post();
+
+        $pack = (array)$post;
+        $repeater = "<div class='{$cwd_class} {$cwdsm_class} {$cwdxs_class}'>".FetchTemplate($template, $pack)."</div>";
+        $html .=  $repeater;
+
+    }
+    wp_reset_query();
+
+    $html = "<div class='row'>{$html}</div>";
+    $cname = array();
+    foreach($cids as $cid){
+        $cat = get_term_by('slug', $cid, $taxo);
+        $cname[] = $cat->name;
+
+    }
+    $cats = implode(", ", $cname);
+
+    //Added from v4.2.1
+    $desc = '';
+
+    if(isset($fnparams['title']) && $fnparams['title'] != false && intval($fnparams['title']) != 1) $cats = $fnparams['title'];
+    if(isset($fnparams['desc']) && $fnparams['desc'] != false && intval($fnparams['desc']) != 1) $desc = $fnparams['desc'];
+    if(isset($fnparams['desc']) && $fnparams['desc'] == 1) $desc = term_description($cids[0], $taxo);
+
+     $cimg = '';
+
+
+    $subcats = '';
+    if (function_exists('wpdm_ap_categories') && $subcats == 1) {
+        $schtml = wpdm_ap_categories(array('parent' => $id));
+        if ($schtml != '') {
+            $subcats = "<fieldset class='cat-page-tilte'><legend>" . __('Sub-Categories', 'wpdmpro') . "</legend>" . $schtml . "<div style='clear:both'></div></fieldset>" . "<fieldset class='cat-page-tilte'><legend>" . __('Downloads', 'wpdmpro') . "</legend>";
+            $efs = '</fieldset>';
+        }
+    }
+
+    if (!isset($paging) || $paging == 1)
+        $pgn = "<div style='clear:both'></div>" . $pag->show() . "<div style='clear:both'></div>";
+    else
+        $pgn = "";
+    global $post;
+
+    $sap = get_option('permalink_structure') ? '?' : '&';
+    $burl = $burl . $sap;
+    if (isset($_GET['p']) && $_GET['p'] != '') $burl .= 'p=' . $_GET['p'] . '&';
+    if (isset($_GET['src']) && $_GET['src'] != '') $burl .= 'src=' . $_GET['src'] . '&';
+    $orderby = isset($_GET['orderby']) ? $_GET['orderby'] : 'create_date';
+    $order = ucfirst($order);
+    $order_field = " " . __(ucwords(str_replace("_", " ", $order_field)),"wpdmpro");
+    $ttitle = __('Title', 'wpdmpro');
+    $tdls = __('Downloads', 'wpdmpro');
+    $tcdate = __('Publish Date', 'wpdmpro');
+    $tudate = __('Update Date', 'wpdmpro');
+    $tasc = __('Asc', 'wpdmpro');
+    $tdsc = __('Desc', 'wpdmpro');
+    $tsrc = __('Search', 'wpdmpro');
+    $order_by_label = __('Order By','wpdmpro');
+    if ($toolbar || get_option('__wpdm_cat_tb') == 1)
+        $toolbar = <<<TBR
+
+                 <div class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">$cats</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+      <ul class="nav navbar-nav navbar-right">
+       <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{$order_by_label} {$order_field} <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                         <li><a href="{$burl}orderby=title&order=asc">{$ttitle}</a></li>
+                         <!-- li><a href="{$burl}orderby=download_count&order=desc">{$tdls}</a></li -->
+                         <li><a href="{$burl}orderby=publish_date&order=desc">{$tcdate}</a></li>
+                        </ul>
+                     </li>
+                     <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">$order <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                         <li><a href="{$burl}orderby={$orderby}&order=asc">{$tasc}</a></li>
+                         <li><a href="{$burl}orderby={$orderby}&order=desc">{$tdsc}</a></li>
+                        </ul>
+                     </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</div>
+TBR;
+    else
+        $toolbar = '';
+    return "<div class='w3eden'>" . $toolbar . $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div></div>";
+}
