@@ -24,6 +24,6 @@ function wppb_add_user_content() {
 	// $version = ( ( PROFILE_BUILDER == 'Profile Builder Pro' ) ? 'Pro' : $version );
 	// $version = ( ( PROFILE_BUILDER == 'Profile Builder Hobbyist' ) ? 'Hobbyist' : $version );
 	
-	require_once WPPB_PLUGIN_DIR . 'admin/form/add-user.php';
+	require_once WPPB_PLUGIN_DIR . 'admin/form/form-add-user.php';
 
 }
