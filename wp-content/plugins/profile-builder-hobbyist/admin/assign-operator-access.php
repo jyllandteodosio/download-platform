@@ -61,6 +61,7 @@ function custom_get_rtl_channels()
 function process_operator_access(){
 	// echo $_POST['data'];
 	// TODO: fix unserializeForm function to properly draw checkbox data
+
 	// print_r(unserializeForm($_POST['data']));
 	// echo "</pre>";
 	
@@ -70,6 +71,7 @@ function process_operator_access(){
 	    	$data_unserialized[$key]		= unserialize($data_serialized[$key]);
 	    }
 	print_r($data);
+
 	die();
 }
 add_action('wp_ajax_process_operator_access', 'process_operator_access');

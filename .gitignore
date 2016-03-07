@@ -46,10 +46,10 @@ favico.ico
 /wp-content/plugins/download-manager/cache
 
 #ignore wordpress wp-config.php
-#wp-config.php
+wp-config.php
 
 #ignore .htaccess
-#.htaccess
+.htaccess
 
 # ignore node/grunt dependency directories
 node_modules/

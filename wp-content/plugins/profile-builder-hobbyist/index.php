@@ -133,6 +133,9 @@ function wppb_hobbyist_plugin_init() {
         if (file_exists(WPPB_PLUGIN_DIR . '/admin/add-users.php')){
             include_once(WPPB_PLUGIN_DIR . '/admin/add-users.php');
         }
+        if (file_exists(WPPB_PLUGIN_DIR . '/admin/assign-operator-access.php')){
+            include_once(WPPB_PLUGIN_DIR . '/admin/assign-operator-access.php');
+        }
         // end of custom added field
 
         if (file_exists(WPPB_PLUGIN_DIR . '/features/admin-approval/admin-approval.php')) {
