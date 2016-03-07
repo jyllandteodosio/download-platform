@@ -167,6 +167,7 @@ add_action('wp_ajax_nopriv_bulk_add_to_cart', 'bulk_add_to_cart');
 function unserializeForm($str) {
     $strArray = explode("&", $str);
     foreach($strArray as $item) {
+        $item = urldecode($item);
         list($k, $v) = explode('=', $item);
 		$returndata[ $k ] = $v;
     }
