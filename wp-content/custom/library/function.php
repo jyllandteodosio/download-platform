@@ -1,4 +1,7 @@
 <?php
+/**
+ * Custom database table initialization
+ */
 global $wpdb;
 if (!isset($wpdb->custom_cart)) {
 	$wpdb->custom_cart = $wpdb->prefix . 'custom_cart';
@@ -13,7 +16,6 @@ if (!function_exists('contains')) {
      * @return bool
      */
     function contains($str, $charToSearch){
-
         $str = strtolower($str);
         $charToSearch = strtolower($charToSearch);
 
@@ -21,7 +23,6 @@ if (!function_exists('contains')) {
             if(strpos($str, $char) !== FALSE){
                 return true;
             }
-
         }
         return false;
     }
@@ -70,21 +71,26 @@ if( !function_exists('checkFileType') ){
     }
 }
 
+/**
+ * Database functions for Custom Cart
+ */
+function getCustomCartContents(){
+    global $wpdb;
+    $userID = get_current_user_id( );
+    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID}" );
+    return $rawCart;
+}
 
-// Database functions
 function getCustomCartCount(){
 	global $wpdb;
-
     $user_id = get_current_user_id( );
-
 	$cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
 	return $cart_entry_count;
 }
+
 function insertToCustomCart($serialized_cart){
 	global $wpdb;
-
     $user_id = get_current_user_id( );
-
 	$return_value = $wpdb->insert(
 	        				$wpdb->custom_cart,
 					        array(
@@ -95,11 +101,10 @@ function insertToCustomCart($serialized_cart){
 	    				);
 	return $return_value;
 }
+
 function updateToCustomCart($serialized_cart){
 	global $wpdb;
-
     $user_id = get_current_user_id( );
-
 	$return_value = $wpdb->update( 
 							$wpdb->custom_cart, 
 							array('meta_file' => $serialized_cart), 
@@ -107,14 +112,15 @@ function updateToCustomCart($serialized_cart){
 						);
 	return $return_value;
 }
+
 function fetchEntryFromCustomCart(){
 	global $wpdb;
-
     $user_id = get_current_user_id( );
     $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" )[0];
 
     return $cart_entry;
 }
+
 function deleteToCustomCart(){
 	global $wpdb;
 
@@ -122,36 +128,31 @@ function deleteToCustomCart(){
 	$return_value = $wpdb->delete( $wpdb->custom_cart, array( 'user_id' => $user_id) );
 	return $return_value;
 }
+
 /**
- * Ajax function to update custom cart table
+ * Ajax function to o a bulk add to cart feature
  */
 function bulk_add_to_cart() {
 	global $wpdb;
 	$cartnonce = $_POST['cartnonce'];
 	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
-
 	    $cart_data['file_data']		= unserializeForm($_POST['data']);
-
 	    foreach ( $cart_data['file_data'] as $key => $value) {
 	    	$cart_data_serialized[$key]			= urldecode($value);
 	    	$cart_data_unserialized[$key]		= unserialize($cart_data_serialized[$key]);
 	    }
-	    
 	    $user_id = get_current_user_id( );
 	    $cart_entry_count = getCustomCartCount();
 
 		if($cart_entry_count == 0 ){
 	    	$serialized_cart = serialize($cart_data_unserialized);
 	    	$return_value = insertToCustomCart($serialized_cart);
-
 		}else {
 			$cart_entry = fetchEntryFromCustomCart();
-
 			$unserialized_cart = unserialize($cart_entry);
 	   		$serialized_cart = serialize(array_merge($unserialized_cart, $cart_data_unserialized));
 	   		$return_value = updateToCustomCart($serialized_cart);
 		}
-
 	}else {
 		$return_value = 0;
 	}
@@ -159,35 +160,20 @@ function bulk_add_to_cart() {
 	die();
 }
 add_action('wp_ajax_bulk_add_to_cart', 'bulk_add_to_cart');
-add_action('wp_ajax_nopriv_bulk_add_to_cart', 'bulk_add_to_cart');
 
 /**
- * function to unserialize a form created by jquery serialize method.
+ * Ajax function for adding specific files to cart
  */
-function unserializeForm($str) {
-    $strArray = explode("&", $str);
-    foreach($strArray as $item) {
-        $item = urldecode($item);
-        list($k, $v) = explode('=', $item);
-		$returndata[ $k ] = $v;
-    }
-    return $returndata;
-}
-
 function add_to_cart(){
 	global $wpdb;
 	$cartnonce = $_POST['cartnonce'];
 	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
-
 		$cart_data = prepare_cart_data($_POST['file-id'],$_POST['file-title'],$_POST['file-path'],$_POST['post-id'],$_POST['file-type'],$_POST['user-id'],$_POST['thumb']);
 	    $cart_array = structure_cart_data($cart_data);
-
 	    $cart_entry_count = getCustomCartCount();
-	    
 		if($cart_entry_count == 0 ){
 	    	$serialized_cart = serialize($cart_array);
 		    $return_value = insertToCustomCart($serialized_cart);
-
 		}else {
 			$cart_entry = fetchEntryFromCustomCart();
 			$unserialized_cart = unserialize($cart_entry);
@@ -197,13 +183,63 @@ function add_to_cart(){
 	}else {
 		$return_value = 0;
 	}
-
     echo $return_value == 1 ? "success" : "failed";
     die();
 }
 add_action('wp_ajax_add_to_cart', 'add_to_cart');
-add_action('wp_ajax_nopriv_add_to_cart', 'add_to_cart');
 
+/**
+ * Ajax function to remove item in custom cart table
+ */
+function remove_to_cart(){
+    global $wpdb;
+
+    $cartnonce = $_POST['cartnonce'];
+    if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
+
+        $cart_data['file_id']       = $_POST['file-id'];
+        $cart_data['user_id']       = $_POST['user-id'];
+
+        $cart_entry_count = getCustomCartCount();
+
+        if($cart_entry_count == 1 ){
+            $cart_entry = unserialize($wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']}" )[0]);
+            $meta_file_count = count($cart_entry);
+
+            if(array_key_exists($cart_data['file_id'],$cart_entry)) {
+                if($meta_file_count > 1){
+                    unset($cart_entry[$cart_data['file_id']]);
+                    $serialized_cart = serialize($cart_entry);
+                    $return_value = updateToCustomCart($serialized_cart);
+                }else {
+                    $return_value = deleteToCustomCart();
+                }
+                $return_value = "success";
+            }
+        }else {
+            $return_value = "failed";
+        }
+
+    }else {
+            $return_value = "failed";
+    }
+    echo $return_value;
+    die();
+}
+add_action('wp_ajax_remove_to_cart', 'remove_to_cart');
+
+/**
+ * function to unserialize a form created by jquery .serialize method.
+ */
+function unserializeForm($str) {
+    $strArray = explode("&", $str);
+    foreach($strArray as $item) {
+        $item = urldecode($item);
+        list($k, $v) = explode('=', $item);
+        $returndata[ $k ] = $v;
+    }
+    return $returndata;
+}
 
 /**
  * function to prepare cart data before structuring for serialization
@@ -216,7 +252,6 @@ function prepare_cart_data($fileID=null, $fileTitle=null, $filepath=null, $posdI
     $cart_data['file_type'] 	= $fileType;
     $cart_data['user_id'] 		= $userID;
     $cart_data['thumb'] 		= $thumb;
-
     return $cart_data;
 }
 
@@ -238,54 +273,13 @@ function structure_cart_data($cart_data){
 }
 
 /**
- * Ajax function to remove item in custom cart table
+ * Get contents of custom cart
+ * @param  String $fileType     Either image, promo or file
+ * @return Array                Cart Contents
  */
-function remove_to_cart(){
-	global $wpdb;
-
-	$cartnonce = $_POST['cartnonce'];
-	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
-
-	    $cart_data['file_id'] 		= $_POST['file-id'];
-	    $cart_data['user_id'] 		= $_POST['user-id'];
-
-	    $cart_entry_count = getCustomCartCount();
-
-		if($cart_entry_count == 1 ){
-			$cart_entry = unserialize($wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']}" )[0]);
-			$meta_file_count = count($cart_entry);
-
-			if(array_key_exists($cart_data['file_id'],$cart_entry)) {
-				if($meta_file_count > 1){
-					unset($cart_entry[$cart_data['file_id']]);
-					$serialized_cart = serialize($cart_entry);
-					$return_value = updateToCustomCart($serialized_cart);
-				}else {
-					$return_value = deleteToCustomCart();
-				}
-				$return_value = "success";
-			}
-		}else {
-			$return_value = "failed";
-		}
-
-	}else {
-			$return_value = "failed";
-	}
-    echo $return_value;
-    die();
-}
-add_action('wp_ajax_remove_to_cart', 'remove_to_cart');
-add_action('wp_ajax_nopriv_remove_to_cart', 'remove_to_cart');
-
 function get_custom_cart_contents($fileType = null){
-	global $wpdb;
-
-	$userID = get_current_user_id( );
-	$rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID}" );
-
+	$rawCart = getCustomCartContents();
 	$rawCart = unserialize($rawCart->meta_file);
-	
 	if ($fileType != '' || $fileType != null) {
 		foreach ($rawCart as $key => $value) {
 			if($value['file_type'] == $fileType){
@@ -302,12 +296,19 @@ function get_custom_cart_contents($fileType = null){
 	}else {
 		$myCart = $rawCart;
 	}
-
 	return $myCart != null ? $myCart : array();
 }
 
-// Show list page
 
+
+
+
+
+
+
+
+
+// Show list page
 function custom_posts_where( $where){
     global $wpdb;
     if(isset($wpdb->letter_filter) && $wpdb->letter_filter != null && $wpdb->letter_filter != ''){
