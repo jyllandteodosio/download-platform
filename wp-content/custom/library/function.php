@@ -49,6 +49,8 @@ if( !function_exists('getFilePath') ) {
 	 * @return string 				File path
 	 */
 	function getFilePath($sfile) {
+        // $ind = \WPDM_Crypt::Encrypt($sfile);
+        // return wpdm_download_url($sfile) . "&ind=" . $ind;
 		return file_exists($sfile)?$sfile:UPLOAD_DIR.$sfile;
 	}
 }
@@ -135,11 +137,14 @@ function deleteToCustomCart(){
 function bulk_add_to_cart() {
 	global $wpdb;
 	$cartnonce = $_POST['cartnonce'];
+
 	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
 	    $cart_data['file_data']		= unserializeForm($_POST['data']);
+
 	    foreach ( $cart_data['file_data'] as $key => $value) {
-	    	$cart_data_serialized[$key]			= urldecode($value);
+	    	$cart_data_serialized[$key]			= $value;//urldecode($value);
 	    	$cart_data_unserialized[$key]		= unserialize($cart_data_serialized[$key]);
+            $cart_data_unserialized[$key]['download_url'] = urldecode($cart_data_unserialized[$key]['download_url']);
 	    }
 	    $user_id = get_current_user_id( );
 	    $cart_entry_count = getCustomCartCount();
@@ -168,7 +173,7 @@ function add_to_cart(){
 	global $wpdb;
 	$cartnonce = $_POST['cartnonce'];
 	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
-		$cart_data = prepare_cart_data($_POST['file-id'],$_POST['file-title'],$_POST['file-path'],$_POST['post-id'],$_POST['file-type'],$_POST['user-id'],$_POST['thumb']);
+		$cart_data = prepare_cart_data($_POST['file-id'],$_POST['file-title'], $_POST['file-path'], $_POST['download-url'],$_POST['post-id'],$_POST['file-type'],$_POST['user-id'],$_POST['thumb']);
 	    $cart_array = structure_cart_data($cart_data);
 	    $cart_entry_count = getCustomCartCount();
 		if($cart_entry_count == 0 ){
@@ -244,14 +249,15 @@ function unserializeForm($str) {
 /**
  * function to prepare cart data before structuring for serialization
  */
-function prepare_cart_data($fileID=null, $fileTitle=null, $filepath=null, $posdID=null, $fileType=null, $userID=null, $thumb=null){
+function prepare_cart_data($fileID=null, $fileTitle=null, $filepath=null, $downloadUrl=null, $posdID=null, $fileType=null, $userID=null, $thumb=null){
 	if($fileID != null) $cart_data['file_id'] = $fileID;
     $cart_data['file_title'] 	= $fileTitle;
-    $cart_data['file_path'] 	= $filepath;
+    $cart_data['file_path']     = $filepath;
+    $cart_data['download_url'] 	= $downloadUrl;
     $cart_data['post_id'] 		= $posdID;
     $cart_data['file_type'] 	= $fileType;
     $cart_data['user_id'] 		= $userID;
-    $cart_data['thumb'] 		= $thumb;
+    $cart_data['thumb']         = $thumb;
     return $cart_data;
 }
 
@@ -262,7 +268,8 @@ function structure_cart_data($cart_data){
 	$cart_array = array (
     		$cart_data['file_id'] => array (
 	    			'file_title' => $cart_data['file_title'],
-	    			'file_path' => $cart_data['file_path'],
+                    'file_path' => $cart_data['file_path'],
+	    			'download_url' => $cart_data['download_url'],
 	    			'post_id' => $cart_data['post_id'],
 		    		'file_type' => $cart_data['file_type'],
 		    		'user_id' => $cart_data['user_id'],
@@ -279,33 +286,28 @@ function structure_cart_data($cart_data){
  */
 function get_custom_cart_contents($fileType = null){
 	$rawCart = getCustomCartContents();
-	$rawCart = unserialize($rawCart->meta_file);
-	if ($fileType != '' || $fileType != null) {
-		foreach ($rawCart as $key => $value) {
-			if($value['file_type'] == $fileType){
-				$myCart[$key] = array (
-			    			'file_title' => $value['file_title'],
-			    			'file_path' => $value['file_path'],
-			    			'post_id' => $value['post_id'],
-				    		'file_type' => $value['file_type'],
-				    		'user_id' => $value['user_id'],
-				    		'thumb' => $value['thumb']
-		    			);
-			}
-		}
-	}else {
-		$myCart = $rawCart;
-	}
+    if (!empty($rawCart)) {
+    	$rawCart = unserialize($rawCart->meta_file);
+    	if ($fileType != '' || $fileType != null) {
+    		foreach ($rawCart as $key => $value) {
+    			if($value['file_type'] == $fileType){
+    				$myCart[$key] = array (
+    			    			'file_title' => $value['file_title'],
+                                'file_path' => $value['file_path'],
+    			    			'download_url' => $value['download_url'],
+    			    			'post_id' => $value['post_id'],
+    				    		'file_type' => $value['file_type'],
+    				    		'user_id' => $value['user_id'],
+    				    		'thumb' => $value['thumb']
+    		    			);
+    			}
+    		}
+    	}else {
+    		$myCart = $rawCart;
+    	}
+    }
 	return $myCart != null ? $myCart : array();
 }
-
-
-
-
-
-
-
-
 
 
 // Show list page
@@ -532,3 +534,34 @@ TBR;
         $toolbar = '';
     return "<div class='w3eden'>" . $toolbar . $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div></div>";
 }
+
+/**
+ * Ajax function to o a bulk add to cart feature
+ */
+function bulk_download() {
+    $files = array();
+    $cart_files = get_custom_cart_contents();
+    foreach ($cart_files as $key => $value) {
+        $files[$key] = $value['file_path'];
+    }
+
+    $zip = new ZipArchive();
+    $zipped = UPLOAD_DIR . 'Cart-files.zip';
+    $zip->open($zipped, ZIPARCHIVE::CREATE);
+
+    foreach ($files as $file) {
+        $file = trim($file);
+        if (file_exists(UPLOAD_DIR . $file)) {
+            $fnm = preg_replace("/^[0-9]+?wpdm_/", "", $file);
+            $zip->addFile(UPLOAD_DIR . $file, $fnm);
+        } else if (file_exists($file))
+            $zip->addFile($file, wpdm_basename($file));
+        else if (file_exists(WP_CONTENT_DIR . end($tmp = explode("wp-content", $file)))) //path fix on site move
+            $zip->addFile(WP_CONTENT_DIR . end($tmp = explode("wp-content", $file)), wpdm_basename($file));
+    }
+
+    $zip->close();
+    wpdm_download_file($zipped, 'Cart-files.zip');
+    @unlink($zipped);
+}
+
