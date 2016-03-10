@@ -4,7 +4,10 @@
 /* NOTE: put this if statement before get_header() */
 if(isset($_GET['download-all'])){
 	bulk_download();
+	reports_log();
+    deleteToCustomCart();
 }
+
 
 get_header(); 
 
@@ -31,8 +34,8 @@ if (!empty($image_cart_content)) :?>
 			<div class='panel-body text-center'>
 				<img src="<?php echo $info['thumb'];?>">
 			</div>
-			<a rel="nofollow" class=""
-				data-file-id="<?php echo $file_id;?>" data-file-title="<?php echo $info['file_title'] ?>" data-download-url="<?php echo $info['download_url'] ?>" data-post-id="<?php echo $info['post_id'] ?>" data-file-type="<?php echo $info['file_type'] ?>" data-user-id="<?php echo $info['user_id'] ?>"
+			<a rel="nofollow" class="download-file"
+				data-file-id="<?php echo $file_id;?>" data-file-title="<?php echo $info['file_title'] ?>" data-file-path="<?php echo $info['file_path'] ?>" data-download-url="<?php echo $info['download_url'] ?>" data-post-id="<?php echo $info['post_id'] ?>" data-file-type="<?php echo $info['file_type'] ?>" data-user-id="<?php echo $info['user_id'] ?>"
 				href="<?php echo $info['download_url'];?>">
 					&nbsp;Download
 			</a>
@@ -60,7 +63,7 @@ if (!empty($promo_cart_content)) :?>
 			<img src="<?php echo $info['thumb'];?>">
 		</div>
 		<a rel="nofollow" download class=""
-			data-file-id="<?php echo $file_id;?>" data-file-title="<?php echo $info['file_title'] ?>" data-download-url="<?php echo $info['download_url'] ?>" data-post-id="<?php echo $info['post_id'] ?>" data-file-type="<?php echo $info['file_type'] ?>" data-user-id="<?php echo $info['user_id'] ?>"
+			data-file-id="<?php echo $file_id;?>" data-file-title="<?php echo $info['file_title'] ?>" data-file-path="<?php echo $info['file_path'] ?>" data-download-url="<?php echo $info['download_url'] ?>" data-post-id="<?php echo $info['post_id'] ?>" data-file-type="<?php echo $info['file_type'] ?>" data-user-id="<?php echo $info['user_id'] ?>"
 			href="<?php echo $info['download_url'];?>">
 				&nbsp;Download
 		</a>
@@ -88,7 +91,7 @@ if (!empty($document_cart_content)) :?>
 			<img src="<?php echo $info['thumb'];?>">
 		</div>
 		<a rel="nofollow" download class=""
-			data-file-id="<?php echo $file_id;?>" data-file-title="<?php echo $info['file_title'] ?>" data-download-url="<?php echo $info['download_url'] ?>" data-post-id="<?php echo $info['post_id'] ?>" data-file-type="<?php echo $info['file_type'] ?>" data-user-id="<?php echo $info['user_id'] ?>"
+			data-file-id="<?php echo $file_id;?>" data-file-title="<?php echo $info['file_title'] ?>" data-file-path="<?php echo $info['file_path'] ?>" data-download-url="<?php echo $info['download_url'] ?>" data-post-id="<?php echo $info['post_id'] ?>" data-file-type="<?php echo $info['file_type'] ?>" data-user-id="<?php echo $info['user_id'] ?>"
 			href="<?php echo $info['download_url'];?>">
 				&nbsp;Download
 		</a>
@@ -110,12 +113,29 @@ endif;
 
 <script type='text/javascript' language = 'JavaScript'>
                                 jQuery(document).ready(function(){
-                                    // var ajaxurl = "<?php echo admin_url('/admin-ajax.php')?>";
-                                    // var cartnonce = "<?php echo wp_create_nonce('__rtl_cart_nonce__')?>";
+                                    var ajaxurl = "<?php echo admin_url('/admin-ajax.php')?>";
+                                    var cartnonce = "<?php echo wp_create_nonce('__rtl_cart_nonce__')?>";
 
-                                    // jQuery('#btn-download-all').click(function(){
-                                    // 	console.log('button click');
-                                    // });
+                                    jQuery('.download-file').click(function(){
+                                    	console.log('button click');
+
+                                    	jQuery.post(
+                                            ajaxurl, 
+                                            {   'action': 'download_file',
+                                                'file-id'   : jQuery(this).attr('data-file-id'),
+                                                'file-path' : jQuery(this).attr('data-file-path'),
+                                                'download-url' : jQuery(this).attr('data-download-url'),
+                                                'post-id'   : jQuery(this).attr('data-post-id'),
+                                                'file-type' : jQuery(this).attr('data-file-type'),
+                                                'cartnonce'     : cartnonce
+                                            },
+                                            function(response) {
+                                                console.log('download:');
+                                                console.log(response);
+
+                                            }
+                                        );
+                                    });
 
 
                                 });
