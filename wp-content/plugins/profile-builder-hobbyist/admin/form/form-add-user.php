@@ -5,10 +5,16 @@ echo wppb_front_end_register_handler(array (  ));
 
 
 <script>
-var prefix_password = "rtl_";
-	jQuery("#username").keyup(function () {
+	var prefix_password = "";
+	
+    jQuery("#email").keyup(function () {
       var value = jQuery(this).val();
-      jQuery("#email").val(value);
+      jQuery("#username").val(value);
+      jQuery("#passw1").val(prefix_password+value);
+    }).keyup();
+
+    jQuery("#username").keyup(function () {
+      var value = jQuery(this).val();
       jQuery("#passw1").val(prefix_password+value);
     }).keyup();
 </script>
