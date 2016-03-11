@@ -14,7 +14,7 @@
 					<td>
 						<select name="country" id="country">
 							<option value="">- Select country -</option>
-							<?php $default_country_array = array_filter(wppb_country_select_options( 'back_end' ));
+							<?php $default_country_array = array_filter(custom_get_country_groups());
 								foreach( $default_country_array as $iso_country_code => $country_name ):?>
 									<option value="<?php echo $iso_country_code;?>"><?php echo $country_name;?></option>
 							<?php endforeach;?>

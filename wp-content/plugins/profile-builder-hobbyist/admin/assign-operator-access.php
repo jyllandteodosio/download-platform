@@ -33,6 +33,23 @@ function wppb_assign_operator_access_content() {
 
 }
 
+function custom_get_country_groups()
+{
+	global $wpdb;
+
+	$raw_operator_group = $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'wppb_manage_fields' ");
+	$unserialized_operator_group = unserialize($raw_operator_group);
+
+	$operator_groups = array();
+	$operator_groups_options = explode( ',', $unserialized_operator_group[0]['options']);
+	$operator_groups_labels = explode( ',', $unserialized_operator_group[0]['labels']);
+
+	foreach ($operator_groups_options as $key => $value) {
+		$operator_groups[$value] = $operator_groups_labels[$key];
+	}
+	return $operator_groups;
+}
+
 function custom_get_operator_groups()
 {
 	global $wpdb;
