@@ -650,7 +650,7 @@ function download_file(){
 }
 add_action('wp_ajax_download_file', 'download_file');
 
-
+// TODO : lipat yung code below sa proper location
 /**
  * Custom Css for 'Add New Operator' in Admin Dashboard.
  */
