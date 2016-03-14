@@ -637,9 +637,9 @@ function download_file(){
 
         if ($cart_files_count > 1) {
             unset($unserialized_cart[$cart_data['file_id']]);
-            updateToCustomCart(serialize($unserialized_cart));
+            $return_value = updateToCustomCart(serialize($unserialized_cart));
         }else if ($cart_files_count == 1){
-            deleteToCustomCart();
+            $return_value = deleteToCustomCart();
         }
     }else {
         $return_value = 0;
