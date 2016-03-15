@@ -377,16 +377,17 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
     $fnparams = $params;
     if(!isset($id)) return;
     if(!isset($items_per_page)) $items_per_page = 10;
-    if(!isset($template)) $template = 'link-template-calltoaction3.php';
+    // if(!isset($template)) $template = 'link-template-calltoaction3.php';
+    if(!isset($template)) $template = 'link-template-rtlcbscustom.php';
     if(!isset($cols)) $cols = 3;
     if(!isset($colspad)) $colspad = 2;
     if(!isset($colsphone)) $colsphone = 1;
     if(!isset($toolbar)) $toolbar = 1;
     $taxo = 'wpdmcategory';
     if(isset($tag) && $tag==1) $taxo = 'post_tag';
-    $cwd_class = "col-md-".(int)(12/$cols);
-    $cwdsm_class = "col-sm-".(int)(12/$colspad);
-    $cwdxs_class = "col-xs-".(int)(12/$colsphone);
+    // $cwd_class = "col-md-".(int)(12/$cols);
+    // $cwdsm_class = "col-sm-".(int)(12/$colspad);
+    // $cwdxs_class = "col-xs-".(int)(12/$colsphone);
 
     $id = trim($id, ", ");
     $cids = explode(",", $id);
@@ -485,15 +486,16 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
 
     global $post;
     while($packs->have_posts()) { $packs->the_post();
-
+        /* Show items */
         $pack = (array)$post;
-        $repeater = "<div class='{$cwd_class} {$cwdsm_class} {$cwdxs_class}'>".FetchTemplate($template, $pack)."</div>";
+        $repeater = FetchTemplate($template, $pack);
+        // $repeater = "<div class='{$cwd_class} {$cwdsm_class} {$cwdxs_class}'>".FetchTemplate($template, $pack)."</div>";
         $html .=  $repeater;
 
     }
     wp_reset_query();
 
-    $html = "<div class='row'>{$html}</div>";
+    // $html = "<div class='row'>{$html}</div>";
     $cname = array();
     foreach($cids as $cid){
         $cat = get_term_by('slug', $cid, $taxo);
@@ -522,7 +524,8 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
     }
 
     if (!isset($paging) || $paging == 1)
-        $pgn = "<div style='clear:both'></div>" . $pag->show() . "<div style='clear:both'></div>";
+        $pgn = $pag->show();
+        // $pgn = "<div style='clear:both'></div>" . $pag->show() . "<div style='clear:both'></div>";
     else
         $pgn = "";
     global $post;
@@ -584,7 +587,8 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
 TBR;
     else
         $toolbar = '';
-    return "<div class='w3eden'>" . $toolbar . $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div></div>";
+        return $toolbar . $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div>";
+        // return "<div class='w3eden'>" . $toolbar . $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div></div>";
 }
 
 /**
