@@ -134,6 +134,46 @@ function deleteToCustomCart(){
 	return $return_value;
 }
 
+/* END OF DATABASE FUNCTIONS */
+
+if( !function_exists('get_current_user_role') ){
+    /**
+     * Get current role of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function get_current_user_role(){
+        if ( is_user_logged_in() ) {
+            global $current_user;
+
+            $user_roles = $current_user->roles;
+            $user_role = array_shift($user_roles);
+
+            $return_value = $user_role;
+        }
+        return $return_value;
+    }
+}
+
+if( !function_exists('get_current_user_operator_group') ){
+    /**
+     * Get current role of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function get_current_user_operator_group(){
+        return get_user_meta( get_current_user_id(), 'operator_group', true);
+
+        // if ( is_user_logged_in() ) {
+        //     global $current_user;
+
+        //     $user_roles = $current_user->roles;
+        //     $user_role = array_shift($user_roles);
+
+        //     $return_value = $user_role;
+        // }
+        // return $return_value;
+    }
+}
+
 /**
  * Ajax function to o a bulk add to cart feature
  */

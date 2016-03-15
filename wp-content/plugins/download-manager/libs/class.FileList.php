@@ -376,6 +376,7 @@ class FileList
                         $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
                         $thumb = "";
                         $ind = \WPDM_Crypt::Encrypt($sfile);
+                        $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
 
 
                         if(checkFileType($sfile, 'image') && $prefix != self::$prefix_list['promos']){
@@ -422,8 +423,18 @@ class FileList
                             
                         }
                         else if ( $prefix == self::$prefix_list['promos'] ){
-                            $thumb = $sfileOriginal['thumbnail'];
-                            $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, self::$prefix_list['promos'], $thumb);
+                            $current_user_role = strtolower(get_current_user_role());
+                            $current_user_operator_group = get_current_user_operator_group();
+                            if( ($current_user_role == 'administrator') || 
+                                (   $current_user_role == 'operator' && 
+                                    (   $operator_group_promo_access == $current_user_operator_group || 
+                                        $operator_group_promo_access == 'all'
+                                    )
+                                )
+                              ){
+                                $thumb = $sfileOriginal['thumbnail'];
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, self::$prefix_list['promos'], $thumb);
+                            }
                         }
                         else{
                             /* SHOW DOCUMENTS ===================================================================================== */
