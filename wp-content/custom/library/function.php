@@ -373,7 +373,16 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
             'field' => 'slug',
             'terms' => $cids,
             'operator' => $operator
-        ))
+        )
+        /* Uncomment to exclude channel materials after final FE */
+        // ,
+        // array(
+        //     'taxonomy' => $taxo,
+        //     'field' => 'slug',
+        //     'terms' => 'channel-materials',
+        //     'operator' => 'NOT IN'
+        // )
+        )
     );
 
     if (get_option('_wpdm_hide_all', 0) == 1) {
@@ -697,3 +706,35 @@ function custom_css_profile_builder() {
     </style>';
 }
 add_action('admin_head', 'custom_css_profile_builder');
+
+
+/**
+ * Get month's promos
+ */
+function getMonthsPromos(){
+    global $wpdb;
+$rows = $wpdb->get_results($wpdb->prepare( 
+            "
+            SELECT * 
+            FROM {$wpdb->prefix}postmeta
+            WHERE meta_key LIKE %s
+                AND meta_value = %s
+            ",
+            'add_promo_files_%_category', // meta_name: $ParentName_$RowNumber_$ChildName
+            'On-Air' // meta_value: 'type_3' for example
+        ));
+
+/*
+
+SELECT post_id, meta_key, meta_value 
+FROM rtl21016_postmeta 
+WHERE meta_key = '__wpdm_publish_date'
+OR meta_key = '__wpdm_expire_date'
+ORDER BY post_id
+
+
+ */
+
+
+return $rows;
+}
