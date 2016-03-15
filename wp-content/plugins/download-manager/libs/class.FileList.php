@@ -375,47 +375,49 @@ class FileList
                         $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
                         $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
                         $thumb = "";
+                        $ind = \WPDM_Crypt::Encrypt($sfile);
+
 
                         if(checkFileType($sfile, 'image') && $prefix != self::$prefix_list['promos']){
 
-                            $filepath = getFilePath($sfile);
-                            $thumb = wpdm_dynamic_thumb($filepath, array(150, 88));
+                            $filepath = wpdm_download_url($file) . "&ind=" . $ind;
+                            $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(150, 88));
 
                             /* SHOW IMAGES ========================================================================== */
                             //KEY
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             //EPI
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // GAL
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['gallery']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // LOG
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // OTHERS
                             if( !contains($fileTitle, self::$prefix_list['key_art']) && !contains($fileTitle, self::$prefix_list['episodic_stills']) && !contains($fileTitle, self::$prefix_list['gallery']) && !contains($fileTitle, self::$prefix_list['logos']) && $prefix == self::$prefix_list['others']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             /* END SHOW IMAGES ======================================================================= */
 
                             /* CHANNEL MATERIALS IMAGE ========================================================================== */
                             // CM_LOG
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_logos']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // CM_ELE
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_elements']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // CM_OTH
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_others']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb);
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             
                         }
@@ -427,42 +429,42 @@ class FileList
                             /* SHOW DOCUMENTS ===================================================================================== */
                             // SYN
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['synopses']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // EPK
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['transcripts']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // FAC
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fact_sheet']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // FON
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fonts']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // DOTH
                             if( !contains($fileTitle, self::$prefix_list['synopses']) && !contains($fileTitle, self::$prefix_list['transcripts']) && !contains($fileTitle, self::$prefix_list['fact_sheet']) && !contains($fileTitle, self::$prefix_list['fonts']) && $prefix == self::$prefix_list['document_others']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             /* END SHOW DOCUMENTS ================================================================================= */
 
                             /* SHOW DOCUMENTS ===================================================================================== */
                             // CM_EPG
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // CM_HIG
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_highlights']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // CM_BRA
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_brand']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // CM_BOI
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_boiler']){
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document');
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             /* END SHOW DOCUMENTS ================================================================================= */
                         }
@@ -482,11 +484,13 @@ class FileList
      * @return html
      * @usage returns html format of displayed file panel
      */
-    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null) {
+    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null) {
         $fhtml = "";
         $postID = get_the_id();
         $userID = get_current_user_id( );
+        $ind = \WPDM_Crypt::Encrypt($sfile);
         $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
+        $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file)."&ind=".$ind : $sfile;
         $buttonText = !self::checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added";
         $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
         $isFileRemovable = !self::checkFileInCart($fileID) ? "hidden" : "";
@@ -500,9 +504,11 @@ class FileList
         }
 
         // FORM : INPUT FIELDS - use by bulk add to cart
-        $cart_data = prepare_cart_data(null,$fileTitle,$sfile,$postID,$fileType,$userID,$thumb);
+        $cart_data = prepare_cart_data(null,$fileTitle,$filepath,urlencode($downloadUrl),$postID,$fileType,$userID,$thumb);
         $serialized_cart = serialize($cart_data);
         $fhtml .= "<input type='hidden' name='{$fileID}' value='{$serialized_cart}'>";
+
+        
 
         // FILE PANEL CONTAINER 
         /** Note: for add to cart and remove to cart button, dont use a button tag and input[submit] tag to avoid conflicts with our form tag. I use span here  */
@@ -513,7 +519,7 @@ class FileList
         $fhtml .=               $file_thumb;
         $fhtml .= "         </div>";
         $fhtml .= "         <div class='panel-footer'>";
-        $fhtml .= "             <span class='btn btn-primary btn-sm btn-block btn-add-to-cart {$fileID}' {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>{$buttonText}</span>";
+        $fhtml .= "             <span class='btn btn-primary btn-sm btn-block btn-add-to-cart {$fileID}' {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' href='#'>{$buttonText}</span>";
         $fhtml .= "         </div>";
         $fhtml .= "         <span class='btn btn-primary btn-sm btn-block btn-remove-to-cart {$fileID} {$isFileRemovable}' data-file-id='{$fileID}' data-user-id='{$userID}' href='#'>Remove</span>";
         $fhtml .= "     </div>";
@@ -590,6 +596,7 @@ class FileList
                                                 'file-id'   : file_id,
                                                 'file-title': jQuery(this).attr('data-file-title'),
                                                 'file-path' : jQuery(this).attr('data-file-path'),
+                                                'download-url' : jQuery(this).attr('data-download-url'),
                                                 'post-id'   : jQuery(this).attr('data-post-id'),
                                                 'file-type' : jQuery(this).attr('data-file-type'),
                                                 'user-id'   : jQuery(this).attr('data-user-id'),
