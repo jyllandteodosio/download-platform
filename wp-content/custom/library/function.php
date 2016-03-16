@@ -391,6 +391,7 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
 
     $id = trim($id, ", ");
     $cids = explode(",", $id);
+    $channel_materials = array('channel-materials-entertainment','channel-materials-extreme');
 
     global $wpdb, $current_user, $post, $wp_query;
 
@@ -410,19 +411,16 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
         'posts_per_page' => $items_per_page,
         'include_children' => false,
         'tax_query' => array(array(
-            'taxonomy' => $taxo,
-            'field' => 'slug',
-            'terms' => $cids,
-            'operator' => $operator
-        )
-        /* Uncomment to exclude channel materials after final FE */
-        // ,
-        // array(
-        //     'taxonomy' => $taxo,
-        //     'field' => 'slug',
-        //     'terms' => 'channel-materials',
-        //     'operator' => 'NOT IN'
-        // )
+                'taxonomy' => $taxo,
+                'field' => 'slug',
+                'terms' => $cids,
+                'operator' => $operator
+            ), array(
+                'taxonomy' => $taxo,
+                'field' => 'slug',
+                'terms' => $channel_materials,
+                'operator' => 'NOT IN'
+            )
         )
     );
 
@@ -545,52 +543,19 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
     $tdsc = __('Desc', 'wpdmpro');
     $tsrc = __('Search', 'wpdmpro');
     $order_by_label = __('Order By','wpdmpro');
-    if ($toolbar || get_option('__wpdm_cat_tb') == 1)
-        $toolbar = <<<TBR
 
-                 <div class="navbar navbar-default" role="navigation">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">$cats</a>
-    </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-
-      <ul class="nav navbar-nav navbar-right">
-       <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{$order_by_label} {$order_field} <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                         <li><a href="{$burl}orderby=title&order=asc">{$ttitle}</a></li>
-                         <!-- li><a href="{$burl}orderby=download_count&order=desc">{$tdls}</a></li -->
-                         <li><a href="{$burl}orderby=publish_date&order=desc">{$tcdate}</a></li>
-                        </ul>
-                     </li>
-                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">$order <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                         <li><a href="{$burl}orderby={$orderby}&order=asc">{$tasc}</a></li>
-                         <li><a href="{$burl}orderby={$orderby}&order=desc">{$tdsc}</a></li>
-                        </ul>
-                     </li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</div>
-TBR;
-    else
         $toolbar = '';
-        return $toolbar . $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div>";
+        return $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div>";
         // return "<div class='w3eden'>" . $toolbar . $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div></div>";
 }
 
+function addOrUpdateUrlParam($name, $value)
+{
+    $params = $_GET;
+    unset($params[$name]);
+    $params[$name] = $value;
+    return basename($_SERVER['PHP_SELF']).'?'.http_build_query($params);
+}
 /**
  * function to do a bulk download
  */

@@ -185,6 +185,7 @@ Author URI: http://www.mis-algoritmos.com
                                */
 
                                return str_replace('[%PAGENO%]',$id,$this->uriTPL);
+                               // return $this->uriTPL;
 
                         }
 
@@ -197,7 +198,7 @@ Author URI: http://www.mis-algoritmos.com
                                 $this->calculate == true;
 
                                 $error = false;
-
+                                
                                 if($this->urlF and $this->urlF != '%' and strpos($this->target,$this->urlF)===false){
 
                                                 //Es necesario especificar el comodin para sustituir
