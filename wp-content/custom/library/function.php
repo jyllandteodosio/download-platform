@@ -10,6 +10,7 @@ if (!isset($wpdb->custom_reports)) {
     $wpdb->custom_reports = $wpdb->prefix . 'custom_reports';
 }
 
+
 if (!function_exists('contains')) {
 	// check filename prefix: key, log, oth, .docs, doc, docx, .docx
     /**
