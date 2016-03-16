@@ -462,8 +462,8 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
     if (!isset($paging) || $paging == 1) {
         $pag = new \WPDM\libs\Pagination();
         $pag->items($total);
-        $pag->nextLabel(' &#9658; ');
-        $pag->prevLabel(' &#9668; ');
+        // $pag->nextLabel(' &#9658; ');
+        // $pag->prevLabel(' &#9668; ');
         $pag->limit($items_per_page);
         $pag->currentPage($page);
     }
@@ -544,17 +544,24 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
     $tsrc = __('Search', 'wpdmpro');
     $order_by_label = __('Order By','wpdmpro');
 
+    $html = $total != 0 || $total != NULL || $total != '' ? $html : "<p style='color:#000'>No shows at the moment.</p>";
+
         $toolbar = '';
         return $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div>";
         // return "<div class='w3eden'>" . $toolbar . $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div></div>";
 }
 
-function addOrUpdateUrlParam($name, $value)
+function updateUrlParam($name, $value)
 {
-    $params = $_GET;
-    unset($params[$name]);
-    $params[$name] = $value;
-    return basename($_SERVER['PHP_SELF']).'?'.http_build_query($params);
+    // $params = $_GET;
+    // unset($params[$name]);
+    if($value != ''){
+        $params[$name] = $value;
+        return basename($_SERVER['PHP_SELF']).'?'.http_build_query($params);
+    }else {
+        return basename($_SERVER['PHP_SELF']);
+    }
+    
 }
 /**
  * function to do a bulk download
