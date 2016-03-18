@@ -1,102 +1,225 @@
 <!-- WPDM Template: Custom Template -->
-<style type="text/css">.more_previews_a{display: block;float: left;margin-right: 6px;}</style>
-<div class="row">
 
+<div class="single-item-wrap">
+ 	<div class="single-item-banner-wrap">
+    	<img src="[acf_banner_image]" class="banner-bg fullwidth"/> <!--This is used to assign the custom filtered background behind the primary image --> 
+  	</div><!-- single-item-banner-wrap -->
 
-<div class="col-md-12">
-[description]
-<br />
-<h3>Cast</h3>
-[acf_cast]
-<br><br>
-<h3>Legal Notice</h3>
-[acf_legal_notice]
-<br><br>
+  	<div class="main-content-wrap">
+    	<div class="main-banner-wrap">
+     		<img src="[acf_banner_image]" class="banner-main fullwidth"/> <!--This is used to assign the primary banner image -->  
+    	</div><!-- main-banner-wrap -->
+	    <div class="item-details">
+	      	<h2 class="item-title">[title]</h2>
+	      	<div class="half description pull-left">
+	        	<p>[description]</p>
+	      	</div>
+	      	<div class="half other-information pull-left">
+	        	<h3>Cast:</h3>
+	        	<p>[acf_cast]</p>
+	        	<h3 class="legal-heading">Legal Notice</h3>
+	        	<p>[acf_legal_notice]</p>
+	        </div>
+	      	<div class="clear"></div><!--clear floats-->
+	    </div><!--item-details-->
+  	</div><!--main-content-wrap-->
+  
+  	<!--START SINGLE ITEM CATALOG: NOTE: THIS CONTENT FROM HERE IS JUST A COPY OF CATALOG ITEMS -->
+  	<div class="shows-listing innerpage-show-listing show-catalog">        
+        <div class="main-tabs">
+          <div class="shows-tab tab-trigger active-tab thirds to-uppercase pull-left text-center images-tab" data-target="images-tab-contents" data-sub-tabs="images-sub-tabs"><a href="#">Images</a></div>
+          <div class="shows-tab tab-trigger thirds to-uppercase pull-left text-center documents-tab" data-target="documents-tab-contents" data-sub-tabs="documents-sub-tabs"><a href="#">Documents</a></div>
+          <div class="shows-tab tab-trigger thirds to-uppercase pull-left text-center promo-tab" data-target="promo-tab-contents" data-sub-tabs="promo-sub-tabs"><a href="#">Promos</a></div>
+        </div>
+        
+        <div class="clear red-bar-separator"></div> 
+        <!--START OF SUB TABS-->          
+        <div class="sub-tabs-wrap single-item-subtabs images-sub-tabs fullwidth" data-parent-tab="images-tab">
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center keyart-tab" data-target="keyart-tab-contents"><a href="#">Key Art</a></div>
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center episodicstills-tab" data-target="episodicstills-tab-contents"><a href="#">Episodic Stills</a></div>
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center gallery-tab" data-target="gallery-tab-contents"><a href="#">Gallery</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center logos-tab" data-target="logos-tab-contents"><a href="#">Logos</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center others-tab" data-target="others-tab-contents"><a href="#">Others - Special Web Assets etc</a></div>    
+          <div class="clear"></div>     
+        </div><!-- subtabs-wrap -->   
+         
+        <div class="sub-tabs-wrap single-item-subtabs documents-sub-tabs fullwidth" data-parent-tab="documents-tab">
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center synopses-tab" data-target="synopses-tab-contents"><a href="#">Synopses</a></div>
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center epk-tab" data-target="epk-tab-contents"><a href="#">Transcripts/EPK</a></div>
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center factsheet-tab" data-target="factsheet-tab-contents"><a href="#">Fact Sheet/Press Pack</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center fonts-tab" data-target="fonts-tab-contents"><a href="#">Fonts</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center othersdocuments-tab" data-target="othersdocuments-tab-contents"><a href="#">Others</a></div>    
+          <div class="clear"></div>     
+        </div><!-- subtabs-wrap -->
 
-<h3>Images</h3>
-<h4>Key Art</h4>
-<form id='table-key' class="table-files" method='post' >
-	[file_category,key]
-	<input type='submit' value='Select All'>
-</form>
-<br><br>
+        <div class="sub-tabs-wrap single-item-subtabs promo-sub-tabs fullwidth" data-parent-tab="promo-tab">
+          <div class="clear"></div>     
+        </div><!-- subtabs-wrap -->
+        <!--END OF SUB TABS-->
+                                          
+        <div class="clear"></div><!-- this will maintain the flow of elements even if the next elements were set to float -->
 
-<h4>Episodic Stills</h4>
-<form id='table-epi' class="table-files"  method='post' >
-[file_category,epi]
-<input type='submit' value='Select All'>
-</form>
-<br><br>
+        <div class="show-items-wrap images-tab-contents">
+          <form id='table-key' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+            <div class='show-items'>
+           		[file_category,key]
+           		<div class='clear'></div>
+           	</div>
+          </form>
+        </div><!-- recent-tab-contents -->
+        
+        <div class="show-items-wrap keyart-tab-contents keyart-images">
+          <form id='table-key' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+            <div class='show-items'>
+          		[file_category,key]
+          		<div class='clear'></div>
+          	</div>
+          </form>
+        </div><!-- keyart-tab-contents -->
 
-<h4>Gallery</h4>
-<form id='table-gal' class="table-files"  method='post' >
-[file_category,gal]
-	<input type='submit' value='Select All'>
-</form>
-<br><br>
-<h4>Logos</h4>
-<form id='table-log' class="table-files"  method='post' >
-[file_category,log]
-	<input type='submit' value='Select All'>
-</form>
-<br><br>
-<h4>Others</h4>
-<form id='table-oth' class="table-files"  method='post' >
-[file_category,oth]
-	<input type='submit' value='Select All'>
-</form>
-<br><br>
+        <div class="show-items-wrap episodicstills-tab-contents">
+          <form id='table-epi' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+          <div class="show-items">
+            [file_category,epi]
+            <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+          </div>
+          </form>
+        </div><!-- episodicstills-tab-contents -->
 
+        <div class="show-items-wrap gallery-tab-contents">
+          <form id='table-gal' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+          <div class="show-items">
+            [file_category,gal]
+            <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+          </div>
+          </form>
+        </div><!-- gallery-tab-contents -->
 
-<h3>Documents</h3>
-<h4>Synopses</h4>
-<form id='table-syn' class="table-files"  method='post' >
-[file_category,syn]
-	<input type='submit' value='Select All'>
-</form>
-<br><br>
+        <div class="show-items-wrap logos-tab-contents">
+          <form id='table-log' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+          <div class="show-items">
+            [file_category,log]
+            <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+          </div>
+          </form>
+        </div><!-- logos-tab-contents -->
 
-<h4>Transcripts/EPK</h4>
-<form id='table-epk' class="table-files"  method='post' >
-[file_category,epk]
-	<input type='submit' value='Select All'>
-</form>
-<br><br>
+        <div class="show-items-wrap others-tab-contents">
+          <form id='table-oth' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+          <div class="show-items">
+            [file_category,oth]
+            <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+          </div>
+          </form>
+        </div><!-- others-tab-contents -->
 
-<h4>Fact Sheet/Press Pack</h4>
-<form id='table-fac' class="table-files"  method='post' >
-[file_category,fac]
-	<input type='submit' value='Select All'>
-</form>
-<br><br>
+        <div class="show-items-wrap documents-tab-contents active-tab-content">
+          <form id='table-syn' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+           <div class="show-items">
+            [file_category,syn]
+            <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+          </div><!-- show-items -->
+          </form>
+        </div><!-- documents-tab-contents -->
+        
+        <div class="show-items-wrap synopses-tab-contents">
+          <form id='table-syn' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+          <div class="show-items">
+                [file_category,syn]
+                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+          </div>
+          </form>
+        </div><!-- synopses-tab-contents -->
 
-<h4>Fonts</h4>
-<form id='table-fon' class="table-files"  method='post' >
-[file_category,fon]
-	<input type='submit' value='Select All'>
-</form>
-<br><br>
+        <div class="show-items-wrap epk-tab-contents">
+          <form id='table-epk' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+          <div class="show-items">
+                [file_category,epk]
+                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+          </div>
+          </form>
+        </div><!-- epk-tab-contents -->
 
-<h4>Others</h4>
-<form id='table-doth' class="table-files"  method='post' >
-[file_category,doth]
-	<input type='submit' value='Select All'>
-</form>
-<br><br>
+        <div class="show-items-wrap factsheet-tab-contents">
+          <form id='table-fac' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+          <div class="show-items">
+                [file_category,fac]
+                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+          </div>
+          </form>
+        </div><!-- factsheettab-contents -->
 
+        <div class="show-items-wrap fonts-tab-contents">
+          <form id='table-fon' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+          <div class="show-items">
+                [file_category,fon]
+                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+          </div>
+          </form>
+        </div><!-- fonts-tab-contents -->
 
+        <div class="show-items-wrap othersdocuments-tab-contents">
+          <form id='table-doth' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+          <div class="show-items">
+                [file_category,doth]
+                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+          </div>
+          </form>
+        </div><!-- othersdocuments-tab-contents -->
 
-<h3>Promos</h3>
-<form id='table-promo' class="table-files"  method='post' >
-[file_category,promo]
-	<input type='submit' value='Select All'>
-</form>
-<br><br>
-
-
-</div>
-</div>
-
+        <div class="show-items-wrap promo-tab-contents">
+          <form id='table-promo' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+            <div class="show-items">
+              [file_category,promo]
+              <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+            </div>
+          </form>
+        </div><!--promo-tab-contents -->
+        
+        <div class="clear"></div> <!-- use to clear floats for listing wrap, this will make this container full height -->  
+      </div><!-- shows-listing -->
+      <!--END OF THE SINGLE ITEM CATALOG-->
+    
+</div><!-- single-item-wrap -->
 
 [custom_script]
 

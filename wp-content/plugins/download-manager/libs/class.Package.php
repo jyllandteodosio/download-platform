@@ -42,6 +42,7 @@ class Package {
         $vars['excerpt'] = stripcslashes(strip_tags($vars['post_excerpt']));
         // Added by Dianne D.R. - custom shortcodes
         $vars['acf_show_reference_name'] = get_field( "show_reference_name" );
+        $vars['acf_banner_image'] = get_field( "banner_image" );
         $vars['acf_cast'] = get_field( "cast" );
         $vars['acf_legal_notice'] = get_field( "legal_notice" );
         $vars['acf_promo_files'] = serialize(get_field( "add_promo_files" ));
