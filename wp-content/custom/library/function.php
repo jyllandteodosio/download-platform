@@ -9,6 +9,9 @@ if (!isset($wpdb->custom_cart)) {
 if (!isset($wpdb->custom_reports)) {
     $wpdb->custom_reports = $wpdb->prefix . 'custom_reports';
 }
+if (!isset($wpdb->operator_access)) {
+    $wpdb->operator_access = $wpdb->prefix . 'operator_access';
+}
 
 
 if (!function_exists('contains')) {
@@ -178,16 +181,68 @@ if( !function_exists('get_current_user_operator_group') ){
      */
     function get_current_user_operator_group(){
         return get_user_meta( get_current_user_id(), 'operator_group', true);
+    }
+}
 
-        // if ( is_user_logged_in() ) {
-        //     global $current_user;
+if( !function_exists('get_current_user_country_group') ){
+    /**
+     * Get current country group of logged user.
+     * @return String|bool Returns country group if logged in, else return false;
+     */
+    function get_current_user_country_group(){
+        return get_user_meta( get_current_user_id(), 'country_group', true);
+    }
+}
 
-        //     $user_roles = $current_user->roles;
-        //     $user_role = array_shift($user_roles);
+if( !function_exists('get_current_user_operator_access') ){
+    /**
+     * Get current operator access of logged user.
+     * @return Array Returns array of channels allowed to a specific account;
+     */
+    function get_current_user_operator_access(){
+        global $wpdb;
+        // echo get_current_user_operator_group();
+        $user_id = get_current_user_id( );
+        $country_group = get_current_user_country_group();
+        $operator_group = get_current_user_operator_group();
+        $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" )[0];
+        $array_access = unserialize($access);
+     
+        $array_access_simplified = array();
+        foreach ($array_access as $key => $value) {
+            array_push($array_access_simplified,$value);
+        }
+        
+        return $array_access_simplified;
+    }
+}
 
-        //     $return_value = $user_role;
-        // }
-        // return $return_value;
+if( !function_exists('check_if_have_channel_access') ){
+    /**
+     *Check if logged user has an access to a certain channel
+     * @return Bool Returns 1 if user has an access, else 0
+     */
+    function check_if_have_channel_access($channel = 'entertainment'){
+        global $wpdb;
+        $user_id = get_current_user_id( );
+        $country_group = get_current_user_country_group();
+        $operator_group = get_current_user_operator_group();
+        $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" )[0];
+        if(!empty($access)){
+            $array_access = unserialize($access);
+            
+            $array_access_simplified = array();
+            foreach ($array_access as $key => $value) {
+                array_push($array_access_simplified,$value);
+            }
+            $return_value = in_array($channel, $array_access_simplified);
+        }else if (get_current_user_role() == 'administrator'){
+            $return_value = 1;
+        }else {
+            $return_value = 0;
+        }
+
+        return $return_value;
     }
 }
 
@@ -778,4 +833,120 @@ return $rows;
 function getCartItemsCount(){
 
     return 123;
+}
+
+
+/* HOMEPAGE QUERIES */
+if (!function_exists('getFeaturedBanners')) {
+    /**
+     * Get banners of featured shows
+     * @param  string  $channel Either entertainment or extreme
+     * @param  integer $count   Number of desired result
+     * @return Object           Returns queried featured banners
+     */
+    function getFeaturedBanners($channel = 'entertainment',$count = 5){
+        $args = array(
+                    'posts_per_page' => $count,
+                    'post_type' => 'wpdmpro', 
+                    'tax_query' => array(
+                        array(
+                          'taxonomy' => 'wpdmcategory',
+                          'field'    => 'slug',
+                          'terms'    => ' shows-'.$channel,
+                        ),
+                      ),
+                    'meta_query'  => array(
+                        array(
+                          'key'   => 'featured_show',
+                          'value'   => 'featured',
+                          'compare' => 'LIKE'
+                        )
+                      )
+                  );
+        $query_shows = new WP_Query( $args );
+        return $query_shows;  
+    }
+}
+
+if (!function_exists('getFeaturedShows')) {
+    /**
+     * Get featured shows
+     * @param  string  $channel        Either entertainment or extreme
+     * @param  integer $posts_per_page Desired number of post per page
+     * @param  string  $query_var      Either page or paged
+     * @return Object                  Returns featured shows.
+     */
+    function getFeaturedShows($channel = 'entertainment', $posts_per_page = 1, $query_var = 'paged' ){
+        $paged = ( get_query_var($query_var) ) ? get_query_var($query_var) : 1;
+        $args = array(
+                    'posts_per_page' => $posts_per_page,
+                    'post_type' => 'wpdmpro', 
+                    'paged' => $paged,
+                    'tax_query' => array(
+                        array(
+                          'taxonomy' => 'wpdmcategory',
+                          'field'    => 'slug',
+                          'terms'    => ' shows-'.$channel,
+                        ),
+                      ),
+                    'meta_query'  => array(
+                        array(
+                          'key'   => 'featured_show',
+                          'value'   => 'featured',
+                          'compare' => 'LIKE'
+                        )
+                      )
+                  );
+        $query_shows = new WP_Query( $args );
+        return $query_shows;
+    }
+}
+
+if (!function_exists('getRecentFileUploadsCount')){
+    /**
+     * Get number of files under recent modified shows
+     * @param  string $channel  Either entertainment or extreme
+     * @return Integer          Number of files
+     */
+    function getRecentFileUploadsCount($channel = 'entertainment'){
+        $query_shows = getRecentFileUploads($channel);
+        $sum_files = 0;
+        if($query_shows->have_posts()){
+            while($query_shows->have_posts()) { 
+                $query_shows->the_post();
+                $sum_files += count(get_post_meta(get_the_ID(), '__wpdm_files', true));
+            }
+        }
+        return $sum_files;
+    }
+}
+
+if (!function_exists('getRecentFileUploads')){
+    /**
+     * Get Recently modified shows
+     * @param  string $channel Either entertainment or extreme
+     * @return Object          Returns recently modified shows within a month.
+     */
+    function getRecentFileUploads($channel = 'entertainment'){
+
+        $args = array(
+                    'orderby'=> 'modified',
+                    'order' => 'DESC',
+                    'post_type' => 'wpdmpro', 
+                    'tax_query' => array(
+                        array(
+                          'taxonomy' => 'wpdmcategory',
+                          'field'    => 'slug',
+                          'terms'    => 'shows-'.$channel,
+                        ),
+                      ),
+                    'date_query' => array(
+                      array(
+                        'column' => 'post_modified',
+                        'after'  => '1 month ago',
+                      ))
+                  );
+        $query_shows = new WP_Query( $args );
+        return $query_shows;
+    }
 }
