@@ -13,7 +13,6 @@ if (!isset($wpdb->operator_access)) {
     $wpdb->operator_access = $wpdb->prefix . 'operator_access';
 }
 
-
 if (!function_exists('contains')) {
 	// check filename prefix: key, log, oth, .docs, doc, docx, .docx
     /**
@@ -86,14 +85,16 @@ if( !function_exists('checkFileType') ){
 function getCustomCartContents(){
     global $wpdb;
     $userID = get_current_user_id( );
-    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID}" );
+    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID} AND channel = '{$channel}'" );
     return $rawCart;
 }
 
 function getCustomCartCount(){
 	global $wpdb;
     $user_id = get_current_user_id( );
-	$cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
+    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+	$cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
 
 	return $cart_entry_count;
 }
@@ -101,7 +102,8 @@ function getCustomCartCount(){
 function getCustomCartItemsCount(){
     global $wpdb;
     $user_id = get_current_user_id( );
-    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
+    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
     // print_r($rawCart);die();
     if (!empty($rawCart)) {
         $rawCart = unserialize($rawCart->meta_file);
@@ -116,10 +118,12 @@ function getCustomCartItemsCount(){
 function insertToCustomCart($serialized_cart){
 	global $wpdb;
     $user_id = get_current_user_id( );
+    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
 	$return_value = $wpdb->insert(
 	        				$wpdb->custom_cart,
 					        array(
 					            'user_id' => $user_id,
+                                'channel' => $channel,
 					            'meta_file' => $serialized_cart,
 					            'created_at' => date('Y-m-d H:i:s')
 					        )
@@ -130,10 +134,14 @@ function insertToCustomCart($serialized_cart){
 function updateToCustomCart($serialized_cart){
 	global $wpdb;
     $user_id = get_current_user_id( );
+    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
 	$return_value = $wpdb->update( 
 							$wpdb->custom_cart, 
 							array('meta_file' => $serialized_cart), 
-							array( 'user_id' => $user_id)
+							array( 
+                                'user_id' => $user_id,
+                                'channel' => $channel
+                                )
 						);
 	return $return_value;
 }
@@ -141,7 +149,8 @@ function updateToCustomCart($serialized_cart){
 function fetchEntryFromCustomCart(){
 	global $wpdb;
     $user_id = get_current_user_id( );
-    $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" )[0];
+    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" )[0];
 
     return $cart_entry;
 }
@@ -150,7 +159,14 @@ function deleteToCustomCart(){
 	global $wpdb;
 
     $user_id = get_current_user_id( );
-	$return_value = $wpdb->delete( $wpdb->custom_cart, array( 'user_id' => $user_id) );
+    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+	$return_value = $wpdb->delete( 
+                            $wpdb->custom_cart, 
+                            array( 
+                                'user_id' => $user_id,
+                                'channel' => $channel
+                            ) 
+                        );
 	return $return_value;
 }
 
@@ -217,6 +233,61 @@ if( !function_exists('get_current_user_operator_access') ){
     }
 }
 
+add_action('init', 'myStartSession', 1);
+add_action('wp_logout', 'myEndSession');
+add_action('wp_login', 'myEndSession');
+
+function myStartSession() {
+    if(!session_id()) {
+        session_start();
+    }
+}
+function myEndSession() {
+    session_destroy ();
+}
+
+if( !function_exists('set_channel_access') ){
+    /**
+     *Set channel access
+     * @return Bool Returns 1 if user has an access, else 0
+     */
+    function set_channel_access($channel = 'entertainment', $use_default = false){
+        // die($channel);
+
+        global $wpdb;
+        $user_id = get_current_user_id( );
+        $country_group = get_current_user_country_group();
+        $operator_group = get_current_user_operator_group();
+        $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" )[0];
+        $array_access = unserialize($access);
+        
+        if(!empty($array_access)){
+            // echo "-not admin-";
+            $array_access_simplified = array();
+            foreach ($array_access as $key => $value) {
+                array_push($array_access_simplified,$value);
+            }
+            $return_value = in_array($channel, $array_access_simplified);
+            if($use_default) 
+                set_default_channel($array_access_simplified[0]);
+            else
+                $_SESSION['channel'] = $channel;
+            // echo '$use_default-'.$use_default;
+        }else if (get_current_user_role() == 'administrator'){
+            // echo "-admin-";
+            $return_value = 1;
+            set_default_channel($channel);
+        }else {
+            $return_value = 0;
+            $_SESSION['channel'] = 'none';
+        }
+        // die($_SESSION['channel']);
+
+        return $return_value;
+    }
+}
+
+
 if( !function_exists('check_if_have_channel_access') ){
     /**
      *Check if logged user has an access to a certain channel
@@ -228,23 +299,34 @@ if( !function_exists('check_if_have_channel_access') ){
         $country_group = get_current_user_country_group();
         $operator_group = get_current_user_operator_group();
         $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" )[0];
-        if(!empty($access)){
-            $array_access = unserialize($access);
-            
+        $array_access = unserialize($access);
+        
+        if(!empty($array_access)){
             $array_access_simplified = array();
             foreach ($array_access as $key => $value) {
                 array_push($array_access_simplified,$value);
             }
             $return_value = in_array($channel, $array_access_simplified);
+
         }else if (get_current_user_role() == 'administrator'){
             $return_value = 1;
         }else {
             $return_value = 0;
         }
-
         return $return_value;
     }
 }
+
+if( !function_exists('set_default_channel') ){
+    /**
+     *Check if logged user has an access to a certain channel
+     * @return Bool Returns 1 if user has an access, else 0
+     */
+    function set_default_channel($channel = 'entertainment'){
+        $_SESSION['channel'] = $channel;
+    }
+}
+
 
 /**
  * Ajax function to o a bulk add to cart feature
@@ -429,7 +511,10 @@ function get_custom_cart_contents($fileType = null){
 function custom_posts_where( $where){
     global $wpdb;
     if(isset($wpdb->letter_filter) && $wpdb->letter_filter != null && $wpdb->letter_filter != ''){
-    	$where .= " AND SUBSTRING( post_title, 1, 1 ) ='".$wpdb->letter_filter."' ";
+        $where .= " AND SUBSTRING( post_title, 1, 1 ) ='".$wpdb->letter_filter."' ";
+    }
+    if(isset($wpdb->search_filter) && $wpdb->search_filter != null && $wpdb->search_filter != ''){
+        $where .= " AND post_title LIKE '%".$wpdb->search_filter."%'";
     }
     return $where;
 }
@@ -443,13 +528,12 @@ function wpdm_category_custom($params)
     return wpdm_embed_category_custom($params);
 }
 
-function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'IN' , 'items_per_page' => 10, 'title' => false, 'desc' => false, 'order_field' => 'create_date', 'order' => 'desc', 'paging' => false, 'toolbar' => 1, 'template' => '','cols'=>3, 'colspad'=>2, 'colsphone' => 1, 'letter_filter' => null))
+function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'IN' , 'items_per_page' => 10, 'title' => false, 'desc' => false, 'order_field' => 'create_date', 'order' => 'desc', 'paging' => false, 'toolbar' => 1, 'template' => '','cols'=>3, 'colspad'=>2, 'colsphone' => 1, 'letter_filter' => null, 'search_filter' => null))
 {
     extract($params);
     $fnparams = $params;
     if(!isset($id)) return;
     if(!isset($items_per_page)) $items_per_page = 10;
-    // if(!isset($template)) $template = 'link-template-calltoaction3.php';
     if(!isset($template)) $template = 'link-template-rtlcbscustom.php';
     if(!isset($cols)) $cols = 3;
     if(!isset($colspad)) $colspad = 2;
@@ -457,9 +541,6 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
     if(!isset($toolbar)) $toolbar = 1;
     $taxo = 'wpdmcategory';
     if(isset($tag) && $tag==1) $taxo = 'post_tag';
-    // $cwd_class = "col-md-".(int)(12/$cols);
-    // $cwdsm_class = "col-sm-".(int)(12/$colspad);
-    // $cwdxs_class = "col-xs-".(int)(12/$colsphone);
 
     $id = trim($id, ", ");
     $cids = explode(",", $id);
@@ -476,6 +557,7 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
     $cp = wpdm_query_var($cpvar,'num');
     if(!$cp) $cp = 1;
     $wpdb->letter_filter = $letter_filter;
+    $wpdb->search_filter = $search_filter;
 
     $params = array(
         'post_type' => 'wpdmpro',
@@ -534,8 +616,6 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
     if (!isset($paging) || $paging == 1) {
         $pag = new \WPDM\libs\Pagination();
         $pag->items($total);
-        // $pag->nextLabel(' &#9658; ');
-        // $pag->prevLabel(' &#9668; ');
         $pag->limit($items_per_page);
         $pag->currentPage($page);
     }
@@ -616,7 +696,7 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
     $tsrc = __('Search', 'wpdmpro');
     $order_by_label = __('Order By','wpdmpro');
 
-    $html = $total != 0 || $total != NULL || $total != '' ? $html : "<p style='color:#000'>No shows at the moment.</p>";
+    $html = $total != 0 || $total != NULL || $total != '' ? $html : "<p style='color:#000'>Sorry, nothing matched your search. Please try again.</p>";
 
         $toolbar = '';
         return $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div>";
@@ -911,13 +991,46 @@ if (!function_exists('getRecentFileUploadsCount')){
     function getRecentFileUploadsCount($channel = 'entertainment'){
         $query_shows = getRecentFileUploads($channel);
         $sum_files = 0;
+        $promos_count = 0;
         if($query_shows->have_posts()){
             while($query_shows->have_posts()) { 
                 $query_shows->the_post();
                 $sum_files += count(get_post_meta(get_the_ID(), '__wpdm_files', true));
+                $custom_fields = get_fields();
+                foreach ($custom_fields['add_promo_files'] as $key => $value) {
+                    if(checkIfPromoIsAccessible($value['operator_group'])){
+                        $promos_count++;
+                    }
+                }
             }
         }
-        return $sum_files;
+        
+
+        return $sum_files+$promos_count;
+    }
+}
+
+if (!function_exists('checkIfPromoIsAccessible')) {
+    /**
+     * Check if current promo operator group is accessible to logged user.
+     * @param  string $promo_assigned_operator_group     Assigned operator group to a specific promo
+     * @return Bool                                      Return 1 if accessibl, else 0
+     */
+    function checkIfPromoIsAccessible($promo_assigned_operator_group = "all"){
+        $current_user_role = strtolower(get_current_user_role());
+        $current_user_operator_group = get_current_user_operator_group();
+        if( ($current_user_role == 'administrator') || 
+                (   $current_user_role == 'operator' && 
+                    (   $promo_assigned_operator_group == $current_user_operator_group || 
+                        $promo_assigned_operator_group == 'all'
+                    )
+                )
+            ){
+                $return_value = 1;
+        }else {
+            $return_value = 0;
+        }
+        return $return_value;
     }
 }
 
@@ -948,5 +1061,18 @@ if (!function_exists('getRecentFileUploads')){
                   );
         $query_shows = new WP_Query( $args );
         return $query_shows;
+    }
+}
+
+if (!function_exists('checkShowAssignedChannel')) {
+    function checkShowAssignedChannel($posd_id, $channel){
+        $terms = get_the_terms($posd_id,'wpdmcategory');
+        $return_value = 0;
+        foreach ($terms as $key => $value) {
+            if ($value->slug == $channel || $value->slug == 'shows-'.$channel){
+                $return_value = 1;
+            }
+        }
+        return $return_value;
     }
 }

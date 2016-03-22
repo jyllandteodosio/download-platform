@@ -423,15 +423,7 @@ class FileList
                             
                         }
                         else if ( $prefix == self::$prefix_list['promos'] ){
-                            $current_user_role = strtolower(get_current_user_role());
-                            $current_user_operator_group = get_current_user_operator_group();
-                            if( ($current_user_role == 'administrator') || 
-                                (   $current_user_role == 'operator' && 
-                                    (   $operator_group_promo_access == $current_user_operator_group || 
-                                        $operator_group_promo_access == 'all'
-                                    )
-                                )
-                              ){
+                            if(checkIfPromoIsAccessible($operator_group_promo_access)){
                                 $thumb = $sfileOriginal['thumbnail'];
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, self::$prefix_list['promos'], $thumb);
                             }
