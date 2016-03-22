@@ -575,6 +575,7 @@ class FileList
                                                     /* TODO: .prop in span not working */
                                                     jQuery('#'+form_submitted_id+' .show-items > .item ').addClass('added-to-cart');
                                                     jQuery('#'+form_submitted_id+' .add-to-cart-btn').html(addedText);
+                                                    updateCartCount();
                                                 }else if (response == 'failed') {
                                                     console.log('insert failed');
                                                 }
@@ -607,7 +608,7 @@ class FileList
                                                     /* TODO: .prop in span not working */
                                                     jQuery('.show-items > .'+file_id+'').addClass('added-to-cart');
                                                     jQuery('.add-to-cart-btn.'+file_id).html(addedText);
-                                                    // jQuery('.show-cart span.counter').text(9);
+                                                    updateCartCount();
                                                 }else if (response == 'failed') {
                                                     console.log('insert failed');
                                                 }
@@ -630,16 +631,29 @@ class FileList
                                                 console.log(response);
                                                 if(response == 'success'){
                                                     jQuery('.show-items > .'+file_id+'').removeClass('added-to-cart');
-                                                    // button.addClass('hidden');
                                                     /* Show add button */
                                                     jQuery('.add-to-cart-btn.'+file_id).text('".__("Add to Cart","wpdmpro")."');
+                                                    updateCartCount();
                                                 }else if (response == 'failed') {
                                                     console.log('delete failed');
                                                 }
                                             }
                                         );
                                     });
-
+                                    
+                                    function updateCartCount(){
+                                       
+                                        jQuery.get(
+                                            ajaxurl, 
+                                            {   'action': 'get_custom_cart_items_count'
+                                            },
+                                            function(response) {
+                                                console.log('count:');
+                                                console.log(response);
+                                                jQuery('.show-cart span.counter').text(response);
+                                            }
+                                        );
+                                    }
                                 });
                             </script>";
         return $fhtml;

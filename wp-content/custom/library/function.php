@@ -115,6 +115,24 @@ function getCustomCartItemsCount(){
     return $return_value;
 }
 
+function ajaxGetCustomCartItemsCount(){
+    global $wpdb;
+    $user_id = get_current_user_id( );
+    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
+    // print_r($rawCart);die();
+    if (!empty($rawCart)) {
+        $rawCart = unserialize($rawCart->meta_file);
+        $return_value = count($rawCart);
+    }else{
+        $return_value = 0;
+    }
+
+    echo $return_value;
+    die();
+}
+add_action('wp_ajax_get_custom_cart_items_count', 'ajaxGetCustomCartItemsCount');
+
 function insertToCustomCart($serialized_cart){
 	global $wpdb;
     $user_id = get_current_user_id( );
