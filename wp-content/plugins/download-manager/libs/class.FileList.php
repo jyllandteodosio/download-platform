@@ -361,8 +361,8 @@ class FileList
     public static function CategorizedFileList($file, $prefix = null){
         $file['files'] = maybe_unserialize($file['files']);
         $fhtml = '';
-
-        if(self::checkPackageDownloadAvailability($file['publish_date'], $file['expire_date'])){
+        // die($file['publish_date']);
+        if(checkPackageDownloadAvailabilityDate($file['publish_date'], $file['expire_date'])){
             if (count($file['files']) > 0) {
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
                 $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
@@ -665,10 +665,10 @@ class FileList
      * @return bool
      * @usage returns 1 if file is available for download, otherwise 0
      */
-    public static function checkPackageDownloadAvailability($start_date, $end_date){
-        $pd = isset($start_date)&&$start_date!=""?strtotime($start_date):0;
-        $xd = isset($end_date)&&$end_date!=""?strtotime($end_date):0;
-        return !($xd>0 && $xd<time()) && !($pd>0 && $pd>time()) ? 1 : 0;
-    }
+    // public static function checkPackageDownloadAvailability($start_date, $end_date){
+    //     $pd = isset($start_date)&&$start_date!=""?strtotime($start_date):0;
+    //     $xd = isset($end_date)&&$end_date!=""?strtotime($end_date):0;
+    //     return !($xd>0 && $xd<time()) && !($pd>0 && $pd>time()) ? 1 : 0;
+    // }
 
 }

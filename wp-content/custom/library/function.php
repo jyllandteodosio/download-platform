@@ -73,7 +73,7 @@ if( !function_exists('checkFileType') ){
         $ext = getFileExtension($sfile);
 
         if($fileType == 'image'){
-            $imgext = array('png','jpg','jpeg', 'gif');
+            $imgext = array('png','jpg','jpeg', 'gif', 'tif', 'psd', 'eps');
         }
         return in_array($ext, $imgext) ? 1 : 0;
     }
@@ -654,12 +654,15 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
 
     global $post;
     while($packs->have_posts()) { $packs->the_post();
-        /* Show items */
-        $pack = (array)$post;
-        $repeater = FetchTemplate($template, $pack);
-        // $repeater = "<div class='{$cwd_class} {$cwdsm_class} {$cwdxs_class}'>".FetchTemplate($template, $pack)."</div>";
-        $html .=  $repeater;
-
+        $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+        $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+        if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
+            /* Show items */
+            $pack = (array)$post;
+            $repeater = FetchTemplate($template, $pack);
+            // $repeater = "<div class='{$cwd_class} {$cwdsm_class} {$cwdxs_class}'>".FetchTemplate($template, $pack)."</div>";
+            $html .=  $repeater;
+        endif;
     }
     wp_reset_query();
 
@@ -1092,5 +1095,19 @@ if (!function_exists('checkShowAssignedChannel')) {
             }
         }
         return $return_value;
+    }
+}
+
+if (!function_exists('checkPackageDownloadAvailabilityDate')) {
+    /**
+     * @usage function to check if package is available for download through the publish and expire field
+     * @param $file
+     * @return bool
+     * @usage returns 1 if file is available for download, otherwise 0
+     */
+    function checkPackageDownloadAvailabilityDate($start_date, $end_date){
+        $pd = isset($start_date)&&$start_date!=""?strtotime($start_date):0;
+        $xd = isset($end_date)&&$end_date!=""?strtotime($end_date):0;
+        return !($xd>0 && $xd<time()) && !($pd>0 && $pd>time()) ? 1 : 0;
     }
 }
