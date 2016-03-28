@@ -73,7 +73,7 @@ if( !function_exists('checkFileType') ){
         $ext = getFileExtension($sfile);
 
         if($fileType == 'image'){
-            $imgext = array('png','jpg','jpeg', 'gif', 'tif', 'psd', 'eps');
+            $imgext = array('png','jpg','jpeg', 'gif',);
         }
         return in_array($ext, $imgext) ? 1 : 0;
     }
