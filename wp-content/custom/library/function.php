@@ -1132,8 +1132,7 @@ if (!function_exists('getMonthsPromos')) {
               if( have_rows('add_promo_files') ):
                 while( have_rows('add_promo_files') ): the_row();
                   $promo['operator_group'] = get_sub_field('operator_group');
-                  $promo['promo_start'] = get_sub_field('promo_start');
-
+                  $promo['promo_start'] = get_sub_field('promo_start') != '' ? get_sub_field('promo_start') : date('Ymd');
                   $operator_group_promo_access = isset($promo['operator_group']) ? $promo['operator_group'] : 'all';
                   if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDateIfCurrentMonth($promo['promo_start'])){
 
@@ -1161,6 +1160,7 @@ if (!function_exists('getMonthsPromos')) {
           }
         } 
         wp_reset_query();
+
         return $promos;
     }
 }
