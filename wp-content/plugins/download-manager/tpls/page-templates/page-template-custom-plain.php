@@ -1,7 +1,6 @@
 <!-- WPDM Template: Plain Custom Template -->
  <div class="innerpage-heading-bar">
          <h1 class="page-title">[title]</h1>
-         [searchform]
       </div><!--innerpage-heading-bar-->
       <div class="clear"></div>   
 

@@ -898,36 +898,6 @@ function custom_css_profile_builder() {
 add_action('admin_head', 'custom_css_profile_builder');
 
 
-/**
- * Get month's promos
- */
-function getMonthsPromos(){
-    global $wpdb;
-$rows = $wpdb->get_results($wpdb->prepare( 
-            "
-            SELECT * 
-            FROM {$wpdb->prefix}postmeta
-            WHERE meta_key LIKE %s
-                AND meta_value = %s
-            ",
-            'add_promo_files_%_category', // meta_name: $ParentName_$RowNumber_$ChildName
-            'On-Air' // meta_value: 'type_3' for example
-        ));
-
-/*
-
-SELECT post_id, meta_key, meta_value 
-FROM rtl21016_postmeta 
-WHERE meta_key = '__wpdm_publish_date'
-OR meta_key = '__wpdm_expire_date'
-ORDER BY post_id
-
-
- */
-
-
-return $rows;
-}
 
 /**
  * Get NUmber of items in cart
@@ -1110,5 +1080,87 @@ if (!function_exists('checkPackageDownloadAvailabilityDate')) {
         $pd = isset($start_date)&&$start_date!=""?strtotime($start_date):0;
         $xd = isset($end_date)&&$end_date!=""?strtotime($end_date):0;
         return !($xd>0 && $xd<time()) && !($pd>0 && $pd>time()) ? 1 : 0;
+    }
+}
+
+if (!function_exists('checkDateIfCurrentMonth')) {
+    /**
+     * @usage function to check if a given dat is a current month
+     * @param $start_date
+     * @return bool
+     * @usage returns 1 if date is current month, otherwise 0
+     */
+    function checkDateIfCurrentMonth($start_date){
+        $first_day_of_month = mktime(0,0,0,date('n'),1,date('Y'));
+        $last_day_of_month = mktime(23,59,59,date('n'),date('t'),date('Y')); 
+
+        if ((strtotime($start_date) >= $first_day_of_month) && (strtotime($start_date) <= $last_day_of_month)){
+            return 1;
+        }
+        return 0;
+    }
+}
+
+if (!function_exists('getMonthsPromos')) {
+    /**
+     * @usage function to get promo under a given category
+     * @param $category
+     * @return array
+     * @usage returns an array of promo files, otherwise empty array
+     */
+    function getMonthsPromos($category = 'on-air'){
+        $channel = $_SESSION['channel'];
+        $args = array(
+                    'post_type' => 'wpdmpro', 
+                    'tax_query' => array(
+                        array(
+                          'taxonomy' => 'wpdmcategory',
+                          'field'    => 'slug',
+                          'terms'    => array('shows-'.$channel,'channel-materials-'.$channel ),
+                        ),
+                      )
+                  );
+        $query_shows = new WP_Query( $args );
+
+        $promos = array();
+        if($query_shows->have_posts()){
+          while($query_shows->have_posts()) { 
+            $query_shows->the_post();
+            $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+            $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+            if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
+              if( have_rows('add_promo_files') ):
+                while( have_rows('add_promo_files') ): the_row();
+                  $promo['operator_group'] = get_sub_field('operator_group');
+                  $promo['promo_start'] = get_sub_field('promo_start');
+
+                  $operator_group_promo_access = isset($promo['operator_group']) ? $promo['operator_group'] : 'all';
+                  if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDateIfCurrentMonth($promo['promo_start'])){
+
+                    $promo['category'] = get_sub_field('category') != '' ? get_sub_field('category') : '';
+                    $promo['upload_date'] = get_sub_field('upload_date') != '' ? date("d/n/Y", strtotime(get_sub_field('upload_date'))) : '';
+                    $promo['promo_start'] = get_sub_field('promo_start') != '' ? date("d/n/Y", strtotime(get_sub_field('promo_start'))) : '';
+                    $promo['promo_end'] = get_sub_field('promo_end') != '' ? date("d/n/Y", strtotime(get_sub_field('promo_end'))) : '';
+                    $promo['id'] = get_sub_field('id') != '' ? get_sub_field('id') : '';
+                    $promo['file_name'] = get_sub_field('file_name') != '' ? get_sub_field('file_name') : '';
+                    $promo['program_tx'] = get_sub_field('program_tx') != '' ? get_sub_field('program_tx') : '';
+                    $promo['prog_title_stunts'] = get_sub_field('prog_title_stunts') != '' ? get_sub_field('prog_title_stunts') : '';
+                    $promo['version'] = get_sub_field('version') != '' ? get_sub_field('version') : '';
+                    $promo['duration'] = get_sub_field('duration') != '' ? get_sub_field('duration') : '';
+                    $promo['notes'] = get_sub_field('notes') != '' ? get_sub_field('notes') : '';
+                    $promo['attached_file'] = get_sub_field('attached_file') != '' ? get_sub_field('attached_file') : '';
+                    $promo['post_id'] = get_the_ID();
+                    $promo['user_id'] = get_current_user_id();
+
+                    if(strtolower($promo['category']) == $category)
+                      array_push($promos, $promo);
+                  }
+                endwhile;
+              endif;
+            endif;
+          }
+        } 
+        wp_reset_query();
+        return $promos;
     }
 }

@@ -331,25 +331,26 @@ class FileList
                                     /* PREFIX FOR SHOW IMAGES*/
                                     'key_art'           => 'key', 
                                     'episodic_stills'   => 'epi', 
-                                    'gallery'           => 'gal', 
-                                    'logos'             => 'log',
+                                    'gallery'           => 'gallery', 
+                                    'logos'             => 'logo',
                                     'others'            => 'oth',
                                     /* PREFIX FOR CHANNEL MATERIALS IMAGE*/
-                                    'channel_logos'     => 'cm_log', 
-                                    'channel_elements'  => 'cm_ele', 
+                                    'channel_logos'     => 'logo', 
+                                    'channel_elements'  => 'elements', 
                                     'channel_others'    => 'cm_oth', 
                                     /* PREFIX FOR SHOW DOCUMENTS */
-                                    'synopses'          => 'syn',
-                                    'transcripts'       => 'epk',
-                                    'fact_sheet'        => 'fac',
-                                    'fonts'             => 'fon',
+                                    'synopses'          => 'synopsis',
+                                    'transcripts'       => 'trans',
+                                    'fact_sheet'        => 'fact',
+                                    'fonts'             => 'font',
                                     'document_others'   => 'doth',
+                                    /* PROMO */
                                     'promos'            => 'promo',
                                     /* PREFIX FOR CHANNEL MATERIALS DOCUMENT */
-                                    'channel_epg'       => 'cm_epg',
-                                    'channel_highlights'=> 'cm_hig',
-                                    'channel_brand'     => 'cm_bra',
-                                    'channel_boiler'    => 'cm_boi'
+                                    'channel_epg'       => 'epg',
+                                    'channel_highlights'=> 'highlights',
+                                    'channel_brand'     => 'brand',
+                                    'channel_boiler'    => 'boiler'
                                     );
 
     /**
@@ -358,7 +359,7 @@ class FileList
      * @return string
      * @usage Generate file list with preview - key art images
      */
-    public static function CategorizedFileList($file, $prefix = null){
+    public static function CategorizedFileList($file, $prefix = null, $category = 'show'){
         $file['files'] = maybe_unserialize($file['files']);
         $fhtml = '';
         // die($file['publish_date']);
@@ -396,7 +397,7 @@ class FileList
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // LOG
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos']){
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos'] && $category == 'show'){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // OTHERS
@@ -407,7 +408,7 @@ class FileList
 
                             /* CHANNEL MATERIALS IMAGE ========================================================================== */
                             // CM_LOG
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_logos']){
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_logos'] && $category == 'channel'){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // CM_ELE
@@ -661,27 +662,17 @@ class FileList
     }
 
     /**
-     * @usage function to check if package is available for download through the publish and expire field
-     * @param $file
-     * @return bool
-     * @usage returns 1 if file is available for download, otherwise 0
+     * @usage function to get searchform template
+     * @return string
+     * @usage returns html
      */
-    // public static function checkPackageDownloadAvailability($start_date, $end_date){
-    //     $pd = isset($start_date)&&$start_date!=""?strtotime($start_date):0;
-    //     $xd = isset($end_date)&&$end_date!=""?strtotime($end_date):0;
-    //     return !($xd>0 && $xd<time()) && !($pd>0 && $pd>time()) ? 1 : 0;
-    // }
-
     public static function getSearchForm(){
         $fhtml = '';
+        ob_start();
+        get_template_part('searchform');
+        $fhtml = ob_get_contents();
+        ob_end_clean();
 
-        $fhtml .= '<form role="search" method="get" id="searchform" action="'.get_home_url().'/shows">
-                    <div class="search-fields-wrap show-search-form">
-                        <input type="text" value="" name="sf" id="s" placeholder="Search Shows" class="fullwidth"/>
-                        <i class="fa fa-lg fa-search"></i>
-                        <input type="submit" id="searchsubmit" value=""/>
-                    </div>
-                    </form>';
         return $fhtml;
     }
 }
