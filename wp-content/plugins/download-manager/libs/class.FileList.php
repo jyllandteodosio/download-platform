@@ -368,22 +368,20 @@ class FileList
                 $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
       
                 // Start structuring the container html of file list
-                
+
                 if (is_array($allfiles)) {
                     foreach ($allfiles as $fileID => $sfileOriginal) {
-                        $fileTitle = $prefix != self::$prefix_list['promos'] ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
                         $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
+                        $fileTitle = $prefix != self::$prefix_list['promos'] ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
                         $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
                         $thumb = "";
                         $ind = \WPDM_Crypt::Encrypt($sfile);
                         $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
 
-
                         if(checkFileType($sfile, 'image') && $prefix != self::$prefix_list['promos']){
 
                             $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                             $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(270, 296));
-
                             /* SHOW IMAGES ========================================================================== */
                             //KEY
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
@@ -417,7 +415,7 @@ class FileList
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // CM_OTH
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_others']){
+                            if( !contains($fileTitle, self::$prefix_list['channel_logos']) && !contains($fileTitle, self::$prefix_list['channel_elements']) && $prefix == self::$prefix_list['channel_others']){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             
@@ -454,7 +452,9 @@ class FileList
 
                             /* SHOW DOCUMENTS ===================================================================================== */
                             // CM_EPG
+                            
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
+
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // CM_HIG
@@ -475,6 +475,7 @@ class FileList
 
                 }
             }
+
         }else{
             $fhtml .= "This package is not available for download";
         }
@@ -550,7 +551,7 @@ class FileList
 
         $siteurl = admin_url('/admin-ajax.php');
         $cartnonce = wp_create_nonce('__rtl_cart_nonce__');
-
+        $fhtml = '';
         $fhtml .= " <script type='text/javascript' language = 'JavaScript'>
                                 jQuery(document).ready(function(){
                                     var ajaxurl = '{$siteurl}';
@@ -671,4 +672,16 @@ class FileList
     //     return !($xd>0 && $xd<time()) && !($pd>0 && $pd>time()) ? 1 : 0;
     // }
 
+    public static function getSearchForm(){
+        $fhtml = '';
+
+        $fhtml .= '<form role="search" method="get" id="searchform" action="'.get_home_url().'/shows">
+                    <div class="search-fields-wrap show-search-form">
+                        <input type="text" value="" name="sf" id="s" placeholder="Search Shows" class="fullwidth"/>
+                        <i class="fa fa-lg fa-search"></i>
+                        <input type="submit" id="searchsubmit" value=""/>
+                    </div>
+                    </form>';
+        return $fhtml;
+    }
 }

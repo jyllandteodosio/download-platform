@@ -102,6 +102,9 @@ class Package {
         if(strpos("_".$template,'[file_category,cm_log]')) $vars['file_category,cm_log'] = \WPDM\libs\FileList::CategorizedFileList($vars, "cm_log");
         if(strpos("_".$template,'[file_category,cm_ele]')) $vars['file_category,cm_ele'] = \WPDM\libs\FileList::CategorizedFileList($vars, "cm_ele");
         if(strpos("_".$template,'[file_category,cm_oth]')) $vars['file_category,cm_oth'] = \WPDM\libs\FileList::CategorizedFileList($vars, "cm_oth");
+        
+
+        $vars['searchform'] = \WPDM\libs\FileList::getSearchForm();
 
 
         

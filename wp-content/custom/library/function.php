@@ -501,6 +501,7 @@ function structure_cart_data($cart_data){
  */
 function get_custom_cart_contents($fileType = null){
 	$rawCart = getCustomCartContents();
+    $myCart = array();
     if (!empty($rawCart)) {
     	$rawCart = unserialize($rawCart->meta_file);
     	if ($fileType != '' || $fileType != null) {
