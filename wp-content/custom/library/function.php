@@ -213,8 +213,9 @@ if( !function_exists('get_current_user_operator_group') ){
      * Get current role of logged user.
      * @return String|bool Returns user role if logged in, else return false;
      */
-    function get_current_user_operator_group(){
-        return get_user_meta( get_current_user_id(), 'operator_group', true);
+    function get_current_user_operator_group($user_id = NULL){
+        $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
+        return get_user_meta( $userid, 'operator_group', true);
     }
 }
 
@@ -223,8 +224,9 @@ if( !function_exists('get_current_user_country_group') ){
      * Get current country group of logged user.
      * @return String|bool Returns country group if logged in, else return false;
      */
-    function get_current_user_country_group(){
-        return get_user_meta( get_current_user_id(), 'country_group', true);
+     function get_current_user_country_group($user_id = NULL){
+        $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
+        return get_user_meta( $userid, 'country_group', true);
     }
 }
 
@@ -784,10 +786,15 @@ function insertToCustomReports($serialized_cart){
 
     foreach ($unserialized_cart as $file_id => $value) {
         $user_id = get_current_user_id( );
+        $country_group = get_current_user_country_group($user_id);
+        $operator_group = get_current_user_operator_group($user_id);
+
         $return_value = $wpdb->insert(
                                 $wpdb->custom_reports,
                                 array(
                                     'user_id' => $user_id,
+                                    'country_group' => $country_group,
+                                    'operator_group' => $operator_group,
                                     'post_id' => $value['post_id'],
                                     'file_id' => $file_id,
                                     'file_path' => $value['file_path'],
