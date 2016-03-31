@@ -1093,15 +1093,15 @@ if (!function_exists('checkPackageDownloadAvailabilityDate')) {
 if (!function_exists('checkDateIfCurrentMonth')) {
     /**
      * @usage function to check if a given dat is a current month
-     * @param $start_date
+     * @param $start_date, $end_date
      * @return bool
      * @usage returns 1 if date is current month, otherwise 0
      */
-    function checkDateIfCurrentMonth($start_date){
+    function checkDatesIfCurrentMonth($start_date, $end_date){
         $first_day_of_month = mktime(0,0,0,date('n'),1,date('Y'));
         $last_day_of_month = mktime(23,59,59,date('n'),date('t'),date('Y')); 
 
-        if ((strtotime($start_date) >= $first_day_of_month) && (strtotime($start_date) <= $last_day_of_month)){
+        if( strtotime($start_date) <= $last_day_of_month && $first_day_of_month <= strtotime($end_date) ){
             return 1;
         }
         return 0;
@@ -1140,8 +1140,10 @@ if (!function_exists('getMonthsPromos')) {
                 while( have_rows('add_promo_files') ): the_row();
                   $promo['operator_group'] = get_sub_field('operator_group');
                   $promo['promo_start'] = get_sub_field('promo_start') != '' ? get_sub_field('promo_start') : date('Ymd');
+                  $promo['promo_end'] = get_sub_field('promo_end') != '' ? get_sub_field('promo_end') : date('Ymd');
                   $operator_group_promo_access = isset($promo['operator_group']) ? $promo['operator_group'] : 'all';
-                  if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDateIfCurrentMonth($promo['promo_start'])){
+
+                  if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($promo['promo_start'],$promo['promo_end'])){
 
                     $promo['category'] = get_sub_field('category') != '' ? get_sub_field('category') : '';
                     $promo['upload_date'] = get_sub_field('upload_date') != '' ? date("d/n/Y", strtotime(get_sub_field('upload_date'))) : '';
@@ -1169,5 +1171,70 @@ if (!function_exists('getMonthsPromos')) {
         wp_reset_query();
 
         return $promos;
+    }
+}
+
+if (!function_exists('custom_get_country_groups')){
+    /**
+     * Get Country groups declared in profile builder plugin
+     * @return array key value pair of country groups
+     */
+    function custom_get_country_groups()
+    {
+        global $wpdb;
+
+        $raw_operator_group = $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'wppb_manage_fields' ");
+        $unserialized_operator_group = unserialize($raw_operator_group);
+
+        $operator_groups = array();
+        $operator_groups_options = explode( ',', $unserialized_operator_group[0]['options']);
+        $operator_groups_labels = explode( ',', $unserialized_operator_group[0]['labels']);
+
+        foreach ($operator_groups_options as $key => $value) {
+            $operator_groups[$value] = $operator_groups_labels[$key];
+        }
+        return $operator_groups;
+    }
+}
+
+if (!function_exists('custom_get_operator_groups')){
+    /**
+     * Get all operator groups declared in profile builder plugin
+     * @return array key value pair of operator groups
+     */
+    function custom_get_operator_groups()
+    {
+        global $wpdb;
+
+        $raw_operator_group = $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'wppb_manage_fields' ");
+        $unserialized_operator_group = unserialize($raw_operator_group);
+
+        $operator_groups = array();
+        $operator_groups_options = explode( ',', $unserialized_operator_group[1]['options']);
+        $operator_groups_labels = explode( ',', $unserialized_operator_group[1]['labels']);
+
+        foreach ($operator_groups_options as $key => $value) {
+            $operator_groups[$value] = $operator_groups_labels[$key];
+        }
+        return $operator_groups;
+    }
+}
+
+if (!function_exists('custom_get_rtl_channels')){
+    /**
+     * Get rtl channels
+     * @return array key value pair of name and slug of rtl channels
+     */
+    function custom_get_rtl_channels()
+    {
+        global $wpdb;
+
+        $raw_rtl_channels = $wpdb->get_results("SELECT name,slug FROM $wpdb->terms WHERE slug IN('entertainment', 'extreme' ) ");
+        $rtl_channels = array();
+
+        foreach ($raw_rtl_channels as $key => $value) {
+            $rtl_channels[$value->slug] = $value->name;
+        }
+        return $rtl_channels;
     }
 }
