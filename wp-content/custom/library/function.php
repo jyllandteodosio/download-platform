@@ -1220,6 +1220,69 @@ if (!function_exists('custom_get_operator_groups')){
     }
 }
 
+if (!function_exists('custom_get_operator_accounts')) {
+    /**
+     * Get all operator accounts users
+     * @return array key value pair of operator accounts
+     */
+    function custom_get_operator_accounts(){
+        global $wpdb;
+
+        $query_string = "   SELECT u.id, u.user_email 
+                            FROM $wpdb->users u INNER JOIN $wpdb->usermeta um 
+                            ON u.id = um.user_id
+                            WHERE um.meta_key = '".$wpdb->prefix."capabilities'
+                            AND um.meta_value LIKE '%operator%'
+                            ORDER BY u.user_email
+                            ";
+        $raw_operator_accounts = $wpdb->get_results($query_string, ARRAY_A);
+
+        $operator_accounts = array();
+
+        foreach ($raw_operator_accounts as $key => $value) {
+            $operator_accounts[$value['id']] = $value['user_email'];
+        }
+        // return $query_string;
+        return $operator_accounts;
+    }
+}
+
+if (!function_exists('custom_get_shows()')) {
+    /**
+     * Get Shows
+     * @return array key value pair of show id and title
+     */
+    function custom_get_shows(){
+        $cids = array('shows-entertainment', 'shows-extreme', 'extreme', 'entertainment');
+        $channel_materials = array('channel-materials-entertainment','channel-materials-extreme');
+
+        $params = array(
+            'post_type' => 'wpdmpro',
+            'orderby' => 'title',
+            'order' => 'ASC',
+            'tax_query' => array(array(
+                    'taxonomy' => 'wpdmcategory',
+                    'field' => 'slug',
+                    'terms' => $cids,
+                    'operator' => $operator
+                ), array(
+                    'taxonomy' => 'wpdmcategory',
+                    'field' => 'slug',
+                    'terms' => $channel_materials,
+                    'operator' => 'NOT IN'
+                )
+            )
+        );
+        
+        $query = new WP_Query( $params );
+        $shows = array();
+        while($query->have_posts()) {$query->the_post();
+            $shows[get_the_ID()] = get_the_title();
+        }
+        return $shows;
+    }
+}
+
 if (!function_exists('custom_get_rtl_channels')){
     /**
      * Get rtl channels
@@ -1238,3 +1301,9 @@ if (!function_exists('custom_get_rtl_channels')){
         return $rtl_channels;
     }
 }
+
+// ENQUEUE SCRIPTS
+function my_scripts(){
+    wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");
+}
+add_action("admin_enqueue_scripts", 'my_scripts');
