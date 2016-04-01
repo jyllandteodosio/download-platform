@@ -44,6 +44,7 @@ favico.ico
 /wp-content/images
 /wp-content/image
 /wp-content/plugins/download-manager/cache
+/wp-content/exports
 
 #ignore wordpress wp-config.php
 wp-config.php
