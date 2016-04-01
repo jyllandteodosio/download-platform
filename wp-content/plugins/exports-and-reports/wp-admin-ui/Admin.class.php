@@ -18,7 +18,10 @@ if ( isset( $_GET['download'] ) && isset( $_GET['_wpnonce'] ) && false !== wp_ve
 	if ( ! isset( $_GET['export'] ) || empty( $_GET['export'] ) || ! file_exists( $file ) ) {
 		wp_die( 'File not found.' );
 	}
+    /** Custom code by dianne d.r. - to auto download csv file upon export */
     wpdm_download_file($file, $_GET['export'].".csv");
+    @unlink($file);
+    /** End of custom code  */
     wp_redirect( str_replace( WP_ADMIN_UI_EXPORT_DIR, WP_ADMIN_UI_EXPORT_URL, $file ) );
     die();
 

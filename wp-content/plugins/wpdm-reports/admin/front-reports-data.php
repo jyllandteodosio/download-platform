@@ -99,7 +99,7 @@
 
 		?>
 	</p>
-
+	<!-- TODO - track the cause of page redirect in reports data page upon export -->
 	<input type="button" value=" Export Report " class="button" onclick="document.location='?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv';">
 
 	<table class="wp-list-table widefat">
