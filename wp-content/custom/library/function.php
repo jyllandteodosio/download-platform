@@ -12,6 +12,9 @@ if (!isset($wpdb->custom_reports)) {
 if (!isset($wpdb->operator_access)) {
     $wpdb->operator_access = $wpdb->prefix . 'operator_access';
 }
+if (!isset($wpdb->exportsreports_reports)) {
+    $wpdb->exportsreports_reports = $wpdb->prefix . 'exportsreports_reports';
+}
 
 if (!function_exists('contains')) {
 	// check filename prefix: key, log, oth, .docs, doc, docx, .docx
@@ -1302,8 +1305,26 @@ if (!function_exists('custom_get_rtl_channels')){
     }
 }
 
+if (!function_exists('get_country_name')) {
+    
+    function get_country_name($iso = 'PH'){
+        $country_groups = custom_get_country_groups();
+        return $country_groups[$iso];
+    }
+}
+
+if (!function_exists('get_user_info')) {
+    
+    function get_user_info($user_id, $data){
+        $user_info = get_userdata($user_id);
+        $info = $data == 'email' ? $user_info->user_email : "";
+        return $info;
+    }
+}
+
 // ENQUEUE SCRIPTS
 function my_scripts(){
     wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");
 }
 add_action("admin_enqueue_scripts", 'my_scripts');
+

@@ -5,6 +5,7 @@
 
 	<form id="form_operator_access" method="get">
 		<input type="hidden" name="page" value="wpdm-reports-data">
+		<input type="hidden" name="filter" value="filtered">
 		<table class="form-table">
 			<tbody>
 				<tr class="form-field">
@@ -58,7 +59,10 @@
 						</select>
 					</td>
 					<th scope="row"><label for="shows">To</label></th>
-					<td><input type="date" name="date_to" id="date_to" value="<?php echo $_GET['date_to'];?>"></td>
+					<td>
+						<input type="date" name="date_to" id="date_to" value="<?php echo $_GET['date_to'];?>">
+
+					</td>
 				</tr>
 				<tr class="form-field">
 					<th scope="row"><label for="shows">Shows</label></th>
@@ -82,6 +86,22 @@
 		</p>
 	</form>
 
+	<p><?php echo $form_data['msg_dl_range'];?></p>
+	<p>
+		<?php
+			// todo:clean
+			if ($form_data['filter']) {
+				echo $form_data['country'] != '' ? get_country_name($form_data['country'])." | " : "All Country Group | "; 
+				echo $form_data['operator_group'] != '' ? $form_data['operator_group']." | " : "All Operator Group | "; 
+				echo $form_data['operator_account'] != '' ? get_user_info($form_data['operator_account'],'email')." | " : "All Operator Accounts | "; 
+				echo $form_data['shows'] != '' ? get_the_title($form_data['shows']) : "All Shows";
+			}
+
+		?>
+	</p>
+
+	<input type="button" value=" Export Report " class="button" onclick="document.location='?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv';">
+
 	<table class="wp-list-table widefat">
 		<thead>
 		<tr>
@@ -101,8 +121,8 @@
 			foreach ($reports_data as $key => $value):
 		?>
 		<tr>
-			<td><?php echo "";?></td>
-			<td><?php echo $value['country_group'];?></td>
+			<td><?php echo $form_data['results_period'];?></td>
+			<td><?php echo get_country_name($value['country_group']);?></td>
 			<td><?php echo $value['operator_group'];?></td>
 			<td><?php echo $value['user_email'];?></td>
 			<td><?php echo $value['post_title'];?></td>
@@ -111,10 +131,10 @@
 		<?php 
 			endforeach;
 			else: ?>
-			<tr><td colspan="6" >No results found</td></tr>
+			<tr><td colspan="6" >No results</td></tr>
 		<?php endif; ?>
 
-		
+		</tbody>
 
 		<tfoot>
 			<tr>
