@@ -110,8 +110,8 @@
 	</div>
 	<div class="wpdmr-inline-block wpdmr-btn-export">
 		<?php 
-			$disabled = $form_data['filter'] ? "" : "disabled";
-			$title = $form_data['filter'] ? "" : "Click 'Show Report' first before exporting.";
+			$disabled = $form_data['filter'] && !empty($reports_data) ? "" : "disabled";
+			$title = $form_data['filter'] && !empty($reports_data) ? "" : "Click 'Show Report' first before exporting.";
 		?>
 		<input type="button" value=" Export Report " class="button" <?php echo $disabled?> title="<?php echo $title;?>" onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv','temp_report_window');">
 		<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
@@ -131,7 +131,8 @@
 		<tbody id="the-list">
 		
 		
-		<?php if(isset($reports_data)):
+		<?php
+		if(isset($reports_data) && !empty($reports_data)):
 			foreach ($reports_data as $key => $value):
 		?>
 		<tr>
