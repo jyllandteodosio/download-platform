@@ -1,0 +1,39 @@
+#form_operator_access p.submit {
+	text-align: right;
+}
+
+.wpdmr-table-header {
+	padding: 15px 25px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    font-weight: bold;
+}
+.wpdmr-table-content-filter {
+	padding: 0 30px;
+    background: #FFFFFF;
+    border: 1px solid #ddd;
+    border-top-color: #fff;
+    margin-bottom: 20px;
+}
+.wpdmr-table-content-filter .form-table th,
+.wpdmr-table-content-filter .form-table td {
+	padding: 10px 10px;
+}
+
+.wpdmr-inline-block {
+	display: inline-block;
+}
+
+.wpdmr-btn-export {
+	float: right;
+}
+.wpdmr-reports-data {
+	margin-top: 30px;
+}
+
+.wid-9{
+	width: 90%;
+}
+.temp_report_window {
+	display: none;
+}

@@ -2,107 +2,118 @@
 
 <div class="wrap">
 	<h1 id="">Reports Data</h1>
+	
+	
+		<form id="form_operator_access" method="get">
+			<p class="submit">
+				<input type="submit" class="button button-primary" value="Show Report">
+				<!-- <input type="reset" class="button button-default"  value="Cancel"> -->
+			</p>
+			
+			<input type="hidden" name="page" value="wpdm-reports-data">
+			<input type="hidden" name="filter" value="filtered">
+			
+			<div class="wpdmr-table-header">Filter:</div>
+			<div class="wpdmr-table-content-filter">
+				<table class="form-table">
+					<tbody>
+						<tr class="form-field">
+							<th scope="row"><label for="country">Country Group</label></th>
+							<td>
+								<select name="country" id="country">
+									<option value="">All Country Group</option>
+									<?php $default_country_array = array_filter(custom_get_country_groups());
+										foreach( $default_country_array as $iso_country_code => $country_name ):
+											$selected = $iso_country_code == $form_data['country'] ? "selected" : "";?>
+											<option value="<?php echo $iso_country_code;?>" <?php echo $selected;?> ><?php echo $country_name;?></option>
+									<?php endforeach;?>
+								</select>
+							</td>
+							<th scope="row"><label for="period">Period</label></th>
+							<td>
+								<input type="hidden" name="current_period" id="current-period" value="<?php echo $form_data['current_period'] ?>">
+								<ul class="subsubsub">
+									<li class=""><a href="" id="period-day" class="periods <?php echo $form_data['current_period'] == "period-day" ? "current" : ""?>">Day</a> |</li>
+									<li class=""><a href="" id="period-week" class="periods <?php echo $form_data['current_period'] == "period-week" ? "current" : ""?>">Week</a> |</li>
+									<li class=""><a href="" id="period-month" class="periods <?php echo $form_data['current_period'] == "period-month" ? "current" : ""?>">Month</a> |</li>
+									<li class=""><a href="" id="period-year" class="periods <?php echo $form_data['current_period'] == "period-year" ? "current" : ""?>">Year</a></li>
+								</ul>
+							</td>
+						</tr>
+						<tr class="form-field">
+							<th scope="row"><label for="operator_group">Operator Group</label></th>
+							<td>
+								<select name="operator_group" id="operator_group">
+									<option value="">All Operator group</option>
+									<?php $operator_group_array = array_filter(custom_get_operator_groups());
+									foreach( $operator_group_array as $options => $labels ):
+										$selected = $options == $form_data['operator_group'] ? "selected" : "";?>
+										<option value="<?php echo $options;?>" <?php echo $selected;?> ><?php echo $labels;?></option>
+									<?php endforeach;?>
+								</select>
+							</td>
+							<th scope="row"><label for="shows">From</label></th>
+							<td><input type="date" name="date_from" id="date_from" value="<?php echo $_GET['date_from'];?>" ></td>
+						</tr>
+						<tr class="form-field">
+							<th scope="row"><label for="operator_account">Operator Account</label></th>
+							<td>
+								<select name="operator_account" id="operator_account">
+									<option value="">All Operator Accounts</option>
+									<?php $operator_accounts_array = array_filter(custom_get_operator_accounts());
+									foreach( $operator_accounts_array as $options => $labels ):
+										$selected = $options == $form_data['operator_account'] ? "selected" : "";?>
+										<option value="<?php echo $options;?>" <?php echo $selected;?> ><?php echo $labels;?></option>
+									<?php endforeach;?>
+								</select>
+							</td>
+							<th scope="row"><label for="shows">To</label></th>
+							<td>
+								<input type="date" name="date_to" id="date_to" value="<?php echo $_GET['date_to'];?>">
 
-	<form id="form_operator_access" method="get">
-		<input type="hidden" name="page" value="wpdm-reports-data">
-		<input type="hidden" name="filter" value="filtered">
-		<table class="form-table">
-			<tbody>
-				<tr class="form-field">
-					<th scope="row"><label for="country">Country Group</label></th>
-					<td>
-						<select name="country" id="country">
-							<option value="">All Country Group</option>
-							<?php $default_country_array = array_filter(custom_get_country_groups());
-								foreach( $default_country_array as $iso_country_code => $country_name ):
-									$selected = $iso_country_code == $form_data['country'] ? "selected" : "";?>
-									<option value="<?php echo $iso_country_code;?>" <?php echo $selected;?> ><?php echo $country_name;?></option>
-							<?php endforeach;?>
-						</select>
-					</td>
-					<th scope="row"><label for="period">Period</label></th>
-					<td>
-						<input type="hidden" name="current_period" id="current-period" value="<?php echo $form_data['current_period'] ?>">
-						<ul class="subsubsub">
-							<li class=""><a href="" id="period-day" class="periods <?php echo $form_data['current_period'] == "period-day" ? "current" : ""?>">Day</a> |</li>
-							<li class=""><a href="" id="period-week" class="periods <?php echo $form_data['current_period'] == "period-week" ? "current" : ""?>">Week</a> |</li>
-							<li class=""><a href="" id="period-month" class="periods <?php echo $form_data['current_period'] == "period-month" ? "current" : ""?>">Month</a> |</li>
-							<li class=""><a href="" id="period-year" class="periods <?php echo $form_data['current_period'] == "period-year" ? "current" : ""?>">Year</a></li>
-						</ul>
-					</td>
-				</tr>
-				<tr class="form-field">
-					<th scope="row"><label for="operator_group">Operator Group</label></th>
-					<td>
-						<select name="operator_group" id="operator_group">
-							<option value="">All Operator group</option>
-							<?php $operator_group_array = array_filter(custom_get_operator_groups());
-							foreach( $operator_group_array as $options => $labels ):
-								$selected = $options == $form_data['operator_group'] ? "selected" : "";?>
-								<option value="<?php echo $options;?>" <?php echo $selected;?> ><?php echo $labels;?></option>
-							<?php endforeach;?>
-						</select>
-					</td>
-					<th scope="row"><label for="shows">From</label></th>
-					<td><input type="date" name="date_from" id="date_from" value="<?php echo $_GET['date_from'];?>" ></td>
-				</tr>
-				<tr class="form-field">
-					<th scope="row"><label for="operator_account">Operator Account</label></th>
-					<td>
-						<select name="operator_account" id="operator_account">
-							<option value="">All Operator Accounts</option>
-							<?php $operator_accounts_array = array_filter(custom_get_operator_accounts());
-							foreach( $operator_accounts_array as $options => $labels ):
-								$selected = $options == $form_data['operator_account'] ? "selected" : "";?>
-								<option value="<?php echo $options;?>" <?php echo $selected;?> ><?php echo $labels;?></option>
-							<?php endforeach;?>
-						</select>
-					</td>
-					<th scope="row"><label for="shows">To</label></th>
-					<td>
-						<input type="date" name="date_to" id="date_to" value="<?php echo $_GET['date_to'];?>">
+							</td>
+						</tr>
+						<tr class="form-field">
+							<th scope="row"><label for="shows">Shows</label></th>
+							<td>
+								<select name="shows" id="shows">
+									<option value="">All Shows</option>
+									<?php $shows_array = array_filter(custom_get_shows());
+									foreach( $shows_array as $options => $labels ):
+										$selected = $options == $form_data['shows'] ? "selected" : "";?>
+										<option value="<?php echo $options;?>" <?php echo $selected;?> ><?php echo $labels;?></option>
+									<?php endforeach;?>
+								</select>
+							</td>
+						</tr>
+						
+					</tbody>
+				</table>
+			</div>
 
-					</td>
-				</tr>
-				<tr class="form-field">
-					<th scope="row"><label for="shows">Shows</label></th>
-					<td>
-						<select name="shows" id="shows">
-							<option value="">All Shows</option>
-							<?php $shows_array = array_filter(custom_get_shows());
-							foreach( $shows_array as $options => $labels ):
-								$selected = $options == $form_data['shows'] ? "selected" : "";?>
-								<option value="<?php echo $options;?>" <?php echo $selected;?> ><?php echo $labels;?></option>
-							<?php endforeach;?>
-						</select>
-					</td>
-				</tr>
-				
-			</tbody>
-		</table>
-		<p class="submit">
-			<input type="submit" class="button button-primary" value="Filter">
-			<!-- <input type="reset" class="button button-default"  value="Cancel"> -->
+		</form>
+	
+	<div class="wpdmr-inline-block wid-9">
+		<p><?php echo $form_data['msg_dl_range'];?></p>
+		<p>
+			<?php
+				// todo:clean
+				if ($form_data['filter']) {
+					echo $form_data['country'] != '' ? get_country_name($form_data['country'])." | " : "All Country Group | "; 
+					echo $form_data['operator_group'] != '' ? $form_data['operator_group']." | " : "All Operator Group | "; 
+					echo $form_data['operator_account'] != '' ? get_user_info($form_data['operator_account'],'email')." | " : "All Operator Accounts | "; 
+					echo $form_data['shows'] != '' ? get_the_title($form_data['shows']) : "All Shows";
+				}
+
+			?>
 		</p>
-	</form>
-
-	<p><?php echo $form_data['msg_dl_range'];?></p>
-	<p>
-		<?php
-			// todo:clean
-			if ($form_data['filter']) {
-				echo $form_data['country'] != '' ? get_country_name($form_data['country'])." | " : "All Country Group | "; 
-				echo $form_data['operator_group'] != '' ? $form_data['operator_group']." | " : "All Operator Group | "; 
-				echo $form_data['operator_account'] != '' ? get_user_info($form_data['operator_account'],'email')." | " : "All Operator Accounts | "; 
-				echo $form_data['shows'] != '' ? get_the_title($form_data['shows']) : "All Shows";
-			}
-
-		?>
-	</p>
-	<!-- TODO - track the cause of page redirect in reports data page upon export -->
-	<input type="button" value=" Export Report " class="button" onclick="document.location='?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv';">
-
-	<table class="wp-list-table widefat">
+	</div>
+	<div class="wpdmr-inline-block wpdmr-btn-export">
+		<?php $disabled = $form_data['filter'] ? "" : "disabled"; ?>
+		<input type="button" value=" Export Report " class="button" <?php echo $disabled?> onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv','temp_report_window');">
+		<iframe name="temp_report_window" id="temp_report_window" style="display:none"></iframe>
+	</div>
+	<table class="wpdmr-reports-data wp-list-table widefat">
 		<thead>
 		<tr>
 			<th>Period</th>
