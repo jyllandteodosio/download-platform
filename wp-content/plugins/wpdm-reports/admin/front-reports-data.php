@@ -53,7 +53,7 @@
 								</select>
 							</td>
 							<th scope="row"><label for="shows">From</label></th>
-							<td><input type="date" name="date_from" id="date_from" value="<?php echo $_GET['date_from'];?>" ></td>
+							<td><input type="date" name="date_from" id="date_from" class="date_from" value="<?php echo $_GET['date_from'];?>" ></td>
 						</tr>
 						<tr class="form-field">
 							<th scope="row"><label for="operator_account">Operator Account</label></th>
@@ -109,9 +109,12 @@
 		</p>
 	</div>
 	<div class="wpdmr-inline-block wpdmr-btn-export">
-		<?php $disabled = $form_data['filter'] ? "" : "disabled"; ?>
-		<input type="button" value=" Export Report " class="button" <?php echo $disabled?> onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv','temp_report_window');">
-		<iframe name="temp_report_window" id="temp_report_window" style="display:none"></iframe>
+		<?php 
+			$disabled = $form_data['filter'] ? "" : "disabled";
+			$title = $form_data['filter'] ? "" : "Click 'Show Report' first before exporting.";
+		?>
+		<input type="button" value=" Export Report " class="button" <?php echo $disabled?> title="<?php echo $title;?>" onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv','temp_report_window');">
+		<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
 	</div>
 	<table class="wpdmr-reports-data wp-list-table widefat">
 		<thead>
@@ -213,5 +216,8 @@ console.log('a');
 			jQuery("#"+current).addClass('current');
 			jQuery("#current-period").val(current);
 		}
+
+		jQuery('#date_from').datepicker({ dateFormat: 'yy-mm-dd' });	
+		jQuery('#date_to').datepicker({ dateFormat: 'yy-mm-dd' });	
     });
 </script>

@@ -13,8 +13,6 @@ if(!function_exists('wpdm_reports_data_content')){
 }
 
 if(isset($_GET['country'])){
-	// echo "submitted";
-
     global $wpdb;
     $form_data['filter'] = $_GET['filter'] != NULL || $_GET['filter'] != '' ? true : false;
     $form_data['country'] = $_GET['country'] != NULL || $_GET['country'] != '' ? sanitize_text_field($_GET['country']) : '';
@@ -75,11 +73,25 @@ if(isset($_GET['country'])){
 		" AND ".$condition_operator_account.
 		" AND ".$condition_show.
 		" GROUP BY r.user_id, r.post_id
+          ORDER BY u.user_email,p.post_title
     ";
     $reports_data = $wpdb->get_results($query_string, ARRAY_A);
 
+    /* QUERY for export report */
+    $country_groups = custom_get_country_groups();
+    $country_groups_select_case = "";
+
+    $country_groups_select_case .= "case r.country_group ";
+    foreach ($country_groups as $key => $value) {
+        $country_groups_select_case .= "when '".$key."' then '".$value."' ";
+    }
+    $country_groups_select_case .= "end as country_group, ";
+
+
     $query_string_exportsreports = "
-        SELECT r.country_group, r.operator_group, u.user_email, p.post_title, count(*) as downloaded_files
+        SELECT '".$form_data['results_period']."' as Period,
+            ".$country_groups_select_case."
+            r.operator_group, u.user_email, p.post_title, count(*) as downloaded_files
         FROM ".$wpdb->custom_reports." r 
         INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
         INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
@@ -90,6 +102,7 @@ if(isset($_GET['country'])){
         " AND ".$condition_operator_account.
         " AND ".$condition_show.
         " GROUP BY r.user_id, r.post_id
+          ORDER BY u.user_email,p.post_title
     ";
     $return_value = $wpdb->update( 
         $wpdb->exportsreports_reports, 
@@ -99,9 +112,11 @@ if(isset($_GET['country'])){
         array( 'name' => 'RTL' )
     );
 
-
     // echo "<pre>";
-    // print_r($query_string);
+    // print_r( $query_string_exportsreports);
+    // print_r(custom_get_country_groups());
+    // print_r($country_groups_select_case);
+
     // echo "return_value - ".$return_value;
     // print_r($form_data);
     // print_r($reports_data);
