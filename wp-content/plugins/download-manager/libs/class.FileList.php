@@ -535,7 +535,8 @@ class FileList
      */
     public static function checkFileInCart($fileID){
         $cart_array = get_custom_cart_contents();
-        if(!empty(array_filter($cart_array))){
+	$cart_array_filtered = array_filter($cart_array);
+        if(!empty($cart_array_filtered)){
             return array_key_exists($fileID, $cart_array);
         }
         return 0;
