@@ -107,9 +107,9 @@ function getCustomCartItemsCount(){
     $user_id = get_current_user_id( );
     $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
     $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
-    // print_r($rawCart);die();
+   
     if (!empty($rawCart)) {
-        $rawCart = unserialize(base64_decode($rawCart->meta_file));
+        $rawCart = unserialize(trim($rawCart->meta_file));
         $return_value = count($rawCart);
     }else{
         $return_value = 0;
@@ -123,7 +123,7 @@ function ajaxGetCustomCartItemsCount(){
     $user_id = get_current_user_id( );
     $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
     $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
-    // print_r($rawCart);die();
+   
     if (!empty($rawCart)) {
         $rawCart = unserialize($rawCart->meta_file);
         $return_value = count($rawCart);
@@ -508,8 +508,7 @@ function get_custom_cart_contents($fileType = null){
 	$rawCart = getCustomCartContents();
     $myCart = array();
     if (!empty($rawCart)) {
-    	//$rawCart = unserialize($rawCart->meta_file);
-	$rawCart = unserialize(base64_decode($rawCart->meta_file));
+    	$rawCart = unserialize($rawCart->meta_file);
     	if ($fileType != '' || $fileType != null) {
     		foreach ($rawCart as $key => $value) {
     			if($value['file_type'] == $fileType){
@@ -661,7 +660,7 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
 
     global $post;
     while($packs->have_posts()) { $packs->the_post();
-        $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+        $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);        
         $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
         if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
             /* Show items */
