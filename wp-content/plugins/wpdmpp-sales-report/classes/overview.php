@@ -74,20 +74,21 @@ class WpmpR_Overview{
         $this->var['total_customer_t'] = 0;
         $sql = "SELECT count(*) FROM `{$wpdb->prefix}users` WHERE `user_registered` >= '$date'";
         $this->var['total_customer_t'] = $wpdb->get_var($sql);
-        
+        */
         
         //check top 5
         
         //top 5 customer
         $this->var['top_customers'] = array();
-        $sql = "SELECT uid, count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` group by uid limit 5";
+        // $sql = "SELECT uid, count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` group by uid limit 5";
+        $sql = "SELECT user_id as uid,count(*) as sum FROM `rtl21016_custom_reports` GROUP BY user_id ORDER BY sum DESC LIMIT 0,5";
         $this->var['top_customers'] = $wpdb->get_results($sql,ARRAY_A);
         
         
 
         //top 5 products
         $this->var['top_products'] = array();
-        $sql = "SELECT pid,sum(quantity) as sum  FROM `{$wpdb->prefix}ahm_order_items` group by pid order by sum desc limit 5";
+        $sql = "SELECT post_id as pid,count(*) as sum FROM `rtl21016_custom_reports` GROUP BY post_id ORDER BY sum DESC LIMIT 0,5";
         $results = $wpdb->get_results($sql,ARRAY_A);
         if($results){
             foreach ($results as $row):
@@ -98,7 +99,7 @@ class WpmpR_Overview{
             endforeach;
         }
         
-        
+        /*
         //top 5 payment method
         // $this->var['top_payment_methods'] = array();
         // $sql = "SELECT `payment_method`,count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` group by `payment_method` order by total desc limit 5";
@@ -161,7 +162,7 @@ class WpmpR_Overview{
             if($results) {
                 foreach ($results as $row):
                     $day = date('M d',strtotime($row['created_at']));
-                    $this->var['byDays'][$day] += $row['total'];
+                    $this->var['byDays'][$day] = $row['total'];
                 endforeach;
             }
         }
@@ -171,26 +172,32 @@ class WpmpR_Overview{
 
 
         //by week
-        // $this->var['byWeeks'] = array();
-        // $lastWeek = strtotime(date('Y-m-d',strtotime('-1 week')));
-        // $temp = $lastWeek;
-        // for($i = 1; $i <= 7; $i++) {
-        //     $idx = date('D', $temp);
-        //     $this->var['byWeeks'][$idx] = 0;
-        //     $temp = strtotime('next day',$temp);
-        // }
-        // $sql = "SELECT date,total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$lastWeek and `payment_status`='Completed'";
-        
-        // $results = $wpdb->get_results($sql,ARRAY_A);
-        //$wpdb->print_error();
-        // if($results){
-        //     foreach($results as $row):
-        //         $idx = date('D',$row['date']);
-        //         $this->var['byWeeks'][$idx] += $row['total'];
-        //     endforeach;
-        // }
-        
-        
+        $this->var['byWeeks'] = array();
+        $lastWeek = strtotime(date('Y-m-d',strtotime('-1 week')));
+        $lastWeek_date = date('Y-m-d', $lastWeek);
+        $temp = $lastWeek;
+        for($i = 1; $i <= 7; $i++) {
+            $idx = date('D', $temp);
+            $this->var['byWeeks'][$idx] = 0;
+            $temp = strtotime('next day',$temp);
+        }
+        $now = date('Y-m-d');
+        $startTime = strtotime( $lastWeek_date.' 12:00' );
+        $endTime = strtotime( $now.' 12:00' );
+
+        for ( $i = $startTime; $i < $endTime; $i = $i + 86400 ) {
+            $thisDate = date( 'Y-m-d', $i ); // 2010-05-01, 2010-05-02, etc
+            $sql = "SELECT created_at,count(*) as total FROM `rtl21016_custom_reports` WHERE created_at >= '".$lastMonth_date."' AND created_at LIKE '".$thisDate."%'";
+            $results = $wpdb->get_results($sql,ARRAY_A);
+            $wpdb->print_error();
+            if($results){
+                foreach($results as $row):
+                    if($row['created_at'] == '') continue;
+                    $idx = date('D',strtotime($row['created_at']));
+                    $this->var['byWeeks'][$idx] = $row['total'];
+                endforeach;
+            }
+        }
     }
     
     private function calculateCoupons(){
@@ -943,8 +950,10 @@ function order_m_pie(){
             
       <?php
       if(!empty($this->var['top_products'])){
+            $count = 1;
           foreach ($this->var['top_products'] as $pid => $data):
-              echo "<tr><td>{$pid}</td><td>{$data['title']}</td><td>{$data['amount']}</td></tr>";
+              echo "<tr><td>{$count}</td><td>{$data['title']}</td><td>{$data['amount']}</td></tr>";
+              $count++;
           endforeach;
       }
       
@@ -1042,10 +1051,9 @@ function product_bar_chart(){
       <table class="table table-bordered table-striped">
           <thead>
               <tr>
-                  <th>Billing First Name</th>
+                  <th></th>
                   <th>Billing Email</th>
                   <th>Order Count</th>
-                  <th>Amount</th>
               </tr>
           </thead>
           <tbody>
@@ -1053,6 +1061,7 @@ function product_bar_chart(){
                 //echo "<pre>"; print_r($this->var['top_customers']); echo "</pre>";
                 $forChart = array();
                 if($this->var['top_customers']):
+                    $count = 1;
                     foreach ($this->var['top_customers'] as $row):
                         $billing_shipping=unserialize(get_user_meta($row['uid'], 'user_billing_shipping',true));
                         $fname = $billing_shipping['billing']['first_name'];
@@ -1060,11 +1069,12 @@ function product_bar_chart(){
                         if($fname=='') $fname = "UID - " . $row['uid'];
                         $forChart[] = array('name' => $fname, 'total' => $row['total']);
                         unset($billing_shipping);
-                        echo "<tr><td>{$fname}</td><td>{$email}</td><td>{$row['cnt']}</td><td>{$this->currency}{$row['total']}</td></tr>";
+                        echo "<tr><td>{$count}</td><td>{$email}</td><td>{$row['sum']}</td></tr>";
+                        $count++;
                     endforeach;
                     
                 else:
-                    echo "<tr><td colspan='4'>No user found.</td></tr>";
+                    echo "<tr><td colspan='3'>No user found.</td></tr>";
                 endif;    
           ?>
           </tbody>
