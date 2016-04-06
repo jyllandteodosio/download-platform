@@ -87,7 +87,9 @@ if(isset($_GET['country'])){
     $condition_show = ($form_data['shows'] != '') ? "post_id = ".$form_data['shows'] : '1';
 
     $query_string = "
-		SELECT r.country_group, r.operator_group, u.user_email, p.post_title, count(*) as downloaded_files, 
+		SELECT r.country_group, 
+            IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
+            u.user_email, p.post_title, count(*) as downloaded_files, 
             min(r.created_at) as min_created_date, max(r.created_at) as max_created_date,
             date_format(r.created_at, '".$period_date_format."') as period, 
             date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
@@ -104,7 +106,7 @@ if(isset($_GET['country'])){
           ORDER BY period_format_standard,u.user_email,p.post_title
     ";
     $reports_data = $wpdb->get_results($query_string, ARRAY_A);
-    // echo $query_string;
+    echo $query_string;
     /* QUERY for export report */
     $country_groups = custom_get_country_groups();
     $country_groups_select_case = "";
@@ -113,6 +115,7 @@ if(isset($_GET['country'])){
     foreach ($country_groups as $key => $value) {
         $country_groups_select_case .= "when '".$key."' then '".$value."' ";
     }
+    $country_groups_select_case .= "else 'Admin' ";
     $country_groups_select_case .= "end as country_group, ";
 
 
@@ -120,7 +123,8 @@ if(isset($_GET['country'])){
         SELECT date_format(r.created_at, '".$period_date_format_standard."') as Period,
             ".$select_max_created_at."
             ".$country_groups_select_case."
-            r.operator_group, u.user_email, p.post_title, count(*) as downloaded_files
+            IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
+            u.user_email, p.post_title, count(*) as downloaded_files
         FROM ".$wpdb->custom_reports." r 
         INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
         INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id

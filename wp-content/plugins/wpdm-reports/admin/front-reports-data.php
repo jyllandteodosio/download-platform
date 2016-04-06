@@ -139,9 +139,9 @@
 			<td><?php 
 				echo $value['period'];
 				if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
-				/*echo $form_data['results_period'];*/?>
+				?>
 			</td>
-			<td><?php echo get_country_name($value['country_group']);?></td>
+			<td><?php echo $value['country_group'] != '' ? get_country_name($value['country_group']) : 'Admin' ;?></td>
 			<td><?php echo $value['operator_group'];?></td>
 			<td><?php echo $value['user_email'];?></td>
 			<td><?php echo $value['post_title'];?></td>
