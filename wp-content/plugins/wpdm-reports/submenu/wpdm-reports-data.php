@@ -32,18 +32,43 @@ if(isset($_GET['country'])){
 
     switch ($_GET['current_period']) {
     	case 'period-day':
+            $period_date_format = "%m/%d/%Y";
+            $period_date_format_standard = "%Y-%m-%d";
+            $groupby_period = " period_format_standard";
+            $groupby_period_exportsreports = " Period";
+            $select_max_created_at = "";
     		$form_data['results_period'] = $form_data['date_from_formatted_mdy'];
     		break;
     	case 'period-week':
+            $period_date_format = "%m/%d/%Y";
+            $period_date_format_standard = "%Y-%m-%d";
+            $groupby_period = " YEARWEEK(r.created_at)";
+            $groupby_period_exportsreports = " YEARWEEK(r.created_at)";
+            $select_max_created_at = "date_format(max(r.created_at), '%Y-%m-%d') as 'Period End', ";
     		$form_data['results_period'] = $form_data['date_from_formatted_mdy'].' - '.$form_data['date_to_formatted_mdy'];
     		break;
     	case 'period-month':
+            $period_date_format = "%m/%Y";
+            $period_date_format_standard = "%Y-%m";
+            $groupby_period = " period_format_standard";
+            $groupby_period_exportsreports = " Period";
+            $select_max_created_at = "";
     		$form_data['results_period'] = $form_data['date_from_formatted_my'];
     		break;
     	case 'period-year':
+            $period_date_format = "%Y";
+            $period_date_format_standard = "%Y";
+            $groupby_period = " period_format_standard";
+            $groupby_period_exportsreports = " Period";
+            $select_max_created_at = "";
     		$form_data['results_period'] = $form_data['date_from_formatted_y'];
     		break;
     	default:
+            $period_date_format = "%m/%d/%Y";
+            $period_date_format_standard = "%Y-%m-%d";
+            $groupby_period = "";
+            $groupby_period_exportsreports = "";
+            $select_max_created_at = "";
     		$form_data['results_period'] = "";
     		break;
     }
@@ -62,7 +87,10 @@ if(isset($_GET['country'])){
     $condition_show = ($form_data['shows'] != '') ? "post_id = ".$form_data['shows'] : '1';
 
     $query_string = "
-		SELECT r.country_group, r.operator_group, u.user_email, p.post_title, count(*) as downloaded_files, min(r.created_at), max(r.created_at)
+		SELECT r.country_group, r.operator_group, u.user_email, p.post_title, count(*) as downloaded_files, 
+            min(r.created_at) as min_created_date, max(r.created_at) as max_created_date,
+            date_format(r.created_at, '".$period_date_format."') as period, 
+            date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
 		FROM ".$wpdb->custom_reports." r 
 		INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
 		INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
@@ -72,11 +100,11 @@ if(isset($_GET['country'])){
 		" AND ".$condition_operator_group.
 		" AND ".$condition_operator_account.
 		" AND ".$condition_show.
-		" GROUP BY r.user_id, r.post_id
-          ORDER BY u.user_email,p.post_title
+		" GROUP BY u.id, p.id, ". $groupby_period."
+          ORDER BY period_format_standard,u.user_email,p.post_title
     ";
     $reports_data = $wpdb->get_results($query_string, ARRAY_A);
-
+    // echo $query_string;
     /* QUERY for export report */
     $country_groups = custom_get_country_groups();
     $country_groups_select_case = "";
@@ -89,7 +117,8 @@ if(isset($_GET['country'])){
 
 
     $query_string_exportsreports = "
-        SELECT '".$form_data['results_period']."' as Period,
+        SELECT date_format(r.created_at, '".$period_date_format_standard."') as Period,
+            ".$select_max_created_at."
             ".$country_groups_select_case."
             r.operator_group, u.user_email, p.post_title, count(*) as downloaded_files
         FROM ".$wpdb->custom_reports." r 
@@ -101,8 +130,8 @@ if(isset($_GET['country'])){
         " AND ".$condition_operator_group.
         " AND ".$condition_operator_account.
         " AND ".$condition_show.
-        " GROUP BY r.user_id, r.post_id
-          ORDER BY u.user_email,p.post_title
+        " GROUP BY r.user_id, r.post_id, ". $groupby_period_exportsreports."
+          ORDER BY Period,u.user_email,p.post_title
     ";
     $return_value = $wpdb->update( 
         $wpdb->exportsreports_reports, 

@@ -136,7 +136,11 @@
 			foreach ($reports_data as $key => $value):
 		?>
 		<tr>
-			<td><?php echo $form_data['results_period'];?></td>
+			<td><?php 
+				echo $value['period'];
+				if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
+				/*echo $form_data['results_period'];*/?>
+			</td>
 			<td><?php echo get_country_name($value['country_group']);?></td>
 			<td><?php echo $value['operator_group'];?></td>
 			<td><?php echo $value['user_email'];?></td>
@@ -173,38 +177,38 @@ console.log('a');
 
 		jQuery("#period-day").click(function(e){
 			e.preventDefault();
-		 	firstDay = moment().startOf('day').format("YYYY-MM-DD");
-		 	lastDay = moment().endOf('day').format("YYYY-MM-DD");
+		 	// firstDay = moment().startOf('day').format("YYYY-MM-DD");
+		 	// lastDay = moment().endOf('day').format("YYYY-MM-DD");
 			
 			setActiveDatePeriod(jQuery(this).attr('id'));
-			setDatePeriod(firstDay, lastDay);
+			// setDatePeriod(firstDay, lastDay);
 		});
 
 		jQuery("#period-week").click(function(e){
 			e.preventDefault();
-		 	firstDay = moment().startOf('week').format("YYYY-MM-DD");
-		 	lastDay = moment().endOf('week').format("YYYY-MM-DD");
+		 	// firstDay = moment().startOf('week').format("YYYY-MM-DD");
+		 	// lastDay = moment().endOf('week').format("YYYY-MM-DD");
 
 			setActiveDatePeriod(jQuery(this).attr('id'));
-			setDatePeriod(firstDay, lastDay);
+			// setDatePeriod(firstDay, lastDay);
 		});
 
 		jQuery("#period-month").click(function(e){
 			e.preventDefault();
-		    firstDay = moment().startOf('month').format("YYYY-MM-DD");
-			lastDay = moment().endOf('month').format("YYYY-MM-DD");
+		    // firstDay = moment().startOf('month').format("YYYY-MM-DD");
+			// lastDay = moment().endOf('month').format("YYYY-MM-DD");
 
 			setActiveDatePeriod(jQuery(this).attr('id'));
-			setDatePeriod(firstDay, lastDay);
+			// setDatePeriod(firstDay, lastDay);
 		});
 
 		jQuery("#period-year").click(function(e){
 			e.preventDefault();
-			firstDay = moment().startOf('year').format("YYYY-MM-DD");
-		 	lastDay = moment().endOf('year').format("YYYY-MM-DD");
+			// firstDay = moment().startOf('year').format("YYYY-MM-DD");
+		 	// lastDay = moment().endOf('year').format("YYYY-MM-DD");
 
 			setActiveDatePeriod(jQuery(this).attr('id'));
-			setDatePeriod(firstDay, lastDay);
+			// setDatePeriod(firstDay, lastDay);
 		});
 
 		function setDatePeriod(firstDay, lastDay){
