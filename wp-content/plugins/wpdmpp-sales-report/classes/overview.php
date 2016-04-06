@@ -20,14 +20,14 @@ class WpmpR_Overview{
     private function actions(){
         $this->calculateStatics();
         $this->calculateCoupons();
-        $this->overviewDivs();
+        // $this->overviewDivs();
         $this->mainDivs();
         $this->otherDivs();
     }
     
     private function calculateStatics(){
         global $wpdb;
-        $wpdb->show_errors();
+       /* $wpdb->show_errors();
         //calculate total order count
         $this->var['total_orders'] = 0;
         $sql = "SELECT count(*) FROM `{$wpdb->prefix}ahm_orders` WHERE 1";
@@ -100,17 +100,17 @@ class WpmpR_Overview{
         
         
         //top 5 payment method
-        $this->var['top_payment_methods'] = array();
-        $sql = "SELECT `payment_method`,count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` group by `payment_method` order by total desc limit 5";
-        $this->var['top_payment_methods'] = $wpdb->get_results($sql,ARRAY_A);
+        // $this->var['top_payment_methods'] = array();
+        // $sql = "SELECT `payment_method`,count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` group by `payment_method` order by total desc limit 5";
+        // $this->var['top_payment_methods'] = $wpdb->get_results($sql,ARRAY_A);
         
 
         
         //count order status
-        $this->var['order_status'] = array();
-        $sql = "SELECT `payment_status`,count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` group by `payment_status` order by total desc";
-        $this->var['order_status'] = $wpdb->get_results($sql,ARRAY_A);
-        
+        // $this->var['order_status'] = array();
+        // $sql = "SELECT `payment_status`,count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` group by `payment_status` order by total desc";
+        // $this->var['order_status'] = $wpdb->get_results($sql,ARRAY_A);
+        */
         
         
         /////////main div content/////////////////////////
@@ -118,24 +118,29 @@ class WpmpR_Overview{
         $now = date('Y-m',strtotime('-1 year'));
         $now .= '-01';
         $month = strtotime($now);
+
         $month = strtotime('next month', $month);
+
         //by month sql quries
         $this->var['bymonth'] = array();
         for ($i = 1; $i <= 12; $i++) {
+            $month_date = date('Y-m-d', $month);
+
             $month2 = strtotime('next month', $month);
-            $sql = "SELECT sum(total) FROM `{$wpdb->prefix}ahm_orders` WHERE `date` >= $month and `date` < $month2 and `payment_status`='Completed'";
-            //echo $sql . '<br>';
+            $month2_date = date('Y-m-d',$month2);
+            $sql = "SELECT count(*) FROM `rtl21016_custom_reports` WHERE created_at BETWEEN '".$month_date."' AND '".$month2_date."'";
             $idx = date('M-y',$month);
             $this->var['bymonth'][$idx] = $wpdb->get_var($sql);
-            //$wpdb->print_error();
+            // $wpdb->print_error();
             
             $month = $month2;
         }
         
-        
+
         //by day sql queries
         $this->var['byDays'] = array();
         $lastMonth = strtotime(date('Y-m-d',strtotime('last month')));
+        $lastMonth_date = date('Y-m-d', $lastMonth);
         $tmp = strtotime('+1 day',$lastMonth);
         $today = strtotime(date('Y-m-d'));
         while($tmp<=$today){
@@ -143,39 +148,47 @@ class WpmpR_Overview{
             $this->var['byDays'][$idx] = 0;
             $tmp = strtotime('+1 day', $tmp);
         }
-        
-        $sql = "SELECT date,total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$lastMonth and `payment_status`='Completed'";
-        
-        $results = $wpdb->get_results($sql, ARRAY_A);
-        //$wpdb->print_error();
-        if($results) {
-            foreach ($results as $row):
-                $day = date('M d',$row['date']);
-                $this->var['byDays'][$day] += $row['total'];
-            endforeach;
-            
-            
+
+        $now = date('Y-m-d');
+        $startTime = strtotime( $lastMonth_date.' 12:00' );
+        $endTime = strtotime( $now.' 12:00' );
+
+        for ( $i = $startTime; $i <= $endTime; $i = $i + 86400 ) {
+            $thisDate = date( 'Y-m-d', $i ); // 2010-05-01, 2010-05-02, etc
+            $sql = "SELECT created_at,count(*) as total FROM `rtl21016_custom_reports` WHERE created_at >= '".$lastMonth_date."' AND created_at LIKE '".$thisDate."%'";
+            $results = $wpdb->get_results($sql, ARRAY_A);
+            $wpdb->print_error();
+            if($results) {
+                foreach ($results as $row):
+                    $day = date('M d',strtotime($row['created_at']));
+                    $this->var['byDays'][$day] += $row['total'];
+                endforeach;
+            }
         }
+        array_pop($this->var['byDays']);
         
+        
+
+
         //by week
-        $this->var['byWeeks'] = array();
-        $lastWeek = strtotime(date('Y-m-d',strtotime('-1 week')));
-        $temp = $lastWeek;
-        for($i = 1; $i <= 7; $i++) {
-            $idx = date('D', $temp);
-            $this->var['byWeeks'][$idx] = 0;
-            $temp = strtotime('next day',$temp);
-        }
-        $sql = "SELECT date,total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$lastWeek and `payment_status`='Completed'";
+        // $this->var['byWeeks'] = array();
+        // $lastWeek = strtotime(date('Y-m-d',strtotime('-1 week')));
+        // $temp = $lastWeek;
+        // for($i = 1; $i <= 7; $i++) {
+        //     $idx = date('D', $temp);
+        //     $this->var['byWeeks'][$idx] = 0;
+        //     $temp = strtotime('next day',$temp);
+        // }
+        // $sql = "SELECT date,total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$lastWeek and `payment_status`='Completed'";
         
-        $results = $wpdb->get_results($sql,ARRAY_A);
+        // $results = $wpdb->get_results($sql,ARRAY_A);
         //$wpdb->print_error();
-        if($results){
-            foreach($results as $row):
-                $idx = date('D',$row['date']);
-                $this->var['byWeeks'][$idx] += $row['total'];
-            endforeach;
-        }
+        // if($results){
+        //     foreach($results as $row):
+        //         $idx = date('D',$row['date']);
+        //         $this->var['byWeeks'][$idx] += $row['total'];
+        //     endforeach;
+        // }
         
         
     }
