@@ -19,7 +19,7 @@ class WpmpR_Overview{
     
     private function actions(){
         $this->calculateStatics();
-        $this->calculateCoupons();
+        // $this->calculateCoupons();
         // $this->overviewDivs();
         $this->mainDivs();
         $this->otherDivs();
@@ -84,8 +84,6 @@ class WpmpR_Overview{
         $sql = "SELECT user_id as uid,count(*) as sum FROM `rtl21016_custom_reports` GROUP BY user_id ORDER BY sum DESC LIMIT 0,5";
         $this->var['top_customers'] = $wpdb->get_results($sql,ARRAY_A);
         
-        
-
         //top 5 products
         $this->var['top_products'] = array();
         $sql = "SELECT post_id as pid,count(*) as sum FROM `rtl21016_custom_reports` GROUP BY post_id ORDER BY sum DESC LIMIT 0,5";
@@ -105,14 +103,11 @@ class WpmpR_Overview{
         // $sql = "SELECT `payment_method`,count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` group by `payment_method` order by total desc limit 5";
         // $this->var['top_payment_methods'] = $wpdb->get_results($sql,ARRAY_A);
         
-
-        
         //count order status
         // $this->var['order_status'] = array();
         // $sql = "SELECT `payment_status`,count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` group by `payment_status` order by total desc";
         // $this->var['order_status'] = $wpdb->get_results($sql,ARRAY_A);
         */
-        
         
         /////////main div content/////////////////////////
         //$now = date()
@@ -137,7 +132,6 @@ class WpmpR_Overview{
             $month = $month2;
         }
         
-
         //by day sql queries
         $this->var['byDays'] = array();
         $lastMonth = strtotime(date('Y-m-d',strtotime('last month')));
@@ -168,9 +162,6 @@ class WpmpR_Overview{
         }
         array_pop($this->var['byDays']);
         
-        
-
-
         //by week
         $this->var['byWeeks'] = array();
         $lastWeek = strtotime(date('Y-m-d',strtotime('-1 week')));
@@ -201,88 +192,88 @@ class WpmpR_Overview{
     }
     
     private function calculateCoupons(){
-        global $wpdb;
-        $copuons = array();
-        $this->var['total_coupon_amount'] = 0;
-        $this->var['total_coupon'] = 0;
-        $this->var['total_coupon_amount_t'] = 0;
-        $this->var['total_coupon_t'] = 0;
-        date_default_timezone_set('UTC');
-        $yesterdays = strtotime("-1 days");
+        // global $wpdb;
+        // $copuons = array();
+        // $this->var['total_coupon_amount'] = 0;
+        // $this->var['total_coupon'] = 0;
+        // $this->var['total_coupon_amount_t'] = 0;
+        // $this->var['total_coupon_t'] = 0;
+        // date_default_timezone_set('UTC');
+        // $yesterdays = strtotime("-1 days");
         
         
-        //all coupons count
-        $sql = "SELECT `cart_data`,`date` FROM `{$wpdb->prefix}ahm_orders` WHERE 1";
-        $results = $wpdb->get_results($sql,ARRAY_A);
-        //echo "<pre>";
-        if($results) {
-            foreach($results as $row):
-                $cart_data = maybe_unserialize($row['cart_data']);
-                    if(is_array($cart_data)):
-                    foreach($cart_data as $pid => $data):
-                        if(isset($data['coupon']) && trim($data['coupon']) != ''):
-                            //print_r($data);
-                            if(isset($data['item']) && is_array($data['item'])) {
-                                foreach($data['item'] as $key => $item):
-                                    if(isset($copuons[$pid][$data['coupon']])) {
-                                        $copuons[$pid][$data['coupon']] += $item['coupon_amount'];
-                                        $this->var['total_coupon_amount'] += $item['coupon_amount'];
+        // //all coupons count
+        // $sql = "SELECT `cart_data`,`date` FROM `{$wpdb->prefix}ahm_orders` WHERE 1";
+        // $results = $wpdb->get_results($sql,ARRAY_A);
+        // //echo "<pre>";
+        // if($results) {
+        //     foreach($results as $row):
+        //         $cart_data = maybe_unserialize($row['cart_data']);
+        //             if(is_array($cart_data)):
+        //             foreach($cart_data as $pid => $data):
+        //                 if(isset($data['coupon']) && trim($data['coupon']) != ''):
+        //                     //print_r($data);
+        //                     if(isset($data['item']) && is_array($data['item'])) {
+        //                         foreach($data['item'] as $key => $item):
+        //                             if(isset($copuons[$pid][$data['coupon']])) {
+        //                                 $copuons[$pid][$data['coupon']] += $item['coupon_amount'];
+        //                                 $this->var['total_coupon_amount'] += $item['coupon_amount'];
 
-                                        //today check
-                                        if(strtotime($row['date']) >= $yesterdays) {
-                                            $this->var['total_coupon_amount_t'] += $item['coupon_amount'];
-                                        }
-                                    }
-                                    else {
-                                        $copuons[$pid][$data['coupon']] = $item['coupon_amount'];
-                                        $this->var['total_coupon_amount'] += $item['coupon_amount'];
-                                        $this->var['total_coupon']++;
+        //                                 //today check
+        //                                 if(strtotime($row['date']) >= $yesterdays) {
+        //                                     $this->var['total_coupon_amount_t'] += $item['coupon_amount'];
+        //                                 }
+        //                             }
+        //                             else {
+        //                                 $copuons[$pid][$data['coupon']] = $item['coupon_amount'];
+        //                                 $this->var['total_coupon_amount'] += $item['coupon_amount'];
+        //                                 $this->var['total_coupon']++;
 
-                                        //today check
-                                        if(strtotime($row['date']) >= $yesterdays) {
-                                            $this->var['total_coupon_amount_t'] += $item['coupon_amount'];
-                                            $this->var['total_coupon_t']++;
-                                        }
-                                    }
-                                endforeach;
-                            }
-                        else {
-                            if(isset($copuons[$pid][$data['coupon']])) {
-                                $copuons[$pid][$data['coupon']] += $data['coupon_amount'];
-                                $this->var['total_coupon_amount'] += $data['coupon_amount'];
+        //                                 //today check
+        //                                 if(strtotime($row['date']) >= $yesterdays) {
+        //                                     $this->var['total_coupon_amount_t'] += $item['coupon_amount'];
+        //                                     $this->var['total_coupon_t']++;
+        //                                 }
+        //                             }
+        //                         endforeach;
+        //                     }
+        //                 else {
+        //                     if(isset($copuons[$pid][$data['coupon']])) {
+        //                         $copuons[$pid][$data['coupon']] += $data['coupon_amount'];
+        //                         $this->var['total_coupon_amount'] += $data['coupon_amount'];
 
-                                //check for today
-                                if(strtotime($row['data']) >= $yesterdays){
-                                    $this->var['total_coupon_amount_t'] += $data['coupon_amount'];
-                                }
-                            }
-                            else {
-                                $copuons[$pid][$data['coupon']] = $data['coupon_amount'];
-                                $this->var['total_coupon_amount'] += $data['coupon_amount'];
-                                $this->var['total_coupon']++;
+        //                         //check for today
+        //                         if(strtotime($row['data']) >= $yesterdays){
+        //                             $this->var['total_coupon_amount_t'] += $data['coupon_amount'];
+        //                         }
+        //                     }
+        //                     else {
+        //                         $copuons[$pid][$data['coupon']] = $data['coupon_amount'];
+        //                         $this->var['total_coupon_amount'] += $data['coupon_amount'];
+        //                         $this->var['total_coupon']++;
 
-                                //check for today
-                                if(strtotime($row['data']) >= $yesterdays){
-                                    $this->var['total_coupon_amount_t'] += $data['coupon_amount'];
-                                    $this->var['total_coupon_t']++;
-                                }
-                            }
-                        }
-                endif;
-            endforeach;
-                    endif;
-        endforeach;
-        }
+        //                         //check for today
+        //                         if(strtotime($row['data']) >= $yesterdays){
+        //                             $this->var['total_coupon_amount_t'] += $data['coupon_amount'];
+        //                             $this->var['total_coupon_t']++;
+        //                         }
+        //                     }
+        //                 }
+        //         endif;
+        //     endforeach;
+        //             endif;
+        // endforeach;
+        // }
         
         //echo "</pre>";
-        $this->var['coupons'] = $copuons;
+        // $this->var['coupons'] = $copuons;
        // echo "<pre>"; print_r($this->var['coupons']); echo "</pre>";
         
     }
     
     private function overviewDivs(){
         ?>
-<div class="row">
+<!--<div class="row">
     <div class="col-md-3 col-sm-6">
         <div class="panel panel-default">
             <div class="panel-heading">Total Orders Count</div>
@@ -395,7 +386,7 @@ class WpmpR_Overview{
         </div>
     </div>
     
-</div>
+</div>-->
 
     <?php
     }
@@ -406,7 +397,7 @@ class WpmpR_Overview{
 <div class="row">
     <div class="col-sm-12 col-md-12">
         <div class="panel panel-primary">
-            <div class="panel-heading" id="maindiv_heading">Sales For Last Year</div>
+            <div class="panel-heading" id="maindiv_heading">Total Downloaded Files For Last Year</div>
             <div class="panel-body">
 
                 <br class="clearfix">
@@ -481,7 +472,7 @@ class WpmpR_Overview{
 <div class="row">
     <div class="col-sm-12 col-md-12">
         <div class="panel panel-primary">
-            <div class="panel-heading" id="maindiv_heading">Sales By Week</div>
+            <div class="panel-heading" id="maindiv_heading">Total Downloaded Files For Last Month</div>
             <div class="panel-body">
                 
                 <br class="clearfix">
@@ -559,7 +550,7 @@ class WpmpR_Overview{
 <div class="row">
     <div class="col-sm-12 col-md-12">
         <div class="panel panel-primary">
-            <div class="panel-heading" id="maindiv_heading">Sales By Days</div>
+            <div class="panel-heading" id="maindiv_heading">Total Downloaded Files For Last Week</div>
             <div class="panel-body">
                 
                 <br class="clearfix">
@@ -636,73 +627,12 @@ class WpmpR_Overview{
 
 
 <div class="row">
-    <div class="col-sm-12 col-md-12">
-        <div class="panel panel-primary">
-            <div class="panel-heading" id="maindiv_heading">Top Products</div>
-            <div class="panel-body">
-                
-                <br class="clearfix">
-                <br> <br>
-                
-                <div id="topProd" class="graph_main" style=""></div>
-                
-                <script type="text/javascript">
-                /////Graph by Month/////////////
-
-                /////Graph by Weeks/////////////
-                function topProd(){
-                    var topProd = [<?php 
-                        if(isset($this->var['top_products'])){
-                            $cnt = count($this->var['top_products']);
-                            $i = 1;
-                            foreach ($this->var['top_products'] as $key => $val):
-                                if($val == "") $val = 0;
-                                //$val = intval($val);
-                                echo "['{$val['title']}',{$val['amount']}]";
-                                if($i<$cnt) echo ', ';
-                                $i++;
-                            endforeach;
-                        }
-                    ?>];
-                    //jQuery.jqplot.config.enablePlugins = true;
-                    plot2 = jQuery.jqplot("topProd",[topProd], {
-                        //title:'Top Products',
-                        animate: true,
-                        seriesDefaults:{ 
-                            renderer: jQuery.jqplot.PieRenderer,
-                            rendererOptions: {
-                                showDataLabels: true
-                            }
-                        },
-                        legend:{ show:true } 
-                    });
-                }
-                 
-                     
-                    jQuery(function($){
-                        $('.change_graph').click(function(){
-                            $('.graph_main').hide();
-                            var id = $(this).attr('for');
-                            $('#'+id).fadeIn();
-                            //alert(id);
-                            var fn = window[id];
-                            // is object a function?
-                            if (typeof fn === "function") fn();
-                            
-                            $(this).parent().parent().find('li.active').removeClass('active');
-                            $(this).parent().addClass('active');
-                            $('#maindiv_heading').html($(this).html());
-                            return false;
-                        });
-                        
-                        topProd();
-                        
-                    });
-                    
-                </script>
-                
-            </div>
-        </div>
+    <div class="col-sm-6 col-md-6">
+        <?php $this->topProductsPie(); ?>
+    </div>
+    <div class="col-md-6 col-sm-12">
+        <?php $this->topProducts(); ?>
+        <?php //$this->orderStatus(); ?>
     </div>
 </div>
         <?php
@@ -711,70 +641,71 @@ class WpmpR_Overview{
     private function otherDivs(){
         
         ?>
-<div class="row">
+<!--<div class="row">
     <div class="col-md-6 col-sm-12">
-        <?php $this->orderSummary(); ?>
+        <?php //$this->orderSummary(); ?>
     </div>
     
     <div class="col-md-6 col-sm-12">
-        <?php $this->orderStatus(); ?>
+        <?php //$this->orderStatus(); ?>
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-6 col-sm-12">
-        <?php $this->topProducts(); ?>
+        <?php //$this->topProducts(); ?>
     </div>
     
     <div class="col-md-6 col-sm-12">
-        <?php $this->topPaymentMethods(); ?>
+        <?php //$this->topPaymentMethods(); ?>
     </div>
-</div>
+</div>!-->
 
 <div class="row">
     <div class="col-md-12 col-sm-12">
-        <?php $this->recentOrders(); ?>
+        <?php //$this->recentOrders(); ?>
+        <?php $this->topCustomer(); ?>
     </div>
 </div>
 
 
-<div class="row">
+<!--<div class="row">
     <div class="col-md-6 col-sm-12">
-        <?php $this->topCustomer(); ?>
+        <?php //$this->topCustomer(); ?>
     </div>
     
     <div class="col-md-6 col-sm-12">
-        <?php $this->topCoupons(); ?>
+        <?php //$this->topCoupons(); ?>
     </div>
-</div>
+</div>-->
         <?php
         
         
     }
     
     private function orderSummary(){
-        global $wpdb;
+        // global $wpdb;
         
-        $yesterday = strtotime(date('Y-m-d',strtotime('-1 day')));
-        $today = strtotime(date('Y-m-d'));
-        $sql = "SELECT count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$yesterday and `date`<$today and `payment_status`='Completed'";
-        $yesterday = $wpdb->get_row($sql,ARRAY_A);
+        // $yesterday = strtotime(date('Y-m-d',strtotime('-1 day')));
+        // $today = strtotime(date('Y-m-d'));
+        // $sql = "SELECT count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$yesterday and `date`<$today and `payment_status`='Completed'";
+        // $yesterday = $wpdb->get_row($sql,ARRAY_A);
         
         
-        $week = strtotime(date('Y-m-d',strtotime('-1 week')));
-        $sql = "SELECT count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$week and `payment_status`='Completed'";
-        $lastWeek = $wpdb->get_row($sql,ARRAY_A);
+        // $week = strtotime(date('Y-m-d',strtotime('-1 week')));
+        // $sql = "SELECT count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$week and `payment_status`='Completed'";
+        // $lastWeek = $wpdb->get_row($sql,ARRAY_A);
         
-        $month = strtotime(date('Y-m-d',  strtotime('-1 month')));
-        $sql = "SELECT count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$week and `payment_status`='Completed'";
-        $lastMonth = $wpdb->get_row($sql,ARRAY_A);
+        // $month = strtotime(date('Y-m-d',  strtotime('-1 month')));
+        // $sql = "SELECT count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$week and `payment_status`='Completed'";
+        // $lastMonth = $wpdb->get_row($sql,ARRAY_A);
         
-        $year = strtotime(date('Y-m-d',  strtotime('-1 year')));
-        $sql = "SELECT count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$year and `payment_status`='Completed'";
-        $lastYear = $wpdb->get_row($sql,ARRAY_A);
+        // $year = strtotime(date('Y-m-d',  strtotime('-1 year')));
+        // $sql = "SELECT count(*) as cnt, sum(total) as total FROM `{$wpdb->prefix}ahm_orders` WHERE `date`>=$year and `payment_status`='Completed'";
+        // $lastYear = $wpdb->get_row($sql,ARRAY_A);
         
         ?>
-<div class="panel panel-default">
+<!--<div class="panel panel-default">
   <div class="panel-heading">Order Summary</div>
   <div class="panel-body">
       <table class="table table-bordered table-striped">
@@ -815,7 +746,7 @@ class WpmpR_Overview{
       </table>
               
   </div>
-</div>
+</div>-->
 
         <?php
     }
@@ -823,7 +754,7 @@ class WpmpR_Overview{
     private function orderStatus(){
         
         ?>
-<div class="panel panel-default">
+<!--<div class="panel panel-default">
   <div class="panel-heading">Sales Order Status
         <div class="Icons">
             <a class="Table active" href="#" cls="table"></a>
@@ -840,9 +771,9 @@ class WpmpR_Overview{
                   <th>Amount</th>
               </tr>
           </thead>
-          <tbody>
+          <tbody>-->
   <?php
-        if(!empty($this->var['order_status'])) {
+       /* if(!empty($this->var['order_status'])) {
             foreach ($this->var['order_status'] as $row){
                 $row['total'] = number_format($row['total'],2,".","");
                 echo "<tr><td>{$row['payment_status']}</td><td>{$row['cnt']}</td><td>{$this->currency}{$row['total']}</td></tr>";
@@ -850,16 +781,16 @@ class WpmpR_Overview{
         }
         else {
             echo "<tr><td colspan='3'>No record found.</td></tr>";
-        }
+        }*/
 
   ?>
-          </tbody>
+          <!--</tbody>
       </table>
       
       <div class="barchart" id="orderBar" style="display:none;"></div>
       <div class="piechart" id="orderPie" style="display:none;"></div>
-      
-<script type="text/javascript">
+      -->
+<!--<script type="text/javascript">
 function order_m_chart(){
     var payment = [<?php 
         if(isset($this->var['order_status'])){
@@ -921,29 +852,29 @@ function order_m_pie(){
 
 </script>      
   </div>
-</div>
+</div>-->
 
         <?php
     }
-    
+
     private function topProducts(){
         
         ?>
 <div class="panel panel-default">
-    <div class="panel-heading">Top 5 Products 
+    <div class="panel-heading">Top 5 Shows All Time
         <div class="Icons">
             <a class="Table active" href="#" cls="table"></a>
-            <a class="BarChart" href="#" cls="barchart" fn="product_bar_chart"></a>
-            <a class="PieChart" href="#" cls="piechart" fn="product_pie_chart"></a>
+            <!-- <a class="BarChart" href="#" cls="barchart" fn="product_bar_chart"></a>
+            <a class="PieChart" href="#" cls="piechart" fn="product_pie_chart"></a> -->
         </div>
     </div>
   <div class="panel-body">
       <table class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>Product ID</th>
-                <th>Title</th>
-                <th>Quantity</th>
+                <th></th>
+                <th>Show Title</th>
+                <th>Number of Downloads</th>
             </tr>
         <tbody>
             
@@ -964,10 +895,11 @@ function order_m_pie(){
         </tbody>
     </table>
       <div class="barchart" style="display: none;" id="product_bar_chart1"></div>
-      <div class="piechart" style="display: none;" id="product_pie_chart1"></div>
+      <!-- <div class="piechart" style="display: none;" id="product_pie_chart1"><script type="text/javascript">product_pie_chart();</script></div> -->
       
 <script type="text/javascript">
 function product_pie_chart(){
+    console.log('pie');
     var topProd = [<?php 
         if(isset($this->var['top_products'])){
             $cnt = count($this->var['top_products']);
@@ -983,7 +915,7 @@ function product_pie_chart(){
     ?>];
     //jQuery.jqplot.config.enablePlugins = true;
     plot2 = jQuery.jqplot("product_pie_chart1",[topProd], {
-        title:'Top Products',
+        title:'Top 5 Shows All Time',
         animate: true,
         seriesDefaults:{ 
             renderer: jQuery.jqplot.PieRenderer,
@@ -996,6 +928,62 @@ function product_pie_chart(){
 }
 
 function product_bar_chart(){
+    // var topProd = [<?php 
+    //     if(isset($this->var['top_products'])){
+    //         $cnt = count($this->var['top_products']);
+    //         $i = 1;
+    //         foreach ($this->var['top_products'] as $key => $val):
+    //             if($val == "") $val = 0;
+    //             //$val = intval($val);
+    //             echo "['{$val['title']}',{$val['amount']}]";
+    //             if($i<$cnt) echo ', ';
+    //             $i++;
+    //         endforeach;
+    //     }
+    // ?>];
+    // //jQuery.jqplot.config.enablePlugins = true;
+    // jQuery.jqplot.config.enablePlugins = true;
+    //    plot1 = jQuery.jqplot("product_bar_chart1",[topProd], {
+    //         title:'Top 5 Shows All Time',
+    //         animate: true,
+    //         seriesDefaults:{
+    //             renderer:jQuery.jqplot.BarRenderer,
+    //             rendererOptions: {
+    //                 // Set the varyBarColor option to true to use different colors for each bar.
+    //                 // The default series colors are used.
+    //                 varyBarColor: true
+    //             }
+    //         },
+    //         axes:{
+    //             xaxis:{
+    //                 renderer: jQuery.jqplot.CategoryAxisRenderer
+    //             }
+    //         }
+    //     });
+}
+</script>      
+  </div>
+</div>
+
+        <?php
+    }
+    
+
+    private function topProductsPie(){?>
+        <div class="panel panel-default">
+            <div class="panel-heading">Top 5 Shows All Time
+                <div class="Icons">
+                    <a class="PieChart active" href="#" cls="piechart" fn="product_pie_chart"></a>
+                </div>
+            </div>
+          <div class="panel-body">
+              <div class="piechart"  id="product_pie_chart1" fn="product_pie_chart"></div>
+          </div>
+        </div>
+
+        <script type="text/javascript">
+function product_pie_chart(){
+    console.log('pie');
     var topProd = [<?php 
         if(isset($this->var['top_products'])){
             $cnt = count($this->var['top_products']);
@@ -1010,41 +998,35 @@ function product_bar_chart(){
         }
     ?>];
     //jQuery.jqplot.config.enablePlugins = true;
-    jQuery.jqplot.config.enablePlugins = true;
-       plot1 = jQuery.jqplot("product_bar_chart1",[topProd], {
-            title:'Top Products',
-            animate: true,
-            seriesDefaults:{
-                renderer:jQuery.jqplot.BarRenderer,
-                rendererOptions: {
-                    // Set the varyBarColor option to true to use different colors for each bar.
-                    // The default series colors are used.
-                    varyBarColor: true
-                }
-            },
-            axes:{
-                xaxis:{
-                    renderer: jQuery.jqplot.CategoryAxisRenderer
-                }
+    plot2 = jQuery.jqplot("product_pie_chart1",[topProd], {
+        title:'Top 5 Shows All Time',
+        animate: true,
+        seriesDefaults:{ 
+            renderer: jQuery.jqplot.PieRenderer,
+            rendererOptions: {
+                showDataLabels: true
             }
-        });
+        },
+        legend:{ show:true } 
+    });
 }
-</script>      
-  </div>
-</div>
+product_pie_chart();
+</script>
 
         <?php
     }
     
+
+
     private function topCustomer(){
         
         ?>
 <div class="panel panel-default">
-  <div class="panel-heading">Top 5 Customers
+  <div class="panel-heading">Top 5 Most Active Operator Accounts All Time
     <div class="Icons">
       <a class="Table active" href="#" cls="table"></a>
-      <a class="BarChart" href="#" cls="barchart" fn="customer_m_chart"></a>
-      <a class="PieChart" href="#" cls="piechart" fn="customer_m_pie"></a>
+      <!-- <a class="BarChart" href="#" cls="barchart" fn="customer_m_chart"></a>
+      <a class="PieChart" href="#" cls="piechart" fn="customer_m_pie"></a> -->
     </div>
   </div>
   <div class="panel-body">
@@ -1052,27 +1034,20 @@ function product_bar_chart(){
           <thead>
               <tr>
                   <th></th>
-                  <th>Billing Email</th>
-                  <th>Order Count</th>
+                  <th>Operator Account</th>
+                  <th>Number of Downloads</th>
               </tr>
           </thead>
           <tbody>
           <?php
-                //echo "<pre>"; print_r($this->var['top_customers']); echo "</pre>";
                 $forChart = array();
                 if($this->var['top_customers']):
                     $count = 1;
                     foreach ($this->var['top_customers'] as $row):
-                        $billing_shipping=unserialize(get_user_meta($row['uid'], 'user_billing_shipping',true));
-                        $fname = $billing_shipping['billing']['first_name'];
-                        $email = $billing_shipping['billing']['email'];
-                        if($fname=='') $fname = "UID - " . $row['uid'];
-                        $forChart[] = array('name' => $fname, 'total' => $row['total']);
-                        unset($billing_shipping);
+                        $email = get_user_info($row['uid']);
                         echo "<tr><td>{$count}</td><td>{$email}</td><td>{$row['sum']}</td></tr>";
                         $count++;
                     endforeach;
-                    
                 else:
                     echo "<tr><td colspan='3'>No user found.</td></tr>";
                 endif;    
@@ -1085,61 +1060,61 @@ function product_bar_chart(){
       
 <script type="text/javascript">
 function customer_m_chart(){
-    var payment = [<?php 
-        if(!empty($forChart)){
-            $cnt = count($forChart);
-            $i = 1;
-            foreach ($forChart as $key => $row):
-                echo "['{$row['name']}',{$row['total']}]";
-                if($i<$cnt) echo ', ';
-                $i++;
-            endforeach;
-        }
-    ?>];
-    jQuery.jqplot.config.enablePlugins = true;
-       plot1 = jQuery.jqplot("customerBar",[payment], {
-            //title:'Sales By MOnth',
-            animate: true,
-            seriesDefaults:{
-                renderer:jQuery.jqplot.BarRenderer,
-                rendererOptions: {
-                    // Set the varyBarColor option to true to use different colors for each bar.
-                    // The default series colors are used.
-                    varyBarColor: true
-                }
-            },
-            axes:{
-                xaxis:{
-                    renderer: jQuery.jqplot.CategoryAxisRenderer
-                }
-            }
-        });
+    // var payment = [<?php 
+    //     if(!empty($forChart)){
+    //         $cnt = count($forChart);
+    //         $i = 1;
+    //         foreach ($forChart as $key => $row):
+    //             echo "['{$row['name']}',{$row['total']}]";
+    //             if($i<$cnt) echo ', ';
+    //             $i++;
+    //         endforeach;
+    //     }
+    // ?>];
+    // jQuery.jqplot.config.enablePlugins = true;
+    //    plot1 = jQuery.jqplot("customerBar",[payment], {
+    //         //title:'Sales By MOnth',
+    //         animate: true,
+    //         seriesDefaults:{
+    //             renderer:jQuery.jqplot.BarRenderer,
+    //             rendererOptions: {
+    //                 // Set the varyBarColor option to true to use different colors for each bar.
+    //                 // The default series colors are used.
+    //                 varyBarColor: true
+    //             }
+    //         },
+    //         axes:{
+    //             xaxis:{
+    //                 renderer: jQuery.jqplot.CategoryAxisRenderer
+    //             }
+    //         }
+    //     });
 }            
 
 function customer_m_pie(){
-    var payment = [<?php 
-        if(!empty($forChart)){
-            $cnt = count($forChart);
-            $i = 1;
-            foreach ($forChart as $key => $row):
-                echo "['{$row['name']}',{$row['total']}]";
-                if($i<$cnt) echo ', ';
-                $i++;
-            endforeach;
-        }
-    ?>];
-    jQuery.jqplot.config.enablePlugins = true;
-       plot1 = jQuery.jqplot("customerPie",[payment], {
-            //title:'Sales By MOnth',
-            animate: true,
-            seriesDefaults:{ 
-                renderer: jQuery.jqplot.PieRenderer,
-                rendererOptions: {
-                    showDataLabels: true
-                }
-            },
-            legend:{ show:true } 
-        });
+    // var payment = [<?php 
+    //     if(!empty($forChart)){
+    //         $cnt = count($forChart);
+    //         $i = 1;
+    //         foreach ($forChart as $key => $row):
+    //             echo "['{$row['name']}',{$row['total']}]";
+    //             if($i<$cnt) echo ', ';
+    //             $i++;
+    //         endforeach;
+    //     }
+    // ?>];
+    // jQuery.jqplot.config.enablePlugins = true;
+    //    plot1 = jQuery.jqplot("customerPie",[payment], {
+    //         //title:'Sales By MOnth',
+    //         animate: true,
+    //         seriesDefaults:{ 
+    //             renderer: jQuery.jqplot.PieRenderer,
+    //             rendererOptions: {
+    //                 showDataLabels: true
+    //             }
+    //         },
+    //         legend:{ show:true } 
+    //     });
 }
 
 </script>       
@@ -1151,20 +1126,20 @@ function customer_m_pie(){
     }
     
     private function topCoupons(){
-        $cnt = 0;
-        $temp = array();
-        $forChart = array();
-        if(!empty($this->var['coupons'])):
-            foreach($this->var['coupons'] as $key => $coupon):
-                foreach ($coupon as $a => $b):
-                    if(is_numeric($b))
-                        $temp[$b][] = $a;
-                endforeach;
-            endforeach;
-        endif;
+        // $cnt = 0;
+        // $temp = array();
+        // $forChart = array();
+        // if(!empty($this->var['coupons'])):
+        //     foreach($this->var['coupons'] as $key => $coupon):
+        //         foreach ($coupon as $a => $b):
+        //             if(is_numeric($b))
+        //                 $temp[$b][] = $a;
+        //         endforeach;
+        //     endforeach;
+        // endif;
         
         ?>
-<div class="panel panel-default">
+<!--<div class="panel panel-default">
   <div class="panel-heading">Top 5 Coupons
         <div class="Icons">
             <a class="Table active" href="#" cls="table"></a>
@@ -1181,25 +1156,25 @@ function customer_m_pie(){
             </tr>
         </thead>
         <tbody>
-                    
+                    -->
         <?php 
-        if(!empty($temp)):
-            foreach($temp as $price => $coupons):
-                    foreach ($coupons as $key => $c):
-                        $price = number_format($price,2,".","");
-                        echo "<tr><td>$c</td><td>". $this->currency ."$price</td></tr>";
-                        $forChart[] = array('coupon'=>$c, 'amount'=>$price);
-                        $cnt++;
-                        if($cnt==5) break;
-                    endforeach;
+        // if(!empty($temp)):
+        //     foreach($temp as $price => $coupons):
+        //             foreach ($coupons as $key => $c):
+        //                 $price = number_format($price,2,".","");
+        //                 echo "<tr><td>$c</td><td>". $this->currency ."$price</td></tr>";
+        //                 $forChart[] = array('coupon'=>$c, 'amount'=>$price);
+        //                 $cnt++;
+        //                 if($cnt==5) break;
+        //             endforeach;
 
-            endforeach;
-        else:
-            echo "<tr><td colspan='2'>No Coupons found...</td></tr>";
-        endif;
+        //     endforeach;
+        // else:
+        //     echo "<tr><td colspan='2'>No Coupons found...</td></tr>";
+        // endif;
         //print_r($forChart);
         ?>
-        </tbody>
+       <!-- </tbody>
     </table>
       
       <div class="barchart" id="couponChart" style="display:none"></div>
@@ -1266,7 +1241,7 @@ function coupon_m_pie(){
 
 </script>                    
   </div>
-</div>
+</div>-->
 
         <?php
     }
@@ -1274,7 +1249,7 @@ function coupon_m_pie(){
     private function topPaymentMethods(){
         
         ?>
-<div class="panel panel-default">
+<!--<div class="panel panel-default">
   <div class="panel-heading">Top 5 Payment Methods
         <div class="Icons">
             <a class="Table active" href="#" cls="table"></a>
@@ -1291,20 +1266,20 @@ function coupon_m_pie(){
                   <th>Amount</th>
               </tr>
           </thead>
-          <tbody>
+          <tbody>-->
   <?php
-        if(!empty($this->var['top_payment_methods'])) {
-            foreach ($this->var['top_payment_methods'] as $row){
-                $row['total'] = number_format($row['total'],2,".","");
-                echo "<tr><td>{$row['payment_method']}</td><td>{$row['cnt']}</td><td>{$this->currency}{$row['total']}</td></tr>";
-            }
-        }
-        else {
-            echo "<tr><td colspan='3'>No record found.</td></tr>";
-        }
+        // if(!empty($this->var['top_payment_methods'])) {
+        //     foreach ($this->var['top_payment_methods'] as $row){
+        //         $row['total'] = number_format($row['total'],2,".","");
+        //         echo "<tr><td>{$row['payment_method']}</td><td>{$row['cnt']}</td><td>{$this->currency}{$row['total']}</td></tr>";
+        //     }
+        // }
+        // else {
+        //     echo "<tr><td colspan='3'>No record found.</td></tr>";
+        // }
 
   ?>
-          </tbody>
+          <!--</tbody>
       </table>
       
       <div class="barchart" id="paymentBar" style="display:none;"></div>
@@ -1374,16 +1349,16 @@ function payment_m_pie(){
 </script>
   </div>
 </div>
-
+-->
         <?php
     }
     
     private function recentOrders(){
-        global $wpdb;
-        $sql = "SELECT order_id,`date`,total,uid,`order_status`,`payment_status` FROM `{$wpdb->prefix}ahm_orders` where order_status='Completed'  ORDER BY `date` desc LIMIT 5";
-        $results = $wpdb->get_results($sql,ARRAY_A);
+        // global $wpdb;
+        // $sql = "SELECT order_id,`date`,total,uid,`order_status`,`payment_status` FROM `{$wpdb->prefix}ahm_orders` where order_status='Completed'  ORDER BY `date` desc LIMIT 5";
+        // $results = $wpdb->get_results($sql,ARRAY_A);
     ?>
-<div class="panel panel-primary">
+<!--<div class="panel panel-primary">
   <div class="panel-heading">Recent 5 Orders</div>
   <div class="panel-body">
       <?php //echo "<pre>"; print_r($results); echo "</pre>"; ?>
@@ -1403,34 +1378,34 @@ function payment_m_pie(){
           </thead>
           <tbody>
           <?php
-                if($results):
-                    foreach ($results as $row):
-                        //$billing = maybe_unserialize($row['billing_shipping_data']);
-                        $user_info = get_userdata($row['uid']);
-                        $fname =  $user_info->last_name;
-                        $email = $user_info->user_email;
-                        $cart_data = maybe_unserialize($row['cart_data']);
-                        $cnt = count($cart_data);
-                        unset($cart_data);
-                        $date = date('Y-m-d H:i:s',$row['date']);
-                        $row['total'] = number_format($row['total'],2,".","");
-                        echo "<tr>
-                            <td>{$row['order_id']}</td>
-                            <td>$date</td>
-                            <td>$email</td>
-                            <td>$fname</td>
-                            <td>$cnt</td>
-                            <td>{$row['total']}</td>
-                            <td>{$row['order_status']}</td>
-                            <td>{$row['payment_status']}</td>
-                                </tr>
-                            ";
+                // if($results):
+                //     foreach ($results as $row):
+                //         //$billing = maybe_unserialize($row['billing_shipping_data']);
+                //         $user_info = get_userdata($row['uid']);
+                //         $fname =  $user_info->last_name;
+                //         $email = $user_info->user_email;
+                //         $cart_data = maybe_unserialize($row['cart_data']);
+                //         $cnt = count($cart_data);
+                //         unset($cart_data);
+                //         $date = date('Y-m-d H:i:s',$row['date']);
+                //         $row['total'] = number_format($row['total'],2,".","");
+                //         echo "<tr>
+                //             <td>{$row['order_id']}</td>
+                //             <td>$date</td>
+                //             <td>$email</td>
+                //             <td>$fname</td>
+                //             <td>$cnt</td>
+                //             <td>{$row['total']}</td>
+                //             <td>{$row['order_status']}</td>
+                //             <td>{$row['payment_status']}</td>
+                //                 </tr>
+                //             ";
                         
                         
-                    endforeach;
-                else:
-                    echo "<tr><td colspan='8'>No order found.</td></tr>";
-                endif;
+                //     endforeach;
+                // else:
+                //     echo "<tr><td colspan='8'>No order found.</td></tr>";
+                // endif;
           ?>
           </tbody>
       </table>
@@ -1438,7 +1413,7 @@ function payment_m_pie(){
               
   </div>
 </div>
-
+-->
         <?php
     }
 }

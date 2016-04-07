@@ -1315,7 +1315,7 @@ if (!function_exists('get_country_name')) {
 
 if (!function_exists('get_user_info')) {
     
-    function get_user_info($user_id, $data){
+    function get_user_info($user_id, $data='email'){
         $user_info = get_userdata($user_id);
         $info = $data == 'email' ? $user_info->user_email : "";
         return $info;

@@ -84,14 +84,14 @@ class WpmpR_AdminPanel{
                 <!-- here code for tab -->
                 <div class="container-fluid">
                     
-                    <ul id="myTab" class="nav nav-tabs">
-                        <li class="<?php if(!isset($_GET['page_now']) || $_GET['page_now'] =='') { echo "active";} ?>">
+                    <!-- <ul id="myTab" class="nav nav-tabs"> -->
+                        <!-- <li class="<?php if(!isset($_GET['page_now']) || $_GET['page_now'] =='') { echo "active";} ?>">
                             <a href="<?php echo admin_url('/edit.php?post_type=wpdmpro&page=product-reports'); ?>" data-toggle="tab">Overview</a>
-                        </li>
+                        </li> -->
 
-                        <li class="<?php if(isset($_GET['page_now']) && $_GET['page_now'] =='sales') { echo "active";} ?>">
+                       <!--  <li class="<?php if(isset($_GET['page_now']) && $_GET['page_now'] =='sales') { echo "active";} ?>">
                             <a href="<?php echo admin_url('/edit.php?post_type=wpdmpro&page=product-reports&page_now=sales'); ?>" data-toggle="tab">Sales</a>
-                        </li>
+                        </li> -->
 
 <!--                        <li class="<?php if(isset($_GET['page_now']) && $_GET['page_now'] =='coupons') { echo "active";} ?>">
                             <a href="<?php echo admin_url('/edit.php?post_type=wpdmpro&page=product-reports&page_now=coupons'); ?>" data-toggle="tab">Coupons</a>
@@ -104,7 +104,7 @@ class WpmpR_AdminPanel{
                         <li class="<?php if(isset($_GET['page_now']) && $_GET['page_now'] =='stock') { echo "active";} ?>">
                             <a href="<?php echo admin_url('/edit.php?post_type=wpdmpro&page=product-reports&page_now=stock'); ?>" data-toggle="tab">Stock</a>
                         </li>-->
-                    </ul>
+                    <!-- </ul> -->
                         <script type="text/javascript">
                             jQuery(function($){
                                $('#myTab a').click(function (e) {
