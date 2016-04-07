@@ -106,7 +106,7 @@ if(isset($_GET['country'])){
           ORDER BY period_format_standard,u.user_email,p.post_title
     ";
     $reports_data = $wpdb->get_results($query_string, ARRAY_A);
-    echo $query_string;
+    // echo $query_string;
     /* QUERY for export report */
     $country_groups = custom_get_country_groups();
     $country_groups_select_case = "";
