@@ -105,7 +105,7 @@ if(isset($_GET['country'])){
     ";
     $reports_count = $wpdb->get_results($query_string_count, ARRAY_A);
 
-    $reports_per_page = 10;
+    $reports_per_page = 30;
     $page = isset( $_GET['cpage'] ) ? abs( (int) $_GET['cpage'] ) : 1;
     $total_reports_count = count($reports_count);
     // echo $total_reports_count;
