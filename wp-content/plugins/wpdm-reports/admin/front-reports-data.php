@@ -167,6 +167,21 @@
 		</tfoot>
 
 	</table>
+	
+	<div class="tablenav">
+		<div class="tablenav-pages">
+			<?php 
+				echo paginate_links( array(
+				    'base' => add_query_arg( 'cpage', '%#%' ),
+				    'format' => '',
+				    'prev_text' => __('&laquo;'),
+				    'next_text' => __('&raquo;'),
+				    'total' => ceil($total_reports_count / $reports_per_page),
+				    'current' => $page
+				));
+			?>
+		</div>
+	</div>
 
 </div>
 
