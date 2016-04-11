@@ -499,7 +499,7 @@ class FileList
         $buttonText = !self::checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
         $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
         $isFileRemovable = !self::checkFileInCart($fileID) ? "" : "added-to-cart";
-        
+        $fileTitle = mb_strimwidth($fileTitle, 0, 20, "...");
         if($thumb){
             $file_thumb = "<img src='{$thumb}' alt='{$fileTitle}' />";
         }else{
