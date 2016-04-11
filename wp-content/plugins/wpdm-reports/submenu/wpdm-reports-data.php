@@ -87,8 +87,23 @@ if(isset($_GET['country'])){
     $condition_operator_account = ($form_data['operator_account'] != '') ? "user_id = ".$form_data['operator_account'] : '1';
     $condition_show = ($form_data['shows'] != '') ? "post_id = ".$form_data['shows'] : '1';
 
+    $select_count = " count(*) as downloaded_files, min(r.created_at) as min_created_date, max(r.created_at) as max_created_date, "
+    $group_by = " GROUP BY u.id, p.id, ". $groupby_period." ";
 
-
+    // $query_string_count = "
+    //     SELECT date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
+    //     FROM ".$wpdb->custom_reports." r 
+    //     INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
+    //     INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
+    //     WHERE ".
+    //     $condition_period.
+    //     " AND ".$condition_country.
+    //     " AND ".$condition_operator_group.
+    //     " AND ".$condition_operator_account.
+    //     " AND ".$condition_show.
+    //     " GROUP BY u.id, p.id, ". $groupby_period."
+    //       ORDER BY period_format_standard,u.user_email,p.post_title
+    // ";
     $query_string_count = "
         SELECT date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
         FROM ".$wpdb->custom_reports." r 
@@ -100,8 +115,7 @@ if(isset($_GET['country'])){
         " AND ".$condition_operator_group.
         " AND ".$condition_operator_account.
         " AND ".$condition_show.
-        " GROUP BY u.id, p.id, ". $groupby_period."
-          ORDER BY period_format_standard,u.user_email,p.post_title
+        " ORDER BY period_format_standard,u.user_email,p.post_title
     ";
     $reports_count = $wpdb->get_results($query_string_count, ARRAY_A);
 
@@ -115,8 +129,8 @@ if(isset($_GET['country'])){
     $query_string = "
 		SELECT r.country_group, 
             IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
-            u.user_email, p.post_title, count(*) as downloaded_files, 
-            min(r.created_at) as min_created_date, max(r.created_at) as max_created_date,
+            u.user_email, p.post_title, 
+            ".$select_count."
             date_format(r.created_at, '".$period_date_format."') as period, 
             date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
 		FROM ".$wpdb->custom_reports." r 
@@ -128,13 +142,33 @@ if(isset($_GET['country'])){
 		" AND ".$condition_operator_group.
 		" AND ".$condition_operator_account.
 		" AND ".$condition_show.
-		" GROUP BY u.id, p.id, ". $groupby_period."
+		 $group_by."
           ORDER BY period_format_standard,u.user_email,p.post_title
+          LIMIT ".$limit_start.", ".$reports_per_page."
+    ";
+    $query_string = "
+        SELECT r.country_group, 
+            IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
+            u.user_email, p.post_title, 
+
+            date_format(r.created_at, '".$period_date_format."') as period, 
+            date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
+        FROM ".$wpdb->custom_reports." r 
+        INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
+        INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
+        WHERE ".
+        $condition_period.
+        " AND ".$condition_country.
+        " AND ".$condition_operator_group.
+        " AND ".$condition_operator_account.
+        " AND ".$condition_show.
+        
+        " ORDER BY period_format_standard,u.user_email,p.post_title
           LIMIT ".$limit_start.", ".$reports_per_page."
     ";
     $reports_data = $wpdb->get_results($query_string, ARRAY_A);
 
-    // echo $query_string;
+    echo $query_string;
 
     /* QUERY for export report */
     $country_groups = custom_get_country_groups();

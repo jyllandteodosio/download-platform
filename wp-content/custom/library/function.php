@@ -779,7 +779,7 @@ function bulk_download() {
  */
 function reports_log(){
     $raw_cart_data = fetchEntryFromCustomCart();
-    insertToCustomReports($raw_cart_data);
+    return insertToCustomReports($raw_cart_data);
 }
 
 function insertToCustomReports($serialized_cart){
@@ -788,6 +788,7 @@ function insertToCustomReports($serialized_cart){
     $unserialized_cart = unserialize($serialized_cart);
 
     foreach ($unserialized_cart as $file_id => $value) {
+
         $user_id = get_current_user_id( );
         $country_group = get_current_user_country_group($user_id);
         $operator_group = get_current_user_operator_group($user_id);
@@ -800,6 +801,7 @@ function insertToCustomReports($serialized_cart){
                                     'operator_group' => $operator_group,
                                     'post_id' => $value['post_id'],
                                     'file_id' => $file_id,
+                                    'file_title' => $value['file_title'],
                                     'file_path' => $value['file_path'],
                                     'file_type' => $value['file_type'],
                                     'download_url' => $value['download_url'],
@@ -807,6 +809,8 @@ function insertToCustomReports($serialized_cart){
                                 )
                             );
     }
+    return $return_value;
+
 }
 
 /**
@@ -815,6 +819,7 @@ function insertToCustomReports($serialized_cart){
 function structure_reports_data($cart_data){
     $cart_array = array (
             $cart_data['file_id'] => array (
+                    'file_title' => $cart_data['file_title'],
                     'file_path' => $cart_data['file_path'],
                     'download_url' => $cart_data['download_url'],
                     'post_id' => $cart_data['post_id'],
@@ -831,6 +836,7 @@ function structure_reports_data($cart_data){
 function download_file(){
     $cartnonce = $_POST['cartnonce'];
     if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
+        $cart_data['file_title']     = $_POST['file-title'];
         $cart_data['file_path']     = $_POST['file-path'];
         $cart_data['download_url']  = $_POST['download-url'];
         $cart_data['post_id']       = $_POST['post-id'];
@@ -840,7 +846,7 @@ function download_file(){
 
         $raw_cart_data = fetchEntryFromCustomCart();
         $unserialized_cart = unserialize($raw_cart_data);
-        insertToCustomReports(serialize(structure_reports_data($cart_data)));
+        $return_value = insertToCustomReports(serialize(structure_reports_data($cart_data)));
         
         $cart_files_count = count($unserialized_cart);
 
