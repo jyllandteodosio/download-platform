@@ -85,6 +85,13 @@
 									<?php endforeach;?>
 								</select>
 							</td>
+							<th scope="row"><label for="result_type">Result Type</label></th>
+							<td>
+								<select name="result_type" id="result_type">
+									<option value="list" <?php echo $form_data['result_type'] == 'list' ? "selected" : "" ;?> >List of downloaded files</option>
+									<option value="sum" <?php echo $form_data['result_type'] == 'sum' ? "selected" : "" ;?>>Sum of downloaded files</option>
+								</select>
+							</td>
 						</tr>
 						
 					</tbody>
@@ -93,7 +100,7 @@
 
 		</form>
 	
-	<div class="wpdmr-inline-block wid-9">
+	<div class="wpdmr-inline-block wid-6">
 		<p><?php echo $form_data['msg_dl_range'];?></p>
 		<p>
 			<?php
@@ -113,7 +120,13 @@
 			$disabled = $form_data['filter'] && !empty($reports_data) ? "" : "disabled";
 			$title = $form_data['filter'] && !empty($reports_data) ? "" : "Click 'Show Report' first before exporting.";
 		?>
-		<input type="button" value=" Export Report " class="button" <?php echo $disabled?> title="<?php echo $title;?>" onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv','temp_report_window');">
+		<label for="result_type_export">Result Type: </label>
+		<select name="result_type_export" id="result_type_export">
+			<option value="list">List of downloaded files</option>
+			<option value="sum">Sum of downloaded files</option>
+		</select>
+		<input type="button" value=" Export Report " id="export_sum" class="button" <?php echo $disabled?> title="<?php echo $title;?>" style="display:none" onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv','temp_report_window');">
+		<input type="button" value=" Export Report " id="export_list" class="button" <?php echo $disabled?> title="<?php echo $title;?>" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv','temp_report_window');">
 		<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
 	</div>
 	<table class="wpdmr-reports-data wp-list-table widefat">
@@ -241,5 +254,18 @@ console.log('a');
 
 		jQuery('#date_from').datepicker({ dateFormat: 'yy-mm-dd' });	
 		jQuery('#date_to').datepicker({ dateFormat: 'yy-mm-dd' });	
+
+		jQuery( "#result_type_export" ).change(function() {
+			var result_type = jQuery( "#result_type_export" ).val();
+			console.log(result_type);
+			if (result_type == 'list') {
+				jQuery('#export_sum').hide();
+				jQuery('#export_list').show();
+
+			}else if (result_type == 'sum') {
+				jQuery('#export_list').hide();
+				jQuery('#export_sum').show();
+			}
+		});
     });
 </script>
