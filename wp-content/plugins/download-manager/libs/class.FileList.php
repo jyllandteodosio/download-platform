@@ -499,7 +499,7 @@ class FileList
         $buttonText = !self::checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
         $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
         $isFileRemovable = !self::checkFileInCart($fileID) ? "" : "added-to-cart";
-        $fileTitle = mb_strimwidth($fileTitle, 0, 20, "...");
+        $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 20, "...");
         if($thumb){
             $file_thumb = "<img src='{$thumb}' alt='{$fileTitle}' />";
         }else{
@@ -517,7 +517,7 @@ class FileList
         $fhtml .= "     <div class='item {$fileID} {$isFileRemovable}'>";
         $fhtml .=           $file_thumb;
         $fhtml .= "         <div class='show-meta'>";
-        $fhtml .= "             <p>{$fileTitle}</p>";
+        $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
         $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID}'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' >{$buttonText}</a>";
         $fhtml .= "         </div>";
         $fhtml .= "         <span class='close-btn' data-file-id='{$fileID}' data-user-id='{$userID}'><i class='fa fa-lg fa-times'></i></span>";

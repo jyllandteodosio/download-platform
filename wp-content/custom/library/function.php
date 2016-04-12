@@ -428,7 +428,9 @@ function remove_to_cart(){
         $cart_entry_count = getCustomCartCount();
 
         if($cart_entry_count == 1 ){
-            $cart_entry = unserialize($wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']}" )[0]);
+            $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    //          $cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
+            $cart_entry = unserialize($wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']} AND channel = '{$channel}'" )[0]);
             $meta_file_count = count($cart_entry);
 
             if(array_key_exists($cart_data['file_id'],$cart_entry)) {
@@ -753,7 +755,8 @@ function bulk_download() {
     }
      
     $zip = new ZipArchive();
-    $zipped = UPLOAD_DIR . 'Cart-files.zip';
+    $date_now = date('Y-m-d');
+    $zipped = UPLOAD_DIR . 'Cart-files-'.$date_now.'.zip';
     $zip->open($zipped, ZIPARCHIVE::CREATE);
 
     foreach ($files as $file) {
@@ -768,7 +771,7 @@ function bulk_download() {
     }
 
     $zip->close();
-    wpdm_download_file($zipped, 'Cart-files.zip');
+    wpdm_download_file($zipped, 'Cart-files-'.$date_now.'.zip');
     @unlink($zipped);
 
 
