@@ -375,7 +375,8 @@ function bulk_add_to_cart() {
 		}else {
 			$cart_entry = fetchEntryFromCustomCart();
 			$unserialized_cart = unserialize($cart_entry);
-	   		$serialized_cart = serialize(array_merge($unserialized_cart, $cart_data_unserialized));
+            $serialized_cart = serialize($unserialized_cart+$cart_data_unserialized);
+	   		// $serialized_cart = serialize(array_merge($unserialized_cart, $cart_data_unserialized));
 	   		$return_value = updateToCustomCart($serialized_cart);
 		}
 	}else {
@@ -402,7 +403,8 @@ function add_to_cart(){
 		}else {
 			$cart_entry = fetchEntryFromCustomCart();
 			$unserialized_cart = unserialize($cart_entry);
-	   		$serialized_cart = serialize(array_merge($unserialized_cart, $cart_array));
+            $serialized_cart = serialize($unserialized_cart+$cart_array);
+	   		// $serialized_cart = serialize(array_merge($unserialized_cart, $cart_array));
 	   		$return_value = updateToCustomCart($serialized_cart);
 		}
 	}else {
