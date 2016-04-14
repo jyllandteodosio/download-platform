@@ -39,7 +39,7 @@
           <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center episodicstills-tab" data-target="episodicstills-tab-contents"><a href="#">Episodic Stills</a></div>
           <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center gallery-tab" data-target="gallery-tab-contents"><a href="#">Gallery</a></div>    
           <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center logos-tab" data-target="logos-tab-contents"><a href="#">Logos</a></div>    
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center others-tab" data-target="others-tab-contents"><a href="#">Others - Special Web Assets etc</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center others-tab last-tab" data-target="others-tab-contents"><a href="#">Others - Special Web Assets etc</a></div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->   
          
