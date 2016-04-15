@@ -78,7 +78,13 @@ $table_prefix  = 'rtl21016_';
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
 define('WP_DEBUG', false);
-
+define( 'WP_ALLOW_MULTISITE', true );
+define('MULTISITE', true);
+define('SUBDOMAIN_INSTALL', false);
+define('DOMAIN_CURRENT_SITE', '192.168.1.167');
+define('PATH_CURRENT_SITE', '/rtlcbsasia/');
+define('SITE_ID_CURRENT_SITE', 2);
+define('BLOG_ID_CURRENT_SITE', 2);
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */
