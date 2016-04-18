@@ -53,6 +53,49 @@
 	</form>
 </div>
 
+<table class="form_operator_access_table wp-list-table striped widefat">
+		<thead>
+		<tr>
+			<th>Country Group</th>
+			<th>Operator Group</th>
+			<th>RTL CBS Channel</th>
+		</tr>
+		</thead>
+
+		<tbody id="the-list">
+		
+		
+		<?php
+		$operator_access = get_all_operator_access();
+		// echo "<pre>";
+		// print_r($operator_access);
+		// echo "</pre>";
+		if(isset($operator_access) && !empty($operator_access)):
+			foreach ($operator_access as $key => $value):
+		?>
+		<tr>
+			<td><?php echo $value['country_group'] != '' ? get_country_name($value['country_group']) : 'Admin' ;?></td>
+			<td><?php echo $value['operator_group'];?></td>
+			<td><?php echo $value['meta_access_unserialized'];?></td>
+		</tr>
+		<?php 
+			endforeach;
+			else: ?>
+			<tr><td colspan="6" >No results</td></tr>
+		<?php endif; ?>
+
+		</tbody>
+
+		<tfoot>
+			<tr>
+				<th>Country Group</th>
+				<th>Operator Group</th>
+				<th>RTL CBS Channel</th>
+			</tr>
+		</tfoot>
+
+	</table>
+
 <script>
 	jQuery(document).ready(function(){
 		/**
@@ -71,6 +114,8 @@
                 },function(response) {
                     jQuery("#message").removeClass("hidden");
                     jQuery("#message p").text(response);
+                    location.reload();
+
                 }
             );
         });
