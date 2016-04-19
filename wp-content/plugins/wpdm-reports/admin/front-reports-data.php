@@ -124,7 +124,7 @@
 		<input type="button" value=" Export Report " id="export_list" class="button" <?php echo $disabled?> title="<?php echo $title;?>" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv','temp_report_window');">
 		<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
 	</div>
-	<table class="wpdmr-reports-data wp-list-table widefat">
+	<table class="wpdmr-reports-data wp-list-table striped widefat">
 		<thead>
 		<tr>
 			<th>Period</th>

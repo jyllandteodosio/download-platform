@@ -256,6 +256,29 @@ if( !function_exists('get_current_user_operator_access') ){
     }
 }
 
+if( !function_exists('get_all_operator_access') ){
+    /**
+     * Get current operator access of logged user.
+     * @return Array Returns array of channels allowed to a specific account;
+     */
+    function get_all_operator_access(){
+        global $wpdb;
+        $operator_access = $wpdb->get_results( "SELECT id, operator_group, country_group, meta_access FROM $wpdb->operator_access ORDER BY country_group, operator_group", ARRAY_A );
+        $operator_access_prep = array();
+
+        foreach ($operator_access as $key => $value) {
+            $meta_access_unserialized = unserialize($value['meta_access']);
+            $meta_access_simplified = implode(' , ', $meta_access_unserialized);
+            $operator_access_prep[$value['id']] = array(
+                                'operator_group' => $value['operator_group'],
+                                'country_group' => $value['country_group'],
+                                'meta_access_unserialized' => $meta_access_simplified);
+        }
+        
+        return $operator_access_prep;
+    }
+}
+
 add_action('init', 'myStartSession', 1);
 add_action('wp_logout', 'myEndSession');
 add_action('wp_login', 'myEndSession');
