@@ -13,7 +13,7 @@ body {
 	background: #000 url('images/background.png') no-repeat fixed center top;
 	color: #fff;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 1em;
+	font-size: 14px;
 	-webkit-font-smoothing: antialiased;
 	-moz-font-smoothing: antialiased;
 	-ms-font-smoothing: antialiased;
@@ -31,9 +31,14 @@ a:hover {
 
 /* BOOTSTRAP OVERRIDES
 ----------------------------------*/
+@media (min-width: 1200px) {
+	.container {
+		width: 1090px;
+	}
+}
 
 .nav > li {
-   padding: 10px 15px;
+   padding: 10px 15px 0;
 }
 
 .nav > li > a {
@@ -46,6 +51,8 @@ a:hover {
 }
 
 .navbar {
+	min-height: 35px;
+	margin-bottom: 0;
 	border: none;
 }
 
@@ -147,4 +154,85 @@ a:hover {
 	font-size: 11px;
 	line-height: 1.8;
 	color: #fff;
+}
+
+/* MISCELLANEOUS & PLUGINS
+----------------------------------*/
+/* Slideshow */
+.featured-slideshow .day {
+	margin-bottom: 5px;
+	font-size: 28px;
+	font-weight: bold;
+}
+
+.featured-slideshow .time {
+	margin-bottom: 10px;
+	font-size: 27px;
+	font-weight: bold;
+}
+
+.featured-slideshow .timezone {
+	margin-left: 15px;
+	font-size: 14px;
+}
+
+.featured-slideshow .title {
+	font-size: 35px;
+	font-weight: bold;
+}
+
+.featured-slideshow .description {
+	margin-top: 10px;
+	margin-bottom: 9px;
+	line-height: 19px;
+}
+
+.featured-slideshow .view-more {
+	display: inline-block;
+	margin: 9px 0;
+	padding: 4px 18px;
+	border-radius: 3px;
+	background: #f3f3f4;
+	background: -moz-linear-gradient(top, #f3f3f4 0%, #bdbfc1 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f3f3f4), color-stop(100%, #bdbfc1));
+	background: -webkit-linear-gradient(top, #f3f3f4 0%, #bdbfc1 100%);
+	background: -o-linear-gradient(top, #f3f3f4 0%, #bdbfc1 100%);
+	background: -ms-linear-gradient(top, #f3f3f4 0%, #bdbfc1 100%);
+	background: linear-gradient(to bottom, #f3f3f4 0%, #bdbfc1 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f3f3f4', endColorstr='#bdbfc1', GradientType=0 );
+	color: #000;
+	line-height: 18px;
+}
+
+/* Swiper */
+.featured-slideshow .swiper-container {
+	border-radius: 6px;
+}
+
+.swiper-photo {
+	width: 100%;
+}
+
+.swiper-description {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	padding: 50px 30px;
+	background: -moz-linear-gradient(left, rgba(0,0,0,0.89) 0%, rgba(36,36,36,0.89) 14%, rgba(232,232,232,0) 91%, rgba(255,255,255,0) 100%);
+	background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(0,0,0,0.89)), color-stop(14%, rgba(36,36,36,0.89)), color-stop(91%, rgba(232,232,232,0)), color-stop(100%, rgba(255,255,255,0)));
+	background: -webkit-linear-gradient(left, rgba(0,0,0,0.89) 0%, rgba(36,36,36,0.89) 14%, rgba(232,232,232,0) 91%, rgba(255,255,255,0) 100%);
+	background: -o-linear-gradient(left, rgba(0,0,0,0.89) 0%, rgba(36,36,36,0.89) 14%, rgba(232,232,232,0) 91%, rgba(255,255,255,0) 100%);
+	background: -ms-linear-gradient(left, rgba(0,0,0,0.89) 0%, rgba(36,36,36,0.89) 14%, rgba(232,232,232,0) 91%, rgba(255,255,255,0) 100%);
+	background: linear-gradient(to right, rgba(0,0,0,0.89) 0%, rgba(36,36,36,0.89) 14%, rgba(232,232,232,0) 91%, rgba(255,255,255,0) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e3000000', endColorstr='#00ffffff', GradientType=1 );
+}
+
+@media (min-width: 1200px ) {
+	.featured-slideshow .swiper-container {
+		max-height: 400px;
+	}
+
+	.swiper-description {
+		width: 505px;
+	}
 }
