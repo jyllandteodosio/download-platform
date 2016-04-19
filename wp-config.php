@@ -83,8 +83,8 @@ define('MULTISITE', true);
 define('SUBDOMAIN_INSTALL', false);
 define('DOMAIN_CURRENT_SITE', '192.168.1.167');
 define('PATH_CURRENT_SITE', '/rtlcbsasia/');
-define('SITE_ID_CURRENT_SITE', 2);
-define('BLOG_ID_CURRENT_SITE', 2);
+define('SITE_ID_CURRENT_SITE', 1);
+define('BLOG_ID_CURRENT_SITE', 1);
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */
