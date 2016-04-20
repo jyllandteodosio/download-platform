@@ -2,7 +2,7 @@
     /*
     Plugin Name: WPDM Reports
     Description: Custom reports
-    7M
+    Dianne Katherine Delos Reyes
     Version: 1.0
     */
    
