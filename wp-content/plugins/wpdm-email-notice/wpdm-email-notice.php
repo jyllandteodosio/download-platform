@@ -78,132 +78,21 @@ function wpdm_check_new_files($id)
 	    }
 
 		$users = getUsersByRole('Operator');
-
-		// echo "post data-res";
-	 //    echo "<pre>";
-	 //    echo $query_users->request;
-	 //    print_r($promos_diff);
-	 //    echo "operator access:<br>";
-	 //    print_r($operator_access);
-	 //    echo "country groups prepared:";
-	 //    print_r($country_groups_prepared);
-	 //    echo "operator groups prepared:";
-	 //    print_r($operator_groups_prepared);
-	 //    // print_r($wpdm_promos_new);
-	 //    echo "</pre>";
-	 //    echo "<br><br><br>";
     
 		$permalink = get_permalink($id);
 		foreach ($users as $user) {
 			if(check_user_group_access($user, $operator_access)){
-				// print_r($user);
-				// echo $user->user_email.'<br>';
-				// echo "link-".$permalink."<br>";
-				// echo "CG-".$user->country_group."<br>";
-				// echo "operator_group-".$user->operator_group."<br>";
 				/* Check if there's a new promo file */
 				$promo_files = get_user_accessible_promos($user, $promos_diff, $wpdm_promos_new);
 				send_email_notice($user, $promo_files, $permalink);
 
-				// echo "promos:";
 				print_r($promo_files);
 			}
-
-			// echo "<br><br><br>";
 		}
-
-	    // echo "post data-res";
-	    // echo "<pre>";
-	    // print_r($operator_groups);
-	    // print_r($query_string);
-	    // print_r($users->operator_group);
-	    // echo "string--".$query_users->request;
-	    // echo "</pre>";
-	    // echo "<br><br><br>";
-
-	    // echo "post data-res";
-	    // echo "<pre>";
-	    // print_r($operator_access_extreme);
-	    // echo "</pre>";
-	    // echo "<br><br><br>";
-
-    	// send_email_notice();
-		
-    	die();
+    	// die();
     }
-
-
-    // echo "promo data-new";
-    // echo "<pre>";
-    // print_r($wpdm_promos_new_id);
-    // print_r($wpdm_promos_new);
-    // echo "</pre>";
-    // echo "<br><br><br>";
-
-    // echo "promo data-old";
-    // echo "<pre>";
-    // print_r($wpdm_promos_old_id);
-    // print_r($wpdm_promos_old);
-    // echo "</pre>";
-    // echo "<br><br><br>";
-
-    // echo "promo data-diff";
-    // echo "<pre>";
-    // print_r($promos_diff);
-    // echo "</pre>";
-    // echo "<br><br><br>";
-    
-
-    // echo "post data-old";
-    // echo "<pre>";
-    // print_r($wpdm_files_old);
-    // echo "</pre>";
-    // echo "<br><br><br>";
-
-    // echo "post data-new";
-    // echo "<pre>";
-    // print_r($wpdm_files_new);
-    // echo "</pre>";
-    // echo "<br><br><br>";
-
-    // echo "post data-res";
-    // echo "<pre>";
-    // print_r($files_diff);
-    // echo "</pre>";
-    // echo "<br><br><br>";
-    // 
-    
-    // echo "post data-res";
-    // echo "<pre>";
-    // print_r($_POST);
-    // echo "</pre>";
-    // echo "<br><br><br>";
-
-    
 }
 
-/*
-
-This should consider separate email notices to operators when files specific to them are uploaded.
-
-Email text content:
-
-Hi <Operator Name>,
-
-You have new files available for download today, including the following promo files:
-
-- <promo file name available for the user>
-- <promo file name available for the user>
-
-Check out the files here: <link to operator's website>.
-
-Thanks!
-
-RTL CBS Asia Team
-
-
-
- */
 
 function send_email_notice($user, $promo_files, $show_link){
 	$to = "diannekatherinedelosreyes@gmail.com";//$user->user_email;
