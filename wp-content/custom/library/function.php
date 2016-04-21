@@ -85,6 +85,14 @@ if( !function_exists('checkFileType') ){
 /**
  * Database functions for Custom Cart
  */
+function getUsersByRole($role = 'administrator'){
+    $args = array(
+                'role' => $role
+            );
+    $query_users = new WP_User_Query( $args );
+    $users = $query_users->get_results();
+    return $users;
+}
 function getCustomCartContents(){
     global $wpdb;
     $userID = get_current_user_id( );

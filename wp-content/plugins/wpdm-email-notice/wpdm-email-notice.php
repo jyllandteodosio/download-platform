@@ -7,146 +7,109 @@
     */
    
 
-/* Email Notice */
+/* Email Notice 
+PROMO ROW ID REFERENCE ============================================================
+    		[field_56bda97f2303e] => Promo Category
+            [field_56bda9b52303f] => Upload Date
+            [field_56bda9eb23040] => ID
+            [field_56bda9fc23041] => Promo Start
+            [field_56bdaa1123042] => Promo End
+            [field_56bdaa2523043] => File Name
+            [field_56bdaa2e23044] => Program Tx
+            [field_56bdaa3923045] => Program Title
+            [field_56bdaa4d23046] => Version
+            [field_56bdaa5723047] => Duration
+            [field_56bdaa6223048] => Notes
+            [field_56bdaa6e23049] => Attached file
+            [field_56cc2f84bbefe] => Thumbnail file
+            [field_56de395d8068d] => Operator Group Access (all, singtel etc)
+================================================================================= */
+
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($id)
 {
+	/* Get current POST data */
     $post = get_post($id, ARRAY_A);
 
     /* Check for attached show files */
-    $wpdm_files_old = maybe_unserialize(get_post_meta($id, '__wpdm_files', true));
-    $wpdm_files_new = $_POST['file']['files'];
-    $files_diff=array_diff($wpdm_files_new,$wpdm_files_old);
+    $wpdm_files_old = maybe_unserialize(get_post_meta($id, '__wpdm_files', true)); 		/* Old values from database */
+    $wpdm_files_new = $_POST['file']['files']; 											/* New values from form */
+    $files_diff = array_diff($wpdm_files_new,$wpdm_files_old);							/* Check number of New files added */
 
     /* Check for attached promo files */
     $wpdm_promos_new_id = array();
     $wpdm_promos_old_id = array();
-    $wpdm_promos_old = get_field( "add_promo_files" , $id);
-    $wpdm_promos_new = $_POST['fields']['field_56bda9692303d'];
-    array_pop($wpdm_promos_new); /* Necessary to remove extra array at the last index */
+    $wpdm_promos_old = get_field( "add_promo_files" , $id);								/* Old values from database */
+    $wpdm_promos_new = $_POST['fields']['field_56bda9692303d'];							/* New values from form */
+    array_pop($wpdm_promos_new); 														/* Remove extra array at the last index */
 
-    /*
-    		[field_56bda97f2303e] => On-Air
-            [field_56bda9b52303f] => 20160330
-            [field_56bda9eb23040] => ID
-            [field_56bda9fc23041] => Start date
-            [field_56bdaa1123042] => End date
-            [field_56bdaa2523043] => file name
-            [field_56bdaa2e23044] => Entertainment
-            [field_56bdaa3923045] => Limitless
-            [field_56bdaa4d23046] => RevJ
-            [field_56bdaa5723047] => 30s
-            [field_56bdaa6223048] => 44 MB
-            [field_56bdaa6e23049] => 243
-            [field_56cc2f84bbefe] => 
-            [field_56de395d8068d] => Operator Group Access (all, singtel etc)
-     */
     /* Restructure post data of promo files into key value pair */
     foreach ($wpdm_promos_new as $key => $value) {
-        $wpdm_promos_new_id[$value['field_56bda9eb23040']] = $value['field_56bdaa2523043'];
+        $wpdm_promos_new_id[$value['field_56bda9eb23040']] = $value['field_56bdaa2523043']; /* New values from form (key,value) */
     }
     /* Restructure DB data of promo files into key value pair */
     foreach ($wpdm_promos_old as $key => $value) {
-        $wpdm_promos_old_id[$value['id']] = $value['file_name'];
+        $wpdm_promos_old_id[$value['id']] = $value['file_name'];						/* Old values from database (key,value) */
     }
-    $promos_diff=array_diff($wpdm_promos_new_id,$wpdm_promos_old_id);
+    $promos_diff=array_diff($wpdm_promos_new_id,$wpdm_promos_old_id);					/* Check number New Promo files added */
   
-    // if(count($files_diff) >= 1 || count($promos_diff) >= 1){
-    	$categories = $_POST['tax_input']['wpdmcategory'];
-    	// print_r($categories);
-    	
-	    global $wpdb;
-	    $entertainment_category_id = $wpdb->get_var( "SELECT term_id FROM $wpdb->terms WHERE slug = 'entertainment'");
-	    $extreme_category_id = $wpdb->get_var( "SELECT term_id FROM $wpdb->terms WHERE slug = 'extreme'");
+    if(count($files_diff) >= 1 || count($promos_diff) >= 1){
+    	$categories = $_POST['tax_input']['wpdmcategory'];								/* Get categories assigned */
 
-	    $is_exist_entertainment = array_search($entertainment_category_id, $categories);
-	    $is_exist_extreme = array_search($extreme_category_id, $categories);
+	    $entertainment_category_id = getCategoryIdBySlug('shows-entertainment');
+	    $extreme_category_id = getCategoryIdBySlug('shows-extreme');
+
+		/* Check if show categories includes entertainment or extreme */
+	    $is_exist_channel['entertainment'] = array_search($entertainment_category_id, $categories);
+	    $is_exist_channel['extreme'] = array_search($extreme_category_id, $categories);
 
 	    $operator_access = array();
-	    if($is_exist_entertainment){
-	    	$operator_access_entertainment = $wpdb->get_results("SELECT id, operator_group, country_group FROM $wpdb->operator_access WHERE meta_access LIKE '%entertainment%'", ARRAY_A);
+	    foreach ($is_exist_channel as $key => $value) {
+	    	if($value){
+		    	$operator_access_channel['entertainment'] = getOperatorCountryCombinationAccess($key);
+		    }
 	    }
-	    
-	    if($is_exist_extreme){
-	    	$operator_access_extreme = $wpdb->get_results("SELECT id, operator_group, country_group FROM $wpdb->operator_access WHERE meta_access LIKE '%extreme%'", ARRAY_A);
+	    foreach ($operator_access_channel as $key => $value) {
+	    	if(isset($operator_access_channel['entertainment'])){
+			    foreach ($operator_access_channel['entertainment'] as $key => $value) {
+			    	$operator_access[$value['id']] = array('operator_group' => $value['operator_group'],'country_group' => $value['country_group']);
+			    }
+			}
 	    }
-	    if(isset($operator_access_entertainment)){
-		    foreach ($operator_access_entertainment as $key => $value) {
-		    	$operator_access[$value['id']] = array(
-		    										'operator_group' => $value['operator_group'],
-		    										'country_group' => $value['country_group']);
-		    }
-		}
-	    if(isset($operator_access_extreme)){
-		    foreach ($operator_access_extreme as $key => $value) {
-		    	$operator_access[$value['id']] = array(
-		    										'operator_group' => $value['operator_group'],
-		    										'country_group' => $value['country_group']);
-		    }
-		}
 
-		$operator_groups = array();
-		$country_groups = array();
-		if(isset($operator_access)){
-		    foreach ($operator_access as $key => $value) {
-		    	array_push($operator_groups, $value['operator_group']);
-		    	array_push($country_groups, $value['country_group']);
-		    }
-		}
+		$users = getUsersByRole('Operator');
 
-		$operator_groups_prepared = implode(",",$operator_groups); 
-		$country_groups_prepared = implode(",",$country_groups); 
-
-		$args = array(
-			'meta_query' => array(
-								'relation' => 'AND',
-									array(
-										'key'     => 'operator_group',
-										'value'   => $operator_groups_prepared,
-							 			'compare' => 'IN'
-									),
-									array(
-										'key'     => 'country_group',
-										'value'   => $country_groups_prepared,
-							 			'compare' => 'IN'
-									)
-							)
-		);
-		$query_users = new WP_User_Query( $args );
-		$users = $query_users->get_results();
-
-		echo "post data-res";
-	    echo "<pre>";
-	    print_r($promos_diff);
-	    print_r($wpdm_promos_new);
-	    echo "</pre>";
-	    echo "<br><br><br>";
+		// echo "post data-res";
+	 //    echo "<pre>";
+	 //    echo $query_users->request;
+	 //    print_r($promos_diff);
+	 //    echo "operator access:<br>";
+	 //    print_r($operator_access);
+	 //    echo "country groups prepared:";
+	 //    print_r($country_groups_prepared);
+	 //    echo "operator groups prepared:";
+	 //    print_r($operator_groups_prepared);
+	 //    // print_r($wpdm_promos_new);
+	 //    echo "</pre>";
+	 //    echo "<br><br><br>";
     
 		$permalink = get_permalink($id);
 		foreach ($users as $user) {
-			echo $user->user_email.'<br>';
-			echo "link-".$permalink."<br>";
-			echo "operator_group-".$user->operator_group."<br>";
-			if (count($promos_diff) >= 1) {
-				echo "promos:";
-				foreach ($promos_diff as $pd_key => $pd_value) {
-					echo "1";
-					foreach ($wpdm_promos_new as $wpn_key => $wpn_value) {
-						echo "2<pre>";
-						// echo "->".$wpn_value['field_56bda9eb23040']."<-";
-						// print_r($wpn_value);
-						// echo "</pre><br>";
-						
-						if($wpn_value['field_56bda9eb23040'] == $pd_key){
-							if($wpn_value['field_56de395d8068d'] == $user->operator_group)
-								echo "->".$wpn_value['field_56bdaa2523043'];
-						}
-					}
-					// echo "->".$wpdm_promos_new[];
-				}
-				// $wpdm_promos_new[]
+			if(check_user_group_access($user, $operator_access)){
+				// print_r($user);
+				// echo $user->user_email.'<br>';
+				// echo "link-".$permalink."<br>";
+				// echo "CG-".$user->country_group."<br>";
+				// echo "operator_group-".$user->operator_group."<br>";
+				/* Check if there's a new promo file */
+				$promo_files = get_user_accessible_promos($user, $promos_diff, $wpdm_promos_new);
+				send_email_notice($user, $promo_files, $permalink);
+
+				// echo "promos:";
+				print_r($promo_files);
 			}
-			echo "<br><br><br>";
+
+			// echo "<br><br><br>";
 		}
 
 	    // echo "post data-res";
@@ -164,8 +127,11 @@ function wpdm_check_new_files($id)
 	    // echo "</pre>";
 	    // echo "<br><br><br>";
 
+    	// send_email_notice();
+		
     	die();
-    // }
+    }
+
 
     // echo "promo data-new";
     // echo "<pre>";
@@ -214,4 +180,124 @@ function wpdm_check_new_files($id)
     // echo "<br><br><br>";
 
     
+}
+
+/*
+
+This should consider separate email notices to operators when files specific to them are uploaded.
+
+Email text content:
+
+Hi <Operator Name>,
+
+You have new files available for download today, including the following promo files:
+
+- <promo file name available for the user>
+- <promo file name available for the user>
+
+Check out the files here: <link to operator's website>.
+
+Thanks!
+
+RTL CBS Asia Team
+
+
+
+ */
+
+function send_email_notice($user, $promo_files, $show_link){
+	$to = "diannekatherinedelosreyes@gmail.com";//$user->user_email;
+	$subject = 'RTL CBS Asia Notification - New files are available for you today!';
+	$headers = array('Content-Type: text/html; charset=UTF-8');
+
+	$message = '';
+	$message .= "Hi {$user->user_login},<br><br>";
+	$message .= "You have new files available for download today";
+	if(!empty($promo_files)){
+		$message .= ", including the following promo files:<br><br>";
+		foreach ($promo_files as $promo_file) {
+			$message .= " - ".$promo_file."<br>";
+		}
+	}
+	$message .= "<br><br>Check out the files here: <a href='".$show_link."'>Click here</a><br><br>
+				Thanks!<br><br>
+				RTL CBS Asia Team";
+		
+	// Start output buffering to grab smtp debugging output
+	ob_start();
+
+	// Send the test mail
+	$result = wp_mail($to,$subject,$message,$headers);
+		
+	// Grab the smtp debugging output
+	$smtp_debug = ob_get_clean();
+		
+	// Output the response
+	echo "res-".$result;
+}
+
+if (!function_exists('check_user_group_access')){
+	/**
+	 * Check if a particular user is included in array of allowed operator and country group combination
+	 * @param  Object $user            User
+	 * @param  Array $operator_access  Key value pair of allowed operator group and country group combination
+	 * @return bool                    Returns 1 if accessible, otherwise 0
+	 */
+	function check_user_group_access($user, $operator_access){
+		foreach ($operator_access as $key => $value) {
+			if (strtolower($value['operator_group']) == strtolower($user->operator_group) 
+				&& strtolower($value['country_group']) == strtolower($user->country_group)) {
+				return 1;
+			}else{
+				continue;
+			}
+		}
+		return 0;
+	}
+}
+
+if (!function_exists('get_user_accessible_promos')){
+	/**
+	 * Get all oerator available newly uploaded promo files
+	 * @param  Object $user           	User
+	 * @param  Array  $new_promos_ids 	ID of newly uploaded promo file
+	 * @param  Array  $all_promos     	All current promos from the submitted form
+	 * @return Array                  	Array of promo file names
+	 */
+	function get_user_accessible_promos($user, $new_promos_ids, $all_promos){
+		/* Check if there's a new promo uploaded */
+		$promo_files = array();
+		if (count($new_promos_ids) >= 1) {
+			foreach ($new_promos_ids as $pd_key => $pd_value) {
+				foreach ($all_promos as $wpn_key => $wpn_value) {
+					/* Check if KEYs are the same */
+					if($wpn_value['field_56bda9eb23040'] == $pd_key){
+						/* Check if Operator Group of promo is set to all or to a specific user operator group */
+						if( strtolower($wpn_value['field_56de395d8068d']) == 'all' || 
+							strtolower($wpn_value['field_56de395d8068d']) == strtolower($user->operator_group)){
+							array_push($promo_files, $wpn_value['field_56bdaa2523043']);
+						}
+					}
+				}
+			}
+		}
+		return $promo_files;
+	}
+}
+
+/* Database Queries */
+if(!function_exists('getCategoryIdBySlug')){
+	function getCategoryIdBySlug($slug = 'shows-entertainment'){
+		global $wpdb;
+		$category_id = $wpdb->get_var( "SELECT term_id FROM $wpdb->terms WHERE slug = '{$slug}'");
+		return $category_id;
+	}
+}
+
+if (!function_exists('getOperatorCountryCombinationAccess')) {
+	function getOperatorCountryCombinationAccess($channel = 'entertainment'){
+		global $wpdb;
+		$operator_access = $wpdb->get_results("SELECT id, operator_group, country_group FROM $wpdb->operator_access WHERE meta_access LIKE '%{$channel}%'", ARRAY_A);
+		return $operator_access;
+	}
 }
