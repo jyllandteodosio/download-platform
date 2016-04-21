@@ -69,8 +69,8 @@ add_action( 'after_setup_theme', 'rtlcbsconsumer_setup' );
 // Enqueue styles and scripts
 function rtlcbsconsumer_scripts() {
 	wp_enqueue_style( 'bootstrap-style', get_template_directory_uri() . '/css/bootstrap.min.css', false, '3.3.6', 'all' );
-	wp_enqueue_style( 'rtlcbsconsumer-style', get_stylesheet_uri(), false, '1.0', 'all' );
 	wp_enqueue_style( 'swiper-style', get_template_directory_uri() . '/css/swiper.min.css', false, '3.3.1', 'all' );
+	wp_enqueue_style( 'rtlcbsconsumer-style', get_stylesheet_uri(), false, '1.0', 'all' );
 
 	wp_enqueue_script( 'jQuery', get_template_directory_uri() . '/js/vendor/jquery.min.js', false, 1.12, true);
 	wp_enqueue_script( 'bootstrap-script', get_template_directory_uri() . '/js/vendor/bootstrap.min.js', array ( 'jQuery' ), 3.3, true);
@@ -78,3 +78,21 @@ function rtlcbsconsumer_scripts() {
 	wp_enqueue_script( 'main-js', get_template_directory_uri() . '/js/main.js', false, 1.0, true);
 }
 add_action( 'wp_enqueue_scripts', 'rtlcbsconsumer_scripts' );
+
+/**
+ * Register widget area.
+ *
+ * @link https://codex.wordpress.org/Function_Reference/register_sidebar
+ */
+function twentyfifteen_widgets_init() {
+	register_sidebar( array(
+		'name'          => __( 'What\'s on RTL CBS Entertainment HD', 'rtlcbsconsumer' ),
+		'id'            => 'rtlcbs-home-sidebar',
+		'description'   => __( 'Add widgets here to appear in your homesidebar.', 'rtlcbsconsumer' ),
+		'before_widget' => '',
+		'after_widget'  => '',
+		'before_title'  => '',
+		'after_title'   => '',
+	) );
+}
+add_action( 'widgets_init', 'twentyfifteen_widgets_init' );
