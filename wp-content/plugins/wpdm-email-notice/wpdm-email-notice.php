@@ -32,38 +32,40 @@ function wpdm_check_new_files($id)
     $post = get_post($id, ARRAY_A);
 
     /* Check for attached show files */
-    $wpdm_files_old = maybe_unserialize(get_post_meta($id, '__wpdm_files', true)); 		/* Old values from database */
-    $wpdm_files_new = $_POST['file']['files']; 											/* New values from form */
-    $files_diff = array_diff($wpdm_files_new,$wpdm_files_old);							/* Check number of New files added */
+    $wpdm_files_old = get_post_meta($id, '__wpdm_files', true) != "" ? maybe_unserialize(get_post_meta($id, '__wpdm_files', true)) : array(); /* Old values from database */
+    $wpdm_files_new = $_POST['file']['files'] != "" ? $_POST['file']['files'] : array(); /* New values from form */
+    $files_diff = array_diff($wpdm_files_new,$wpdm_files_old);	/* Remove extra array at the last index */
 
     /* Check for attached promo files */
     $wpdm_promos_new_id = array();
     $wpdm_promos_old_id = array();
-    $wpdm_promos_old = get_field( "add_promo_files" , $id);								/* Old values from database */
-    $wpdm_promos_new = $_POST['fields']['field_56bda9692303d'];							/* New values from form */
-    array_pop($wpdm_promos_new); 														/* Remove extra array at the last index */
-
+    $wpdm_promos_old = get_field( "add_promo_files" , $id) ? get_field( "add_promo_files" , $id) : array(); /* Old values from database */
+    $wpdm_promos_new = $_POST['fields']['field_56bda9692303d'];	/* New values from form */
+    array_pop($wpdm_promos_new); /* Remove extra array at the last index  */
+ 
     /* Restructure post data of promo files into key value pair */
     foreach ($wpdm_promos_new as $key => $value) {
         $wpdm_promos_new_id[$value['field_56bda9eb23040']] = $value['field_56bdaa2523043']; /* New values from form (key,value) */
     }
     /* Restructure DB data of promo files into key value pair */
     foreach ($wpdm_promos_old as $key => $value) {
-        $wpdm_promos_old_id[$value['id']] = $value['file_name'];						/* Old values from database (key,value) */
+        $wpdm_promos_old_id[$value['id']] = $value['file_name']; /* Old values from database (key,value) */
     }
-    $promos_diff=array_diff($wpdm_promos_new_id,$wpdm_promos_old_id);					/* Check number New Promo files added */
+    $promos_diff=array_diff($wpdm_promos_new_id,$wpdm_promos_old_id); /* Check number New Promo files added */
   
     if(count($files_diff) >= 1 || count($promos_diff) >= 1){
-    	$categories = $_POST['tax_input']['wpdmcategory'];								/* Get categories assigned */
+    	$categories = $_POST['tax_input']['wpdmcategory']; /* Get categories assigned */
 
 	    $entertainment_category_id = getCategoryIdBySlug('shows-entertainment');
 	    $extreme_category_id = getCategoryIdBySlug('shows-extreme');
 
 		/* Check if show categories includes entertainment or extreme */
+		$is_exist_channel = array();
 	    $is_exist_channel['entertainment'] = array_search($entertainment_category_id, $categories);
 	    $is_exist_channel['extreme'] = array_search($extreme_category_id, $categories);
 
 	    $operator_access = array();
+	    $operator_access_channel = array();
 	    foreach ($is_exist_channel as $key => $value) {
 	    	if($value){
 		    	$operator_access_channel['entertainment'] = getOperatorCountryCombinationAccess($key);
@@ -95,7 +97,8 @@ function wpdm_check_new_files($id)
 
 
 function send_email_notice($user, $promo_files, $show_link){
-	$to = "diannekatherinedelosreyes@gmail.com";//$user->user_email;
+	$to = $user->user_email;
+	// $to = "diannekatherinedelosreyes@gmail.com";
 	$subject = 'RTL CBS Asia Notification - New files are available for you today!';
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
