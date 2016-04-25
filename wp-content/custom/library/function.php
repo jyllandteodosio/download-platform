@@ -1365,6 +1365,58 @@ if (!function_exists('get_user_info')) {
 }
 
 
+// add_filter('acf/validate_value/name=promo_start', 'my_acf_validate_value', 10, 4);
+
+// function my_acf_validate_value( $valid, $value, $field, $input ){
+    
+    // bail early if value is already invalid
+    // if( !$valid ) {
+        
+    //     return $valid;
+        
+    // }
+    
+    
+    // // load image data
+    // $data = wp_get_attachment_image_src( $value, 'full' );
+    // $width = $data[1];
+    // $height = $data[2];
+    
+    // if( $width < 960 ) {
+        
+    //     $valid = 'Image must be at least 960px wide';
+        
+    // }
+    
+//     $valid = "dianne";
+//     // return
+//     return $valid;
+    
+    
+// }
+
+function new_modify_user_table( $column ) {
+    $column['operator_group'] = 'Operator Group';
+    $column['country_group'] = 'Country Group';
+    return $column;
+}
+add_filter( 'manage_users_columns', 'new_modify_user_table' );
+
+function new_modify_user_table_row( $val, $column_name, $user_id ) {
+    $user = get_userdata( $user_id );
+    switch ($column_name) {
+        case 'operator_group' :
+            return get_user_meta($user_id, 'operator_group', true) != "" ? get_user_meta($user_id, 'operator_group', true) : "None";
+            break;
+        case 'country_group' :
+            return get_country_name(get_user_meta($user_id, 'country_group', true));
+            break;
+        default:
+    }
+    return $return;
+}
+add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
+
 // ENQUEUE SCRIPTS
 function my_scripts(){
     wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");
