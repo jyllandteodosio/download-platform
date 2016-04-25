@@ -149,42 +149,53 @@ get_header( 'rtl' ); ?>
 	</div>
 </div>
 <div class="section row">
-	<div class="col-lg-6">
+	<div class="col-xs-12 col-lg-6">
 		<h2 class="section-title">Spotlight</h2>
-		<div class="spotlight-show">
-			<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_306x200.jpg');"></div>
-			<div class="spotlight-details">
-				<h3 class="spotlight-title">Billboard Music Awards 2015</h3>
-				<p class="spotlight-excerpt">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring...</p>
-				<a href="#">View More</a>
+		<div class="row">
+			<div class="spotlight-show-container col-xs-12 col-sm-6 col-md-3 col-lg-12">
+				<div class="spotlight-show">
+					<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_306x200.jpg');"></div>
+					<div class="spotlight-details">
+						<h3 class="spotlight-title">Billboard Music Awards 2015</h3>
+						<p class="spotlight-excerpt">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring...</p>
+						<a href="#">View More</a>
+					</div>
+				</div>
 			</div>
-		</div>
-		<div class="spotlight-show">
-			<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_306x200.jpg');"></div>
-			<div class="spotlight-details">
-				<h3 class="spotlight-title">House of Cards 3</h3>
-				<p class="spotlight-excerpt">Frank Underwood has ascended to the presidency of the United States without a single vote cast to his name. As he now holds the most powerful position in the world, how...</p>
-				<a href="#">View More</a>
+			<div class="spotlight-show-container col-xs-12 col-sm-6 col-md-3 col-lg-12">
+				<div class="spotlight-show">
+					<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_306x200.jpg');"></div>
+					<div class="spotlight-details">
+						<h3 class="spotlight-title">House of Cards 3</h3>
+						<p class="spotlight-excerpt">Frank Underwood has ascended to the presidency of the United States without a single vote cast to his name. As he now holds the most powerful position in the world, how...</p>
+						<a href="#">View More</a>
+					</div>
+				</div>
 			</div>
-		</div>
-		<div class="spotlight-show">
-			<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/bgt_306x200.jpg');"></div>
-			<div class="spotlight-details">
-				<h3 class="spotlight-title">Britain's Got Talent 9</h3>
-				<p class="spotlight-excerpt">Anyone, any age, any talent. Join judges Simon Cowell, Amanda Holden, Alesha Dixon and David Walliams to find the next winner of Britain's Got Talent! Expect the...</p>
-				<a href="#">View More</a>
+			<div class="spotlight-show-container col-xs-12 col-sm-6 col-md-3 col-lg-12">
+				<div class="spotlight-show">
+					<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/bgt_306x200.jpg');">
+					</div>
+					<div class="spotlight-details">
+						<h3 class="spotlight-title">Britain's Got Talent 9</h3>
+						<p class="spotlight-excerpt">Anyone, any age, any talent. Join judges Simon Cowell, Amanda Holden, Alesha Dixon and David Walliams to find the next winner of Britain's Got Talent! Expect the...</p>
+						<a href="#">View More</a>
+					</div>
+				</div>
 			</div>
-		</div>
-		<div class="spotlight-show">
-			<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_306x200.jpg');"></div>
-			<div class="spotlight-details">
-				<h3 class="spotlight-title">Elementary 3</h3>
-				<p class="spotlight-excerpt">The new season of Elementary is brimming with uncertainty on how things will develop after the dynamic duo parted ways. Holmes returns to New York with a new apprentice...</p>
-				<a href="#">View More</a>
+			<div class="spotlight-show-container col-xs-12 col-sm-6 col-md-3 col-lg-12">
+				<div class="spotlight-show">
+					<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_306x200.jpg');"></div>
+					<div class="spotlight-details">
+						<h3 class="spotlight-title">Elementary 3</h3>
+						<p class="spotlight-excerpt">The new season of Elementary is brimming with uncertainty on how things will develop after the dynamic duo parted ways. Holmes returns to New York with a new apprentice...</p>
+						<a href="#">View More</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-	<div id="widget-home-sidebar" class="col-lg-6">
+	<div id="widget-home-sidebar" class="col-xs-12 col-lg-6">
 		<h2 class="section-title">What's on RTL CBS Entertainment HD</h2>
 		<?php if ( is_active_sidebar( 'rtlcbs-home-sidebar' ) ) : ?>
 			<div id="home-sidebar" class="primary-sidebar widget-area" role="complementary">

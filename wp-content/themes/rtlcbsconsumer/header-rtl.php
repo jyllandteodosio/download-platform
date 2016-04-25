@@ -24,11 +24,11 @@
 		<div id="header" class="">
 			<div class="container">
 				<div id="masthead">
-					<a href="<?php bloginfo( 'url' ) ?>"><img src="<?php header_image(); ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo" /></a>
 					<div class="ad-container">
 						<div class="ad">
 						</div>
 					</div>
+					<a href="<?php bloginfo( 'url' ) ?>"><img src="<?php header_image(); ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo" /></a>
 				</div>
 				<nav class="navbar">					
 							<div class="navbar-header">
