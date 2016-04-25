@@ -1395,6 +1395,7 @@ if (!function_exists('get_user_info')) {
     
 // }
 
+/* Add custom column to Users table */
 function new_modify_user_table( $column ) {
     $column['operator_group'] = 'Operator Group';
     $column['country_group'] = 'Country Group';
@@ -1402,6 +1403,7 @@ function new_modify_user_table( $column ) {
 }
 add_filter( 'manage_users_columns', 'new_modify_user_table' );
 
+/* Populate custom column in Users table */
 function new_modify_user_table_row( $val, $column_name, $user_id ) {
     $user = get_userdata( $user_id );
     switch ($column_name) {
@@ -1416,6 +1418,12 @@ function new_modify_user_table_row( $val, $column_name, $user_id ) {
     return $return;
 }
 add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
+
+// add_action( 'pre_post_update', 'wpdm_check_changes' );
+// function wpdm_check_changes($id)
+// {
+//     die("asd");
+// }
 
 // ENQUEUE SCRIPTS
 function my_scripts(){
