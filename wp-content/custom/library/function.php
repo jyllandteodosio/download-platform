@@ -1420,10 +1420,84 @@ function new_modify_user_table_row( $val, $column_name, $user_id ) {
 add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
 
 // add_action( 'pre_post_update', 'wpdm_check_changes' );
-// function wpdm_check_changes($id)
-// {
-//     die("asd");
+function wpdm_check_changes($id)
+{
+    // echo "<pre>";
+    // echo "<br><br>wpdm_files_old:<br>";
+    // print_r($wpdm_files_old);
+    // echo "<br><br>wpdm_files_new:<br>";
+    // print_r($wpdm_files_new);
+    // echo "<br><br>files_diff:<br>";
+    // print_r($files_diff);
+    // echo "<br><br>wpdm_promos_old:<br>";
+    // print_r($wpdm_promos_old);
+    // echo "<br><br>wpdm_promos_new:<br>";
+    // print_r($wpdm_promos_new);
+    // echo "<br><br>POST:<br>";
+    // print_r($_POST);
+    // echo "<br><br>wpdm_promos_old_id:<br>";
+    // print_r( $wpdm_promos_old_id);
+    // echo "<br><br>wpdm_promos_new_id:<br>";
+    // print_r( $wpdm_promos_new_id);
+    // echo "<br><br>promos_diff:<br>";
+    // print_r($promos_diff);
+    // echo "</pre>";
+    $response =  "<script> document.write(confirm('dianne')); </script>";
+    if(!$response){
+        die("terminated");
+    }
+    // exit();
+    // die($response);
+    // wp_die( 'The title of your post have to be 10 or more !' );
+}
+
+/* = Add a "molly guard" to the publish button */
+
+// add_action( 'admin_print_footer_scripts', 'sr_publish_molly_guard' );
+function sr_publish_molly_guard() {
+// global $post;
+// print_r($post);
+// die();
+
+echo <<<EOT
+<script>
+jQuery(document).ready(function($){
+    $('#publishing-action input[name="save"]').click(function() {
+        var title = $('#title').val();
+        if(confirm('Are you sure you want to publish this? '+title)) {
+            return true;
+        } else {
+            $('#publishing-action .spinner').hide();
+            $('#publishing-action img').hide();
+            $(this).removeClass('button-primary-disabled');
+            return false;
+        }
+    });
+});
+</script>
+EOT;
+
+die('asd');
+}
+
+// This is the confirmation message that will appear.
+
+// $c_message = 'Are you SURE you want to publish this post?';
+ 
+// function confirm_publish(){
+
+// global $c_message;
+// echo '
+//         <script type="text/javascript">
+//         <!--
+//         var publish = document.getElementById("publish");
+//         if (publish !== null) publish.onclick = function(){
+//             return confirm("'.$c_message.'");
+//         };
+//         // -->
+//         </script>';
 // }
+// add_action('admin_footer', 'confirm_publish');
 
 // ENQUEUE SCRIPTS
 function my_scripts(){

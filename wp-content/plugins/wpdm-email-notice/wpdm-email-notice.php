@@ -124,7 +124,7 @@ function send_email_notice($user, $files, $show_link){
 
 	$message = '';
 	$message .= "Hi {$user->user_login},<br><br>";
-	$message .= "<b>You have new files available for download today</b><br>";
+	$message .= "<b>You have new files available for download today!</b><br>";
 	if(!empty($files['promo'])){
 		$message .= "<br>Promo file/s:<br>";
 		$message .= "<ul>";
@@ -142,7 +142,7 @@ function send_email_notice($user, $files, $show_link){
 		$message .= "</ul>";
 	}
 	$message .= "<br><br><b>To view and download the files,</b> <a href='".$show_link."'>log on to the Operator Website</a><br><br>
-				Thanks!<br>
+				Thanks,<br>
 				RTL CBS Asia Team";
 	// echo $message;
 	// Start output buffering to grab smtp debugging output

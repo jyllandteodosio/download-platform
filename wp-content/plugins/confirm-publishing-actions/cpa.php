@@ -109,8 +109,8 @@ class cpa_confirm_publishing_actions
 
              'confirm_delete'   => sprintf( __( 'You are about to delete this %1$s. Proceed?',              'pjh-cpa' ), $t )
             ,'confirm_submit'   => sprintf( __( 'You are about to submit this %1$s for review. Proceed?',   'pjh-cpa' ), $t )
-            ,'confirm_publish'  => sprintf( __( self::get_confirm_prompt(),             'pjh-cpa' ), $t )
-            ,'confirm_update'   => sprintf( __( 'You are about to update this %1$s. Proceed?',              'pjh-cpa' ), $t )
+            ,'confirm_publish'  => self::get_confirm_prompt()//sprintf( __( self::get_confirm_prompt(),             'pjh-cpa' ), $t )
+            ,'confirm_update'   => self::get_confirm_prompt()//sprintf( __( self::get_confirm_prompt(),              'pjh-cpa' ), $t )
             ,'confirm_schedule' => sprintf( __( 'You are about to schedule this %1$s. Proceed?',            'pjh-cpa' ), $t )
             ,'submit'           => __( 'Submit for Review' )
             ,'publish'          => __( 'Publish' )
@@ -123,9 +123,30 @@ class cpa_confirm_publishing_actions
     }
 
     public static function get_confirm_prompt(){
-        // echo "dk-".$_POST['post_title'];
-        // die("diane");
-        // return "asd".$_POST['post_title'];
+        // $prompt = "
+        //     <script>
+        //         document.write('adasdasdsad');
+        //     </script>
+        // ";
+        // $prompt = '
+        //      <script type="text/javascript">
+        //     <!--
+        //     var publish = document.getElementById("publish");
+        //     if (publish !== null) publish.onclick = function(){
+        //         return confirm("diannnenenneen");
+        //     };
+        //     // -->
+        //     </script>
+
+        // ';
+//         return <<<EOT
+// <script>
+// jQuery(document).ready(function($){
+//     document.write($('#title').val());
+// });
+// </script>
+// EOT;
+        return "as<br>d";
     }
     /**
      * Plugin row meta
