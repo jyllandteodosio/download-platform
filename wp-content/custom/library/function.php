@@ -1364,37 +1364,6 @@ if (!function_exists('get_user_info')) {
     }
 }
 
-
-// add_filter('acf/validate_value/name=promo_start', 'my_acf_validate_value', 10, 4);
-
-// function my_acf_validate_value( $valid, $value, $field, $input ){
-    
-    // bail early if value is already invalid
-    // if( !$valid ) {
-        
-    //     return $valid;
-        
-    // }
-    
-    
-    // // load image data
-    // $data = wp_get_attachment_image_src( $value, 'full' );
-    // $width = $data[1];
-    // $height = $data[2];
-    
-    // if( $width < 960 ) {
-        
-    //     $valid = 'Image must be at least 960px wide';
-        
-    // }
-    
-//     $valid = "dianne";
-//     // return
-//     return $valid;
-    
-    
-// }
-
 /* Add custom column to Users table */
 function new_modify_user_table( $column ) {
     $column['operator_group'] = 'Operator Group';
