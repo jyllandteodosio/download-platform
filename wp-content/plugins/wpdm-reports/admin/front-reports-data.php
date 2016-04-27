@@ -120,8 +120,8 @@
 			$disabled = $form_data['filter'] && !empty($reports_data) ? "" : "disabled";
 			$title = $form_data['filter'] && !empty($reports_data) ? "" : "Click 'Show Report' first before exporting.";
 		?>
-		<input type="button" value=" Export Report " id="export_sum" class="button" <?php echo $disabled?> title="<?php echo $title;?>" style="display:none" onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv','temp_report_window');">
-		<input type="button" value=" Export Report " id="export_list" class="button" <?php echo $disabled?> title="<?php echo $title;?>" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv','temp_report_window');">
+		<input type="button" value=" Export Report " id="export_sum" class="button" <?php echo $disabled?> title="<?php echo $title;?>" style="display:none" onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
+		<input type="button" value=" Export Report " id="export_list" class="button" <?php echo $disabled?> title="<?php echo $title;?>" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
 		<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
 	</div>
 	<table class="wpdmr-reports-data wp-list-table striped widefat">

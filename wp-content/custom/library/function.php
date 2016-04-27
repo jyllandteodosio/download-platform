@@ -1468,6 +1468,31 @@ die('asd');
 // }
 // add_action('admin_footer', 'confirm_publish');
 
+function send_monthly_report($file){
+    // $to = $user->user_email;
+    $to = "diannekatherinedelosreyes@gmail.com";
+    $subject = 'Monthly report';
+    // $headers = array('Content-Type: text/html; charset=UTF-8');
+    $headers  = 'MIME-Version: 1.0' . "\r\n";
+    $headers .= 'Content-type: multipart/mixed; charset=iso-8859-1' . "\r\n";
+    $attachment = $file;
+    $mail_attachment = array( $attachment );
+
+    $message = 'attachment';
+    // echo $message;
+    // Start output buffering to grab smtp debugging output
+    ob_start();
+
+    // Send the test mail
+    $result = wp_mail($to,$subject,$message,$headers,$mail_attachment);
+        
+    // Grab the smtp debugging output
+    $smtp_debug = ob_get_clean();
+        
+    // Output the response
+    // echo "res-".$result;
+}
+
 // ENQUEUE SCRIPTS
 function my_scripts(){
     wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");

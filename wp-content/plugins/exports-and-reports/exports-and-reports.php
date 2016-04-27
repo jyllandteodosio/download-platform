@@ -1012,6 +1012,8 @@ function exports_reports_view( $group_id = false ) {
 		</div>
 	<?php
 	}
+	// $admin->export_source = "dianna";
+	$admin->setTestvar("another value");
 	$admin->go();
 }
 add_action( 'wp_admin_ui_post_export', 'exports_reports_log', 10, 2 );

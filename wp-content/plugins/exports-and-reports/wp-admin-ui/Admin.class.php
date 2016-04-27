@@ -19,8 +19,13 @@ if ( isset( $_GET['download'] ) && isset( $_GET['_wpnonce'] ) && false !== wp_ve
 		wp_die( 'File not found.' );
 	}
     /** Custom code by dianne d.r. - to auto download csv file upon export */
-    wpdm_download_file($file, $_GET['export'].".csv");
-    @unlink($file);
+    // send_monthly_report($file);
+    print_r($_GET);
+    die();
+    if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_reports_data' ){
+        wpdm_download_file($file, $_GET['export'].".csv");
+        @unlink($file);
+    }
     /** End of custom code  */
     wp_redirect( str_replace( WP_ADMIN_UI_EXPORT_DIR, WP_ADMIN_UI_EXPORT_URL, $file ) );
     die();
@@ -125,13 +130,18 @@ class WP_Admin_UI
     var $export_url = false;
     var $export_type = false;
     var $export_delimiter = false;
+    var $export_source = '';
 
+    public function setTestvar($testvar) { 
+        $this->export_source = $testvar; 
+    }
+    
     function __construct ($options=false)
     {
         do_action('wp_admin_ui_pre_init',$options);
         $options = $this->do_hook('options',$options);
         $this->base_url = plugins_url( 'Admin.class.php', __FILE__  );
-        $this->export_url = admin_url( 'admin-ajax.php' ) . '?action=wp_admin_ui_export&download=1&_wpnonce='.wp_create_nonce('wp-admin-ui-export').'&export=';
+        $this->export_url = admin_url( 'admin-ajax.php' ) . '?action=wp_admin_ui_export&export_source='.$this->export_source.'&download=1&_wpnonce='.wp_create_nonce('wp-admin-ui-export').'&export=';
         $this->assets_url = str_replace('/Admin.class.php','',$this->base_url).'/assets';
         if(false!==$this->get_var('id'))
             $this->id = sanitize_text_field( $_GET['id'] );
