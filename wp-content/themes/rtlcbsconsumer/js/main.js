@@ -13,21 +13,25 @@
 		slidesPerView: 4,
 		spaceBetween: 6,
 		nextButton: '.swiper-button-next',
-      prevButton: '.swiper-button-prev',
-      breakpoints: {
-      	320: {
-      		slidesPerView: 1
-      	},
-      	640: {
-      		slidesPerView: 2
-      	},
-      	768: {
-      		slidesPerView: 3
-      	}, 
-      	992: {
-      		slidesPerView: 4
-      	}
-      }
+            prevButton: '.swiper-button-prev',
+            breakpoints: {
+            	320: {
+            		slidesPerView: 1
+            	},
+            	640: {
+            		slidesPerView: 2
+            	},
+            	768: {
+            		slidesPerView: 3
+            	}, 
+            	992: {
+            		slidesPerView: 4
+            	}
+            }
 	});
+
+   $( '.content-scroll .simplebar' ).simplebar({
+      autoHide: false
+   });
 
 })( jQuery );
