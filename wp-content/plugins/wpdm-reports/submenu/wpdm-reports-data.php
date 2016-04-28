@@ -145,16 +145,7 @@ if(isset($_GET['country'])){
     // echo $query_string;
 
     /* QUERY for export report */
-    $country_groups = custom_get_country_groups();
-    $country_groups_select_case = "";
-
-    $country_groups_select_case .= "case r.country_group ";
-    foreach ($country_groups as $key => $value) {
-        $country_groups_select_case .= "when '".$key."' then '".$value."' ";
-    }
-    $country_groups_select_case .= "else 'Admin' ";
-    $country_groups_select_case .= "end as country_group, ";
-
+    $country_groups_select_case .= getCountryGroupSelectCase();
 
     $query_string_exportsreports = "
         SELECT date_format(r.created_at, '".$period_date_format_standard."') as ".$period_start_label.",
@@ -174,24 +165,8 @@ if(isset($_GET['country'])){
         " GROUP BY r.user_id, r.post_id, ". $period_start_label."
           ORDER BY ".$period_start_label.",u.user_email,p.post_title
     ";
+    setRtlReportList($period_date_format,$period_date_format_standard,$period_start_label,$select_max_created_at_list,$condition_period );
 
-     $query_string_exportsreports_list = "
-        SELECT date_format(r.created_at, '".$period_date_format_standard."') as ".$period_start_label.",
-            ".$select_max_created_at_list."
-            ".$country_groups_select_case."
-            IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
-            u.user_email, p.post_title, r.file_title as downloaded_files
-        FROM ".$wpdb->custom_reports." r 
-        INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
-        INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
-        WHERE ".
-        $condition_period.
-        " AND ".$condition_country.
-        " AND ".$condition_operator_group.
-        " AND ".$condition_operator_account.
-        " AND ".$condition_show.
-        " ORDER BY ".$period_start_label.",u.user_email,p.post_title
-    ";
 
     $return_value = $wpdb->update( 
         $wpdb->exportsreports_reports, 
@@ -199,13 +174,6 @@ if(isset($_GET['country'])){
             'sql_query' => $query_string_exportsreports
         ), 
         array( 'name' => 'RTL' )
-    );
-    $return_value = $wpdb->update( 
-        $wpdb->exportsreports_reports, 
-        array( 
-            'sql_query' => $query_string_exportsreports_list
-        ), 
-        array( 'name' => 'RTLList' )
     );
 
     // echo "<pre>";
@@ -218,4 +186,3 @@ if(isset($_GET['country'])){
     // print_r($reports_data);
     // echo "</pre>";
 }
-

@@ -812,7 +812,7 @@ function exports_reports_field_defaults( $field = null ) {
 }
 
 function exports_reports_view( $group_id = false ) {
-
+	
 	global $wpdb;
 	$has_full_access = exports_reports_current_user_can_any( 'exports_reports_full_access' );
 	if ( is_super_admin() || ( !$has_full_access && exports_reports_has_role( 'administrator' ) ) ) {
@@ -1013,7 +1013,8 @@ function exports_reports_view( $group_id = false ) {
 	<?php
 	}
 	// $admin->export_source = "dianna";
-	$admin->setTestvar("another value");
+	// $admin->setTestvar("another value");
+	// die('dia');
 	$admin->go();
 }
 add_action( 'wp_admin_ui_post_export', 'exports_reports_log', 10, 2 );

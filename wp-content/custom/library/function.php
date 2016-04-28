@@ -199,6 +199,18 @@ function deleteToCustomCart(){
 	return $return_value;
 }
 
+function updateToExportsReports($query_string_exportsreports_list){
+    global $wpdb;
+    $return_value = $wpdb->update( 
+        $wpdb->exportsreports_reports, 
+        array( 
+            'sql_query' => $query_string_exportsreports_list
+        ), 
+        array( 'name' => 'RTLList' )
+    );
+    return $return_value;
+}
+
 /* END OF DATABASE FUNCTIONS */
 
 if( !function_exists('get_current_user_role') ){
@@ -1470,15 +1482,17 @@ die('asd');
 
 function send_monthly_report($file){
     // $to = $user->user_email;
-    $to = "diannekatherinedelosreyes@gmail.com";
-    $subject = 'Monthly report';
+    $to = "diannekatherinedelosreyes@ymail.com";
+    $subject = 'RTL CBS Asia Monthly Report';
     // $headers = array('Content-Type: text/html; charset=UTF-8');
     $headers  = 'MIME-Version: 1.0' . "\r\n";
     $headers .= 'Content-type: multipart/mixed; charset=iso-8859-1' . "\r\n";
     $attachment = $file;
-    $mail_attachment = array( $attachment );
+    $mail_attachment = $file;//array( $attachment );
 
-    $message = 'attachment';
+    $message = 'Please see the attachment';
+    // print_r($mail_attachment);
+    // die();
     // echo $message;
     // Start output buffering to grab smtp debugging output
     ob_start();
@@ -1492,6 +1506,68 @@ function send_monthly_report($file){
     // Output the response
     // echo "res-".$result;
 }
+
+// add_filter('acf/validate_value/name=end', 'validate_end_date_func', 10, 4);
+// function validate_end_date_func($valid, $value, $field, $input) {
+//   // if (!$valid) {
+//   //   return $valid;
+//   // }
+//   // $repeater_key = 'field_572020eac3ff6';
+//   // $start_key = 'field_572020f6c3ff7';
+//   // $end_key = 'field_5720210cc3ff8';
+//   // // extract row from input
+//   // $row = preg_replace('/^\s*acf\[[^\]]+\]\[([^\]]+)\].*$/', '\1', $input);
+//   // $start_value = $_POST['acf'][$repeater_key][$row][$start_key];
+//   // $end_value = $value;
+//   // if ($end_value <= $start_value) {
+//    $valid = 'end value must be greater than start value';
+//   // }
+//   return $valid;
+//   // return true;
+// }
+
+function setRtlReportList($period_date_format = "%m/%d/%Y", $period_date_format_standard = "%Y-%m-%d", $period_start_label = " Period", $select_max_created_at_list = "", $condition_period = null){
+    global $wpdb;
+    $country_groups_select_case .= getCountryGroupSelectCase();
+
+    $condition_period = $condition_period != null || $condition_period != "" ? $condition_period : "r.created_at BETWEEN '".date('Y-m-01', strtotime('previous month'))." 00:00:00' AND '".date('Y-m-t', strtotime('previous month'))." 23:59:59'";
+    $query_string_exportsreports_list = "
+        SELECT date_format(r.created_at, '".$period_date_format_standard."') as ".$period_start_label.",
+            ".$select_max_created_at_list."
+            ".$country_groups_select_case."
+            IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
+            u.user_email, p.post_title, r.file_title as downloaded_files
+        FROM ".$wpdb->custom_reports." r 
+        INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
+        INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
+        WHERE ".$condition_period.
+        " ORDER BY ".$period_start_label.",u.user_email,p.post_title
+    ";
+
+    $return_value = updateToExportsReports($query_string_exportsreports_list);
+}
+
+function getCountryGroupSelectCase(){
+    $country_groups = custom_get_country_groups();
+    $country_groups_select_case = "";
+
+    $country_groups_select_case .= "case r.country_group ";
+    foreach ($country_groups as $key => $value) {
+        $country_groups_select_case .= "when '".$key."' then '".$value."' ";
+    }
+    $country_groups_select_case .= "else 'Admin' ";
+    $country_groups_select_case .= "end as country_group, ";
+
+    return $country_groups_select_case;
+}
+
+function testing(){
+    die('diane');
+    echo '<input type="button" value=" Export Report " id="auto_report" class="button" title="" style="display:none" onclick="window.open("?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports","temp_report_window");">';
+    echo '<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>';
+    echo "<script>jQuery('#auto_report').trigger('click');</script>";
+}
+add_action( 'init', 'testing', 100 );
 
 // ENQUEUE SCRIPTS
 function my_scripts(){

@@ -19,9 +19,13 @@ add_action('admin_menu', "plugin_menu");
 
 function reports_dashboard(){
 	// die(WPDMR_PLUGIN_DIR);
-	
+	// echo "<script>alert('omg!');</script>";
+	// wp_clear_scheduled_hook('my_task_hook');
+	// echo "<script>alert('omg!');</script>";
+	// echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
 	echo "dashboard";
 }
+
 function wpdm_reports_data_content(){
 	require_once WPDMR_PLUGIN_DIR . 'admin/front-reports-data.php';
 }
@@ -54,3 +58,41 @@ function register_plugin_styles() {
 	wp_register_style('jquery-ui', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css');
 	wp_enqueue_style( 'jquery-ui' ); 
 }
+
+
+/* Cron job not working */
+// function my_cron_schedules($schedules){
+//     $schedules['five_seconds'] = array(
+//         'interval' => 1,
+//         'display'  => esc_html__( 'Every Second' ),
+//     );
+//     $schedules['monthly'] = array(      
+//     	'interval'=> 2592000,      
+//     	'display'=>  __('Once Every 30 Days')  
+//     );
+//     return $schedules;
+// }
+// add_filter('cron_schedules','my_cron_schedules');
+
+// if ( ! wp_next_scheduled( 'my_task_hook' ) ) {
+//   wp_schedule_event( time(), 'five_seconds', 'my_task_hook' );
+// }
+
+// add_action( 'my_task_hook', 'my_task_function' );
+
+// function my_task_function() {
+// 	// echo '<script>window.open("?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports","temp_report_window");</script>';
+// 	// ob_start(); // ensures anything dumped out will be caught
+// 	// // do stuff here
+// 	// $url = 'http://example.com/thankyou.php'; // this can be set based on whatever
+// 	// // clear out the output buffer
+// 	// while (ob_get_status()) {ob_end_clean();}
+// 	// // no redirect
+// 	// header( "Location: $url" );
+
+// 	echo '<input type="button" value=" Export Report " id="auto_report" class="button" title="" style="display:none" onclick="window.open("?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports","temp_report_window");">';
+//     echo '<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>';
+//     echo "<script>jQuery('#auto_report').trigger('click');</script>";
+//   // echo "<script>alert('omg!');</script>";
+//   // wp_die('dieee');
+// }

@@ -19,9 +19,16 @@ if ( isset( $_GET['download'] ) && isset( $_GET['_wpnonce'] ) && false !== wp_ve
 		wp_die( 'File not found.' );
 	}
     /** Custom code by dianne d.r. - to auto download csv file upon export */
-    // send_monthly_report($file);
-    print_r($_GET);
-    die();
+    // custom_monthly_reports
+    // die('sh');
+    if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_monthly_reports' ){
+        setRtlReportList();
+        // send_monthly_report($file);
+    }
+   
+    // print_r($_GET);
+    // echo $file;
+    // die();
     if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_reports_data' ){
         wpdm_download_file($file, $_GET['export'].".csv");
         @unlink($file);
@@ -135,13 +142,13 @@ class WP_Admin_UI
     public function setTestvar($testvar) { 
         $this->export_source = $testvar; 
     }
-    
+
     function __construct ($options=false)
     {
         do_action('wp_admin_ui_pre_init',$options);
         $options = $this->do_hook('options',$options);
         $this->base_url = plugins_url( 'Admin.class.php', __FILE__  );
-        $this->export_url = admin_url( 'admin-ajax.php' ) . '?action=wp_admin_ui_export&export_source='.$this->export_source.'&download=1&_wpnonce='.wp_create_nonce('wp-admin-ui-export').'&export=';
+        $this->export_url = admin_url( 'admin-ajax.php' ) . '?action=wp_admin_ui_export&export_source='.$this->get_var('export_source').'&download=1&_wpnonce='.wp_create_nonce('wp-admin-ui-export').'&export=';
         $this->assets_url = str_replace('/Admin.class.php','',$this->base_url).'/assets';
         if(false!==$this->get_var('id'))
             $this->id = sanitize_text_field( $_GET['id'] );
@@ -1249,7 +1256,12 @@ class WP_Admin_UI
                 }
                 fclose($fp);
                 $this->message('<strong>Success:</strong> Your export is ready, the download should begin in a few moments. If it doesn\'t, <a href="'.$this->export_url.urlencode($export_file).'">click here to access your CSV export file</a>.<br /><br />When you are done with your export, <a href="'.$this->var_update(array('remove_export'=>urlencode($export_file),'action'=>'export')).'">click here to remove it</a>, otherwise the export will be deleted within 24 hours of generation.');
-                echo '<script type="text/javascript">window.open("'.$this->export_url.urlencode($export_file).'");</script>';
+                
+                /** Custom code by dianne d.r. - opens a blank new tab for Reports Data export btn */
+                if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_reports_data' ){
+                    echo '<script type="text/javascript">window.open("'.$this->export_url.urlencode($export_file).'");</script>';
+                }
+                /** End of custom code  */
             }
             elseif($this->export_type=='tsv')
             {
