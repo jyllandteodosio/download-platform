@@ -34,4 +34,23 @@
       autoHide: false
    });
 
+   $( '.video-playlist' ).mCustomScrollbar({
+      theme: 'dark'
+   });
+
+   /* Video Player */
+
+   var playerId = 'vimeoplayer'
+   var player = $f( document.getElementById( playerId ) );
+      player.addEvent('ready', function() {
+      player.api('play');
+   })
+
+   $( '.video-show' ).on( 'click', function() {
+      $( '.video-show' ).removeClass( 'active' );
+      $( this ).addClass( 'active' );
+      var vimeoId = $(this).data('vimeo-id');
+      var src = '//player.vimeo.com/video/' + vimeoId + '?api=1&player_id=' + playerId;  
+      $( '#' + playerId ).prop( 'src', src);
+   });
 })( jQuery );

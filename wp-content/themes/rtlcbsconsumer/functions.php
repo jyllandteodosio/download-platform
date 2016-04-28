@@ -70,12 +70,14 @@ add_action( 'after_setup_theme', 'rtlcbsconsumer_setup' );
 function rtlcbsconsumer_scripts() {
 	wp_enqueue_style( 'bootstrap-style', get_template_directory_uri() . '/css/bootstrap.min.css', false, '3.3.6', 'all' );
 	wp_enqueue_style( 'swiper-style', get_template_directory_uri() . '/css/swiper.min.css', false, '3.3.1', 'all' );
+	wp_enqueue_style( 'mCustomScrollBar-style', get_template_directory_uri() . '/css/jquery.mCustomScrollbar.min.css', false, '3.1.3', 'all' );
 	wp_enqueue_style( 'simplebar-style', get_template_directory_uri() . '/css/simplebar.css', false, '1.1.9', 'all' );
 	wp_enqueue_style( 'rtlcbsconsumer-style', get_stylesheet_uri(), false, '1.0', 'all' );
 
 	wp_enqueue_script( 'jQuery', get_template_directory_uri() . '/js/vendor/jquery.min.js', false, 1.12, true);
 	wp_enqueue_script( 'bootstrap-script', get_template_directory_uri() . '/js/vendor/bootstrap.min.js', array ( 'jQuery' ), 3.3, true);
 	wp_enqueue_script( 'plugins', get_template_directory_uri() . '/js/plugins.js', false, 1.0, true);
+	wp_enqueue_script( 'froogaloop', '//f.vimeocdn.com/js/froogaloop2.min.js', false, 1.0, true);
 	wp_enqueue_script( 'main-js', get_template_directory_uri() . '/js/main.js', false, 1.0, true);
 }
 add_action( 'wp_enqueue_scripts', 'rtlcbsconsumer_scripts' );
