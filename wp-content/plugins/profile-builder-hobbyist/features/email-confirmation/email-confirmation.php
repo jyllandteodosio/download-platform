@@ -563,15 +563,31 @@ function wppb_notify_user_registration_email( $bloginfo, $user_name, $email, $se
 	
 	//send an email to the newly registered user, if this option was selected
 	if ( isset( $send_credentials_via_email ) && ( $send_credentials_via_email == 'sending' ) ){
-		$user_message_from = apply_filters( 'wppb_register_from_email_message_user_email', $bloginfo );
+		/* Commented lines of code are the original profile builder codes*/
+		$user_message_from = apply_filters( 'wppb_register_from_email_message_user_email', 'RTL CBS Asia' );
+		// $user_message_from = apply_filters( 'wppb_register_from_email_message_user_email', $bloginfo );
 
-		$user_message_subject = sprintf( __( '[%1$s] Your new account information', 'profile-builder' ), $user_message_from, $user_name, $password );
+		$user_message_subject = sprintf( __( 'Welcome to RTL CBS Asia - Operator Website!', 'profile-builder' ), $user_message_from, $user_name, $password );
+		// $user_message_subject = sprintf( __( '[%1$s] Your new account information', 'profile-builder' ), $user_message_from, $user_name, $password );
 		$user_message_subject = apply_filters( 'wppb_register_user_email_subject_without_admin_approval', $user_message_subject, $email, $password, $user_message_subject, 'wppb_user_emailc_default_registration_email_subject' );
 
         if ( $password === NULL ) {
             $password = __( 'Your selected password at signup', 'profile-builder' );
         }
-		$user_message_content = sprintf( __( 'Welcome to %1$s!<br/><br/><br/>Your username is:%2$s and password:%3$s', 'profile-builder' ), $user_message_from, $user_name, $password );
+        $message_string = '
+        	<b>Welcome to RTL CBS Asia - Operator Website!</b>
+			<br/><br/>
+        	A new account has been created for you using the following credentials:
+			<br/><br/>
+        	username: %2$s<br/>
+        	password: %3$s<br/>
+			<br/>
+			<b><a href="'.get_site_url(1, 'change-password/').'">Change your password</a></b> now or <b><a href="'.get_site_url(1).'">Log in</a></b> to the Operator Site and check out all of the files available for you.
+			<br/><br/>
+			Thanks,<br/>
+			RTL CBS Asia Team<br/>
+        	';
+		$user_message_content = sprintf( __( $message_string, 'profile-builder' ), $user_message_from, $user_name, $password );
         if ( $password === __( 'Your selected password at signup', 'profile-builder' ) ) {
             $password = NULL;
         }
