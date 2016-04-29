@@ -34,26 +34,25 @@
       autoHide: false
    });
 
-   //* Loading this with screen width of 992px and above inside the condition doesn't work because of weird vimeo error. 
-   var videoPlayer = new Swiper( '.video-playlist', {
-      slidesPerView: 4,
-      nextButton: '.video-playlist-container .swiper-button-next',
-      prevButton: '.video-playlist-container .swiper-button-prev',
-      breakpoints: {
-         767: {
-            slidesPerView: 3
-         },
-         479: {
-            slidesPerView: 2
-         },
-         359: {
-            slidesPerView: 1
+   var videoPlayer;
+   if( $( window ).innerWidth() < 992 ) {
+      videoPlayer = new Swiper( '.video-playlist', {
+         slidesPerView: 4,
+         nextButton: '.video-playlist-container .swiper-button-next',
+         prevButton: '.video-playlist-container .swiper-button-prev',
+         breakpoints: {
+            767: {
+               slidesPerView: 3
+            },
+            479: {
+               slidesPerView: 2
+            },
+            359: {
+               slidesPerView: 1
+            }
          }
-      }
-   });
-   videoPlayer.destroy( false, true );
-
-   if( $( window ).innerWidth() >= 992 ) { 
+      });
+   } else {   
       $( '.video-playlist-side' ).removeClass( 'swiper-container' );
       $( '.video-playlist-side .video-show-container' ).removeClass( 'swiper-wrapper' );
       $( '.video-playlist-side .video-show' ).removeClass( 'swiper-slide' );
@@ -64,12 +63,12 @@
 
    $( window ).on( 'resize', function() {
       if( $( window ).innerWidth() < 992 ) {
+         $( '.video-playlist' ).mCustomScrollbar( 'destroy' );
          $( '.video-playlist-side' ).addClass( 'swiper-container' );
          $( '.video-playlist-side .video-show-container' ).addClass( 'swiper-wrapper' );
          $( '.video-playlist-side .video-show' ).addClass( 'swiper-slide' );
-         $('.swiper-wrapper').removeAttr('style');
-         $('.swiper-slide').removeAttr('style');
-         if( typeof videoPlayer == 'undefined' ) {
+         if (typeof videoPlayer == 'undefined' ) {
+            console.log('define videoplayer');
             videoPlayer = new Swiper( '.video-playlist', {
                slidesPerView: 4,
                nextButton: '.video-playlist-container .swiper-button-next',
@@ -86,12 +85,9 @@
                   }
                }
             });
-            
-         } else {
-            videoPlayer.attachEvents();
          }
          videoPlayer.update();
-         $( '.video-playlist' ).mCustomScrollbar( 'destroy' )
+         videoPlayer.attachEvents();
       } else {
          if( videoPlayer ) videoPlayer.destroy( false, true );
          $( '.video-playlist-side' ).removeClass( 'swiper-container' );

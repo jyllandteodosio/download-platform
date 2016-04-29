@@ -664,7 +664,7 @@ a:hover {
 	content: '';
 	position: absolute;
 	top: 15px;
-	left: 0;
+	left: 1px;
 	height: 12px;
 	width: 7px;
 	background-position: -100px -3px;
@@ -698,6 +698,32 @@ a:hover {
 .video-playlist-container .swiper-container-rtl .swiper-button-next {
 	left: 0;
 	border-radius: 5px 0 0 5px;
+}
+
+.video-playlist-container .swiper-button-prev::before, 
+.video-playlist-container .swiper-container-rtl .swiper-button-nexr::before {
+	content: '';
+	position: absolute;
+	top: calc(50% - 8px);
+	left: calc(50% - 5px);
+	width: 8px !important;
+	height: 11px !important;
+	background-position: -131px -2px;
+	background-image: url("images/flat-sprites.svg");
+	-pie-background: url("images/flat-sprites.svg");
+}
+
+.video-playlist-container .swiper-button-next::before, 
+.video-playlist-container .swiper-container-rtl .swiper-button-prev::before {
+	content: '';
+	position: absolute;
+	top: calc(50% - 8px);
+	right: calc(50% - 5px);
+	width: 8px !important;
+	height: 11px !important;
+	background-position: -139px -2px;
+	background-image: url("images/flat-sprites.svg");
+	-pie-background: url("images/flat-sprites.svg");
 }
 
 @media (max-width: 479px) {
