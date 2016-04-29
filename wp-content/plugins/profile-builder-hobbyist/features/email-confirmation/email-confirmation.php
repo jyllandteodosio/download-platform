@@ -582,7 +582,11 @@ function wppb_notify_user_registration_email( $bloginfo, $user_name, $email, $se
         	username: %2$s<br/>
         	password: %3$s<br/>
 			<br/>
-			<b><a href="'.get_site_url(1, 'change-password/').'">Change your password</a></b> now or <b><a href="'.get_site_url(1).'">Log in</a></b> to the Operator Site and check out all of the files available for you.
+			<b><a href="'.get_site_url(1, 'change-password/').'">Login and change your password</a></b> now;
+			<br/>
+			or
+			<br/>
+			<b><a href="'.get_site_url(1).'">Log in</a></b> to check out all of the files available for you.
 			<br/><br/>
 			Thanks,<br/>
 			RTL CBS Asia Team<br/>
