@@ -72,7 +72,7 @@ get_header( 'rtl' ); ?>
 				</div>
 			</div>
 			<div class="swiper-slide">
-				<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/theoddcouple.png" />
+				<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/theoddcouple.png" class="swiper-photo"/>
 				<div class="swiper-description">
 					<span class="day">Fridays</span>
 					<div class="time">
@@ -85,7 +85,7 @@ get_header( 'rtl' ); ?>
 				</div>		
 			</div>
 			<div class="swiper-slide">
-				<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/marryme.jpg" />	
+				<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/marryme.jpg" class="swiper-photo"/>	
 				<div class="swiper-description">
 					<span class="day">Fridays</span>
 					<div class="time">
@@ -98,7 +98,7 @@ get_header( 'rtl' ); ?>
 				</div>	
 			</div>
 			<div class="swiper-slide">
-				<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/chrisleyknowsbest.png" />
+				<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/chrisleyknowsbest.png" class="swiper-photo"/>
 				<div class="swiper-description">
 					<span class="day">Sundays</span>
 					<div class="time">
@@ -145,7 +145,7 @@ get_header( 'rtl' ); ?>
 		</div>	
 		<div class="swiper-button-prev"></div>
    	<div class="swiper-button-next"></div>	
-		<div class="text-center"><a href="#" class="today-link">View Featured Shows<span class="glyphicon glyphicon-play"></span></a></div>
+		<div class="text-center"><a href="<?php echo site_url(); ?>/featured-shows" class="today-link">View Featured Shows<span class="glyphicon glyphicon-play"></span></a></div>
 	</div>
 </div>
 <div class="section row">
@@ -197,6 +197,39 @@ get_header( 'rtl' ); ?>
 	</div>
 	<div id="widget-home-sidebar" class="col-xs-12 col-lg-6">
 		<h2 class="section-title">What's on RTL CBS Entertainment HD</h2>
+		<div id="home-video-player" class="video-player-container">
+			<div class="video-player">
+				<iframe id="vimeoplayer" width="700" height="300" src="http://player.vimeo.com/video/127580017?api=1&player_id=vimeoplayer" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+			</div>
+			<div class="video-playlist-container">
+				<div id="video-playlist" class="video-playlist swiper-container">
+					<div class="video-show-container swiper-wrapper">
+						<div class="video-show swiper-slide active" data-vimeo-id="127580017">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_500x280.png" class="video-thumbnail">
+							<span class="video-title">Billboard Music Awards 2015</span>
+						</div>
+						<div class="video-show swiper-slide" data-vimeo-id="127580018">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/bgt_500x280.png" class="video-thumbnail">
+							<span class="video-title">Britain's Got Talent 9</span>	
+						</div>
+						<div class="video-show swiper-slide" data-vimeo-id="121871277">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_500x280.png" class="video-thumbnail">
+							<span class="video-title">Elementary 3</span>
+						</div>
+						<div class="video-show swiper-slide" data-vimeo-id="127580022">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_500x280.png" class="video-thumbnail">
+							<span class="video-title">House of Cards 3</span>
+						</div>
+						<div class="video-show swiper-slide" data-vimeo-id="127600510">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/letterman_500x280.png" class="video-thumbnail">
+							<span class="video-title">Later Show with Letterman</span>
+						</div>
+					</div>
+				</div>
+				<div class="swiper-button-prev gradient-red"></div>
+	    		<div class="swiper-button-next gradient-red"></div>
+			</div>
+		</div>
 		<?php if ( is_active_sidebar( 'rtlcbs-home-sidebar' ) ) : ?>
 			<div id="home-sidebar" class="primary-sidebar widget-area" role="complementary">
 				<?php dynamic_sidebar( 'rtlcbs-home-sidebar' ); ?>

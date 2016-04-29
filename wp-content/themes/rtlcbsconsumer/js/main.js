@@ -30,13 +30,48 @@
             }
 	});
 
+   var otherSlideShow = new Swiper( '#other-shows-slideshow', {
+      slidesPerView: 3,
+      spaceBetween: 20,
+      slidesPerGroup: 3,
+      nextButton: '.swiper-button-next',
+      prevButton: '.swiper-button-prev',
+      breakpoints: {
+         639: {
+         slidesPerView: 1,
+         slidesPerGroup: 1
+         },
+         991: {
+            slidesPerView: 2,
+            slidesPerGroup: 2
+         }
+      }
+   });
+
+   homeVideoPlayer = new Swiper( '#home-video-player .video-playlist', {
+      slidesPerView: 4,
+      nextButton: '.video-playlist-container .swiper-button-next',
+      prevButton: '.video-playlist-container .swiper-button-prev',
+      breakpoints: {
+         767: {
+            slidesPerView: 3
+         },
+         479: {
+            slidesPerView: 2
+         },
+         359: {
+            slidesPerView: 1
+         }
+      }
+   });
+
    $( '.content-scroll .simplebar' ).simplebar({
       autoHide: false
    });
 
    var videoPlayer;
    if( $( window ).innerWidth() < 992 ) {
-      videoPlayer = new Swiper( '.video-playlist', {
+      videoPlayer = new Swiper( '.video-playlist-side-container .video-playlist', {
          slidesPerView: 4,
          nextButton: '.video-playlist-container .swiper-button-next',
          prevButton: '.video-playlist-container .swiper-button-prev',
@@ -69,7 +104,7 @@
          $( '.video-playlist-side .video-show' ).addClass( 'swiper-slide' );
          if (typeof videoPlayer == 'undefined' ) {
             console.log('define videoplayer');
-            videoPlayer = new Swiper( '.video-playlist', {
+            videoPlayer = new Swiper( '.video-playlist-side-container .video-playlist', {
                slidesPerView: 4,
                nextButton: '.video-playlist-container .swiper-button-next',
                prevButton: '.video-playlist-container .swiper-button-prev',
@@ -93,7 +128,7 @@
          $( '.video-playlist-side' ).removeClass( 'swiper-container' );
          $( '.video-playlist-side .video-show-container' ).removeClass( 'swiper-wrapper' );
          $( '.video-playlist-side .video-show' ).removeClass( 'swiper-slide' );
-         $( '.video-playlist' ).mCustomScrollbar({
+         $( '.video-playlist-side-container .video-playlist' ).mCustomScrollbar({
             theme: 'dark',
          });
       }

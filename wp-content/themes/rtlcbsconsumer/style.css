@@ -400,7 +400,8 @@ a:hover {
 	right: -37px;
 }
 
-#showsToday .swiper-button-prev {
+#showsToday .swiper-button-prev,
+.swiper-white .swiper-button-prev {
 	content: '';
 	width: 26px !important;
 	height: 30px !important;
@@ -435,6 +436,10 @@ a:hover {
 }
 
 /* Home - Sections */
+.section {
+	position: relative;
+}
+
 .section-title {
 	margin-bottom: 20px;
 	font-size: 22px;
@@ -635,6 +640,48 @@ a:hover {
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d11e23', endColorstr='#88080a',GradientType=0 );
 }
 
+/* Show
+----------------------------------*/
+.show {
+	border-radius: 5px;
+	background: #161617;
+	overflow: hidden;
+}
+
+.show .show-thumbnail {
+	width: 100%;
+}
+
+.show .show-details {
+	padding: 15px;
+}
+
+.show .show-title {
+	display: block;
+	font-size: 22px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.show .show-description {
+	margin-top: 15px;
+	margin-bottom: 0;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.show .view-more {
+	margin: 0;
+	margin-top: 25px;
+}
+
+.other-slideshow-container {
+	position: relative;
+	width: calc(100% - 100px);
+	margin: 0 auto;
+}
+
 /* Video Player
 ----------------------------------*/
 .video-player > iframe {
@@ -777,10 +824,75 @@ a:hover {
 	}
 }
 
+#home-video-player {
+	margin-bottom: 20px;
+}
+
+#home-video-player .video-playlist-container {
+	margin-top: 1px;
+	background-color: #161617;
+}
+
+#home-video-player .video-playlist .video-show.active::before {
+	content: none;
+}
+
+#home-video-player .video-playlist {
+	width: calc(100% - 24px);
+} 
+
+#home-video-player .video-show {
+	text-align: center;
+	padding: 20px 8px 5px;
+} 
+
+#home-video-player .video-title {
+	font-size: 10px;
+	height: auto;
+	white-space: nowrap;
+	width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+#home-video-player .video-thumbnail {
+	font-size: 10px;
+	height: auto;
+	margin-bottom: 20px;
+}
+
 #widget-home-sidebar .widget-area > div {
 	overflow-x: auto;
 	text-align: center;
 }
+
+/* Swiper
+----------------------------------*/
+.swiper-button-default-white {
+	background: none;
+}
+
+.swiper-button-default-white:after {
+	content: '';
+	position: absolute;
+	background-image: url("images/flat-sprites.svg");
+	-pie-background: url("images/flat-sprites.svg");
+}
+
+.swiper-button-default-white.swiper-button-next:after {
+	right: 0;
+	width: 26px !important;
+	height: 30px !important;
+	background-position: -194px -43px;
+}
+
+.swiper-button-default-white.swiper-button-prev:after {
+	left: 0;
+	width: 26px !important;
+	height: 30px !important;
+	background-position: -168px -43px;
+}
+
 
 /* Widgets */
 @media (min-width: 1200px) {
@@ -840,6 +952,96 @@ a:hover {
 	color: #000;
 	line-height: 18px;
 	text-decoration: none;
+}
+
+.link-button:hover {
+	color: #000;
+}
+
+@media (max-width: 991px) {
+	#featured-slideshow .day {
+		font-size: 24px;
+	}
+
+	#featured-slideshow .time {
+		font-size: 23px;
+		line-height: 1;
+	}
+
+	#featured-slideshow .timezone {
+		margin-left: 0;
+		font-size: 12px;
+	}
+
+	#featured-slideshow .title {
+		font-size: 28px;
+		line-height: 1;
+	}
+
+	#featured-slideshow .swiper-photo {
+		float: right;
+	}
+}
+
+@media (max-width: 767px) {
+	#featured-slideshow .day {
+		font-size: 21px;
+	}
+
+	#featured-slideshow .time {
+		font-size: 20px;
+		line-height: 1;
+	}
+
+	#featured-slideshow .timezone {
+		margin-left: 0;
+		font-size: 12px;
+	}
+
+	#featured-slideshow .title {
+		font-size: 24px;
+		line-height: 1;
+	}
+
+	#featured-slideshow .description {
+		display: none;
+	}
+
+	#featured-slideshow .swiper-photo {
+		float: right;
+	}
+
+	#featured-slideshow .view-more {
+		display: block;
+		max-width: 105px;
+	}
+}
+
+@media (max-width: 639px) {
+
+	#featured-slideshow .description,
+	#featured-slideshow .day,
+	#featured-slideshow .time {
+		display: none;
+	}
+
+	#featured-slideshow .title {
+		display: block;
+		font-size: 16px;
+	}
+
+	#featured-slideshow .swiper-description {
+		padding: 10px 10px 30px;
+	}
+
+	#featured-slideshow .swiper-photo {
+		height: 265px;
+		width: auto;
+	}
+
+	#featured-slideshow .view-more {
+		font-size: 12px;
+	}
 }
 
 /* Swiper */

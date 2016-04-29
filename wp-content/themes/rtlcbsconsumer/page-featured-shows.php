@@ -73,7 +73,7 @@ get_header( 'rtl' ); ?>
 				</div>
 			</div>
 			<div class="swiper-slide">
-				<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/theoddcouple.png" />
+				<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/theoddcouple.png" class="swiper-photo"/>
 				<div class="swiper-description">
 					<span class="day">Fridays</span>
 					<div class="time">
@@ -94,24 +94,142 @@ get_header( 'rtl' ); ?>
 	<div class="row">
 		<div class="spotlight-show-container col-xs-12 col-sm-6">
 			<div class="spotlight-show">
-				<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_306x200.jpg');"></div>
 				<div class="spotlight-details">
 					<h3 class="spotlight-title">Billboard Music Awards 2015</h3>
 					<p class="spotlight-excerpt">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring...</p>
 					<a href="#">View More</a>
 				</div>
+				<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_306x200.jpg');"></div>
 			</div>
 		</div>
 		<div class="spotlight-show-container col-xs-12 col-sm-6">
 			<div class="spotlight-show">
-				<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_306x200.jpg');"></div>
 				<div class="spotlight-details">
 					<h3 class="spotlight-title">House of Cards 3</h3>
 					<p class="spotlight-excerpt">Frank Underwood has ascended to the presidency of the United States without a single vote cast to his name. As he now holds the most powerful position in the world, how...</p>
 					<a href="#">View More</a>
 				</div>
+				<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_306x200.jpg');"></div>
 			</div>
 		</div>
 	</div>
+</div>
+<div class="section">
+	<div class="video-player-container video-player-side-container clearfix">
+		<div class="video-player">
+			<iframe id="vimeoplayer" width="700" height="400" src="http://player.vimeo.com/video/127580017?api=1&player_id=vimeoplayer" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+		</div>
+		<div class="video-playlist-container video-playlist-side-container">
+			<div id="video-playlist" class="video-playlist video-playlist-side swiper-container">
+				<div class="video-show-container swiper-wrapper">
+					<div class="video-show swiper-slide active" data-vimeo-id="127580017">
+						<span class="video-title">Billboard Music Awards 2015</span>
+						<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_500x280.png" class="video-thumbnail">
+					</div>
+					<div class="video-show swiper-slide" data-vimeo-id="127580018">
+						<span class="video-title">Britain's Got Talent 9</span>
+						<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/bgt_500x280.png" class="video-thumbnail">
+					</div>
+					<div class="video-show swiper-slide" data-vimeo-id="121871277">
+						<span class="video-title">Elementary 3</span>
+						<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_500x280.png" class="video-thumbnail">
+					</div>
+					<div class="video-show swiper-slide" data-vimeo-id="127580022">
+						<span class="video-title">House of Cards 3</span>
+						<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_500x280.png" class="video-thumbnail">
+					</div>
+					<div class="video-show swiper-slide" data-vimeo-id="127600510">
+						<span class="video-title">Later Show with Letterman</span>
+						<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/letterman_500x280.png" class="video-thumbnail">
+					</div>
+				</div>
+			</div>
+			<div class="swiper-button-prev gradient-red hidden-md hidden-lg"></div>
+    		<div class="swiper-button-next gradient-red hidden-md hidden-lg"></div>
+		</div>
+	</div>
+</div>
+<div class="section">
+	<h2 class="section-title">Other Shows</h2>
+	<div class="other-slideshow-container">
+		<div id="other-shows-slideshow" class="swiper-container">
+			<div class="swiper-wrapper">
+				<div class="swiper-slide">
+					<div class="show">
+						<div class="show-thumbnail-container">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_331x300.png" class="show-thumbnail" />
+						</div>
+						<div class="show-details">
+							<span class="show-title">Billboard Music Awards 2015</span>
+							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
+							<a href="#" class="view-more link-button">View More</a>
+						</div>
+					</div>
+				</div>
+				<div class="swiper-slide">		
+					<div class="show">
+						<div class="show-thumbnail-container">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/bgt_331x300.jpg" class="show-thumbnail" />
+						</div>
+						<div class="show-details">
+							<span class="show-title">Billboard Music Awards 2015</span>
+							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
+							<a href="#" class="view-more link-button">View More</a>
+						</div>
+					</div>
+				</div>
+				<div class="swiper-slide">		
+					<div class="show">
+						<div class="show-thumbnail-container">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_331x300.png" class="show-thumbnail" />
+						</div>
+						<div class="show-details">
+							<span class="show-title">Billboard Music Awards 2015</span>
+							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
+							<a href="#" class="view-more link-button">View More</a>
+						</div>
+					</div>
+				</div>
+				<div class="swiper-slide">		
+					<div class="show">
+						<div class="show-thumbnail-container">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_331x300.png" class="show-thumbnail" />
+						</div>
+						<div class="show-details">
+							<span class="show-title">Billboard Music Awards 2015</span>
+							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
+							<a href="#" class="view-more link-button">View More</a>
+						</div>
+					</div>
+				</div>
+				<div class="swiper-slide">		
+					<div class="show">
+						<div class="show-thumbnail-container">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_331x300.png" class="show-thumbnail" />
+						</div>
+						<div class="show-details">
+							<span class="show-title">Billboard Music Awards 2015</span>
+							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
+							<a href="#" class="view-more link-button">View More</a>
+						</div>
+					</div>
+				</div>
+				<div class="swiper-slide">		
+					<div class="show">
+						<div class="show-thumbnail-container">
+							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_331x300.png" class="show-thumbnail" />
+						</div>
+						<div class="show-details">
+							<span class="show-title">Billboard Music Awards 2015</span>
+							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
+							<a href="#" class="view-more link-button">View More</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="swiper-button-prev swiper-button-default-white"></div>
+	<div class="swiper-button-next swiper-button-default-white "></div>
 </div>
 <?php get_footer( 'rtl' ); ?>
