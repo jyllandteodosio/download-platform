@@ -234,10 +234,6 @@ a:hover {
 	padding: 30px 50px 50px;
 }
 
-.content-area.content-scroll {
-	padding-bottom: 0;
-}
-
 .section {
 	margin-bottom: 20px;
 }
@@ -257,9 +253,14 @@ a:hover {
 	line-height: 27px;
 }
 
-.content-scroll .entry-content {
-	padding-top: 10px;
+.fixed-height {
+	height: 315px;
 	background-color: #000;
+	overflow-y: auto;
+}
+
+.fixed-height .entry-content {
+	padding: 15px 0 10px 40px;
 }
 
 .content-scroll .entry-content .simplebar {
@@ -272,6 +273,12 @@ a:hover {
 .content-scroll .entry-content .simplebar-content {
 	padding-left: 40px;
 	padding-right: 40px;
+}
+
+@media (max-width: 767px) {
+	.fixed-height .entry-content {
+		padding-left: 15px;
+	}
 }
 
 /* Simple Scrollbar */
@@ -1131,4 +1138,24 @@ a:hover {
 .mCS-dark.mCSB_scrollTools .mCSB_draggerRail {
 	width: 14px;
 	background-color: #2c2a2b;
+}
+
+.mCS-red.mCSB_inside > .mCSB_container {
+	margin-right: 15px;
+}
+
+.mCS-red .mCSB_scrollTools {
+	width: 15px;
+}
+
+.mCS-red .mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
+	width: 15px;
+	border-radius: 3px;
+	background-color: #df1f26;
+}
+
+.mCS-red .mCSB_scrollTools .mCSB_draggerRail {
+	width: 15px;
+	border-radius: 3px;
+	background-color: #373736;
 }
