@@ -1371,7 +1371,7 @@ if (!function_exists('get_user_info')) {
     
     function get_user_info($user_id, $data='email'){
         $user_info = get_userdata($user_id);
-        $info = $data == 'email' ? $user_info->user_email : "";
+        $info = $data == 'email' ? $user_info->user_email : ($data == 'login' ? $user_info->user_login : "");
         return $info;
     }
 }
