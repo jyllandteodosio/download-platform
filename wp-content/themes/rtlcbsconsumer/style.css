@@ -615,104 +615,140 @@ a:hover {
 	.page-template-schedule .entry-header {
 		padding: 15px;
 	}
+
+	.page-template-videos .content-area {
+		padding: 10px 0 25px;
+		min-height: auto;
+	}
 }
 
 /* MISCELLANEOUS & PLUGINS
 ----------------------------------*/
+.gradient-red {
+	background: #d11e23;
+	background: -moz-linear-gradient(top, #d11e23 0%, #88080a 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #d11e23), color-stop(100%, #88080a));
+	background: -webkit-linear-gradient(top, #d11e23 0%, #88080a 100%);
+	background: -o-linear-gradient(top, #d11e23 0%, #88080a 100%);
+	background: -ms-linear-gradient(top, #d11e23 0%, #88080a 100%);
+	background: linear-gradient(to bottom, #d11e23 0%, #88080a 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d11e23', endColorstr='#88080a',GradientType=0 );
+}
 
 /* Video Player
 ----------------------------------*/
-.video-player-container {
-	display: table;
-	height: 400px;
-	margin: 0 auto;
+.video-player > iframe {
+	width: 100%;
 }
 
-.video-player,
 .video-playlist-container {
-	display: table-cell;
-	vertical-align: top;
-	height: 400px;
-}
-
-.video-player {
-	width: 700px;
-	background: #000;
+	position: relative;
+	margin-top: 10px;
+	border-radius: 5px;
+	background-color: #2f2d2e;
+	overflow: hidden;
 }
 
 .video-playlist {
-	width: 167px;
-	height: 400px;
-	border-radius: 0 5px 5px 0;
-	background-color: #2f2d2e;
+	width: calc(100% - 40px);
+	margin: 0 auto;
 }
 
 .video-show {
 	position: relative;
-	margin-top: 5px;
-	margin-bottom: 20px;
-	margin-left: 10px;
+	padding: 10px;
 	cursor: pointer;
-}
-
-.video-title {
-	line-height: 1.2;
-}
-
-.video-thumbnail {
-	margin-top: 5px;
-	width: 100%;
 }
 
 .video-playlist .video-show.active::before {
 	content: '';
 	position: absolute;
-	top: 5px;
-	left: -8px;
+	top: 15px;
+	left: 0;
 	height: 12px;
 	width: 7px;
 	background-position: -100px -3px;
 	background-image: url('images/flat-sprites.svg');
 }
 
-@media (max-width: 991px) {
-	.video-player-container,
-	.video-player,
-	.video-playlist-container,
-	.video-playlist {
-		display: block;
-		width: 100%;
+.video-title {
+	display: block;
+	height: 40px;
+}
+
+.video-thumbnail {
+	width: 100%;
+}
+
+.video-playlist-container .swiper-button-next, 
+.video-playlist-container .swiper-button-prev {
+	top: 0;
+	margin-top: 0;
+	width: 20px;
+	height: 100%;
+}
+
+.video-playlist-container .swiper-button-next,
+.video-playlist-container .swiper-container-rtl .swiper-button-prev {
+	right: 0;
+	border-radius: 0 5px 5px 0;
+}
+
+.video-playlist-container .swiper-button-prev, 
+.video-playlist-container .swiper-container-rtl .swiper-button-next {
+	left: 0;
+	border-radius: 5px 0 0 5px;
+}
+
+@media (max-width: 479px) {
+	.video-player > iframe {
+		height: 100%;
 	}
 
-	.video-player-container {
+	.video-player {
+		height: 200px;
+	}
+}
+
+@media (min-width: 992px) {
+	.video-player-side-container {
+		max-width: 900px;
+		width: 100%;
+		margin: 0 auto;
+	}
+
+	.video-player-side-container .video-player {
+		width: calc(100% - 167px);
+		height: 400px;
+		float: left;
+	}
+
+	.video-player-side-container .video-playlist-container {
+		float: left;
+		margin-top: 0;
+		width: 167px;
+		border-radius: 0 5px 5px 0;
+	}
+
+	.video-player-side-container .video-playlist {
+		height: 400px;
+		width: 100%;
+		margin: 0;
+		padding-left: 5px;
+	}
+
+	.video-player-side-container .video-show {
+		padding: 10px;
+	}
+
+	.video-player-side-container .video-title {
+		display: inline;
 		height: auto;
 	}
 
-	.video-player > iframe {
-		width: 100%;
+	.video-player-side-container .video-thumbnail {
+		margin-top: 5px;
 	}
-
-	.video-playlist{
-		height: 200px;
-	}
-
-	.video-show {
-		width: 300px;
-	}
-}
-
-@media (min-width: 992px) and (max-width: 1199px) {
-	.video-player {
-		width: 600px;
-	}
-
-	.video-player > iframe {
-		width: 100%;
-	}
-}
-
-.center-wrapper {
-	margin: 0 auto;
 }
 
 #widget-home-sidebar .widget-area > div {
@@ -781,6 +817,12 @@ a:hover {
 }
 
 /* Swiper */
+
+.swiper-button-next.swiper-button-disabled, 
+.swiper-button-prev.swiper-button-disabled {
+	opacity: 0;
+}
+
 #featured-slideshow .swiper-container {
 	border-radius: 6px;
 	box-shadow: 0 0 20px #000;
