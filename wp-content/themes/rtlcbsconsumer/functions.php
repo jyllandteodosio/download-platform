@@ -39,13 +39,14 @@ function rtlcbsconsumer_setup() {
 	add_theme_support( 'post-thumbnails' );
 	set_post_thumbnail_size( 1200, 9999 );
 
-	// This theme uses wp_nav_menu() in two locations.
+	// This theme uses wp_nav_menu() .
 	register_nav_menus( array(
 		'primary' => __( 'Primary Menu', 'rtlcbsconsumer' ),
 		'footer'  => __( 'Footer Menu', 'rtlcbsconsumer' ),
 		'about'  => __( 'Footer About Menu', 'rtlcbsconsumer' ),
 		'extra'  => __( 'Footer Extra Menu', 'rtlcbsconsumer' ),
 		'social'  => __( 'Social Links Menu', 'rtlcbsconsumer' ),
+		'featured-shows'  => __( 'Featured Shows Menu', 'rtlcbsconsumer' ),
 	) );
 
 	/*

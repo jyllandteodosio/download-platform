@@ -54,11 +54,25 @@
 								<li><a href="#about">About</a></li>
 								<li><a href="#contact">Contact</a></li>
 							</ul> -->
+							<div class="social-header visible-md visible-lg">
+							<span>Follow us on:</span>
+							<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="facebook">Facebook</a>
+							<a href="http://www.twitter.com" title="Twitter" class="twitter">Twitter</a>
+							<span>Monday, May 2, 2016</span>
+						</div>
 						</div><!--/.nav-collapse -->
+						<?php wp_nav_menu( array(
+								'menu' => 'Featured Shows Menu',
+								'menu_class' => 'nav navbar-nav hide hidden-xs hidden-sm',
+								'menu_id' => 'featured-menu',
+								'container' => '',
+								'theme_location' => 'featured-shows',
+								'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>'
+							) ); ?>
 					</div>
 				</nav>
 			</div>
 		</div>
 
-		<main id="main" class="container">
+		<main id="main" class="container clearfix">
 

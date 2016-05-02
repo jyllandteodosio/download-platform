@@ -30,6 +30,12 @@
 								) ); ?>
 							</div>
 							<div class="col-sm-4">
+								<div class="social-footer clearfix">
+									<p><span>Follow Us: </span>
+									<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="social facebook">Facebook</a>	
+									<a href="http://www.twitter.com" title="Twitter" class="social twitter">Twitter</a>		
+									</p>										
+								</div>
 								<?php wp_nav_menu( array(
 									'menu_class' => 'footer-menu',
 									'container' => '',

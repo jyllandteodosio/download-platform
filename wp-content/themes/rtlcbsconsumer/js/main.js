@@ -1,4 +1,14 @@
 (function( $ ) {
+   /* Mega Menu
+   ----------------------------------*/
+   $( '.mega-menu, #featured-menu' ).hover( function() {
+      $( '#featured-menu' ).removeClass( 'hide' );
+   }, function() {
+      $( '#featured-menu' ).addClass( 'hide' );
+   });
+
+   /* Swipers
+   ----------------------------------*/
 	var homeSwiper = new Swiper( '#featured-slideshow', {
 		speed: 1000,
 		autoHeight: true,
@@ -45,6 +55,19 @@
             slidesPerView: 2,
             slidesPerGroup: 2
          }
+      }
+   });
+
+   var latestSlideShow = new Swiper( '#latest-episodes-slideshow', {
+      slidesPerView: 2, 
+      slidesPerColumn: 2,
+      spaceBetween: 10,
+      nextButton: '.swiper-button-next',
+      prevButton: '.swiper-button-prev',
+      breakpoints: {
+         1199: {
+            slidesPerView: 1
+         },
       }
    });
 
@@ -155,4 +178,13 @@
          $( '#' + playerId ).prop( 'src', src);
       });
    }
+
+   $( '.show-banner .watch-video' ).on( 'click', function(e) {
+      e.preventDefault();
+      $( '.show-banner-video-container' ).removeClass( 'hide' );
+   });
+
+   $( '.close-video' ).on( 'click', function() {
+      $( '.show-banner-video-container' ).addClass( 'hide' );
+   });
 })( jQuery );
