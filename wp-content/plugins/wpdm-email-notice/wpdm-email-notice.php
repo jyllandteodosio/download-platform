@@ -41,12 +41,13 @@ function wpdm_check_new_files($id)
     $wpdm_promos_old_id = array();
     $wpdm_promos_old = get_field( "add_promo_files" , $id) ? get_field( "add_promo_files" , $id) : array(); /* Old values from database */
     $wpdm_promos_new = $_POST['fields']['field_56bda9692303d'];	/* New values from form */
-    array_pop($wpdm_promos_new); /* Remove extra array at the last index  */
- 	
-    /* Restructure post data of promo files into key value pair */
-    foreach ($wpdm_promos_new as $key => $value) {
-        $wpdm_promos_new_id[$value['field_56bda9eb23040']] = $value['field_56bdaa2523043']; /* New values from form (key,value) */
-    }
+    if($wpdm_promos_new!= null) {
+    	array_pop($wpdm_promos_new); /* Remove extra array at the last index  */
+	    /* Restructure post data of promo files into key value pair */
+	    foreach ($wpdm_promos_new as $key => $value) {
+	        $wpdm_promos_new_id[$value['field_56bda9eb23040']] = $value['field_56bdaa2523043']; /* New values from form (key,value) */
+	    }
+	}
     /* Restructure DB data of promo files into key value pair */
     foreach ($wpdm_promos_old as $key => $value) {
         $wpdm_promos_old_id[$value['id']] = $value['file_name']; /* Old values from database (key,value) */
