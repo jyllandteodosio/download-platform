@@ -1376,236 +1376,87 @@ if (!function_exists('get_user_info')) {
     }
 }
 
-/* Add custom column to Users table */
-function new_modify_user_table( $column ) {
-    $column['operator_group'] = 'Operator Group';
-    $column['country_group'] = 'Country Group';
-    return $column;
-}
-add_filter( 'manage_users_columns', 'new_modify_user_table' );
-
-/* Populate custom column in Users table */
-function new_modify_user_table_row( $val, $column_name, $user_id ) {
-    $user = get_userdata( $user_id );
-    switch ($column_name) {
-        case 'operator_group' :
-            return get_user_meta($user_id, 'operator_group', true) != "" ? get_user_meta($user_id, 'operator_group', true) : "None";
-            break;
-        case 'country_group' :
-            return get_country_name(get_user_meta($user_id, 'country_group', true));
-            break;
-        default:
+if (!function_exists('new_modify_user_table')){
+    /**
+     * Add custom column to Users table
+     */
+    function new_modify_user_table( $column ) {
+        $column['operator_group'] = 'Operator Group';
+        $column['country_group'] = 'Country Group';
+        return $column;
     }
-    return $return;
+    add_filter( 'manage_users_columns', 'new_modify_user_table' );
 }
-add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
 
-// add_action( 'pre_post_update', 'wpdm_check_changes' );
-// function wpdm_check_changes($id)
-// {
-//     echo "<pre>";
-//     // echo "<br><br>wpdm_files_old:<br>";
-//     // print_r($wpdm_files_old);
-//     // echo "<br><br>wpdm_files_new:<br>";
-//     // print_r($wpdm_files_new);
-//     // echo "<br><br>files_diff:<br>";
-//     // print_r($files_diff);
-//     // echo "<br><br>wpdm_promos_old:<br>";
-//     // print_r($wpdm_promos_old);
-//     // echo "<br><br>wpdm_promos_new:<br>";
-//     // print_r($wpdm_promos_new);
-//     // echo "<br><br>POST:<br>";
-//     print_r($_POST);
-//     // echo "<br><br>wpdm_promos_old_id:<br>";
-//     // print_r( $wpdm_promos_old_id);
-//     // echo "<br><br>wpdm_promos_new_id:<br>";
-//     // print_r( $wpdm_promos_new_id);
-//     // echo "<br><br>promos_diff:<br>";
-//     // print_r($promos_diff);
-//     echo "</pre>";
-//     // $response =  "<script> document.write(confirm('dianne')); </script>";
-//     // if(!$response){
-//     //     die("terminated");
-//     // }
-//     // exit();
-//     // 
-//     die();
-//     // wp_die( 'The title of your post have to be 10 or more !' );
-// }
-
-/* = Add a "molly guard" to the publish button */
-
-// add_action( 'admin_print_footer_scripts', 'sr_publish_molly_guard' );
-function sr_publish_molly_guard() {
-// global $post;
-// print_r($post);
-// die();
-
-echo <<<EOT
-<script>
-jQuery(document).ready(function($){
-    $('#publishing-action input[name="save"]').click(function() {
-        var title = $('#title').val();
-        if(confirm('Are you sure you want to publish this? '+title)) {
-            return true;
-        } else {
-            $('#publishing-action .spinner').hide();
-            $('#publishing-action img').hide();
-            $(this).removeClass('button-primary-disabled');
-            return false;
+if(!function_exists('new_modify_user_table_row')){
+    /**
+     * Populate custom column in Users table
+     */
+    function new_modify_user_table_row( $val, $column_name, $user_id ) {
+        $user = get_userdata( $user_id );
+        switch ($column_name) {
+            case 'operator_group' :
+                return get_user_meta($user_id, 'operator_group', true) != "" ? get_user_meta($user_id, 'operator_group', true) : "None";
+                break;
+            case 'country_group' :
+                return get_country_name(get_user_meta($user_id, 'country_group', true));
+                break;
+            default:
         }
-    });
-});
-</script>
-EOT;
-
-die('asd');
-}
-
-// This is the confirmation message that will appear.
-
-// $c_message = 'Are you SURE you want to publish this post?';
- 
-// function confirm_publish(){
-
-// global $c_message;
-// echo '
-//         <script type="text/javascript">
-//         <!--
-//         var publish = document.getElementById("publish");
-//         if (publish !== null) publish.onclick = function(){
-//             return confirm("'.$c_message.'");
-//         };
-//         // -->
-//         </script>';
-// }
-// add_action('admin_footer', 'confirm_publish');
-
-function send_monthly_report($file){
-    // $to = $user->user_email;
-    $to = "diannekatherinedelosreyes@ymail.com";
-    $subject = 'RTL CBS Asia Monthly Report';
-    // $headers = array('Content-Type: text/html; charset=UTF-8');
-    $headers  = 'MIME-Version: 1.0' . "\r\n";
-    $headers .= 'Content-type: multipart/mixed; charset=iso-8859-1' . "\r\n";
-    $attachment = $file;
-    $mail_attachment = $file;//array( $attachment );
-
-    $message = 'Please see the attachment';
-    // print_r($mail_attachment);
-    // die();
-    // echo $message;
-    // Start output buffering to grab smtp debugging output
-    ob_start();
-
-    // Send the test mail
-    $result = wp_mail($to,$subject,$message,$headers,$mail_attachment);
-        
-    // Grab the smtp debugging output
-    $smtp_debug = ob_get_clean();
-        
-    // Output the response
-    // echo "res-".$result;
-}
-
-// add_filter('acf/validate_value/name=end', 'validate_end_date_func', 10, 4);
-// function validate_end_date_func($valid, $value, $field, $input) {
-//   // if (!$valid) {
-//   //   return $valid;
-//   // }
-//   // $repeater_key = 'field_572020eac3ff6';
-//   // $start_key = 'field_572020f6c3ff7';
-//   // $end_key = 'field_5720210cc3ff8';
-//   // // extract row from input
-//   // $row = preg_replace('/^\s*acf\[[^\]]+\]\[([^\]]+)\].*$/', '\1', $input);
-//   // $start_value = $_POST['acf'][$repeater_key][$row][$start_key];
-//   // $end_value = $value;
-//   // if ($end_value <= $start_value) {
-//    $valid = 'end value must be greater than start value';
-//   // }
-//   return $valid;
-//   // return true;
-// }
-// add_filter('acf/validate_value/name=end_date', 'validate_end_date_func', 10, 4);
-// function validate_end_date_func($valid, $value, $field, $input) {
-//   if (!$valid) {
-//     return $valid;
-//   }
-//   $repeater_key = 'field_56faad2a333ab';
-//   $start_key = 'field_56fab49fd51ce';
-//   $end_key = 'field_56fab4d1d51d0';
-//   // extract row from input
-//   $row = preg_replace('/^\s*acf\[[^\]]+\]\[([^\]]+)\].*$/', '\1', $input);
-//   $start_value = $_POST['acf'][$repeater_key][$row][$start_key];
-//   $end_value = $value;
-//   if ($end_value <= $start_value) {
-//    $valid = 'end value must be greater than start value';
-//   }
-//   return $valid;
-// }
-// 
-// add_filter('acf/validate_value/name=end', 'validate_end_date_func', 10, 4);
-// function validate_end_date_func($valid, $value, $field, $input) {
-// if (!$valid) {
-//     return $valid;
-//   }
-// //   $repeater_key = 'field_572020eac3ff6';
-// //   $start_key = 'field_572020f6c3ff7';
-// //   $end_key = 'field_5720210cc3ff8';
-// //   // extract row from input
-// //   $row = preg_replace('/^\s*acf\[[^\]]+\]\[([^\]]+)\].*$/', '\1', $input);
-//   $start_value = '20160409';//$_POST['acf'][$repeater_key][$row][$start_key];
-//   $end_value = $value;
-//   if ($end_value <= $start_value) {
-//    $valid =  'end value must be greater than start value';
-//   }
-//   return $valid;
-// }
-
-function setRtlReportList($period_date_format = "%m/%d/%Y", $period_date_format_standard = "%Y-%m-%d", $period_start_label = " Period", $select_max_created_at_list = "", $condition_period = null){
-    global $wpdb;
-    $country_groups_select_case .= getCountryGroupSelectCase();
-
-    $condition_period = $condition_period != null || $condition_period != "" ? $condition_period : "r.created_at BETWEEN '".date('Y-m-01', strtotime('previous month'))." 00:00:00' AND '".date('Y-m-t', strtotime('previous month'))." 23:59:59'";
-    $query_string_exportsreports_list = "
-        SELECT date_format(r.created_at, '".$period_date_format_standard."') as ".$period_start_label.",
-            ".$select_max_created_at_list."
-            ".$country_groups_select_case."
-            IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
-            u.user_email, p.post_title, r.file_title as downloaded_files
-        FROM ".$wpdb->custom_reports." r 
-        INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
-        INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
-        WHERE ".$condition_period.
-        " ORDER BY ".$period_start_label.",u.user_email,p.post_title
-    ";
-
-    $return_value = updateToExportsReports($query_string_exportsreports_list);
-}
-
-function getCountryGroupSelectCase(){
-    $country_groups = custom_get_country_groups();
-    $country_groups_select_case = "";
-
-    $country_groups_select_case .= "case r.country_group ";
-    foreach ($country_groups as $key => $value) {
-        $country_groups_select_case .= "when '".$key."' then '".$value."' ";
+        return $return;
     }
-    $country_groups_select_case .= "else 'Admin' ";
-    $country_groups_select_case .= "end as country_group, ";
-
-    return $country_groups_select_case;
+    add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
 }
 
-function testing(){
-    die('diane');
-    echo '<input type="button" value=" Export Report " id="auto_report" class="button" title="" style="display:none" onclick="window.open("?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports","temp_report_window");">';
-    echo '<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>';
-    echo "<script>jQuery('#auto_report').trigger('click');</script>";
+if(!function_exists('setRtlReportList')){
+    /**
+     * To generate query string of RTL Report List
+     * @param string $period_date_format          Date format for display in tables
+     * @param string $period_date_format_standard Date format for CSV
+     * @param string $period_start_label          Column header of Period Start
+     * @param string $select_max_created_at_list  Max created_at date
+     * @param [type] $condition_period            Where clause
+     */
+    function setRtlReportList($period_date_format = "%m/%d/%Y", $period_date_format_standard = "%Y-%m-%d", $period_start_label = " Period", $select_max_created_at_list = "", $condition_period = null){
+        global $wpdb;
+        $country_groups_select_case .= getCountryGroupSelectCase();
+
+        $condition_period = $condition_period != null || $condition_period != "" ? $condition_period : "r.created_at BETWEEN '".date('Y-m-01', strtotime('previous month'))." 00:00:00' AND '".date('Y-m-t', strtotime('previous month'))." 23:59:59'";
+        $query_string_exportsreports_list = "
+            SELECT date_format(r.created_at, '".$period_date_format_standard."') as ".$period_start_label.",
+                ".$select_max_created_at_list."
+                ".$country_groups_select_case."
+                IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
+                u.user_email, p.post_title, r.file_title as downloaded_files
+            FROM ".$wpdb->custom_reports." r 
+            INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
+            INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
+            WHERE ".$condition_period.
+            " ORDER BY ".$period_start_label.",u.user_email,p.post_title
+        ";
+
+        $return_value = updateToExportsReports($query_string_exportsreports_list);
+    }
 }
-add_action( 'init', 'testing', 100 );
 
+if(!function_exists('getCountryGroupSelectCase')){
+    /**
+     * Format select case of country group for RTL Report List
+     */
+    function getCountryGroupSelectCase(){
+        $country_groups = custom_get_country_groups();
+        $country_groups_select_case = "";
 
+        $country_groups_select_case .= "case r.country_group ";
+        foreach ($country_groups as $key => $value) {
+            $country_groups_select_case .= "when '".$key."' then '".$value."' ";
+        }
+        $country_groups_select_case .= "else 'Admin' ";
+        $country_groups_select_case .= "end as country_group, ";
+
+        return $country_groups_select_case;
+    }
+}
 
 // ENQUEUE SCRIPTS
 function my_scripts(){
