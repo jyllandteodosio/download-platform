@@ -98,6 +98,7 @@ class Package {
         if(strpos("_".$template,'[file_category,cm_hig]')) $vars['file_category,cm_hig'] = \WPDM\libs\FileList::CategorizedFileList($vars, "highlights");
         if(strpos("_".$template,'[file_category,cm_bra]')) $vars['file_category,cm_bra'] = \WPDM\libs\FileList::CategorizedFileList($vars, "brand");
         if(strpos("_".$template,'[file_category,cm_boi]')) $vars['file_category,cm_boi'] = \WPDM\libs\FileList::CategorizedFileList($vars, "boiler");
+        if(strpos("_".$template,'[file_category,cm_cat]')) $vars['file_category,cm_cat'] = \WPDM\libs\FileList::CategorizedFileList($vars, "catch");
         // Channel Materials - Images
         if(strpos("_".$template,'[file_category,cm_log]')) $vars['file_category,cm_log'] = \WPDM\libs\FileList::CategorizedFileList($vars, "logo", 'channel');
         if(strpos("_".$template,'[file_category,cm_ele]')) $vars['file_category,cm_ele'] = \WPDM\libs\FileList::CategorizedFileList($vars, "elements");

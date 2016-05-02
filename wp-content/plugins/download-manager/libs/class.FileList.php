@@ -350,7 +350,8 @@ class FileList
                                     'channel_epg'       => 'epg',
                                     'channel_highlights'=> 'highlights',
                                     'channel_brand'     => 'brand',
-                                    'channel_boiler'    => 'boiler'
+                                    'channel_boiler'    => 'boiler',
+                                    'channel_catchup'   => 'catch'
                                     );
 
     /**
@@ -470,6 +471,10 @@ class FileList
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_boiler']){
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
+                            // CM_CAT
+                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_catchup']){
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
+                            }
                             /* END SHOW DOCUMENTS ================================================================================= */
                         }
                     }
@@ -499,7 +504,7 @@ class FileList
         $buttonText = !self::checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
         $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
         $isFileRemovable = !self::checkFileInCart($fileID) ? "" : "added-to-cart";
-        $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 50, "...");
+        $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 48, "...");
         if($thumb){
             $file_thumb = "<img src='{$thumb}' alt='{$fileTitle}' />";
         }else{

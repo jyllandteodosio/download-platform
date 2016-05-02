@@ -12,10 +12,11 @@
         <div class="clear red-bar-separator"></div>    
 
         <div class="sub-tabs-wrap documents-sub-tabs fullwidth" data-parent-tab="documents-tab">
-          <div class="shows-tab tab-trigger sub-tabs quarters to-uppercase pull-left text-center channelepg-tab" data-target="channelepg-tab-contents"><a href="#">EPG</a></div>
-          <div class="shows-tab tab-trigger sub-tabs quarters to-uppercase pull-left text-center channelhighlights-tab" data-target="channelhighlights-tab-contents"><a href="#">Highlights</a></div>
-          <div class="shows-tab tab-trigger sub-tabs quarters to-uppercase pull-left text-center channelbrand-tab" data-target="channelbrand-tab-contents"><a href="#">Brand Guide</a></div>    
-          <div class="shows-tab tab-trigger sub-tabs quarters to-uppercase pull-left text-center channelboiler-tab" data-target="channelboiler-tab-contents"><a href="#">Boiler Plates</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelepg-tab" data-target="channelepg-tab-contents"><a href="#">EPG</a></div>
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelhighlights-tab" data-target="channelhighlights-tab-contents"><a href="#">Highlights</a></div>
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelbrand-tab" data-target="channelbrand-tab-contents"><a href="#">Brand Guide</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelboiler-tab" data-target="channelboiler-tab-contents"><a href="#">Boiler Plates</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelcatch-tab" data-target="channelcatch-tab-contents"><a href="#">Catch Up</a></div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->  
 
@@ -74,6 +75,18 @@
            	</div>
           </form>
         </div><!-- channelboiler-tab-contents -->
+
+        <div class="show-items-wrap channelcatch-tab-contents">
+          <form id='table-cm_cat' class="table-files" method='post' >
+            <div class="filter-wrap clear text-left">
+              <input type='submit'  class="show-filter" value='Select All'>
+            </div><!-- filter-wrap -->
+            <div class='show-items'>
+              [file_category,cm_cat]
+              <div class='clear'></div>
+            </div>
+          </form>
+        </div><!-- channelcatch-tab-contents -->
 
         <div class="show-items-wrap channellogos-tab-contents">
           <form id='table-cm_log' class="table-files" method='post' >
