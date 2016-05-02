@@ -1401,36 +1401,37 @@ function new_modify_user_table_row( $val, $column_name, $user_id ) {
 add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
 
 // add_action( 'pre_post_update', 'wpdm_check_changes' );
-function wpdm_check_changes($id)
-{
-    // echo "<pre>";
-    // echo "<br><br>wpdm_files_old:<br>";
-    // print_r($wpdm_files_old);
-    // echo "<br><br>wpdm_files_new:<br>";
-    // print_r($wpdm_files_new);
-    // echo "<br><br>files_diff:<br>";
-    // print_r($files_diff);
-    // echo "<br><br>wpdm_promos_old:<br>";
-    // print_r($wpdm_promos_old);
-    // echo "<br><br>wpdm_promos_new:<br>";
-    // print_r($wpdm_promos_new);
-    // echo "<br><br>POST:<br>";
-    // print_r($_POST);
-    // echo "<br><br>wpdm_promos_old_id:<br>";
-    // print_r( $wpdm_promos_old_id);
-    // echo "<br><br>wpdm_promos_new_id:<br>";
-    // print_r( $wpdm_promos_new_id);
-    // echo "<br><br>promos_diff:<br>";
-    // print_r($promos_diff);
-    // echo "</pre>";
-    $response =  "<script> document.write(confirm('dianne')); </script>";
-    if(!$response){
-        die("terminated");
-    }
-    // exit();
-    // die($response);
-    // wp_die( 'The title of your post have to be 10 or more !' );
-}
+// function wpdm_check_changes($id)
+// {
+//     echo "<pre>";
+//     // echo "<br><br>wpdm_files_old:<br>";
+//     // print_r($wpdm_files_old);
+//     // echo "<br><br>wpdm_files_new:<br>";
+//     // print_r($wpdm_files_new);
+//     // echo "<br><br>files_diff:<br>";
+//     // print_r($files_diff);
+//     // echo "<br><br>wpdm_promos_old:<br>";
+//     // print_r($wpdm_promos_old);
+//     // echo "<br><br>wpdm_promos_new:<br>";
+//     // print_r($wpdm_promos_new);
+//     // echo "<br><br>POST:<br>";
+//     print_r($_POST);
+//     // echo "<br><br>wpdm_promos_old_id:<br>";
+//     // print_r( $wpdm_promos_old_id);
+//     // echo "<br><br>wpdm_promos_new_id:<br>";
+//     // print_r( $wpdm_promos_new_id);
+//     // echo "<br><br>promos_diff:<br>";
+//     // print_r($promos_diff);
+//     echo "</pre>";
+//     // $response =  "<script> document.write(confirm('dianne')); </script>";
+//     // if(!$response){
+//     //     die("terminated");
+//     // }
+//     // exit();
+//     // 
+//     die();
+//     // wp_die( 'The title of your post have to be 10 or more !' );
+// }
 
 /* = Add a "molly guard" to the publish button */
 
@@ -1525,6 +1526,41 @@ function send_monthly_report($file){
 //   return $valid;
 //   // return true;
 // }
+// add_filter('acf/validate_value/name=end_date', 'validate_end_date_func', 10, 4);
+// function validate_end_date_func($valid, $value, $field, $input) {
+//   if (!$valid) {
+//     return $valid;
+//   }
+//   $repeater_key = 'field_56faad2a333ab';
+//   $start_key = 'field_56fab49fd51ce';
+//   $end_key = 'field_56fab4d1d51d0';
+//   // extract row from input
+//   $row = preg_replace('/^\s*acf\[[^\]]+\]\[([^\]]+)\].*$/', '\1', $input);
+//   $start_value = $_POST['acf'][$repeater_key][$row][$start_key];
+//   $end_value = $value;
+//   if ($end_value <= $start_value) {
+//    $valid = 'end value must be greater than start value';
+//   }
+//   return $valid;
+// }
+// 
+// add_filter('acf/validate_value/name=end', 'validate_end_date_func', 10, 4);
+// function validate_end_date_func($valid, $value, $field, $input) {
+// if (!$valid) {
+//     return $valid;
+//   }
+// //   $repeater_key = 'field_572020eac3ff6';
+// //   $start_key = 'field_572020f6c3ff7';
+// //   $end_key = 'field_5720210cc3ff8';
+// //   // extract row from input
+// //   $row = preg_replace('/^\s*acf\[[^\]]+\]\[([^\]]+)\].*$/', '\1', $input);
+//   $start_value = '20160409';//$_POST['acf'][$repeater_key][$row][$start_key];
+//   $end_value = $value;
+//   if ($end_value <= $start_value) {
+//    $valid =  'end value must be greater than start value';
+//   }
+//   return $valid;
+// }
 
 function setRtlReportList($period_date_format = "%m/%d/%Y", $period_date_format_standard = "%Y-%m-%d", $period_start_label = " Period", $select_max_created_at_list = "", $condition_period = null){
     global $wpdb;
@@ -1568,6 +1604,8 @@ function testing(){
     echo "<script>jQuery('#auto_report').trigger('click');</script>";
 }
 add_action( 'init', 'testing', 100 );
+
+
 
 // ENQUEUE SCRIPTS
 function my_scripts(){
