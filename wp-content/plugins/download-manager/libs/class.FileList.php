@@ -383,6 +383,7 @@ class FileList
                         if(checkFileType($sfile, 'image') && $prefix != self::$prefix_list['promos']){
 
                             $filepath = wpdm_download_url($file) . "&ind=" . $ind;
+                            // $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(10000, 10000));
                             $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(270, 296));
                             /* SHOW IMAGES ========================================================================== */
                             //KEY
