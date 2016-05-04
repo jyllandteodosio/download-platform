@@ -582,9 +582,7 @@ function wppb_notify_user_registration_email( $bloginfo, $user_name, $email, $se
         	username: %2$s<br/>
         	password: %3$s<br/>
 			<br/>
-			<b><a href="'.get_site_url(1, 'change-password/').'">Login and change your password</a></b> now;
-			<br/>
-			or
+			<b><a href="'.get_site_url(1, 'change-password/').'">Login and change your password</a></b> now; or
 			<br/>
 			<b><a href="'.get_site_url(1).'">Log in</a></b> to check out all of the files available for you.
 			<br/><br/>
