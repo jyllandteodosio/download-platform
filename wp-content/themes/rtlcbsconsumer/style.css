@@ -644,6 +644,7 @@ a:hover {
 
 	.spotlight-details {
 		display: table-cell;
+		vertical-align: top;
 	}
 }
 
