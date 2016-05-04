@@ -33,26 +33,27 @@
         </div>
         
         <div class="clear red-bar-separator"></div> 
-        <!--START OF SUB TABS-->          
-        <div class="sub-tabs-wrap single-item-subtabs images-sub-tabs fullwidth" data-parent-tab="images-tab">
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center keyart-tab" data-target="keyart-tab-contents"><a href="#">Key Art</a></div>
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center episodicstills-tab" data-target="episodicstills-tab-contents"><a href="#">Episodic Stills</a></div>
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center gallery-tab" data-target="gallery-tab-contents"><a href="#">Gallery</a></div>    
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center logos-tab" data-target="logos-tab-contents"><a href="#">Logos</a></div>    
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center others-tab last-tab" data-target="others-tab-contents"><a href="#">Others - Special Web Assets etc</a></div>    
-          <div class="clear"></div>     
+        <!-- To revert original sub tabs style, add " single-item-subtabs " in sub tabs wrapper and remove "fifths" and "pull-left" class on each sub tabs -->
+        <!--START OF SUB TABS-->    
+        <div class="sub-tabs-wrap images-sub-tabs fullwidth" data-parent-tab="images-tab">
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center keyart-tab" data-target="keyart-tab-contents"><a href="#">Key Art</a></div>
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center episodicstills-tab" data-target="episodicstills-tab-contents"><a href="#">Episodic Stills</a></div>
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center gallery-tab" data-target="gallery-tab-contents"><a href="#">Gallery</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center logos-tab" data-target="logos-tab-contents"><a href="#">Logos</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center others-tab last-tab" data-target="others-tab-contents"><a href="#">Others - Special Web Assets etc</a></div>    
+          <div class="clear"></div> 
         </div><!-- subtabs-wrap -->   
          
-        <div class="sub-tabs-wrap single-item-subtabs documents-sub-tabs fullwidth" data-parent-tab="documents-tab">
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center synopses-tab" data-target="synopses-tab-contents"><a href="#">Synopses</a></div>
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center epk-tab" data-target="epk-tab-contents"><a href="#">Transcripts/EPK</a></div>
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center factsheet-tab" data-target="factsheet-tab-contents"><a href="#">Fact Sheet/Press Pack</a></div>    
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center fonts-tab" data-target="fonts-tab-contents"><a href="#">Fonts</a></div>    
-          <div class="shows-tab tab-trigger sub-tabs  to-uppercase text-center othersdocuments-tab" data-target="othersdocuments-tab-contents"><a href="#">Others</a></div>    
+        <div class="sub-tabs-wrap documents-sub-tabs fullwidth" data-parent-tab="documents-tab">
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center synopses-tab" data-target="synopses-tab-contents"><a href="#">Synopses</a></div>
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center epk-tab" data-target="epk-tab-contents"><a href="#">Transcripts/EPK</a></div>
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center factsheet-tab" data-target="factsheet-tab-contents"><a href="#">Fact Sheet/Press Pack</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center fonts-tab" data-target="fonts-tab-contents"><a href="#">Fonts</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center othersdocuments-tab" data-target="othersdocuments-tab-contents"><a href="#">Others</a></div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->
 
-        <div class="sub-tabs-wrap single-item-subtabs promo-sub-tabs fullwidth" data-parent-tab="promo-tab">
+        <div class="sub-tabs-wrap promo-sub-tabs fullwidth" data-parent-tab="promo-tab">
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->
         <!--END OF SUB TABS-->
