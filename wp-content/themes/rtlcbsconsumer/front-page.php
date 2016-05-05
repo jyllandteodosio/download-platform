@@ -143,8 +143,8 @@ get_header( 'rtl' ); ?>
 				</div>
 			</div>	
 		</div>	
-		<div class="swiper-button-prev"></div>
-   	<div class="swiper-button-next"></div>	
+		<div class="today-nav swiper-button-prev"></div>
+   	<div class="today-nav swiper-button-next"></div>	
 		<div class="text-center"><a href="<?php echo site_url(); ?>/featured-shows" class="today-link">View Featured Shows<span class="glyphicon glyphicon-play"></span></a></div>
 	</div>
 </div>
@@ -226,8 +226,8 @@ get_header( 'rtl' ); ?>
 						</div>
 					</div>
 				</div>
-				<div class="swiper-button-prev gradient-red"></div>
-	    		<div class="swiper-button-next gradient-red"></div>
+				<div class="video-player-nav swiper-button-prev gradient-red"></div>
+	    		<div class="video-player-nav swiper-button-next gradient-red"></div>
 			</div>
 		</div>
 		<?php if ( is_active_sidebar( 'rtlcbs-home-sidebar' ) ) : ?>

@@ -33,8 +33,8 @@ get_header( 'rtl' ); ?>
 					</div>
 				</div>
 			</div>
-			<div class="swiper-button-prev gradient-red hidden-md hidden-lg"></div>
-    		<div class="swiper-button-next gradient-red hidden-md hidden-lg"></div>
+			<div class="video-player-nav swiper-button-prev gradient-red hidden-md hidden-lg"></div>
+    		<div class="video-player-nav swiper-button-next gradient-red hidden-md hidden-lg"></div>
 		</div>
 	</div>
 </div>
