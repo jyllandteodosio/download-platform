@@ -258,7 +258,8 @@ class FileSystem
         }
         $image = wp_get_image_editor($path);
         if (!is_wp_error($image)) {
-            $image->resize($width, $height, true);
+            /* Customized by Dianne D.R. - Original code [$image->resize($width, $height, true);]  */
+            $image->resize($width, $height, false);
             $image->save($thumbpath);
         }
         $thumbpath = str_replace("\\","/", $thumbpath);

@@ -384,9 +384,21 @@ class FileList
 
                             $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                             // $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(10000, 10000));
+                            // $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(300, 100));
                             $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(500, 300));
+                            // $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(400, 200));
+                            // $thumb = 'http://192.168.1.167/rtlcbsasia/wp-content/uploads/download-manager-files/1458699373wpdm_show-1-featured-img';//UPLOAD_DIR.$sfile;
                             // echo "dynamic thumb - ".wpdm_dynamic_thumb(getFilePath($sfile), array(270, 296));
                             // echo "<br>plain thumb - ".getFilePath($sfile);
+                            // echo "UPLOAD_BASE-".wp_upload_dir();
+                            // $upload_dir = wp_upload_dir();
+                            // $user_dirname = $upload_dir['basedir'];
+                            // echo $sfile;
+
+                            // $uploads = wp_upload_dir(); 
+                            // // echo $uploads['baseurl'];
+                            // echo '<img src="' . esc_url( $uploads['baseurl'] . '/download-manager-files/'.$sfile ) . '" href="#">';
+
                             // die();
                             /* SHOW IMAGES ========================================================================== */
                             //KEY
@@ -517,6 +529,8 @@ class FileList
             $file_thumb = "<img class='file-ico' src='{$thumb}' alt='{$fileTitle}' />";
         }
 
+        // echo "thumb: ".$file_thumb;
+        // die();
         // FORM : INPUT FIELDS - use by bulk add to cart
         $cart_data = prepare_cart_data(null,$fileTitle,$filepath,urlencode($downloadUrl),$postID,$fileType,$userID,$thumb);
         $serialized_cart = serialize($cart_data);
@@ -524,7 +538,7 @@ class FileList
 
         // FILE PANEL CONTAINER 
         $fhtml .= "     <div class='item {$fileID} {$isFileRemovable}'>";
-        $fhtml .=           $file_thumb;
+        $fhtml .=           "<div class='file-thumb'>".$file_thumb."</div>";
         $fhtml .= "         <div class='show-meta'>";
         $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
         $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID}'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' >{$buttonText}</a>";
