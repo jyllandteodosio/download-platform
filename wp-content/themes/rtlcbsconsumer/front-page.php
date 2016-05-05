@@ -16,7 +16,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">Billboard Music Awards 2015</span>
 					<p class="description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social interactions on popular online destinations for music.</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>	
 			</div>
 			<div class="swiper-slide">
@@ -29,7 +29,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">Britain's Got Talent 9</span>
 					<p class="description">Anyone, any age, any talent. Join judges Simon Cowell, Amanda Holden, Alesha Dixon and David Walliams to find the next winner of Britain's Got Talent! Expect the craziest, funniest, most stunning and entertaining acts - all in a bid to win the grand prize of £250,000.</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>			
 			</div>
 			<div class="swiper-slide">
@@ -42,7 +42,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">Critics' Choice Television Awards</span>
 					<p class="description">The 5th annual Critics' Choice Television Awards honors the best in programs and performances on television.</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>		
 			</div>
 			<div class="swiper-slide">
@@ -55,7 +55,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">House Of Cards 3</span>
 					<p class="description">Frank Underwood has ascended to the presidency of the United States without a single vote cast to his name. As he now holds the most powerful position in the world, how is he going to keep himself at the top or will he lose at the game he so expertly plays?</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>		
 			</div>
 			<div class="swiper-slide">
@@ -68,7 +68,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">Elementary 3</span>
 					<p class="description">Elementary stars Jonny Lee Miller as detective Sherlock Holmes and Lucy Liu as Dr. Joan Watson in a modern-day drama about a crime-solving duo that cracks the NYPD's most impossible cases.</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>
 			</div>
 			<div class="swiper-slide">
@@ -81,7 +81,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">The Odd Couple 3</span>
 					<p class="description">Former college buddies Oscar and Felix become unlikely roommates after the demise of their marriages. The only thing is - they are complete opposites! Oscar is an endearing slob while Felix is an uptight neat freak. How will these mismatched friends make their crazy living arrangement work?</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>		
 			</div>
 			<div class="swiper-slide">
@@ -94,7 +94,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">Marry Me</span>
 					<p class="description">After Annie ruined the perfect proposal from her long-time partner Jake, they decide to hold off on the engagement until they can do it right. Yet if history tells us anything, it's when we really want things to go right that they all tend to go wrong. The only thing we know for sure is these two are destined to be together - whether they can get it together or not.</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>	
 			</div>
 			<div class="swiper-slide">
@@ -107,7 +107,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">Chrisley Knows Best</span>
 					<p class="description">Chrisley Knows Best follows multimillionaire Todd Chrisley and his family's picture-perfect Southern life. But behind the façade of their 30,000 sq-ft home, real-life issues and lots of laugh-out-loud drama unfolds.</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>		
 			</div>
 		</div>
@@ -158,7 +158,7 @@ get_header( 'rtl' ); ?>
 					<div class="spotlight-details">
 						<h3 class="spotlight-title">Billboard Music Awards 2015</h3>
 						<p class="spotlight-excerpt">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring...</p>
-						<a href="#">View More</a>
+						<a href="<?php echo site_url(); ?>/elementary">View More</a>
 					</div>
 				</div>
 			</div>
@@ -168,7 +168,7 @@ get_header( 'rtl' ); ?>
 					<div class="spotlight-details">
 						<h3 class="spotlight-title">House of Cards 3</h3>
 						<p class="spotlight-excerpt">Frank Underwood has ascended to the presidency of the United States without a single vote cast to his name. As he now holds the most powerful position in the world, how...</p>
-						<a href="#">View More</a>
+						<a href="<?php echo site_url(); ?>/elementary">View More</a>
 					</div>
 				</div>
 			</div>
@@ -179,7 +179,7 @@ get_header( 'rtl' ); ?>
 					<div class="spotlight-details">
 						<h3 class="spotlight-title">Britain's Got Talent 9</h3>
 						<p class="spotlight-excerpt">Anyone, any age, any talent. Join judges Simon Cowell, Amanda Holden, Alesha Dixon and David Walliams to find the next winner of Britain's Got Talent! Expect the...</p>
-						<a href="#">View More</a>
+						<a href="<?php echo site_url(); ?>/elementary">View More</a>
 					</div>
 				</div>
 			</div>
@@ -189,7 +189,7 @@ get_header( 'rtl' ); ?>
 					<div class="spotlight-details">
 						<h3 class="spotlight-title">Elementary 3</h3>
 						<p class="spotlight-excerpt">The new season of Elementary is brimming with uncertainty on how things will develop after the dynamic duo parted ways. Holmes returns to New York with a new apprentice...</p>
-						<a href="#">View More</a>
+						<a href="<?php echo site_url(); ?>/elementary">View More</a>
 					</div>
 				</div>
 			</div>

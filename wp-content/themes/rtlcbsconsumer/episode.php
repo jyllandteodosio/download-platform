@@ -2,7 +2,7 @@
 // Template Name: Episode
 
 get_header( 'rtl' ); ?>
-<a href="#" class="back-to-previous">Back to the Show Page</a>
+<a href="<?php echo site_url(); ?>/elementary" class="back-to-previous">Back to the Show Page</a>
 <div class="section">
 	<div class="show-episode">
 		<div class="row">

@@ -11,7 +11,7 @@
 						<div class="show-details">
 							<span class="show-title">Billboard Music Awards 2015</span>
 							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
-							<a href="#" class="view-more link-button">View More</a>
+							<a href="<?php echo site_url(); ?>/elementary" class="view-more link-button">View More</a>
 						</div>
 					</div>
 				</div>
@@ -23,7 +23,7 @@
 						<div class="show-details">
 							<span class="show-title">Billboard Music Awards 2015</span>
 							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
-							<a href="#" class="view-more link-button">View More</a>
+							<a href="<?php echo site_url(); ?>/elementary" class="view-more link-button">View More</a>
 						</div>
 					</div>
 				</div>
@@ -35,7 +35,7 @@
 						<div class="show-details">
 							<span class="show-title">Billboard Music Awards 2015</span>
 							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
-							<a href="#" class="view-more link-button">View More</a>
+							<a href="<?php echo site_url(); ?>/elementary" class="view-more link-button">View More</a>
 						</div>
 					</div>
 				</div>
@@ -47,7 +47,7 @@
 						<div class="show-details">
 							<span class="show-title">Billboard Music Awards 2015</span>
 							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
-							<a href="#" class="view-more link-button">View More</a>
+							<a href="<?php echo site_url(); ?>/elementary" class="view-more link-button">View More</a>
 						</div>
 					</div>
 				</div>
@@ -59,7 +59,7 @@
 						<div class="show-details">
 							<span class="show-title">Billboard Music Awards 2015</span>
 							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
-							<a href="#" class="view-more link-button">View More</a>
+							<a href="<?php echo site_url(); ?>/elementary" class="view-more link-button">View More</a>
 						</div>
 					</div>
 				</div>
@@ -71,13 +71,13 @@
 						<div class="show-details">
 							<span class="show-title">Billboard Music Awards 2015</span>
 							<p class="show-description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social...</p>
-							<a href="#" class="view-more link-button">View More</a>
+							<a href="<?php echo site_url(); ?>/elementary" class="view-more link-button">View More</a>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="swiper-button-prev swiper-button-default-white"></div>
-	<div class="swiper-button-next swiper-button-default-white "></div>
+	<div class="other-shows-nav swiper-button-prev swiper-button-default-white"></div>
+	<div class="other-shows-nav swiper-button-next swiper-button-default-white "></div>
 </div>

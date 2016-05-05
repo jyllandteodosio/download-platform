@@ -44,8 +44,8 @@
       slidesPerView: 3,
       spaceBetween: 20,
       slidesPerGroup: 3,
-      nextButton: '.swiper-button-next',
-      prevButton: '.swiper-button-prev',
+      nextButton: '.other-shows-nav.swiper-button-next',
+      prevButton: '.other-shows-nav.swiper-button-prev',
       breakpoints: {
          639: {
          slidesPerView: 1,
@@ -62,8 +62,8 @@
       slidesPerView: 2, 
       slidesPerColumn: 2,
       spaceBetween: 10,
-      nextButton: '.swiper-button-next',
-      prevButton: '.swiper-button-prev',
+      nextButton: '.latest-episodes-nav.swiper-button-next',
+      prevButton: '.latest-episodes-nav.swiper-button-prev',
       breakpoints: {
          1199: {
             slidesPerView: 1
