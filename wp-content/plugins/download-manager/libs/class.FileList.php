@@ -384,7 +384,10 @@ class FileList
 
                             $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                             // $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(10000, 10000));
-                            $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(270, 296));
+                            $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(500, 300));
+                            // echo "dynamic thumb - ".wpdm_dynamic_thumb(getFilePath($sfile), array(270, 296));
+                            // echo "<br>plain thumb - ".getFilePath($sfile);
+                            // die();
                             /* SHOW IMAGES ========================================================================== */
                             //KEY
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
