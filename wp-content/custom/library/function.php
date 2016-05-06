@@ -1458,6 +1458,19 @@ if(!function_exists('getCountryGroupSelectCase')){
     }
 }
 
+function set_session_notice(){
+    $noticenonce = $_POST['noticenonce'];
+    if (!empty($_POST) && wp_verify_nonce($noticenonce, '__rtl_modal_notice__') ){
+        $_SESSION['modal_notice'] = 'hide';
+        echo "success";
+    }else{
+        echo "Invalid Access";
+    }
+    die();
+}
+add_action('wp_ajax_set_session_notice', 'set_session_notice');
+add_action( 'wp_ajax_nopriv_set_session_notice', 'set_session_notice' );
+
 // ENQUEUE SCRIPTS
 function my_scripts(){
     wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");
