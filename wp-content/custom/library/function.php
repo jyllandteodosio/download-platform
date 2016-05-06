@@ -1154,11 +1154,16 @@ if (!function_exists('checkDateIfCurrentMonth')) {
      * @return bool
      * @usage returns 1 if date is current month, otherwise 0
      */
-    function checkDatesIfCurrentMonth($start_date, $end_date){
+    function checkDatesIfCurrentMonth($start_date, $end_date, $promo_filter){
         $first_day_of_month = mktime(0,0,0,date('n'),1,date('Y'));
         $last_day_of_month = mktime(23,59,59,date('n'),date('t'),date('Y')); 
 
-        if( strtotime($start_date) <= $last_day_of_month && $first_day_of_month <= strtotime($end_date) ){
+        if($promo_filter == 'this-month' && strtotime($start_date) <= $last_day_of_month && $first_day_of_month <= strtotime($end_date)){
+        // if( strtotime($start_date) <= $last_day_of_month && $first_day_of_month <= strtotime($end_date) ){
+            return 1;
+        }else if ($promo_filter == 'all'){
+            return 1;
+        }else if ($promo_filter == 'upcoming' && strtotime($start_date) > $last_day_of_month){
             return 1;
         }
         return 0;
@@ -1172,7 +1177,7 @@ if (!function_exists('getMonthsPromos')) {
      * @return array
      * @usage returns an array of promo files, otherwise empty array
      */
-    function getMonthsPromos($category = 'on-air'){
+    function getMonthsPromos($category = 'on-air', $promo_filter = 'this-month'){
         $channel = $_SESSION['channel'];
         $args = array(
                     'post_type' => 'wpdmpro', 
@@ -1200,7 +1205,7 @@ if (!function_exists('getMonthsPromos')) {
                   $promo['promo_end'] = get_sub_field('promo_end') != '' ? get_sub_field('promo_end') : date('Ymd');
                   $operator_group_promo_access = isset($promo['operator_group']) ? $promo['operator_group'] : 'all';
 
-                  if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($promo['promo_start'],$promo['promo_end'])){
+                  if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($promo['promo_start'],$promo['promo_end'], $promo_filter)){
 
                     $promo['category'] = get_sub_field('category') != '' ? get_sub_field('category') : '';
                     $promo['upload_date'] = get_sub_field('upload_date') != '' ? date("d/n/Y", strtotime(get_sub_field('upload_date'))) : '';
