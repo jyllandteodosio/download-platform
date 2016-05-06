@@ -22,14 +22,11 @@
 	var todaySlideShow = new Swiper( '#today-slideshow', {
 		slidesPerView: 4,
 		spaceBetween: 6,
-		nextButton: '.swiper-button-next',
-      prevButton: '.swiper-button-prev',
+		nextButton: '.today-nav.swiper-button-next',
+      prevButton: '.today-nav.swiper-button-prev',
             breakpoints: {
-            	320: {
-            		slidesPerView: 1
-            	},
             	640: {
-            		slidesPerView: 2
+            		slidesPerView: 1
             	},
             	768: {
             		slidesPerView: 3
@@ -44,8 +41,8 @@
       slidesPerView: 3,
       spaceBetween: 20,
       slidesPerGroup: 3,
-      nextButton: '.swiper-button-next',
-      prevButton: '.swiper-button-prev',
+      nextButton: '.other-shows-nav.swiper-button-next',
+      prevButton: '.other-shows-nav.swiper-button-prev',
       breakpoints: {
          639: {
          slidesPerView: 1,
@@ -62,8 +59,8 @@
       slidesPerView: 2, 
       slidesPerColumn: 2,
       spaceBetween: 10,
-      nextButton: '.swiper-button-next',
-      prevButton: '.swiper-button-prev',
+      nextButton: '.latest-episodes-nav.swiper-button-next',
+      prevButton: '.latest-episodes-nav.swiper-button-prev',
       breakpoints: {
          1199: {
             slidesPerView: 1
@@ -73,8 +70,8 @@
 
    homeVideoPlayer = new Swiper( '#home-video-player .video-playlist', {
       slidesPerView: 4,
-      nextButton: '.video-playlist-container .swiper-button-next',
-      prevButton: '.video-playlist-container .swiper-button-prev',
+      nextButton: '.video-player-nav.swiper-button-next',
+      prevButton: '.video-player-nav.swiper-button-prev',
       breakpoints: {
          767: {
             slidesPerView: 3

@@ -17,7 +17,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">Billboard Music Awards 2015</span>
 					<p class="description">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring, streaming and social interactions on popular online destinations for music.</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>	
 			</div>
 			<div class="swiper-slide">
@@ -30,7 +30,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">Britain's Got Talent 9</span>
 					<p class="description">Anyone, any age, any talent. Join judges Simon Cowell, Amanda Holden, Alesha Dixon and David Walliams to find the next winner of Britain's Got Talent! Expect the craziest, funniest, most stunning and entertaining acts - all in a bid to win the grand prize of £250,000.</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>			
 			</div>
 			<div class="swiper-slide">
@@ -43,7 +43,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">Critics' Choice Television Awards</span>
 					<p class="description">The 5th annual Critics' Choice Television Awards honors the best in programs and performances on television.</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>		
 			</div>
 			<div class="swiper-slide">
@@ -56,7 +56,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">House Of Cards 3</span>
 					<p class="description">Frank Underwood has ascended to the presidency of the United States without a single vote cast to his name. As he now holds the most powerful position in the world, how is he going to keep himself at the top or will he lose at the game he so expertly plays?</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>		
 			</div>
 			<div class="swiper-slide">
@@ -69,7 +69,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">Elementary 3</span>
 					<p class="description">Elementary stars Jonny Lee Miller as detective Sherlock Holmes and Lucy Liu as Dr. Joan Watson in a modern-day drama about a crime-solving duo that cracks the NYPD's most impossible cases.</p>
-					<a href="#" class="view-more">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>
 			</div>
 			<div class="swiper-slide">
@@ -82,7 +82,7 @@ get_header( 'rtl' ); ?>
 					</div>
 					<span class="title">The Odd Couple 3</span>
 					<p class="description">Former college buddies Oscar and Felix become unlikely roommates after the demise of their marriages. The only thing is - they are complete opposites! Oscar is an endearing slob while Felix is an uptight neat freak. How will these mismatched friends make their crazy living arrangement work?</p>
-					<a href="#" class="link-button">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="link-button">View More</a>
 				</div>		
 			</div>
 		</div>
@@ -97,7 +97,7 @@ get_header( 'rtl' ); ?>
 				<div class="spotlight-details">
 					<h3 class="spotlight-title">Billboard Music Awards 2015</h3>
 					<p class="spotlight-excerpt">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring...</p>
-					<a href="#">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="link-button">View More</a>
 				</div>
 				<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_306x200.jpg');"></div>
 			</div>
@@ -107,7 +107,7 @@ get_header( 'rtl' ); ?>
 				<div class="spotlight-details">
 					<h3 class="spotlight-title">House of Cards 3</h3>
 					<p class="spotlight-excerpt">Frank Underwood has ascended to the presidency of the United States without a single vote cast to his name. As he now holds the most powerful position in the world, how...</p>
-					<a href="#">View More</a>
+					<a href="<?php echo site_url(); ?>/elementary" class="link-button">View More</a>
 				</div>
 				<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_306x200.jpg');"></div>
 			</div>
@@ -144,8 +144,8 @@ get_header( 'rtl' ); ?>
 					</div>
 				</div>
 			</div>
-			<div class="swiper-button-prev gradient-red hidden-md hidden-lg"></div>
-    		<div class="swiper-button-next gradient-red hidden-md hidden-lg"></div>
+			<div class="video-player-nav swiper-button-prev gradient-red hidden-md hidden-lg"></div>
+    		<div class="video-player-nav swiper-button-next gradient-red hidden-md hidden-lg"></div>
 		</div>
 	</div>
 </div>

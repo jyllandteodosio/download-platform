@@ -31,7 +31,7 @@ get_header( 'rtl' ); ?>
 		<div id="latest-episodes-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
 				<div class="swiper-slide">
-					<a href="#" class="show show-wide">
+					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
 						<div class="show-thumbnail-container">
 							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
 						</div>
@@ -43,7 +43,7 @@ get_header( 'rtl' ); ?>
 					</a>
 				</div>
 				<div class="swiper-slide">
-					<a href="#" class="show show-wide">
+					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
 						<div class="show-thumbnail-container">
 							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
 						</div>
@@ -55,7 +55,7 @@ get_header( 'rtl' ); ?>
 					</a>
 				</div>
 				<div class="swiper-slide">
-					<a href="#" class="show show-wide">
+					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
 						<div class="show-thumbnail-container">
 							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
 						</div>
@@ -67,7 +67,7 @@ get_header( 'rtl' ); ?>
 					</a>
 				</div>
 				<div class="swiper-slide">
-					<a href="#" class="show show-wide">
+					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
 						<div class="show-thumbnail-container">
 							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
 						</div>
@@ -79,7 +79,7 @@ get_header( 'rtl' ); ?>
 					</a>
 				</div>
 				<div class="swiper-slide">
-					<a href="#" class="show show-wide">
+					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
 						<div class="show-thumbnail-container">
 							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
 						</div>
@@ -91,7 +91,7 @@ get_header( 'rtl' ); ?>
 					</a>
 				</div>
 				<div class="swiper-slide">
-					<a href="#" class="show show-wide">
+					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
 						<div class="show-thumbnail-container">
 							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
 						</div>
@@ -105,8 +105,8 @@ get_header( 'rtl' ); ?>
 			</div>
 		</div>
 	</div>
-	<div class="swiper-button-prev swiper-button-default-white"></div>
-	<div class="swiper-button-next swiper-button-default-white "></div>
+	<div class="latest-episodes-nav swiper-button-prev swiper-button-default-white"></div>
+	<div class="latest-episodes-nav swiper-button-next swiper-button-default-white "></div>
 </div>
 <?php get_template_part( 'partials/other-shows' ); ?>
 <?php get_footer( 'rtl' ); ?>
