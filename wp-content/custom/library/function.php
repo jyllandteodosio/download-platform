@@ -288,7 +288,8 @@ if( !function_exists('get_all_operator_access') ){
 
         foreach ($operator_access as $key => $value) {
             $meta_access_unserialized = unserialize($value['meta_access']);
-            $meta_access_simplified = implode(' , ', $meta_access_unserialized);
+            // $meta_access_simplified = implode(' , ', $meta_access_unserialized);
+            $meta_access_simplified = $meta_access_unserialized != NULL ? implode(' , ', $meta_access_unserialized) : "";
             $operator_access_prep[$value['id']] = array(
                                 'operator_group' => $value['operator_group'],
                                 'country_group' => $value['country_group'],

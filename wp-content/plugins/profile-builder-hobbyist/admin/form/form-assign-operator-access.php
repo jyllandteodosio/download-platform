@@ -174,9 +174,12 @@
 						},
 						function( response ) {
 							var parsedData = JSON.parse(response);
-							var entertainment = parsedData["channel-access[0]"];
-							var extreme= parsedData["channel-access[1]"];
-
+							var entertainment = '',extreme= '';
+							if(parsedData) {
+								var entertainment = parsedData["channel-access[0]"];
+								var extreme= parsedData["channel-access[1]"];
+							}
+							
 							if(entertainment != undefined && entertainment != ''){
 								jQuery('#channel-access-0').attr('checked', true);
 							}else{
