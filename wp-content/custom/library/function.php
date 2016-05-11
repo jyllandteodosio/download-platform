@@ -1483,3 +1483,32 @@ function my_scripts(){
 }
 add_action("admin_enqueue_scripts", 'my_scripts');
 
+
+// echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
+add_filter( 'cron_schedules', 'myprefix_add_weekly_cron_schedule' );
+function myprefix_add_weekly_cron_schedule( $schedules ) {
+    $schedules['minute'] = array(
+        'interval' => 60, // 1 week in seconds
+        'display'  => __( 'Per Minute' ),
+    );
+ 
+    return $schedules;
+}
+
+// add_action( 'my_hourly_event',  'update_db_hourly' );
+
+// if ( ! wp_next_scheduled( 'my_hourly_event' ) ) {
+//     wp_schedule_event( time(), 'minute', 'my_hourly_event' );
+// }
+// function update_db_hourly() {
+//     global $wpdb;
+//     $wpdb->insert( 
+//         'rtl21016_cron', 
+//         array( 
+//             'test' => 'value1'
+//         ) 
+//     );
+
+// } // end update_csv_hourly
+
+// wp_clear_scheduled_hook( 'my_hourly_event' );
