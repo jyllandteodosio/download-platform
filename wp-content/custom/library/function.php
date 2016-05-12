@@ -1461,7 +1461,6 @@ if(!function_exists('getCountryGroupSelectCase')){
                 $country_groups_select_case .= "when '".$key."' then '".$value."' ";
             else
                 $country_groups_select_case .= "when '' then 'Admin' ";
-
         }
         $country_groups_select_case .= "else 'Admin' ";
         $country_groups_select_case .= "end as country_group, ";
