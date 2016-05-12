@@ -1457,7 +1457,11 @@ if(!function_exists('getCountryGroupSelectCase')){
 
         $country_groups_select_case .= "case r.country_group ";
         foreach ($country_groups as $key => $value) {
-            $country_groups_select_case .= "when '".$key."' then '".$value."' ";
+            if($key != '')
+                $country_groups_select_case .= "when '".$key."' then '".$value."' ";
+            else
+                $country_groups_select_case .= "when '' then 'Admin' ";
+
         }
         $country_groups_select_case .= "else 'Admin' ";
         $country_groups_select_case .= "end as country_group, ";
