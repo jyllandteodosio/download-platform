@@ -1155,16 +1155,18 @@ if (!function_exists('checkDateIfCurrentMonth')) {
      * @return bool
      * @usage returns 1 if date is current month, otherwise 0
      */
-    function checkDatesIfCurrentMonth($start_date, $end_date, $promo_filter){
+    function checkDatesIfCurrentMonth($start_date, $end_date, $promo_filter='this-month'){
         $first_day_of_month = mktime(0,0,0,date('n'),1,date('Y'));
         $last_day_of_month = mktime(23,59,59,date('n'),date('t'),date('Y')); 
+        $current_day_of_month = time(); 
 
         if($promo_filter == 'this-month' && strtotime($start_date) <= $last_day_of_month && $first_day_of_month <= strtotime($end_date)){
-        // if( strtotime($start_date) <= $last_day_of_month && $first_day_of_month <= strtotime($end_date) ){
             return 1;
         }else if ($promo_filter == 'all'){
             return 1;
         }else if ($promo_filter == 'upcoming' && strtotime($start_date) > $last_day_of_month){
+            return 1;
+        }else if ($promo_filter == 'current' && strtotime($start_date) <= $current_day_of_month && strtotime($end_date) >= $current_day_of_month){
             return 1;
         }
         return 0;
@@ -1485,20 +1487,20 @@ add_action("admin_enqueue_scripts", 'my_scripts');
 
 
 // echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
-add_filter( 'cron_schedules', 'myprefix_add_weekly_cron_schedule' );
-function myprefix_add_weekly_cron_schedule( $schedules ) {
-    $schedules['minute'] = array(
-        'interval' => 60, // 1 week in seconds
-        'display'  => __( 'Per Minute' ),
-    );
+// add_filter( 'cron_schedules', 'myprefix_add_weekly_cron_schedule' );
+// function myprefix_add_weekly_cron_schedule( $schedules ) {
+//     $schedules['minute'] = array(
+//         'interval' => 60, // 1 week in seconds
+//         'display'  => __( 'Per Minute' ),
+//     );
  
-    return $schedules;
-}
+//     return $schedules;
+// }
 
-// add_action( 'my_hourly_event',  'update_db_hourly' );
+// // add_action( 'my_hourly_event',  'update_db_hourly' );
 
 // if ( ! wp_next_scheduled( 'my_hourly_event' ) ) {
-//     wp_schedule_event( time(), 'minute', 'my_hourly_event' );
+//     // wp_schedule_event( time(), 'minute', 'my_hourly_event' );
 // }
 // function update_db_hourly() {
 //     global $wpdb;
@@ -1508,7 +1510,37 @@ function myprefix_add_weekly_cron_schedule( $schedules ) {
 //             'test' => 'value1'
 //         ) 
 //     );
+//     // testing();
 
 // } // end update_csv_hourly
 
 // wp_clear_scheduled_hook( 'my_hourly_event' );
+
+
+// add_action( 'init', 'testing', 100 );
+function send_monthly_report($file){
+    // $to = $user->user_email;
+    $to = "diannekatherinedelosreyes@ymail.com";
+    $subject = 'RTL CBS Asia Monthly Report';
+    // $headers = array('Content-Type: text/html; charset=UTF-8');
+    $headers  = 'MIME-Version: 1.0' . "\r\n";
+    $headers .= 'Content-type: multipart/mixed; charset=iso-8859-1' . "\r\n";
+    $attachment = $file;
+    $mail_attachment = $file;//array( $attachment );
+
+    $message = 'Please see the attachment';
+    // print_r($mail_attachment);
+    // die();
+    // echo $message;
+    // Start output buffering to grab smtp debugging output
+    ob_start();
+
+    // Send the test mail
+    $result = wp_mail($to,$subject,$message,$headers,$mail_attachment);
+        
+    // Grab the smtp debugging output
+    $smtp_debug = ob_get_clean();
+        
+    // Output the response
+    // echo "res-".$result;
+}

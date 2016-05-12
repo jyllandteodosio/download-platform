@@ -363,7 +363,7 @@ class FileList
     public static function CategorizedFileList($file, $prefix = null, $category = 'show'){
         $file['files'] = maybe_unserialize($file['files']);
         $fhtml = '';
-        // die($file['publish_date']);
+        
         if(checkPackageDownloadAvailabilityDate($file['publish_date'], $file['expire_date'])){
             if (count($file['files']) > 0) {
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
@@ -439,7 +439,7 @@ class FileList
                             
                         }
                         else if ( $prefix == self::$prefix_list['promos'] ){
-                            if(checkIfPromoIsAccessible($operator_group_promo_access)){
+                            if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($sfileOriginal['promo_start'],$sfileOriginal['promo_end'], 'current') ) {
                                 $thumb = $sfileOriginal['thumbnail'];
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, self::$prefix_list['promos'], $thumb);
                             }

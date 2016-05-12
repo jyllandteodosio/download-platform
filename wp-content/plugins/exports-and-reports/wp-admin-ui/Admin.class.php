@@ -9,6 +9,19 @@ if ( ! is_object( $wpdb ) ) {
 	wp_die( 'Access denied' );
 }
 // FOR EXPORTS ONLY
+function sendAutomaticReports($export_file){
+    // die('auto!!');
+    echo '<script type="text/javascript">console.log("dianne--.'.$export_file.'");</script>';
+    // do_action('wp_admin_ui_export_download');
+    $file = WP_ADMIN_UI_EXPORT_DIR.'/'.str_replace(array('/','..'),'',$export_file);
+    $file = realpath( $file );
+
+    // echo '<script type="text/javascript">console.log("dianne 2--'.$file.'");</script>';
+
+    setRtlReportList();
+    send_monthly_report($file);
+    // @unlink($file);
+}
 if ( isset( $_GET['download'] ) && isset( $_GET['_wpnonce'] ) && false !== wp_verify_nonce( $_GET['_wpnonce'], 'wp-admin-ui-export' ) ) {
     do_action('wp_admin_ui_export_download');
     $file = WP_ADMIN_UI_EXPORT_DIR.'/'.str_replace(array('/','..'),'',$_GET['export']);
@@ -21,11 +34,11 @@ if ( isset( $_GET['download'] ) && isset( $_GET['_wpnonce'] ) && false !== wp_ve
     /** Custom code by dianne d.r. - to auto download csv file upon export */
     // custom_monthly_reports
     // die('sh');
-    if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_monthly_reports' ){
-        setRtlReportList();
-        // send_monthly_report($file);
-    }
-   
+    // if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_monthly_reports' ){
+    //     setRtlReportList();
+    //     send_monthly_report($file);
+    //     @unlink($file);
+    // }
     // print_r($_GET);
     // echo $file;
     // die();
@@ -1260,6 +1273,10 @@ class WP_Admin_UI
                 /** Custom code by dianne d.r. - opens a blank new tab for Reports Data export btn */
                 if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_reports_data' ){
                     echo '<script type="text/javascript">window.open("'.$this->export_url.urlencode($export_file).'");</script>';
+
+                }else if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_monthly_reports' ){
+                    sendAutomaticReports($export_file);
+                    // echo '<script type="text/javascript">console.log("dianne");</script>';
                 }
                 /** End of custom code  */
             }

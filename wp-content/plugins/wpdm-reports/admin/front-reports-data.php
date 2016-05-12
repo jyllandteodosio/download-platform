@@ -123,9 +123,10 @@
 		
 		<input type="button" value=" Export Report " id="export_sum" class="button" <?php echo $disabled?> title="<?php echo $title;?>" style="display:none" onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
 		<input type="button" value=" Export Report " id="export_list" class="button" <?php echo $disabled?> title="<?php echo $title;?>" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
+		<!-- <input type="button" value=" Export Report " id="auto_report" class="button" style="display:block" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports','temp_report_window');"> -->
+		
 		<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
 		
-		<!-- <input type="button" value=" Export Report " id="auto_report" class="button" title="<?php echo $title;?>" style="display:none" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports','temp_report_window');"> -->
 
 		<script>
 			// jQuery('#auto_report').trigger('click');

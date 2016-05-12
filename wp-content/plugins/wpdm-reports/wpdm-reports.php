@@ -96,3 +96,59 @@ function register_plugin_styles() {
 //   // echo "<script>alert('omg!');</script>";
 //   // wp_die('dieee');
 // }
+
+
+add_filter( 'cron_schedules', 'myprefix_add_weekly_cron_schedule' );
+function myprefix_add_weekly_cron_schedule( $schedules ) {
+    $schedules['minute'] = array(
+        'interval' => 60, // 1 week in seconds
+        'display'  => __( 'Per Minute' ),
+    );
+ 
+    return $schedules;
+}
+
+add_action( 'my_hourly_event',  'update_db_hourly' );
+
+if ( ! wp_next_scheduled( 'my_hourly_event' ) ) {
+    wp_schedule_event( time(), 'minute', 'my_hourly_event' );
+}
+function update_db_hourly() {
+    global $wpdb;
+    $wpdb->insert( 
+        'rtl21016_cron', 
+        array( 
+            'test' => 'value1'
+        ) 
+    );
+    testing();
+
+} // end update_csv_hourly
+
+function testing(){
+	global $wpdb;
+    $wpdb->insert( 
+        'rtl21016_cron', 
+        array( 
+            'test' => 'value2'
+        ) 
+    );
+    ?>
+    <input type="button" value=" Export Report " id="auto_report" class="button" style="display:block; position:absolute; z-index:100; top:500; right:100" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports','temp_report_window');">
+    <iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
+    <script>console.log("Send RTL reports...");jQuery('#auto_report').trigger('click');</script>
+    <?php
+
+    global $wpdb;
+    $wpdb->insert( 
+        'rtl21016_cron', 
+        array( 
+            'test' => 'value3'
+        ) 
+    );
+    // die('diane');
+    // echo '<input type="button" value=" Export Report " id="auto_report" class="button" title="" style="display:none" onclick="window.open("?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports","temp_report_window");">';
+    // echo '<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>';
+    // echo "<script>jQuery('#auto_report').trigger('click');</script>";
+}
+// testing();
