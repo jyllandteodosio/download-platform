@@ -24,9 +24,12 @@
 									<option value="">All Country Group</option>
 									<?php $default_country_array = array_filter(custom_get_country_groups());
 										foreach( $default_country_array as $iso_country_code => $country_name ):
-											$selected = $iso_country_code == $form_data['country'] ? "selected" : "";?>
-											<option value="<?php echo $iso_country_code;?>" <?php echo $selected;?> ><?php echo $country_name;?></option>
-									<?php endforeach;?>
+											if ($iso_country_code != ''):
+												$selected = $iso_country_code == $form_data['country'] ? "selected" : "";?>
+												<option value="<?php echo $iso_country_code;?>" <?php echo $selected;?> ><?php echo $country_name;?></option>
+									<?php 	endif;
+										endforeach;
+									?>
 								</select>
 							</td>
 							<th scope="row"><label for="period">Period</label></th>
@@ -47,9 +50,11 @@
 									<option value="">All Operator group</option>
 									<?php $operator_group_array = array_filter(custom_get_operator_groups());
 									foreach( $operator_group_array as $options => $labels ):
-										$selected = $options == $form_data['operator_group'] ? "selected" : "";?>
-										<option value="<?php echo $options;?>" <?php echo $selected;?> ><?php echo $labels;?></option>
-									<?php endforeach;?>
+										if ($options != ''):
+											$selected = $options == $form_data['operator_group'] ? "selected" : "";?>
+											<option value="<?php echo $options;?>" <?php echo $selected;?> ><?php echo $labels;?></option>
+									<?php endif;
+									endforeach;?>
 								</select>
 							</td>
 							<th scope="row"><label for="shows">From</label></th>
@@ -119,10 +124,11 @@
 		<?php 
 			$disabled = $form_data['filter'] && !empty($reports_data) ? "" : "disabled";
 			$title = $form_data['filter'] && !empty($reports_data) ? "" : "Click 'Show Report' first before exporting.";
+			$export_button_visibility = 'style="display:none"';
 		?>
 		
-		<input type="button" value=" Export Report " id="export_sum" class="button" <?php echo $disabled?> title="<?php echo $title;?>" style="display:none" onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
-		<input type="button" value=" Export Report " id="export_list" class="button" <?php echo $disabled?> title="<?php echo $title;?>" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
+		<input type="button" value=" Export Report" id="export_sum" class="button" <?php echo $disabled?> title="<?php echo $title;?>" <?php echo $_GET['result_type'] != 'sum' ? $export_button_visibility : '';?> onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
+		<input type="button" value=" Export Report" id="export_list" class="button" <?php echo $disabled?> title="<?php echo $title;?>" <?php echo !isset($_GET['result_type']) ? '' : (($_GET['result_type'] != 'list' ) ? $export_button_visibility : '');?> onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
 		<!-- <input type="button" value=" Export Report " id="auto_report" class="button" style="display:block" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports','temp_report_window');"> -->
 		
 		<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
