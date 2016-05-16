@@ -1,26 +1,28 @@
 <?php
 // Template Name: Show
 
-get_header( 'rtl' ); ?>
+get_header( 'rtl' );
+switch_to_blog( 1 );?>
+
 <div class="section">
 	<div class="show-banner">
-		<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_1060x400.jpg" class="img-responsive">
+		<img src="<?php the_field('banner_image'); ?>" class="img-responsive">
 		<div class="show-banner-video-container hide">
 			<span class="close-video">x</span>
 			<iframe class="show-banner-video" id="showInnerVid" src="//player.vimeo.com/video/121871277?badge=0&amp;byline=0&amp;portrait=0&amp;title=0" width="1060" height="400" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 		</div>
 		<div class="show-banner-description">
-			<span class="date">Wednesdays</span>
-			<span class="time">9:00pm <small>(8:00pm JKT/BKK)</small></span>
+			<span class="date"><?php the_time('l');?></span>
+			<span class="time"><?php the_time('h:ia')?> <small>(<?php the_time('h:ia')?> JKT/BKK)</small></span>
 			<a href="#" class="watch-video"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>Watch Video</a>
 		</div>
 	</div>
 	<div class="show-synopsis">
 		<div class="row">
-			<div class="col-sm-4"><img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_menu.png" class="img-responsive"></div>
+			<div class="col-sm-4"><img src="<?php the_field('image_title'); ?>" class="img-responsive"></div>
 			<div class="col-sm-8">
-				<p>The new season of Elementary is brimming with uncertainty on how things will develop after the dynamic duo parted ways. Holmes returns to New York with a new apprentice and a renewed interest in working with the NYPD after being fired by London’s MI6. However, Captain Gregson won’t let him resume consulting for the department without permission from his former partner, Watson, the NYPD’s new go-to private investigator. New cases. New relationships. New twists will be in store. Will Holmes and Dr. Watson ever reunite?</p>
-				<p><strong>Starring</strong> Jonny Lee Miller, Lucy Liu</p>
+				<p><?php echo the_content();?></p>
+				<p><strong>Starring</strong> <?php echo get_field('cast',175); ?></p>
 			</div>
 		</div>
 	</div>

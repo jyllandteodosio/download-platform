@@ -5,7 +5,36 @@
 get_header( 'rtl' ); ?>
 <div class="section">
 	<div id="featured-slideshow" class="swiper-container">
+	<?php
+	global $switched;
+	switch_to_blog( 1 );
+
+	$channel = 'entertainment';
+	$query_shows = getFeaturedBanners($channel,5);
+	?>
+	
 		<div class="swiper-wrapper">
+			<?php
+				if($query_shows->have_posts()):
+	                while($query_shows->have_posts()) : $query_shows->the_post();
+	                  //echo "<br>".the_title();?>
+					<div class="swiper-slide">	
+						<img src="<?php the_field('banner_image'); ?>" class="swiper-photo" title="<?php the_title();?>" />
+						<div class="swiper-description">
+							<span class="day"><?php the_time('F d, l');?></span>
+							<div class="time">
+								<span class="timeslot">Live at <?php the_time('h:ia')?></span>
+								<span class="timezone">(<?php the_time('h:ia')?> JKT/BKK)</span>
+							</div>
+							<span class="title"><?php the_title(); ?></span>
+							<p class="description"><?php echo the_excerpt();?></p>
+							<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>" class="view-more">View More</a>
+						</div>	
+					</div>
+	                <?php endwhile;
+	            endif;
+			restore_current_blog();
+			?>
 			<div class="swiper-slide">	
 				<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard.jpg" class="swiper-photo" />
 				<div class="swiper-description">
@@ -19,7 +48,7 @@ get_header( 'rtl' ); ?>
 					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>	
 			</div>
-			<div class="swiper-slide">
+			<!-- <div class="swiper-slide">
 				<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/bgt.png" class="swiper-photo" />
 				<div class="swiper-description">
 					<span class="day">Sundays</span>
@@ -109,8 +138,9 @@ get_header( 'rtl' ); ?>
 					<p class="description">Chrisley Knows Best follows multimillionaire Todd Chrisley and his family's picture-perfect Southern life. But behind the façade of their 30,000 sq-ft home, real-life issues and lots of laugh-out-loud drama unfolds.</p>
 					<a href="<?php echo site_url(); ?>/elementary" class="view-more">View More</a>
 				</div>		
-			</div>
+			</div> -->
 		</div>
+		<?php //restore_current_blog(); ?>
 		<div class="swiper-pagination"></div>
 	</div>
 </div>
