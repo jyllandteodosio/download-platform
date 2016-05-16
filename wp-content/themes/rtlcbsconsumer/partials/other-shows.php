@@ -5,9 +5,8 @@
 			<div class="swiper-wrapper">
 				<?php
 					switch_to_blog( 1 );
-
-		$channel = 'entertainment';
-		$query_shows = getAllShows($channel);
+					$channel = 'entertainment';
+					$query_shows = getAllShows($channel);
 					if($query_shows->have_posts()):
 			            while($query_shows->have_posts()) : $query_shows->the_post();
 			            	$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
@@ -28,8 +27,8 @@
 			                <?php endif;
 			            endwhile;
 			        endif;
+			        restore_current_blog();
 				?>
-				
 			</div>
 		</div>
 	</div>

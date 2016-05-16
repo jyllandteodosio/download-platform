@@ -85,6 +85,7 @@ get_header( 'rtl' ); ?>
 				                <?php endif;
 				            endwhile;
 				        endif;
+				        restore_current_blog();
 					?>
 				</div>
 			</div>
