@@ -18,8 +18,7 @@ get_header( 'rtl' ); ?>
 	                while($query_shows->have_posts()) : $query_shows->the_post();
 	            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
 	                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
-	                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
-	                  //echo "<br>".the_title();?>
+	                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
 					<div class="swiper-slide">
 						<img src="<?php the_field('banner_image'); ?>" class="swiper-photo" title="<?php the_title();?>" />
 						<div class="swiper-description">
@@ -48,31 +47,31 @@ get_header( 'rtl' ); ?>
 	<div class="panel-body">
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
-				<div class="swiper-slide">
-					<div class="time">
-						<span class="timeslot">9:30pm</span>
-						<span class="timezone">(8:30pm JKT/BKK)</span>
-					</div>
-					<div class="swiper-description">
-						<span class="title">Marry Me</span>
-						<p class="details"></p>
-					</div>
-				</div>
-				<div class="swiper-slide">
-					<div class="time">
-						<span class="timeslot">9:55pm</span>
-						<span class="timezone">(8:55pm JKT/BKK)</span>
-					</div>
-					<div class="swiper-description">
-						<span class="title">The Odd Couple 3</span>
-						<p class="details"></p>
-					</div>
-				</div>
+				<?php
+					if($query_shows->have_posts()):
+		                while($query_shows->have_posts()) : $query_shows->the_post();
+		            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+		                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+		                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
+
+		                    <div class="swiper-slide">
+								<div class="time">
+									<span class="timeslot"><?php echo date('h:i a',get_field('airing_schedule'));?></span>
+									<span class="timezone">(<?php echo date('h:i a',get_field('airing_time_jkt'));?> JKT/BKK)</span>
+								</div>
+								<div class="swiper-description">
+									<span class="title"><?php the_title(); ?></span>
+									<p class="details"></p>
+								</div>
+							</div>
+		                <?php endif;endwhile;
+		            endif;
+				?>
 			</div>	
 		</div>	
 		<div class="today-nav swiper-button-prev"></div>
    	<div class="today-nav swiper-button-next"></div>	
-		<div class="text-center"><a href="<?php echo site_url(); ?>/featured-shows" class="today-link">View Featured Shows<span class="glyphicon glyphicon-play"></span></a></div>
+		<div class="text-center"><a href="<?php echo get_site_url(2); ?>/featured-shows" class="today-link">View Featured Shows<span class="glyphicon glyphicon-play"></span></a></div>
 	</div>
 </div>
 <div class="section row">
@@ -98,16 +97,6 @@ get_header( 'rtl' ); ?>
 	                <?php endif;endwhile;
 	            endif;
 			?>
-			<!-- <div class="spotlight-show-container col-xs-12 col-sm-6 col-md-3 col-lg-12">
-				<div class="spotlight-show">
-					<div class="spotlight-photo" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_306x200.jpg');"></div>
-					<div class="spotlight-details">
-						<h3 class="spotlight-title">Billboard Music Awards 2015</h3>
-						<p class="spotlight-excerpt">The Billboard Music Awards honors some of the hottest names in music today. The finalists are based on key fan interactions, including album sales, radio airplay, touring...</p>
-						<a href="<?php echo site_url(); ?>/elementary">View More</a>
-					</div>
-				</div>
-			</div> -->
 		</div>
 	</div>
 	<div id="widget-home-sidebar" class="col-xs-12 col-lg-6">
