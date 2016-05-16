@@ -7,13 +7,11 @@ get_header( 'rtl' ); ?>
 	<div id="featured-slideshow" class="swiper-container">
 	<?php
 	switch_to_blog( 1 );
-
 	$channel = 'entertainment';
-	$query_shows = getFeaturedBanners($channel,5);
 	?>
-	
 		<div class="swiper-wrapper">
 			<?php
+				$query_shows = getFeaturedBanners($channel,5);
 				if($query_shows->have_posts()):
 	                while($query_shows->have_posts()) : $query_shows->the_post();
 	            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
@@ -48,6 +46,7 @@ get_header( 'rtl' ); ?>
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
 				<?php
+					$query_shows = getAllShows($channel);
 					if($query_shows->have_posts()):
 		                while($query_shows->have_posts()) : $query_shows->the_post();
 		            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
@@ -79,6 +78,7 @@ get_header( 'rtl' ); ?>
 		<h2 class="section-title">Spotlight</h2>
 		<div class="row">
 			<?php
+				$query_shows = getAllShows($channel);
 				if($query_shows->have_posts()):
 	                while($query_shows->have_posts()) : $query_shows->the_post();
 	            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
@@ -109,6 +109,7 @@ get_header( 'rtl' ); ?>
 				<div id="video-playlist" class="video-playlist swiper-container">
 					<div class="video-show-container swiper-wrapper">
 						<?php
+							$query_shows = getAllShows($channel);
 							if($query_shows->have_posts()):
 				                while($query_shows->have_posts()) : $query_shows->the_post();
 				            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);

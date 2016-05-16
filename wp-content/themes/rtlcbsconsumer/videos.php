@@ -11,26 +11,29 @@ get_header( 'rtl' ); ?>
 		<div class="video-playlist-container video-playlist-side-container">
 			<div id="video-playlist" class="video-playlist video-playlist-side swiper-container">
 				<div class="video-show-container swiper-wrapper">
-					<div class="video-show swiper-slide active" data-vimeo-id="127580017">
+					<?php
+						switch_to_blog( 1 );
+						$channel = 'entertainment';
+						$query_shows = getAllShows($channel);
+
+						if($query_shows->have_posts()):
+				            while($query_shows->have_posts()) : $query_shows->the_post();
+				            	$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+				                $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+				                if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
+				                    <div class="video-show swiper-slide" data-vimeo-id="<?php the_field('vimeo_id'); ?>">
+										<span class="video-title"><?php the_title(); ?></span>
+										<img src="<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>" class="video-thumbnail">
+									</div>
+				                <?php endif;
+				            endwhile;
+				        endif;
+				        restore_current_blog();
+					?>
+					<!-- <div class="video-show swiper-slide active" data-vimeo-id="127580017">
 						<span class="video-title">Billboard Music Awards 2015</span>
 						<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_500x280.png" class="video-thumbnail">
-					</div>
-					<div class="video-show swiper-slide" data-vimeo-id="127580018">
-						<span class="video-title">Britain's Got Talent 9</span>
-						<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/bgt_500x280.png" class="video-thumbnail">
-					</div>
-					<div class="video-show swiper-slide" data-vimeo-id="121871277">
-						<span class="video-title">Elementary 3</span>
-						<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_500x280.png" class="video-thumbnail">
-					</div>
-					<div class="video-show swiper-slide" data-vimeo-id="127580022">
-						<span class="video-title">House of Cards 3</span>
-						<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_500x280.png" class="video-thumbnail">
-					</div>
-					<div class="video-show swiper-slide" data-vimeo-id="127600510">
-						<span class="video-title">Later Show with Letterman</span>
-						<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/letterman_500x280.png" class="video-thumbnail">
-					</div>
+					</div> -->
 				</div>
 			</div>
 			<div class="video-player-nav swiper-button-prev gradient-red hidden-md hidden-lg"></div>
