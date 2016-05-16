@@ -9,11 +9,11 @@ switch_to_blog( 1 );?>
 		<img src="<?php the_field('banner_image'); ?>" class="img-responsive">
 		<div class="show-banner-video-container hide">
 			<span class="close-video">x</span>
-			<iframe class="show-banner-video" id="showInnerVid" src="//player.vimeo.com/video/121871277?badge=0&amp;byline=0&amp;portrait=0&amp;title=0" width="1060" height="400" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+			<iframe class="show-banner-video" id="showInnerVid" src="//player.vimeo.com/video/<?php the_field('vimeo_id'); ?>?badge=0&amp;byline=0&amp;portrait=0&amp;title=0" width="1060" height="400" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 		</div>
 		<div class="show-banner-description">
-			<span class="date"><?php the_time('l');?></span>
-			<span class="time"><?php the_time('h:ia')?> <small>(<?php the_time('h:ia')?> JKT/BKK)</small></span>
+			<span class="date"><?php echo date('l',get_field('airing_schedule'));?></span>
+			<span class="time"><?php echo date('h:ia',get_field('airing_schedule'));?> <small>(<?php echo date('h:ia',get_field('airing_time_jkt'));?> JKT/BKK)</small></span>
 			<a href="#" class="watch-video"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>Watch Video</a>
 		</div>
 	</div>

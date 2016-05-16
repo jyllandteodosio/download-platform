@@ -23,10 +23,10 @@ get_header( 'rtl' ); ?>
 					<div class="swiper-slide">
 						<img src="<?php the_field('banner_image'); ?>" class="swiper-photo" title="<?php the_title();?>" />
 						<div class="swiper-description">
-							<span class="day"><?php the_time('F d, l');?></span>
+							<span class="day"><?php echo date('F d, l',get_field('airing_schedule'));?></span>
 							<div class="time">
-								<span class="timeslot">Live at <?php the_time('h:ia')?></span>
-								<span class="timezone">(<?php the_time('h:ia')?> JKT/BKK)</span>
+								<span class="timeslot">Live at <?php echo date('h:i a',get_field('airing_schedule'));?></span>
+								<span class="timezone">(<?php echo date('h:i a',get_field('airing_time_jkt'));?> JKT/BKK)</span>
 							</div>
 							<span class="title"><?php the_title(); ?></span>
 							<p class="description"><?php echo the_excerpt();?></p>
@@ -97,7 +97,6 @@ get_header( 'rtl' ); ?>
 							</div>
 	                <?php endif;endwhile;
 	            endif;
-			restore_current_blog();
 			?>
 			<!-- <div class="spotlight-show-container col-xs-12 col-sm-6 col-md-3 col-lg-12">
 				<div class="spotlight-show">
@@ -120,26 +119,20 @@ get_header( 'rtl' ); ?>
 			<div class="video-playlist-container">
 				<div id="video-playlist" class="video-playlist swiper-container">
 					<div class="video-show-container swiper-wrapper">
-						<div class="video-show swiper-slide active" data-vimeo-id="127580017">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/billboard_500x280.png" class="video-thumbnail">
-							<span class="video-title">Billboard Music Awards 2015</span>
-						</div>
-						<div class="video-show swiper-slide" data-vimeo-id="127580018">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/bgt_500x280.png" class="video-thumbnail">
-							<span class="video-title">Britain's Got Talent 9</span>	
-						</div>
-						<div class="video-show swiper-slide" data-vimeo-id="121871277">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_500x280.png" class="video-thumbnail">
-							<span class="video-title">Elementary 3</span>
-						</div>
-						<div class="video-show swiper-slide" data-vimeo-id="127580022">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/houseofcards_500x280.png" class="video-thumbnail">
-							<span class="video-title">House of Cards 3</span>
-						</div>
-						<div class="video-show swiper-slide" data-vimeo-id="127600510">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/letterman_500x280.png" class="video-thumbnail">
-							<span class="video-title">Later Show with Letterman</span>
-						</div>
+						<?php
+							if($query_shows->have_posts()):
+				                while($query_shows->have_posts()) : $query_shows->the_post();
+				            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+				                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+				                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
+				                    	<div class="video-show swiper-slide active" data-vimeo-id="<?php the_field('vimeo_id'); ?>">
+											<img src="<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>" class="video-thumbnail">
+											<span class="video-title"><?php the_title(); ?></span>
+										</div>
+				                <?php endif;endwhile;
+				            endif;
+						restore_current_blog();
+						?>
 					</div>
 				</div>
 				<div class="video-player-nav swiper-button-prev gradient-red"></div>
