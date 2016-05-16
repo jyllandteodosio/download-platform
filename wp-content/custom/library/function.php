@@ -1004,10 +1004,32 @@ if (!function_exists('getFeaturedBanners')) {
         return $query_shows;  
     }
 }
-
+if (!function_exists('getAllShows')) {
+    /**
+     * Get featured shows (paginated)
+     * @param  string  $channel        Either entertainment or extreme
+     * @param  integer $posts_per_page Desired number of post per page
+     * @param  string  $query_var      Either page or paged
+     * @return Object                  Returns featured shows.
+     */
+    function getAllShows($channel = 'entertainment'){
+        $args = array(
+                    'post_type' => 'wpdmpro', 
+                    'tax_query' => array(
+                        array(
+                          'taxonomy' => 'wpdmcategory',
+                          'field'    => 'slug',
+                          'terms'    => ' shows-'.$channel,
+                        ),
+                      )
+                  );
+        $query_shows = new WP_Query( $args );
+        return $query_shows;
+    }
+}
 if (!function_exists('getFeaturedShows')) {
     /**
-     * Get featured shows
+     * Get featured shows (paginated)
      * @param  string  $channel        Either entertainment or extreme
      * @param  integer $posts_per_page Desired number of post per page
      * @param  string  $query_var      Either page or paged
