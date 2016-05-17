@@ -935,6 +935,7 @@ a:hover {
 
 .show.show-wide .show-thumbnail-container {
 	float: left;
+	width: 45%;
 }
 
 .show.show-wide .show-details {

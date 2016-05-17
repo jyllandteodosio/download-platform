@@ -1569,3 +1569,53 @@ function send_monthly_report($file){
     // Output the response
     // echo "res-".$result;
 }
+
+// add_action( 'init', 'create_post_type' );
+// function create_post_type() {
+//   register_post_type( 'acme_product',
+//     array(
+//       'labels' => array(
+//         'name' => __( 'Products' ),
+//         'singular_name' => __( 'Product' )
+//       ),
+//       'public' => true,
+//       'has_archive' => true,
+//     )
+//   );
+// }
+
+// function theme_slug_filter_wp_title( $title ) {
+//     global $post;
+//     $post_slug=$post->post_name;
+//     if ( is_404() ) {
+//         $title = get_the_title().'ADD 404 TITLE TEXT HERE';
+//     }
+//     // You can do other filtering here, or
+//     // just return $title
+//     return $title;
+// }
+// // Hook into wp_title filter hook
+// add_filter( 'wp_title', 'theme_slug_filter_wp_title' );
+
+function add_query_vars_filter( $vars ){
+  $vars[] = "episode";
+  return $vars;
+}
+add_filter( 'query_vars', 'add_query_vars_filter' );
+
+// add_action('init','add_author_more_rewrite_rule');
+// function add_author_more_rewrite_rule()
+// {
+//     add_rewrite_rule(
+//         '(\d*)$',
+//         '?episode=$matches[1]',
+//         'top'
+//     );
+// }
+
+// add_filter( 'init', 'add_author_more_query_var' );
+// function add_author_more_query_var()
+// {
+//     global $wp;
+//     $wp->add_query_var( 'episode' );
+// }

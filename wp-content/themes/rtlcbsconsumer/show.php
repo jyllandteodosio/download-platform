@@ -29,86 +29,41 @@ switch_to_blog( 1 );?>
 </div>
 <div class="section">
 	<h2 class="section-title">Latest Episodes</h2>
+	<?php
+	$post_slug = $post->post_name;
+	$episode = pods( 'episode' );
+
+	$params = array(
+	    'where' => 'show.post_name = "'.$post_slug.'"',
+	    'orderby' => 'episode_number.meta_value DESC'
+	);
+
+	$episode->find( $params );
+	?>
 	<div class="other-slideshow-container">
 		<div id="latest-episodes-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
-				<div class="swiper-slide">
-					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
-						<div class="show-thumbnail-container">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
+				<?php
+					while( $episode->fetch() ):?>
+						<div class="swiper-slide">
+							<a href="<?php echo(get_site_url(2)."/".$post->post_name.'?ep='.$episode->field('post_name'))?>" class="show show-wide">
+								<div class="show-thumbnail-container">
+									<img src="<?php echo wp_get_attachment_image_src(get_post_thumbnail_id($episode->field('id')), 'thumbnail-size', true)[0];?>" class="show-thumbnail" />
+								</div>
+								<div class="show-details">
+									<div class="episode">Episode <?php echo $episode->field('episode_number');?></div>
+									<div class="episode-title"><?php echo $episode->field('post_title');?></div>
+									<p class="show-description"><?php echo strip_tags(mb_strimwidth($episode->field('post_content'),0,150,'...'));?></p>
+								</div>
+							</a>
 						</div>
-						<div class="show-details">
-							<div class="episode">Episode 24</div>
-							<div class="episode-title">A Controlled Descent</div>
-							<p class="show-description">When Holmes’ former recovery sponsor and friend, Alfredo, disappears, Holmes and Watson retrace his steps as Captain Gregson and Detective Bell lend NYPD’s...</p>
-						</div>
-					</a>
-				</div>
-				<div class="swiper-slide">
-					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
-						<div class="show-thumbnail-container">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
-						</div>
-						<div class="show-details">
-							<div class="episode">Episode 24</div>
-							<div class="episode-title">A Controlled Descent</div>
-							<p class="show-description">When Holmes’ former recovery sponsor and friend, Alfredo, disappears, Holmes and Watson retrace his steps as Captain Gregson and Detective Bell lend NYPD’s...</p>
-						</div>
-					</a>
-				</div>
-				<div class="swiper-slide">
-					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
-						<div class="show-thumbnail-container">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
-						</div>
-						<div class="show-details">
-							<div class="episode">Episode 24</div>
-							<div class="episode-title">A Controlled Descent</div>
-							<p class="show-description">When Holmes’ former recovery sponsor and friend, Alfredo, disappears, Holmes and Watson retrace his steps as Captain Gregson and Detective Bell lend NYPD’s...</p>
-						</div>
-					</a>
-				</div>
-				<div class="swiper-slide">
-					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
-						<div class="show-thumbnail-container">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
-						</div>
-						<div class="show-details">
-							<div class="episode">Episode 24</div>
-							<div class="episode-title">A Controlled Descent</div>
-							<p class="show-description">When Holmes’ former recovery sponsor and friend, Alfredo, disappears, Holmes and Watson retrace his steps as Captain Gregson and Detective Bell lend NYPD’s...</p>
-						</div>
-					</a>
-				</div>
-				<div class="swiper-slide">
-					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
-						<div class="show-thumbnail-container">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
-						</div>
-						<div class="show-details">
-							<div class="episode">Episode 24</div>
-							<div class="episode-title">A Controlled Descent</div>
-							<p class="show-description">When Holmes’ former recovery sponsor and friend, Alfredo, disappears, Holmes and Watson retrace his steps as Captain Gregson and Detective Bell lend NYPD’s...</p>
-						</div>
-					</a>
-				</div>
-				<div class="swiper-slide">
-					<a href="<?php echo site_url(); ?>/episode-24" class="show show-wide">
-						<div class="show-thumbnail-container">
-							<img src="<?php echo get_template_directory_uri(); ?>/images/placeholders/elementary_235x199.png" class="show-thumbnail" />
-						</div>
-						<div class="show-details">
-							<div class="episode">Episode 24</div>
-							<div class="episode-title">A Controlled Descent</div>
-							<p class="show-description">When Holmes’ former recovery sponsor and friend, Alfredo, disappears, Holmes and Watson retrace his steps as Captain Gregson and Detective Bell lend NYPD’s...</p>
-						</div>
-					</a>
-				</div>
+				<?php endwhile;?>
 			</div>
 		</div>
 	</div>
 	<div class="latest-episodes-nav swiper-button-prev swiper-button-default-white"></div>
 	<div class="latest-episodes-nav swiper-button-next swiper-button-default-white "></div>
 </div>
+<?php restore_current_blog();?>
 <?php get_template_part( 'partials/other-shows' ); ?>
 <?php get_footer( 'rtl' ); ?>
