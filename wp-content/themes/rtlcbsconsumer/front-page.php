@@ -89,7 +89,7 @@ get_header( 'rtl' ); ?>
 									<div class="spotlight-photo" style="background-image: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>');"></div>
 									<div class="spotlight-details">
 										<h3 class="spotlight-title"><?php the_title(); ?></h3>
-										<p class="spotlight-excerpt"><?php echo mb_strimwidth(get_the_excerpt(),0,150, '...');?></p>
+										<p class="spotlight-excerpt"><?php echo strip_tags(mb_strimwidth(get_the_excerpt(),0,150, '...'));?></p>
 										<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>">View More</a>
 									</div>
 								</div>

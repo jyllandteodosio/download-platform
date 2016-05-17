@@ -52,7 +52,7 @@ get_header( 'rtl' ); ?>
 							<div class="spotlight-show">
 								<div class="spotlight-details">
 									<h3 class="spotlight-title"><?php the_title(); ?></h3>
-									<p class="spotlight-excerpt"><?php echo mb_strimwidth(get_the_excerpt(),0,100, '...');?></p>
+									<p class="spotlight-excerpt"><?php echo strip_tags(mb_strimwidth(get_the_excerpt(),0,150, '...'));?></p>
 									<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>" class="link-button">View More</a>
 								</div>
 								<div class="spotlight-photo" style="background-image: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>');"></div>
@@ -74,11 +74,12 @@ get_header( 'rtl' ); ?>
 				<div class="video-show-container swiper-wrapper">
 					<?php
 						if($query_shows->have_posts()):
+							$counter = 1;
 				            while($query_shows->have_posts()) : $query_shows->the_post();
 				            	$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
 				                $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 				                if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
-				                    <div class="video-show swiper-slide active" data-vimeo-id="<?php the_field('vimeo_id'); ?>">
+				                    <div class="video-show swiper-slide <?php echo $counter++ == 1 ? 'active':'';?>" data-vimeo-id="<?php the_field('vimeo_id'); ?>">
 										<span class="video-title"><?php the_title(); ?></span>
 										<img src="<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>" class="video-thumbnail">
 									</div>

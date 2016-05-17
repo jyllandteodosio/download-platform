@@ -19,7 +19,7 @@
 										</div>
 										<div class="show-details">
 											<span class="show-title"><?php the_title(); ?></span>
-											<p class="show-description"><?php echo mb_strimwidth(get_the_excerpt(),0,180, '...');?></p>
+											<p class="show-description"><?php echo strip_tags(mb_strimwidth(get_the_excerpt(),0,180, '...'));?></p>
 											<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>" class="view-more link-button">View More</a>
 										</div>
 									</div>
