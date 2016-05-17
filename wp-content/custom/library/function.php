@@ -211,6 +211,13 @@ function updateToExportsReports($query_string_exportsreports_list){
     return $return_value;
 }
 
+function getPostIdBySlug($slug){
+    global $wpdb;
+    $post_id = $wpdb->get_var( "SELECT ID FROM $wpdb->posts WHERE post_name = '".$slug."'" );
+
+    return $post_id;
+}
+
 /* END OF DATABASE FUNCTIONS */
 
 if( !function_exists('get_current_user_role') ){
@@ -1584,18 +1591,7 @@ function send_monthly_report($file){
 //   );
 // }
 
-// function theme_slug_filter_wp_title( $title ) {
-//     global $post;
-//     $post_slug=$post->post_name;
-//     if ( is_404() ) {
-//         $title = get_the_title().'ADD 404 TITLE TEXT HERE';
-//     }
-//     // You can do other filtering here, or
-//     // just return $title
-//     return $title;
-// }
-// // Hook into wp_title filter hook
-// add_filter( 'wp_title', 'theme_slug_filter_wp_title' );
+
 
 function add_query_vars_filter( $vars ){
   $vars[] = "episode";

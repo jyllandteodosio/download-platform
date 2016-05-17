@@ -100,3 +100,18 @@ function twentyfifteen_widgets_init() {
 	) );
 }
 add_action( 'widgets_init', 'twentyfifteen_widgets_init' );
+
+
+function theme_slug_filter_wp_title( $title ) {
+	switch_to_blog( 1 );
+    if ( is_404() && isset($_GET['ep']) ) {
+    	$post_id = getPostIdBySlug($_GET['ep']);
+        $title = get_the_title($post_id);
+    }else if ( is_404() ){
+    	$post_id = getPostIdBySlug(get_query_var('pagename'));
+        $title = get_the_title($post_id);
+    }
+    restore_current_blog();
+    return $title;
+}
+add_filter( 'wp_title', 'theme_slug_filter_wp_title' );
