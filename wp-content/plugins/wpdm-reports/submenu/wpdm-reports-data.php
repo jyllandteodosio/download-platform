@@ -36,7 +36,7 @@ if(isset($_GET['country'])){
             $period_date_format = "%m/%d/%Y";
             $period_date_format_standard = "%Y-%m-%d";
             $period_start_label = " Period";
-            $groupby_period = " period_format_standard";
+            $groupby_period = " ,period_format_standard";
             $select_max_created_at = "";
             $select_max_created_at_list = "";
     		$form_data['results_period'] = $form_data['date_from_formatted_mdy'];
@@ -45,7 +45,7 @@ if(isset($_GET['country'])){
             $period_date_format = "%m/%d/%Y";
             $period_date_format_standard = "%Y-%m-%d";
             $period_start_label = " Start";
-            $groupby_period = " YEARWEEK(r.created_at)";
+            $groupby_period = " ,YEARWEEK(r.created_at)";
             $groupby_period_exportsreports = " YEARWEEK(r.created_at)";
             $select_max_created_at = "date_format(max(r.created_at), '%Y-%m-%d') as 'End', ";
             $select_max_created_at_list = "date_format(r.created_at, '%Y-%m-%d') as 'End', ";
@@ -55,7 +55,7 @@ if(isset($_GET['country'])){
             $period_date_format = "%m/%Y";
             $period_date_format_standard = "%Y-%m";
             $period_start_label = " Period";
-            $groupby_period = " period_format_standard";
+            $groupby_period = " ,period_format_standard";
             $select_max_created_at = "";
             $select_max_created_at_list = "";
     		$form_data['results_period'] = $form_data['date_from_formatted_my'];
@@ -64,7 +64,7 @@ if(isset($_GET['country'])){
             $period_date_format = "%Y";
             $period_date_format_standard = "%Y";
             $period_start_label = " Period";
-            $groupby_period = " period_format_standard";
+            $groupby_period = " ,period_format_standard";
             $select_max_created_at = "";
             $select_max_created_at_list = "";
     		$form_data['results_period'] = $form_data['date_from_formatted_y'];
@@ -94,7 +94,7 @@ if(isset($_GET['country'])){
     $condition_show = ($form_data['shows'] != '') ? "post_id = ".$form_data['shows'] : '1';
 
     $select_count = $form_data['result_type'] == 'sum' ?  " count(*) as downloaded_files, min(r.created_at) as min_created_date, max(r.created_at) as max_created_date, " : " r.file_title as downloaded_files, ";
-    $group_by = $form_data['result_type'] == 'sum' ?  " GROUP BY u.id, p.id, ". $groupby_period." " : " ";
+    $group_by = $form_data['result_type'] == 'sum' ?  " GROUP BY u.id, p.id ". $groupby_period." " : " ";
 
     $query_string_count = "
         SELECT date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
