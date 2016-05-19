@@ -12,7 +12,9 @@
 	    <div class="item-details">
 	      	<h2 class="item-title">[title]</h2>
 	      	<div class="half description pull-left">
-	        	<p>[description]</p>
+	        	<div class="collapsible-desc">
+	        	    <p>[description]</p>
+	        	</div>                
 	      	</div>
 	      	<div class="half other-information pull-left">
 	        	<h3>Cast:</h3>
