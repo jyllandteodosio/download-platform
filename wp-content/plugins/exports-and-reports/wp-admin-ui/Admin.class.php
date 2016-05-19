@@ -43,7 +43,7 @@ if ( isset( $_GET['download'] ) && isset( $_GET['_wpnonce'] ) && false !== wp_ve
     // echo $file;
     // die();
     if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_reports_data' ){
-        wpdm_download_file($file, $_GET['export'].".csv");
+        wpdm_download_file($file, $_GET['export']);
         @unlink($file);
     }
     /** End of custom code  */
