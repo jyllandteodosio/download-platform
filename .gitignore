@@ -56,3 +56,4 @@ wp-config.php
 # ignore node/grunt dependency directories
 node_modules/
 
+db-connect-test.php
