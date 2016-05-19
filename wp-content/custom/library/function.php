@@ -1469,10 +1469,12 @@ if(!function_exists('setRtlReportList')){
             INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
             INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
             WHERE ".$condition_period.
-            " ORDER BY ".$period_start_label.",u.user_email,p.post_title
+            " ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
         ";
-
+        // echo "<br><br>list:".$query_string_exportsreports_list;
         $return_value = updateToExportsReports($query_string_exportsreports_list);
+
+        return $query_string_exportsreports_list;
     }
 }
 
@@ -1512,10 +1514,10 @@ add_action('wp_ajax_set_session_notice', 'set_session_notice');
 add_action( 'wp_ajax_nopriv_set_session_notice', 'set_session_notice' );
 
 // ENQUEUE SCRIPTS
-function my_scripts(){
-    wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");
-}
-add_action("admin_enqueue_scripts", 'my_scripts');
+// function my_scripts(){
+//     wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");
+// }
+// add_action("admin_enqueue_scripts", 'my_scripts');
 
 
 // echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
