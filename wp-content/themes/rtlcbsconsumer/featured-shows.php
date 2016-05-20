@@ -22,10 +22,10 @@ get_header( 'rtl' ); ?>
 								<div class="swiper-slide">
 									<img src="<?php the_field('banner_image'); ?>" class="swiper-photo" title="<?php the_title();?>" />
 									<div class="swiper-description">
-										<span class="day"><?php echo date('F d, l',get_field('airing_schedule'));?></span>
+										<span class="day"><?php echo get_field('airing_schedule') ? date('F d, l',get_field('airing_schedule')) : date('F d, l');?></span>
 										<div class="time">
-											<span class="timeslot">Live at <?php echo date('h:i a',get_field('airing_schedule'));?></span>
-											<span class="timezone">(<?php echo date('h:i a',get_field('airing_time_jkt'));?> JKT/BKK)</span>
+											<span class="timeslot">Live at <?php echo get_field('airing_schedule') ? date('h:i a',get_field('airing_schedule')) : date('h:i a');?></span>
+											<span class="timezone">(<?php echo get_field('airing_time_jkt') ? date('h:i a',get_field('airing_time_jkt')) : date('h:i a');?> JKT/BKK)</span>
 										</div>
 										<span class="title"><?php the_title(); ?></span>
 										<p class="description"><?php echo the_excerpt();?></p>
