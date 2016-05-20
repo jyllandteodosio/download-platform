@@ -10,17 +10,13 @@ if ( ! is_object( $wpdb ) ) {
 }
 // FOR EXPORTS ONLY
 function sendAutomaticReports($export_file){
-    // die('auto!!');
     echo '<script type="text/javascript">console.log("dianne--.'.$export_file.'");</script>';
-    // do_action('wp_admin_ui_export_download');
     $file = WP_ADMIN_UI_EXPORT_DIR.'/'.str_replace(array('/','..'),'',$export_file);
     $file = realpath( $file );
 
-    // echo '<script type="text/javascript">console.log("dianne 2--'.$file.'");</script>';
-
-    setRtlReportList();
+    $setRtlReportList = setRtlReportList();
     send_monthly_report($file);
-    // @unlink($file);
+    @unlink($file);
 }
 if ( isset( $_GET['download'] ) && isset( $_GET['_wpnonce'] ) && false !== wp_verify_nonce( $_GET['_wpnonce'], 'wp-admin-ui-export' ) ) {
     do_action('wp_admin_ui_export_download');
@@ -32,16 +28,13 @@ if ( isset( $_GET['download'] ) && isset( $_GET['_wpnonce'] ) && false !== wp_ve
 		wp_die( 'File not found.' );
 	}
     /** Custom code by dianne d.r. - to auto download csv file upon export */
-    // custom_monthly_reports
-    // die('sh');
+   
     // if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_monthly_reports' ){
-    //     setRtlReportList();
+        // setRtlReportList();
     //     send_monthly_report($file);
     //     @unlink($file);
     // }
-    // print_r($_GET);
-    // echo $file;
-    // die();
+   
     if ( isset( $_GET['export_source']) && $_GET['export_source'] == 'custom_reports_data' ){
         wpdm_download_file($file, $_GET['export']);
         @unlink($file);
