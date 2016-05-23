@@ -1555,7 +1555,7 @@ add_action( 'wp_ajax_nopriv_set_session_notice', 'set_session_notice' );
 function send_monthly_report($file){
     $users = get_users('role=Administrator');
     foreach ($users as $user) {
-        $to = $user->user_email;
+        $to = $user->user_email;//'diannekatherinedelosreyes@ymail.com';
         $subject = 'RTL CBS Asia Monthly Report';
         $headers = array('Content-Type: text/html; charset=UTF-8');
         $mail_attachment = $file;
@@ -1574,6 +1574,8 @@ function send_monthly_report($file){
         ob_start();
         $result = wp_mail($to,$subject,$message,$headers,$mail_attachment);
         $smtp_debug = ob_get_clean();
+        echo "<script>console.log('Email sent to : {$user->user_email}')</script>";
+        echo "<script>console.log('Result : {$result}')</script>";
     } 
 }
 
