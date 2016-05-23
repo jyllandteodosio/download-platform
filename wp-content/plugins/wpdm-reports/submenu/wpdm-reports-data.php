@@ -14,6 +14,7 @@ if(!function_exists('wpdm_reports_data_content')){
 
 if(isset($_GET['country'])){
     global $wpdb;
+    /* Fetching of form inputs */
     $form_data['filter'] = $_GET['filter'] != NULL || $_GET['filter'] != '' ? true : false;
     $form_data['country'] = $_GET['country'] != NULL || $_GET['country'] != '' ? sanitize_text_field($_GET['country']) : '';
     $form_data['operator_group'] = $_GET['operator_group'] != NULL || $_GET['operator_group'] != '' ? sanitize_text_field($_GET['operator_group']) : '';
@@ -24,19 +25,23 @@ if(isset($_GET['country'])){
     $form_data['date_to'] = $_GET['date_to'] != NULL || $_GET['date_to'] != '' ? sanitize_text_field($_GET['date_to'])." 23:59:59" : '';
     $form_data['result_type'] = $_GET['result_type'] != NULL || $_GET['result_type'] != '' ? sanitize_text_field($_GET['result_type']) : 'sum';
 
+    /* Formatting of date (from and to) */
     $form_data['date_from_formatted_mdy'] = date_format(date_create($form_data['date_from']),"m/d/Y");
     $form_data['date_from_formatted_my'] = date_format(date_create($form_data['date_from']),"m/Y");
     $form_data['date_from_formatted_y'] = date_format(date_create($form_data['date_from']),"Y");
     $form_data['date_to_formatted_mdy'] = date_format(date_create($form_data['date_to']),"m/d/Y");
 
+    /* Date layouting for filter message */
     $form_data['msg_dl_range'] = ($form_data['date_from'] != '' && $form_data['date_to'] != '') ? "Downloaded Files from ".$form_data['date_from_formatted_mdy']." to ".$form_data['date_to_formatted_mdy'] : "";
 
+    /* Setting of parts of query specific for a certain date period */
     switch ($_GET['current_period']) {
     	case 'period-day':
             $period_date_format = "%m/%d/%Y";
             $period_date_format_standard = "%Y-%m-%d";
             $period_start_label = " Period";
-            $groupby_period = " period_format_standard";
+            $groupby_period = " ,period_format_standard";
+            $groupby_period_exportsreports = " Period";
             $select_max_created_at = "";
             $select_max_created_at_list = "";
     		$form_data['results_period'] = $form_data['date_from_formatted_mdy'];
@@ -45,7 +50,7 @@ if(isset($_GET['country'])){
             $period_date_format = "%m/%d/%Y";
             $period_date_format_standard = "%Y-%m-%d";
             $period_start_label = " Start";
-            $groupby_period = " YEARWEEK(r.created_at)";
+            $groupby_period = " ,YEARWEEK(r.created_at)";
             $groupby_period_exportsreports = " YEARWEEK(r.created_at)";
             $select_max_created_at = "date_format(max(r.created_at), '%Y-%m-%d') as 'End', ";
             $select_max_created_at_list = "date_format(r.created_at, '%Y-%m-%d') as 'End', ";
@@ -55,7 +60,8 @@ if(isset($_GET['country'])){
             $period_date_format = "%m/%Y";
             $period_date_format_standard = "%Y-%m";
             $period_start_label = " Period";
-            $groupby_period = " period_format_standard";
+            $groupby_period = " ,period_format_standard";
+            $groupby_period_exportsreports = " Period";
             $select_max_created_at = "";
             $select_max_created_at_list = "";
     		$form_data['results_period'] = $form_data['date_from_formatted_my'];
@@ -64,7 +70,8 @@ if(isset($_GET['country'])){
             $period_date_format = "%Y";
             $period_date_format_standard = "%Y";
             $period_start_label = " Period";
-            $groupby_period = " period_format_standard";
+            $groupby_period = " ,period_format_standard";
+            $groupby_period_exportsreports = " Period";
             $select_max_created_at = "";
             $select_max_created_at_list = "";
     		$form_data['results_period'] = $form_data['date_from_formatted_y'];
@@ -74,12 +81,16 @@ if(isset($_GET['country'])){
             $period_date_format_standard = "%Y-%m-%d";
             $period_start_label = " Period";
             $groupby_period = "";
+            $groupby_period_exportsreports = " Period";
             $select_max_created_at = "";
             $select_max_created_at_list = "";
     		$form_data['results_period'] = "";
     		break;
     }
-    $condition_period = ($form_data['date_from'] != '' && $form_data['date_to'] != '') ? "r.created_at BETWEEN '".$form_data['date_from']."' AND '".$form_data['date_to']."'" : '1';
+
+    /* Setting WHERE condition for r.created_at date */
+    // $condition_period = ($form_data['date_from'] != '' && $form_data['date_to'] != '') ? "r.created_at BETWEEN '".$form_data['date_from']."' AND '".$form_data['date_to']."'" : '1';
+    $condition_period = '1';
     if ($form_data['date_from'] != '' && $form_data['date_to'] != '') {
     	$condition_period = "r.created_at BETWEEN '".$form_data['date_from']."' AND '".$form_data['date_to']."'";
     }else if ($form_data['date_to'] == ''){
@@ -87,15 +98,19 @@ if(isset($_GET['country'])){
     }else if ($form_data['date_from'] == ''){
     	$condition_period = "r.created_at <= '".$form_data['date_to']."'";
     }
-
+    /* Setting WHERE condition for country_group, operator_group, operator_account and show */
     $condition_country = ($form_data['country'] != '') ? "country_group = '".$form_data['country']."'" : '1';
     $condition_operator_group = ($form_data['operator_group'] != '') ? "operator_group = '".$form_data['operator_group']."'" : '1';
     $condition_operator_account = ($form_data['operator_account'] != '') ? "user_id = ".$form_data['operator_account'] : '1';
     $condition_show = ($form_data['shows'] != '') ? "post_id = ".$form_data['shows'] : '1';
 
-    $select_count = $form_data['result_type'] == 'sum' ?  " count(*) as downloaded_files, min(r.created_at) as min_created_date, max(r.created_at) as max_created_date, " : " r.file_title as downloaded_files, ";
-    $group_by = $form_data['result_type'] == 'sum' ?  " GROUP BY u.id, p.id, ". $groupby_period." " : " ";
+    /* Select specific items per result type (sum or list) */
+    $select_count = $form_data['result_type'] == 'sum' ?  " count(*) as downloaded_files, min(r.created_at) as min_created_date, max(r.created_at) as max_created_date, " : " r.file_title as downloaded_files, r.created_at as max_created_date, ";
+    
+    /* Group by specific item for result type (sum) */
+    $group_by = $form_data['result_type'] == 'sum' ?  " GROUP BY u.id, p.id ". $groupby_period." " : " ";
 
+    /* Preparing pagination details */
     $query_string_count = "
         SELECT date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
         FROM ".$wpdb->custom_reports." r 
@@ -111,18 +126,17 @@ if(isset($_GET['country'])){
         " ORDER BY period_format_standard,u.user_email,p.post_title
     ";
     $reports_count = $wpdb->get_results($query_string_count, ARRAY_A);
-
     $reports_per_page = 30;
     $page = isset( $_GET['cpage'] ) ? abs( (int) $_GET['cpage'] ) : 1;
     $total_reports_count = count($reports_count);
-    // echo $total_reports_count;
-
     $limit_start = $reports_per_page * ($page - 1);
     // echo "limit-".$limit_start."<br>";
+    
+    // IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
+    
+    /* Query string for displayed reports table */
     $query_string = "
-		SELECT r.country_group, 
-            IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
-            u.user_email, p.post_title, 
+		SELECT r.country_group, r.operator_group, u.user_email, p.post_title, 
             ".$select_count."
             date_format(r.created_at, '".$period_date_format."') as period, 
             date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
@@ -136,15 +150,14 @@ if(isset($_GET['country'])){
 		" AND ".$condition_operator_account.
 		" AND ".$condition_show.
 		 $group_by."
-          ORDER BY period_format_standard,u.user_email,p.post_title
+          ORDER BY period_format_standard DESC,u.user_email,p.post_title
           LIMIT ".$limit_start.", ".$reports_per_page."
     ";
    
     $reports_data = $wpdb->get_results($query_string, ARRAY_A);
-
     // echo $query_string;
 
-    /* QUERY for export report */
+    /* QUERY string for exported reports */
     $country_groups_select_case .= getCountryGroupSelectCase();
 
     $query_string_exportsreports = "
@@ -162,12 +175,18 @@ if(isset($_GET['country'])){
         " AND ".$condition_operator_group.
         " AND ".$condition_operator_account.
         " AND ".$condition_show.
-        " GROUP BY r.user_id, r.post_id, ". $period_start_label."
-          ORDER BY ".$period_start_label.",u.user_email,p.post_title
+        " GROUP BY r.user_id, r.post_id, ". $groupby_period_exportsreports."
+          ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
     ";
-    setRtlReportList($period_date_format,$period_date_format_standard,$period_start_label,$select_max_created_at_list,$condition_period );
+    // echo "<br></br>".$query_string_exportsreports;
+    $query_string_list = setRtlReportList($period_date_format,$period_date_format_standard,$period_start_label,$select_max_created_at_list,$condition_period );
+    // $reports_data = $wpdb->get_results($query_string_list, ARRAY_A);
 
+    // echo $query_string;
 
+    // echo "<br><br>".$query_string_exportsreports;
+
+    /* Saving of export query to database */
     $return_value = $wpdb->update( 
         $wpdb->exportsreports_reports, 
         array( 

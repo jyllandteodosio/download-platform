@@ -34,9 +34,12 @@
 							</td>
 							<th scope="row"><label for="period">Period</label></th>
 							<td>
-								<input type="hidden" name="current_period" id="current-period" value="<?php echo $form_data['current_period'] ?>">
+								<?php 
+								// echo $form_data['current_period'];
+								$default_period = !isset($form_data['current_period']) || $form_data['current_period'] == '' ? 'current' : '';?>
+								<input type="hidden" name="current_period" id="current-period" value="<?php echo $default_period != '' ? 'period-day' : $form_data['current_period'] ?>">
 								<ul class="subsubsub">
-									<li class=""><a href="" id="period-day" class="periods <?php echo $form_data['current_period'] == "period-day" ? "current" : ""?>">Day</a> |</li>
+									<li class=""><a href="" id="period-day" class="periods <?php echo $default_period != '' ? $default_period : ($form_data['current_period'] == "period-day" ? "current" : "");?>">Day</a> |</li>
 									<li class=""><a href="" id="period-week" class="periods <?php echo $form_data['current_period'] == "period-week" ? "current" : ""?>">Week</a> |</li>
 									<li class=""><a href="" id="period-month" class="periods <?php echo $form_data['current_period'] == "period-month" ? "current" : ""?>">Month</a> |</li>
 									<li class=""><a href="" id="period-year" class="periods <?php echo $form_data['current_period'] == "period-year" ? "current" : ""?>">Year</a></li>
@@ -133,7 +136,6 @@
 		
 		<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
 		
-
 		<script>
 			// jQuery('#auto_report').trigger('click');
 		</script>
@@ -156,6 +158,7 @@
 		<?php
 		if(isset($reports_data) && !empty($reports_data)):
 			foreach ($reports_data as $key => $value):
+				// echo "<pre>";print_r($reports_data);echo "</pre>";
 		?>
 		<tr>
 			<td><?php 
@@ -163,8 +166,9 @@
 				if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
 				?>
 			</td>
-			<td><?php echo $value['country_group'] != '' ? get_country_name($value['country_group']) : 'Admin' ;?></td>
-			<td><?php echo $value['operator_group'];?></td>
+			<td><?php echo $value['country_group'] != '' && $value['country_group'] != NULL ? get_country_name($value['country_group']) : 'Admin' ;?></td>
+			<td><?php echo $value['operator_group'] != '' && $value['operator_group'] != NULL ? $value['operator_group'] : 'Admin' ;?></td>
+			<!-- <td><?php //echo $value['operator_group'];?></td> -->
 			<td><?php echo $value['user_email'];?></td>
 			<td><?php echo $value['post_title'];?></td>
 			<td><?php echo $value['downloaded_files'];?></td>
@@ -210,44 +214,27 @@
 </div>
 
 <script>
-console.log('a');
 	jQuery(document).ready(function(){
 		var curr_date, curr_month, curr_year, firstDay, lastDay;
 
 		jQuery("#period-day").click(function(e){
 			e.preventDefault();
-		 	// firstDay = moment().startOf('day').format("YYYY-MM-DD");
-		 	// lastDay = moment().endOf('day').format("YYYY-MM-DD");
-			
 			setActiveDatePeriod(jQuery(this).attr('id'));
-			// setDatePeriod(firstDay, lastDay);
 		});
 
 		jQuery("#period-week").click(function(e){
 			e.preventDefault();
-		 	// firstDay = moment().startOf('week').format("YYYY-MM-DD");
-		 	// lastDay = moment().endOf('week').format("YYYY-MM-DD");
-
 			setActiveDatePeriod(jQuery(this).attr('id'));
-			// setDatePeriod(firstDay, lastDay);
 		});
 
 		jQuery("#period-month").click(function(e){
 			e.preventDefault();
-		    // firstDay = moment().startOf('month').format("YYYY-MM-DD");
-			// lastDay = moment().endOf('month').format("YYYY-MM-DD");
-
 			setActiveDatePeriod(jQuery(this).attr('id'));
-			// setDatePeriod(firstDay, lastDay);
 		});
 
 		jQuery("#period-year").click(function(e){
 			e.preventDefault();
-			// firstDay = moment().startOf('year').format("YYYY-MM-DD");
-		 	// lastDay = moment().endOf('year').format("YYYY-MM-DD");
-
 			setActiveDatePeriod(jQuery(this).attr('id'));
-			// setDatePeriod(firstDay, lastDay);
 		});
 
 		function setDatePeriod(firstDay, lastDay){

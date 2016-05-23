@@ -23,7 +23,11 @@ function reports_dashboard(){
 	// wp_clear_scheduled_hook('my_task_hook');
 	// echo "<script>alert('omg!');</script>";
 	// echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
-	echo "dashboard";
+	// echo "dashboard";
+    ?>
+    <input type="button" value=" Send Monthly Reports " id="auto_report" class="button" style="" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports','temp_report_window');">
+    <iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
+    <?php
 }
 
 function wpdm_reports_data_content(){

@@ -1469,10 +1469,12 @@ if(!function_exists('setRtlReportList')){
             INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
             INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
             WHERE ".$condition_period.
-            " ORDER BY ".$period_start_label.",u.user_email,p.post_title
+            " ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
         ";
-
+        // echo "<br><br>list:".$query_string_exportsreports_list;
         $return_value = updateToExportsReports($query_string_exportsreports_list);
+
+        return $query_string_exportsreports_list;
     }
 }
 
@@ -1512,10 +1514,10 @@ add_action('wp_ajax_set_session_notice', 'set_session_notice');
 add_action( 'wp_ajax_nopriv_set_session_notice', 'set_session_notice' );
 
 // ENQUEUE SCRIPTS
-function my_scripts(){
-    wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");
-}
-add_action("admin_enqueue_scripts", 'my_scripts');
+// function my_scripts(){
+//     wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");
+// }
+// add_action("admin_enqueue_scripts", 'my_scripts');
 
 
 // echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
@@ -1551,30 +1553,44 @@ add_action("admin_enqueue_scripts", 'my_scripts');
 
 // add_action( 'init', 'testing', 100 );
 function send_monthly_report($file){
-    // $to = $user->user_email;
-    $to = "diannekatherinedelosreyes@ymail.com";
-    $subject = 'RTL CBS Asia Monthly Report';
-    // $headers = array('Content-Type: text/html; charset=UTF-8');
-    $headers  = 'MIME-Version: 1.0' . "\r\n";
-    $headers .= 'Content-type: multipart/mixed; charset=iso-8859-1' . "\r\n";
-    $attachment = $file;
-    $mail_attachment = $file;//array( $attachment );
+    $users = get_users('role=Administrator');
+    foreach ($users as $user) {
+        $to = $user->user_email;//'diannekatherinedelosreyes@ymail.com';
+        $subject = 'RTL CBS Asia Monthly Report';
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+        $mail_attachment = $file;
 
-    $message = 'Please see the attachment';
-    // print_r($mail_attachment);
-    // die();
-    // echo $message;
-    // Start output buffering to grab smtp debugging output
-    ob_start();
+        $message = "
+            Hi {$user->user_email},<br><br>
+            Please see attached report:<br>
+            <ul>
+                <li>List of Downloaded Files from All Operators of Previous Month</li>
+            </ul>
+            You may also <a href='".get_site_url()."/rtlcbs-admin'>Log In</a> to the Operator Website to see more reports.<br><br>
+            Thanks,<br>
+            RTL CBS Asia Team
+        ";
 
-    // Send the test mail
-    $result = wp_mail($to,$subject,$message,$headers,$mail_attachment);
-        
-    // Grab the smtp debugging output
-    $smtp_debug = ob_get_clean();
-        
-    // Output the response
-    // echo "res-".$result;
+        ob_start();
+        $result = wp_mail($to,$subject,$message,$headers,$mail_attachment);
+        $smtp_debug = ob_get_clean();
+        echo "<script>console.log('Email sent to : {$user->user_email}')</script>";
+        echo "<script>console.log('Result : {$result}')</script>";
+    } 
+}
+
+function getCommaSeparatedUserEmails(){
+    $users = get_users('role=Administrator');
+    $email_counter = 1;
+    $formatted_email_recipient = '';
+    foreach ($users as $user) {
+        $formatted_email_recipient .= $user->user_email;
+        if($email_counter < count($users)){
+            $formatted_email_recipient .= ',';
+        }
+        $email_counter++;
+    }
+    return $formatted_email_recipient;
 }
 
 // add_action( 'init', 'create_post_type' );
@@ -1615,3 +1631,4 @@ add_filter( 'query_vars', 'add_query_vars_filter' );
 //     global $wp;
 //     $wp->add_query_var( 'episode' );
 // }
+// 
