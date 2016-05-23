@@ -21,8 +21,9 @@ get_header( 'rtl' ); ?>
 		                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
 								<div class="swiper-slide">
 									<img src="<?php the_field('banner_image'); ?>" class="swiper-photo" title="<?php the_title();?>" />
-									<div class="swiper-description">
-										<span class="day"><?php echo get_field('airing_schedule') ? date('F d, l',get_field('airing_schedule')) : date('F d, l');?></span>
+									<?php $banner_text_alignment = get_field('banner_text_alignment') == 'right' ? "right-info" : "left-info";?>
+									<div class="swiper-description <?php echo $banner_text_alignment; ?>">
+										<span class="day"><?php echo get_field('airing_schedule') ? date('F d, Y',get_field('airing_schedule')) : date('F d, Y');?></span>
 										<div class="time">
 											<span class="timeslot">Live at <?php echo get_field('airing_schedule') ? date('h:i a',get_field('airing_schedule')) : date('h:i a');?></span>
 											<span class="timezone">(<?php echo get_field('airing_time_jkt') ? date('h:i a',get_field('airing_time_jkt')) : date('h:i a');?> JKT/BKK)</span>
