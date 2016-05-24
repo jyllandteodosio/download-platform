@@ -2,7 +2,18 @@
 
 <div class="wrap">
 	<h1 id="">Reports Data</h1>
-	
+	<?php
+	if(isset($form_data['message'])){
+		$validation_message = $form_data['message'];
+		$class_hidden = "";
+		$form_invalid = "form-invalid";
+	}else{
+		$validation_message = "";
+		$class_hidden = "hidden";
+		$form_invalid = "";
+	}
+	?>
+	<div id="message" class="error <?php echo $class_hidden;?>" ><p><?php echo $validation_message;?></p></div>
 	
 		<form id="form_operator_access" method="get">
 			<p class="submit">
@@ -61,7 +72,7 @@
 								</select>
 							</td>
 							<th scope="row"><label for="shows">From</label></th>
-							<td><input type="date" name="date_from" id="date_from" class="date_from" value="<?php echo $_GET['date_from'];?>" ></td>
+							<td class="<?php echo $form_invalid;?>"><input type="date" name="date_from" id="date_from" class="date_from" value="<?php echo $_GET['date_from'];?>" ></td>
 						</tr>
 						<tr class="form-field">
 							<th scope="row"><label for="operator_account">Operator Account</label></th>
@@ -76,7 +87,7 @@
 								</select>
 							</td>
 							<th scope="row"><label for="shows">To</label></th>
-							<td>
+							<td  class="<?php echo $form_invalid;?>">
 								<input type="date" name="date_to" id="date_to" value="<?php echo $_GET['date_to'];?>">
 
 							</td>
