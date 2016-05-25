@@ -1632,3 +1632,22 @@ add_filter( 'query_vars', 'add_query_vars_filter' );
 //     $wp->add_query_var( 'episode' );
 // }
 // 
+
+/* The Event Manager plugin */
+add_filter( 'tribe_event_label_singular', 'event_display_name' );
+function event_display_name() {
+    return 'Schedule';
+}
+add_filter( 'tribe_event_label_singular_lowercase', 'event_display_name_lowercase' );
+function event_display_name_lowercase() {
+    return 'schedule';
+}
+// Plural
+add_filter( 'tribe_event_label_plural', 'event_display_name_plural' );
+function event_display_name_plural() {
+    return 'Schedules';
+}
+add_filter( 'tribe_event_label_plural_lowercase', 'event_display_name_plural_lowercase' );
+function event_display_name_plural_lowercase() {
+    return 'schedules';
+}
