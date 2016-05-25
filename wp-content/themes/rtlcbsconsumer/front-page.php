@@ -33,6 +33,7 @@ get_header( 'rtl' ); ?>
 					</div> 
 	                <?php endif;endwhile;
 	            endif;
+	            restore_current_blog();
 			?>
 		</div>
 		<?php //restore_current_blog(); ?>
@@ -47,25 +48,27 @@ get_header( 'rtl' ); ?>
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
 				<?php
-					$query_shows = getAllShows($channel);
-					if($query_shows->have_posts()):
-		                while($query_shows->have_posts()) : $query_shows->the_post();
-		            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
-		                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
-		                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
+					$events = tribe_get_events( array(
+					    'start_date'   => current_time('Y-m-d').' 00:00',
+    					'end_date'     => current_time('Y-m-d').' 23:59'
+					) );
+					if(count($events) > 0):
+						foreach ( $events as $event ):?>
 
-		                    <div class="swiper-slide">
+			                <div class="swiper-slide">
 								<div class="time">
-									<span class="timeslot"><?php echo get_field('airing_schedule') ? date('h:i a',get_field('airing_schedule')) : date('h:i a');?></span>
-									<span class="timezone">(<?php echo get_field('airing_time_jkt') ? date('h:i a',get_field('airing_time_jkt')) : date('h:i a');?> JKT/BKK)</span>
+									<span class="timeslot"><?php echo tribe_get_start_date($event->ID, false, Tribe__Date_Utils::TIMEFORMAT);//echo get_field('airing_schedule') ? date('h:i a',get_field('airing_schedule')) : date('h:i a');?></span>
+									<span class="timezone">(<?php echo $event->post_content;?>)</span>
 								</div>
 								<div class="swiper-description">
-									<span class="title"><?php the_title(); ?></span>
+									<span class="title"><?php echo $event->post_title; ?></span>
 									<p class="details"></p>
 								</div>
 							</div>
-		                <?php endif;endwhile;
-		            endif;
+			            <?php endforeach;
+			        else:
+			        	echo "No scheduled show today.";
+			        endif;
 				?>
 			</div>	
 		</div>	
@@ -79,6 +82,7 @@ get_header( 'rtl' ); ?>
 		<h2 class="section-title">Spotlight</h2>
 		<div class="row">
 			<?php
+				switch_to_blog( 1 );
 				$query_shows = getAllShows($channel);
 				if($query_shows->have_posts()):
 	                while($query_shows->have_posts()) : $query_shows->the_post();

@@ -6,7 +6,7 @@ $style = ( $bannerUrl ) ? 'style="background-image: url(\'' . $bannerUrl . '\');
 
 get_header( 'rtl' ); ?>
 
-<div class="content-area">
+<div class="content-area calendar-area">
 	<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
 	<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 		<header class="entry-header" <?php echo $style; ?>>
