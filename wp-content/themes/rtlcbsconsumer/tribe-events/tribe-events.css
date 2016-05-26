@@ -8,7 +8,8 @@
 .tribe-events-calendar td.tribe-events-past div[id*=tribe-events-daynum-], 
 .tribe-events-calendar td.tribe-events-past div[id*=tribe-events-daynum-]>a,
 .tribe-events-calendar div[id*=tribe-events-daynum-], 
-.tribe-events-calendar div[id*=tribe-events-daynum-] a{
+.tribe-events-calendar div[id*=tribe-events-daynum-] a,
+.tribe-bar-collapse #tribe-bar-collapse-toggle{
 	color: #444;
 }
 
