@@ -66,9 +66,9 @@ get_header( 'rtl' ); ?>
 								</div>
 							</div>
 			            <?php endforeach;
-			        else:
-			        	echo "No scheduled show today.";
-			        endif;
+			        else:?>
+			        	<span class="shows-message">No scheduled show today.</span>
+			        <?php endif;
 				?>
 			</div>	
 		</div>	

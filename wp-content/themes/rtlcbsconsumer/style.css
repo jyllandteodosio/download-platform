@@ -48,6 +48,11 @@ a:hover {
 	color: #000;
 }
 
+.shows-message {
+	text-align: center;
+	padding: 0px 20px;
+}
+
 /* BOOTSTRAP OVERRIDES
 ----------------------------------*/
 @media (min-width: 1200px) {
@@ -755,32 +760,6 @@ a:hover {
 .page-template-videos .content-area {
 	background: none;
 	min-height: 500px;
-}
-
-.calendar-area .tribe-bar-date-filter,
-.calendar-area .tribe-bar-search-filter,
-.calendar-area #tribe-bar-views,
-.calendar-area .tribe-events-list-separator-month,
-.calendar-area .tribe-events-day .tribe-events-day-time-slot h5{
-	color: #444;
-}
-.calendar-area #tribe-bar-views .tribe-bar-views-list .tribe-bar-views-option a{
-	text-decoration: underline;
-}
-.calendar-area #tribe-events-content .tribe-events-calendar td {
-	background: #270908;
-}
-.calendar-area #tribe-events-content .tribe-events-calendar td.tribe-events-othermonth {
-    background: #f9f9f9;
-}
-.calendar-area .tribe-events-calendar td.tribe-events-past .tribe-events-month-event-title a, 
-.tribe-events-calendar td.tribe-events-past .tribe-events-viewmore a {
-    opacity: 1;
-    filter: Alpha(opacity=100);
-}
-.calendar-area .tribe-events-calendar td.tribe-events-past div[id*=tribe-events-daynum-], 
-.tribe-events-calendar td.tribe-events-past div[id*=tribe-events-daynum-]>a {
-    color: #444;
 }
 
 @media (max-width: 991px) {
