@@ -93,6 +93,7 @@ function getUsersByRole($role = 'administrator'){
     $users = $query_users->get_results();
     return $users;
 }
+
 function getCustomCartContents(){
     global $wpdb;
     $userID = get_current_user_id( );
@@ -217,7 +218,6 @@ function getPostIdBySlug($slug){
 
     return $post_id;
 }
-
 /* END OF DATABASE FUNCTIONS */
 
 if( !function_exists('get_current_user_role') ){
@@ -307,17 +307,26 @@ if( !function_exists('get_all_operator_access') ){
     }
 }
 
-add_action('init', 'myStartSession', 1);
-add_action('wp_logout', 'myEndSession');
-add_action('wp_login', 'myEndSession');
-
-function myStartSession() {
-    if(!session_id()) {
-        session_start();
+if(!function_exists('myStartSession')){
+    /**
+     * Start session on init
+     */
+    function myStartSession() {
+        if(!session_id()) {
+            session_start();
+        }
     }
+    add_action('init', 'myStartSession', 1);
 }
-function myEndSession() {
-    session_destroy ();
+if(!function_exists('myEndSession')){
+    /**
+     * End session on login and logout
+     */
+    function myEndSession() {
+        session_destroy ();
+    }
+    add_action('wp_logout', 'myEndSession');
+    add_action('wp_login', 'myEndSession');
 }
 
 if( !function_exists('set_channel_access') ){
@@ -326,8 +335,6 @@ if( !function_exists('set_channel_access') ){
      * @return Bool Returns 1 if user has an access, else 0
      */
     function set_channel_access($channel = 'entertainment', $use_default = false){
-        // die($channel);
-
         global $wpdb;
         $user_id = get_current_user_id( );
         $country_group = get_current_user_country_group();
@@ -355,12 +362,10 @@ if( !function_exists('set_channel_access') ){
             $return_value = 0;
             $_SESSION['channel'] = 'none';
         }
-        // die($_SESSION['channel']);
 
         return $return_value;
     }
 }
-
 
 if( !function_exists('check_if_have_channel_access') ){
     /**
@@ -401,192 +406,205 @@ if( !function_exists('set_default_channel') ){
     }
 }
 
+if(!function_exists('bulk_add_to_cart')){
+    /**
+     * Ajax function to o a bulk add to cart feature
+     */
+    function bulk_add_to_cart() {
+    	global $wpdb;
+    	$cartnonce = $_POST['cartnonce'];
 
-/**
- * Ajax function to o a bulk add to cart feature
- */
-function bulk_add_to_cart() {
-	global $wpdb;
-	$cartnonce = $_POST['cartnonce'];
+    	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
+    	    $cart_data['file_data']		= unserializeForm($_POST['data']);
 
-	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
-	    $cart_data['file_data']		= unserializeForm($_POST['data']);
+    	    foreach ( $cart_data['file_data'] as $key => $value) {
+    	    	$cart_data_serialized[$key]			= $value;//urldecode($value);
+    	    	$cart_data_unserialized[$key]		= unserialize($cart_data_serialized[$key]);
+                $cart_data_unserialized[$key]['download_url'] = urldecode($cart_data_unserialized[$key]['download_url']);
+    	    }
+    	    $user_id = get_current_user_id( );
+    	    $cart_entry_count = getCustomCartCount();
 
-	    foreach ( $cart_data['file_data'] as $key => $value) {
-	    	$cart_data_serialized[$key]			= $value;//urldecode($value);
-	    	$cart_data_unserialized[$key]		= unserialize($cart_data_serialized[$key]);
-            $cart_data_unserialized[$key]['download_url'] = urldecode($cart_data_unserialized[$key]['download_url']);
-	    }
-	    $user_id = get_current_user_id( );
-	    $cart_entry_count = getCustomCartCount();
-
-		if($cart_entry_count == 0 ){
-	    	$serialized_cart = serialize($cart_data_unserialized);
-	    	$return_value = insertToCustomCart($serialized_cart);
-		}else {
-			$cart_entry = fetchEntryFromCustomCart();
-			$unserialized_cart = unserialize($cart_entry);
-            $serialized_cart = serialize($unserialized_cart+$cart_data_unserialized);
-	   		// $serialized_cart = serialize(array_merge($unserialized_cart, $cart_data_unserialized));
-	   		$return_value = updateToCustomCart($serialized_cart);
-		}
-	}else {
-		$return_value = 0;
-	}
-    echo $return_value == 1 ? "success" : "failed";
-	die();
-}
-add_action('wp_ajax_bulk_add_to_cart', 'bulk_add_to_cart');
-
-/**
- * Ajax function for adding specific files to cart
- */
-function add_to_cart(){
-	global $wpdb;
-	$cartnonce = $_POST['cartnonce'];
-	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
-		$cart_data = prepare_cart_data($_POST['file-id'],$_POST['file-title'], $_POST['file-path'], $_POST['download-url'],$_POST['post-id'],$_POST['file-type'],$_POST['user-id'],$_POST['thumb']);
-	    $cart_array = structure_cart_data($cart_data);
-	    $cart_entry_count = getCustomCartCount();
-		if($cart_entry_count == 0 ){
-	    	$serialized_cart = serialize($cart_array);
-		    $return_value = insertToCustomCart($serialized_cart);
-		}else {
-			$cart_entry = fetchEntryFromCustomCart();
-			$unserialized_cart = unserialize($cart_entry);
-            $serialized_cart = serialize($unserialized_cart+$cart_array);
-	   		// $serialized_cart = serialize(array_merge($unserialized_cart, $cart_array));
-	   		$return_value = updateToCustomCart($serialized_cart);
-		}
-	}else {
-		$return_value = 1;
-	}
-    echo $return_value == 1 ? "success" : "failed";
-    die();
-}
-add_action('wp_ajax_add_to_cart', 'add_to_cart');
-
-/**
- * Ajax function to remove item in custom cart table
- */
-function remove_to_cart(){
-    global $wpdb;
-
-    $cartnonce = $_POST['cartnonce'];
-    if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
-
-        $cart_data['file_id']       = $_POST['file-id'];
-        $cart_data['user_id']       = $_POST['user-id'];
-
-        $cart_entry_count = getCustomCartCount();
-
-        if($cart_entry_count == 1 ){
-            $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-    //          $cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
-            $cart_entry = unserialize($wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']} AND channel = '{$channel}'" )[0]);
-            $meta_file_count = count($cart_entry);
-
-            if(array_key_exists($cart_data['file_id'],$cart_entry)) {
-                if($meta_file_count > 1){
-                    unset($cart_entry[$cart_data['file_id']]);
-                    $serialized_cart = serialize($cart_entry);
-                    $return_value = updateToCustomCart($serialized_cart);
-                }else {
-                    $return_value = deleteToCustomCart();
-                }
-                $return_value = "success";
-            }
-        }else {
-            $return_value = "failed";
-        }
-
-    }else {
-            $return_value = "failed";
-    }
-    echo $return_value;
-    die();
-}
-add_action('wp_ajax_remove_to_cart', 'remove_to_cart');
-
-/**
- * function to unserialize a form created by jquery .serialize method.
- */
-function unserializeForm($str) {
-    $strArray = explode("&", $str);
-    foreach($strArray as $item) {
-        $item = urldecode($item);
-        list($k, $v) = explode('=', $item);
-        $returndata[ $k ] = $v;
-    }
-    return $returndata;
-}
-
-/**
- * function to prepare cart data before structuring for serialization
- */
-function prepare_cart_data($fileID=null, $fileTitle=null, $filepath=null, $downloadUrl=null, $posdID=null, $fileType=null, $userID=null, $thumb=null){
-	if($fileID != null) $cart_data['file_id'] = $fileID;
-    $cart_data['file_title'] 	= $fileTitle;
-    $cart_data['file_path']     = $filepath;
-    $cart_data['download_url'] 	= $downloadUrl;
-    $cart_data['post_id'] 		= $posdID;
-    $cart_data['file_type'] 	= $fileType;
-    $cart_data['user_id'] 		= $userID;
-    $cart_data['thumb']         = $thumb;
-    return $cart_data;
-}
-
-/**
- * function to structure cart data into serialization ready array
- */
-function structure_cart_data($cart_data){
-	$cart_array = array (
-    		$cart_data['file_id'] => array (
-	    			'file_title' => $cart_data['file_title'],
-                    'file_path' => $cart_data['file_path'],
-	    			'download_url' => $cart_data['download_url'],
-	    			'post_id' => $cart_data['post_id'],
-		    		'file_type' => $cart_data['file_type'],
-		    		'user_id' => $cart_data['user_id'],
-		    		'thumb' => $cart_data['thumb']
-    			)
-    	);
-	return $cart_array;
-}
-
-/**
- * Get contents of custom cart
- * @param  String $fileType     Either image, promo or file
- * @return Array                Cart Contents
- */
-function get_custom_cart_contents($fileType = null){
-	$rawCart = getCustomCartContents();
-    $myCart = array();
-    if (!empty($rawCart)) {
-    	$rawCart = unserialize($rawCart->meta_file);
-    	if ($fileType != '' || $fileType != null) {
-    		foreach ($rawCart as $key => $value) {
-    			if($value['file_type'] == $fileType){
-    				$myCart[$key] = array (
-    			    			'file_title' => $value['file_title'],
-                                'file_path' => $value['file_path'],
-    			    			'download_url' => $value['download_url'],
-    			    			'post_id' => $value['post_id'],
-    				    		'file_type' => $value['file_type'],
-    				    		'user_id' => $value['user_id'],
-    				    		'thumb' => $value['thumb']
-    		    			);
-    			}
+    		if($cart_entry_count == 0 ){
+    	    	$serialized_cart = serialize($cart_data_unserialized);
+    	    	$return_value = insertToCustomCart($serialized_cart);
+    		}else {
+    			$cart_entry = fetchEntryFromCustomCart();
+    			$unserialized_cart = unserialize($cart_entry);
+                $serialized_cart = serialize($unserialized_cart+$cart_data_unserialized);
+    	   		// $serialized_cart = serialize(array_merge($unserialized_cart, $cart_data_unserialized));
+    	   		$return_value = updateToCustomCart($serialized_cart);
     		}
     	}else {
-    		$myCart = $rawCart;
+    		$return_value = 0;
     	}
+        echo $return_value == 1 ? "success" : "failed";
+    	die();
     }
-	return $myCart != null ? $myCart : array();
+    add_action('wp_ajax_bulk_add_to_cart', 'bulk_add_to_cart');
+}
+
+if(!function_exists('add_to_cart')){
+    /**
+     * Ajax function for adding specific files to cart
+     */
+    function add_to_cart(){
+    	global $wpdb;
+    	$cartnonce = $_POST['cartnonce'];
+    	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
+    		$cart_data = prepare_cart_data($_POST['file-id'],$_POST['file-title'], $_POST['file-path'], $_POST['download-url'],$_POST['post-id'],$_POST['file-type'],$_POST['user-id'],$_POST['thumb']);
+    	    $cart_array = structure_cart_data($cart_data);
+    	    $cart_entry_count = getCustomCartCount();
+    		if($cart_entry_count == 0 ){
+    	    	$serialized_cart = serialize($cart_array);
+    		    $return_value = insertToCustomCart($serialized_cart);
+    		}else {
+    			$cart_entry = fetchEntryFromCustomCart();
+    			$unserialized_cart = unserialize($cart_entry);
+                $serialized_cart = serialize($unserialized_cart+$cart_array);
+    	   		// $serialized_cart = serialize(array_merge($unserialized_cart, $cart_array));
+    	   		$return_value = updateToCustomCart($serialized_cart);
+    		}
+    	}else {
+    		$return_value = 1;
+    	}
+        echo $return_value == 1 ? "success" : "failed";
+        die();
+    }
+    add_action('wp_ajax_add_to_cart', 'add_to_cart');
+}
+
+if(!function_exists('remove_to_cart')){
+    /**
+     * Ajax function to remove item in custom cart table
+     */
+    function remove_to_cart(){
+        global $wpdb;
+
+        $cartnonce = $_POST['cartnonce'];
+        if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
+
+            $cart_data['file_id']       = $_POST['file-id'];
+            $cart_data['user_id']       = $_POST['user-id'];
+
+            $cart_entry_count = getCustomCartCount();
+
+            if($cart_entry_count == 1 ){
+                $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+        //          $cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
+                $cart_entry = unserialize($wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']} AND channel = '{$channel}'" )[0]);
+                $meta_file_count = count($cart_entry);
+
+                if(array_key_exists($cart_data['file_id'],$cart_entry)) {
+                    if($meta_file_count > 1){
+                        unset($cart_entry[$cart_data['file_id']]);
+                        $serialized_cart = serialize($cart_entry);
+                        $return_value = updateToCustomCart($serialized_cart);
+                    }else {
+                        $return_value = deleteToCustomCart();
+                    }
+                    $return_value = "success";
+                }
+            }else {
+                $return_value = "failed";
+            }
+
+        }else {
+                $return_value = "failed";
+        }
+        echo $return_value;
+        die();
+    }
+    add_action('wp_ajax_remove_to_cart', 'remove_to_cart');
+}
+
+if(!function_exists('unserializeForm')){
+    /**
+     * function to unserialize a form created by jquery .serialize method.
+     */
+    function unserializeForm($str) {
+        $strArray = explode("&", $str);
+        foreach($strArray as $item) {
+            $item = urldecode($item);
+            list($k, $v) = explode('=', $item);
+            $returndata[ $k ] = $v;
+        }
+        return $returndata;
+    }
+}
+
+if(!function_exists('prepare_cart_data')){
+    /**
+     * function to prepare cart data before structuring for serialization
+     */
+    function prepare_cart_data($fileID=null, $fileTitle=null, $filepath=null, $downloadUrl=null, $posdID=null, $fileType=null, $userID=null, $thumb=null){
+    	if($fileID != null) $cart_data['file_id'] = $fileID;
+        $cart_data['file_title'] 	= $fileTitle;
+        $cart_data['file_path']     = $filepath;
+        $cart_data['download_url'] 	= $downloadUrl;
+        $cart_data['post_id'] 		= $posdID;
+        $cart_data['file_type'] 	= $fileType;
+        $cart_data['user_id'] 		= $userID;
+        $cart_data['thumb']         = $thumb;
+        return $cart_data;
+    }
+}
+
+if(!function_exists('structure_cart_data')){
+    /**
+     * function to structure cart data into serialization ready array
+     */
+    function structure_cart_data($cart_data){
+    	$cart_array = array (
+        		$cart_data['file_id'] => array (
+    	    			'file_title' => $cart_data['file_title'],
+                        'file_path' => $cart_data['file_path'],
+    	    			'download_url' => $cart_data['download_url'],
+    	    			'post_id' => $cart_data['post_id'],
+    		    		'file_type' => $cart_data['file_type'],
+    		    		'user_id' => $cart_data['user_id'],
+    		    		'thumb' => $cart_data['thumb']
+        			)
+        	);
+    	return $cart_array;
+    }
+}
+
+if(!function_exists('get_custom_cart_contents')){
+    /**
+     * Get contents of custom cart
+     * @param  String $fileType     Either image, promo or file
+     * @return Array                Cart Contents
+     */
+    function get_custom_cart_contents($fileType = null){
+    	$rawCart = getCustomCartContents();
+        $myCart = array();
+        if (!empty($rawCart)) {
+        	$rawCart = unserialize($rawCart->meta_file);
+        	if ($fileType != '' || $fileType != null) {
+        		foreach ($rawCart as $key => $value) {
+        			if($value['file_type'] == $fileType){
+        				$myCart[$key] = array (
+        			    			'file_title' => $value['file_title'],
+                                    'file_path' => $value['file_path'],
+        			    			'download_url' => $value['download_url'],
+        			    			'post_id' => $value['post_id'],
+        				    		'file_type' => $value['file_type'],
+        				    		'user_id' => $value['user_id'],
+        				    		'thumb' => $value['thumb']
+        		    			);
+        			}
+        		}
+        	}else {
+        		$myCart = $rawCart;
+        	}
+        }
+    	return $myCart != null ? $myCart : array();
+    }
 }
 
 
-// Show list page
+/* Show list page */
 function custom_posts_where( $where){
     global $wpdb;
     if(isset($wpdb->letter_filter) && $wpdb->letter_filter != null && $wpdb->letter_filter != ''){
@@ -597,7 +615,6 @@ function custom_posts_where( $where){
     }
     return $where;
 }
-
 function wpdm_category_custom($params)
 {
     $params['order_field'] = isset($params['order_by'])?$params['order_by']:'publish_date';
@@ -606,7 +623,6 @@ function wpdm_category_custom($params)
     unset($params['item_per_page']);
     return wpdm_embed_category_custom($params);
 }
-
 function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'IN' , 'items_per_page' => 10, 'title' => false, 'desc' => false, 'order_field' => 'create_date', 'order' => 'desc', 'paging' => false, 'toolbar' => 1, 'template' => '','cols'=>3, 'colspad'=>2, 'colsphone' => 1, 'letter_filter' => null, 'search_filter' => null))
 {
     extract($params);
@@ -721,13 +737,11 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
             /* Show items */
             $pack = (array)$post;
             $repeater = FetchTemplate($template, $pack);
-            // $repeater = "<div class='{$cwd_class} {$cwdsm_class} {$cwdxs_class}'>".FetchTemplate($template, $pack)."</div>";
             $html .=  $repeater;
         endif;
     }
     wp_reset_query();
 
-    // $html = "<div class='row'>{$html}</div>";
     $cname = array();
     foreach($cids as $cid){
         $cat = get_term_by('slug', $cid, $taxo);
@@ -757,7 +771,6 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
 
     if (!isset($paging) || $paging == 1)
         $pgn = $pag->show();
-        // $pgn = "<div style='clear:both'></div>" . $pag->show() . "<div style='clear:both'></div>";
     else
         $pgn = "";
     global $post;
@@ -782,144 +795,162 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
 
         $toolbar = '';
         return $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div>";
-        // return "<div class='w3eden'>" . $toolbar . $cimg . $desc . $subcats . $html  . $pgn . "<div style='clear:both'></div></div>";
 }
 
-function updateUrlParam($name, $value)
-{
-    // $params = $_GET;
-    // unset($params[$name]);
-    if($value != ''){
-        $params[$name] = $value;
-        return basename($_SERVER['PHP_SELF']).'?'.http_build_query($params);
-    }else {
-        return basename($_SERVER['PHP_SELF']);
-    }
-    
-}
-/**
- * function to do a bulk download
- */
-function bulk_download() {
-    $files = array();
-    $cart_files = get_custom_cart_contents();
-    foreach ($cart_files as $key => $value) {
-        $files[$key] = $value['file_path'];
-    }
-     
-    $zip = new ZipArchive();
-    $date_now = date('Y-m-d');
-    $zipped = UPLOAD_DIR . 'Cart-files-'.$date_now.'.zip';
-    $zip->open($zipped, ZIPARCHIVE::CREATE);
-
-    foreach ($files as $file) {
-        $file = trim($file);
-        if (file_exists(UPLOAD_DIR . $file)) {
-            $fnm = preg_replace("/^[0-9]+?wpdm_/", "", $file);
-            $zip->addFile(UPLOAD_DIR . $file, $fnm);
-        } else if (file_exists($file))
-            $zip->addFile($file, wpdm_basename($file));
-        else if (file_exists(WP_CONTENT_DIR . end($tmp = explode("wp-content", $file)))) //path fix on site move
-            $zip->addFile(WP_CONTENT_DIR . end($tmp = explode("wp-content", $file)), wpdm_basename($file));
-    }
-
-    $zip->close();
-    wpdm_download_file($zipped, 'Cart-files-'.$date_now.'.zip');
-    @unlink($zipped);
-
-
-}
-
-/**
- * Function to save bulk downloads to reports table
- */
-function reports_log(){
-    $raw_cart_data = fetchEntryFromCustomCart();
-    return insertToCustomReports($raw_cart_data);
-}
-
-function insertToCustomReports($serialized_cart){
-    global $wpdb;
-
-    $unserialized_cart = unserialize($serialized_cart);
-
-    foreach ($unserialized_cart as $file_id => $value) {
-
-        $user_id = get_current_user_id( );
-        $country_group = get_current_user_country_group($user_id);
-        $operator_group = get_current_user_operator_group($user_id);
-
-        $return_value = $wpdb->insert(
-                                $wpdb->custom_reports,
-                                array(
-                                    'user_id' => $user_id,
-                                    'country_group' => $country_group,
-                                    'operator_group' => $operator_group,
-                                    'post_id' => $value['post_id'],
-                                    'file_id' => $file_id,
-                                    'file_title' => $value['file_title'],
-                                    'file_path' => $value['file_path'],
-                                    'file_type' => $value['file_type'],
-                                    'download_url' => $value['download_url'],
-                                    'created_at' => date('Y-m-d H:i:s')
-                                )
-                            );
-    }
-    return $return_value;
-
-}
-
-/**
- * function to structure reports data into serialization ready array
- */
-function structure_reports_data($cart_data){
-    $cart_array = array (
-            $cart_data['file_id'] => array (
-                    'file_title' => $cart_data['file_title'],
-                    'file_path' => $cart_data['file_path'],
-                    'download_url' => $cart_data['download_url'],
-                    'post_id' => $cart_data['post_id'],
-                    'file_type' => $cart_data['file_type'],
-                    'user_id' => $cart_data['user_id']
-                )
-        );
-    return $cart_array;
-}
-
-/**
- * Ajax function for downloading specific files to cart and saving it to reports log
- */
-function download_file(){
-    $cartnonce = $_POST['cartnonce'];
-    if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
-        $cart_data['file_title']     = $_POST['file-title'];
-        $cart_data['file_path']     = $_POST['file-path'];
-        $cart_data['download_url']  = $_POST['download-url'];
-        $cart_data['post_id']       = $_POST['post-id'];
-        $cart_data['file_type']     = $_POST['file-type'];
-        $cart_data['user_id']       = get_current_user_id();
-        $cart_data['file_id']       = $_POST['file-id'];
-
-        $raw_cart_data = fetchEntryFromCustomCart();
-        $unserialized_cart = unserialize($raw_cart_data);
-        $return_value = insertToCustomReports(serialize(structure_reports_data($cart_data)));
-        
-        $cart_files_count = count($unserialized_cart);
-
-        if ($cart_files_count > 1) {
-            unset($unserialized_cart[$cart_data['file_id']]);
-            $return_value = updateToCustomCart(serialize($unserialized_cart));
-        }else if ($cart_files_count == 1){
-            $return_value = deleteToCustomCart();
+if(!function_exists('updateUrlParam')){
+    /**
+     * Build current URL with query parameters
+     * @param  string $name  Query parameter name
+     * @param  string $value Query parameter value
+     * @return string        URL with query parameters
+     */
+    function updateUrlParam($name, $value)
+    {
+        if($value != ''){
+            $params[$name] = $value;
+            return basename($_SERVER['PHP_SELF']).'?'.http_build_query($params);
+        }else {
+            return basename($_SERVER['PHP_SELF']);
         }
-    }else {
-        $return_value = 0;
+        
     }
-    // TODO: update return value
-    echo $return_value == 1 ? "success" : "failed";
-    die();
 }
-add_action('wp_ajax_download_file', 'download_file');
+
+if(!function_exists('bulk_download')){
+    /**
+     * function to do a bulk download
+     */
+    function bulk_download() {
+        $files = array();
+        $cart_files = get_custom_cart_contents();
+        foreach ($cart_files as $key => $value) {
+            $files[$key] = $value['file_path'];
+        }
+         
+        $zip = new ZipArchive();
+        $date_now = date('Y-m-d');
+        $zipped = UPLOAD_DIR . 'Cart-files-'.$date_now.'.zip';
+        $zip->open($zipped, ZIPARCHIVE::CREATE);
+
+        foreach ($files as $file) {
+            $file = trim($file);
+            if (file_exists(UPLOAD_DIR . $file)) {
+                $fnm = preg_replace("/^[0-9]+?wpdm_/", "", $file);
+                $zip->addFile(UPLOAD_DIR . $file, $fnm);
+            } else if (file_exists($file))
+                $zip->addFile($file, wpdm_basename($file));
+            else if (file_exists(WP_CONTENT_DIR . end($tmp = explode("wp-content", $file)))) //path fix on site move
+                $zip->addFile(WP_CONTENT_DIR . end($tmp = explode("wp-content", $file)), wpdm_basename($file));
+        }
+
+        $zip->close();
+        wpdm_download_file($zipped, 'Cart-files-'.$date_now.'.zip');
+        @unlink($zipped);
+    }
+}
+
+if(!function_exists('reports_log')){
+    /**
+     * Function to save bulk downloads to reports table
+     */
+    function reports_log(){
+        $raw_cart_data = fetchEntryFromCustomCart();
+        return insertToCustomReports($raw_cart_data);
+    }
+}
+
+if(!function_exists('insertToCustomReports')){
+    /**
+     * Insert download logs to custom reports table
+     * @param  string $serialized_cart serialized cart data
+     * @return bool                    Database insert boolean result
+     */
+    function insertToCustomReports($serialized_cart){
+        global $wpdb;
+
+        $unserialized_cart = unserialize($serialized_cart);
+
+        foreach ($unserialized_cart as $file_id => $value) {
+
+            $user_id = get_current_user_id( );
+            $country_group = get_current_user_country_group($user_id);
+            $operator_group = get_current_user_operator_group($user_id);
+
+            $return_value = $wpdb->insert(
+                                    $wpdb->custom_reports,
+                                    array(
+                                        'user_id' => $user_id,
+                                        'country_group' => $country_group,
+                                        'operator_group' => $operator_group,
+                                        'post_id' => $value['post_id'],
+                                        'file_id' => $file_id,
+                                        'file_title' => $value['file_title'],
+                                        'file_path' => $value['file_path'],
+                                        'file_type' => $value['file_type'],
+                                        'download_url' => $value['download_url'],
+                                        'created_at' => date('Y-m-d H:i:s')
+                                    )
+                                );
+        }
+        return $return_value;
+    }
+}
+
+if(!function_exists('structure_reports_data')){
+    /**
+     * function to structure reports data into serialization ready array
+     */
+    function structure_reports_data($cart_data){
+        $cart_array = array (
+                $cart_data['file_id'] => array (
+                        'file_title' => $cart_data['file_title'],
+                        'file_path' => $cart_data['file_path'],
+                        'download_url' => $cart_data['download_url'],
+                        'post_id' => $cart_data['post_id'],
+                        'file_type' => $cart_data['file_type'],
+                        'user_id' => $cart_data['user_id']
+                    )
+            );
+        return $cart_array;
+    }
+}
+
+if(!function_exists('structure_reports_data')){
+    /**
+     * Ajax function for downloading specific files to cart and saving it to reports log
+     */
+    function download_file(){
+        $cartnonce = $_POST['cartnonce'];
+        if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
+            $cart_data['file_title']     = $_POST['file-title'];
+            $cart_data['file_path']     = $_POST['file-path'];
+            $cart_data['download_url']  = $_POST['download-url'];
+            $cart_data['post_id']       = $_POST['post-id'];
+            $cart_data['file_type']     = $_POST['file-type'];
+            $cart_data['user_id']       = get_current_user_id();
+            $cart_data['file_id']       = $_POST['file-id'];
+
+            $raw_cart_data = fetchEntryFromCustomCart();
+            $unserialized_cart = unserialize($raw_cart_data);
+            $return_value = insertToCustomReports(serialize(structure_reports_data($cart_data)));
+            
+            $cart_files_count = count($unserialized_cart);
+
+            if ($cart_files_count > 1) {
+                unset($unserialized_cart[$cart_data['file_id']]);
+                $return_value = updateToCustomCart(serialize($unserialized_cart));
+            }else if ($cart_files_count == 1){
+                $return_value = deleteToCustomCart();
+            }
+        }else {
+            $return_value = 0;
+        }
+        // TODO: update return value
+        echo $return_value == 1 ? "success" : "failed";
+        die();
+    }
+    add_action('wp_ajax_download_file', 'download_file');
+}
 
 // TODO : lipat yung code below sa proper location
 /**
@@ -968,17 +999,6 @@ function custom_css_profile_builder() {
     </style>';
 }
 add_action('admin_head', 'custom_css_profile_builder');
-
-
-
-/**
- * Get NUmber of items in cart
- */
-function getCartItemsCount(){
-
-    return 123;
-}
-
 
 /* HOMEPAGE QUERIES */
 if (!function_exists('getFeaturedBanners')) {
@@ -1500,25 +1520,29 @@ if(!function_exists('getCountryGroupSelectCase')){
     }
 }
 
-function set_session_notice(){
-    $noticenonce = $_POST['noticenonce'];
-    if (!empty($_POST) && wp_verify_nonce($noticenonce, '__rtl_modal_notice__') ){
-        $_SESSION['modal_notice'] = 'hide';
-        echo "success";
-    }else{
-        echo "Invalid Access";
+if(!function_exists('set_session_notice')){
+    /**
+     * Set session trigger for hiding mobile modal notice
+     */
+    function set_session_notice(){
+        $noticenonce = $_POST['noticenonce'];
+        if (!empty($_POST) && wp_verify_nonce($noticenonce, '__rtl_modal_notice__') ){
+            $_SESSION['modal_notice'] = 'hide';
+            echo "success";
+        }else{
+            echo "Invalid Access";
+        }
+        die();
     }
-    die();
+    add_action('wp_ajax_set_session_notice', 'set_session_notice');
+    add_action( 'wp_ajax_nopriv_set_session_notice', 'set_session_notice' );
 }
-add_action('wp_ajax_set_session_notice', 'set_session_notice');
-add_action( 'wp_ajax_nopriv_set_session_notice', 'set_session_notice' );
 
 // ENQUEUE SCRIPTS
 // function my_scripts(){
 //     wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");
 // }
 // add_action("admin_enqueue_scripts", 'my_scripts');
-
 
 // echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
 // add_filter( 'cron_schedules', 'myprefix_add_weekly_cron_schedule' );
@@ -1549,91 +1573,73 @@ add_action( 'wp_ajax_nopriv_set_session_notice', 'set_session_notice' );
 // } // end update_csv_hourly
 
 // wp_clear_scheduled_hook( 'my_hourly_event' );
-
-
 // add_action( 'init', 'testing', 100 );
-function send_monthly_report($file){
-    $users = get_users('role=Administrator');
-    foreach ($users as $user) {
-        $to = $user->user_email;//'diannekatherinedelosreyes@ymail.com';
-        $subject = 'RTL CBS Asia Monthly Report';
-        $headers = array('Content-Type: text/html; charset=UTF-8');
-        $mail_attachment = $file;
 
-        $message = "
-            Hi {$user->user_email},<br><br>
-            Please see attached report:<br>
-            <ul>
-                <li>List of Downloaded Files from All Operators of Previous Month</li>
-            </ul>
-            You may also <a href='".get_site_url()."/rtlcbs-admin'>Log In</a> to the Operator Website to see more reports.<br><br>
-            Thanks,<br>
-            RTL CBS Asia Team
-        ";
+if(!function_exists('send_monthly_report')){
+    /**
+     * Send monthly reports to all administrator users
+     * @param  String $file file name
+     */
+    function send_monthly_report($file){
+        $users = get_users('role=Administrator');
+        foreach ($users as $user) {
+            $to = $user->user_email;//'diannekatherinedelosreyes@ymail.com';
+            $subject = 'RTL CBS Asia Monthly Report';
+            $headers = array('Content-Type: text/html; charset=UTF-8');
+            $mail_attachment = $file;
 
-        ob_start();
-        $result = wp_mail($to,$subject,$message,$headers,$mail_attachment);
-        $smtp_debug = ob_get_clean();
-        echo "<script>console.log('Email sent to : {$user->user_email}')</script>";
-        echo "<script>console.log('Result : {$result}')</script>";
-    } 
-}
+            $message = "
+                Hi {$user->user_email},<br><br>
+                Please see attached report:<br>
+                <ul>
+                    <li>List of Downloaded Files from All Operators of Previous Month</li>
+                </ul>
+                You may also <a href='".get_site_url()."/rtlcbs-admin'>Log In</a> to the Operator Website to see more reports.<br><br>
+                Thanks,<br>
+                RTL CBS Asia Team
+            ";
 
-function getCommaSeparatedUserEmails(){
-    $users = get_users('role=Administrator');
-    $email_counter = 1;
-    $formatted_email_recipient = '';
-    foreach ($users as $user) {
-        $formatted_email_recipient .= $user->user_email;
-        if($email_counter < count($users)){
-            $formatted_email_recipient .= ',';
-        }
-        $email_counter++;
+            ob_start();
+            $result = wp_mail($to,$subject,$message,$headers,$mail_attachment);
+            $smtp_debug = ob_get_clean();
+            echo "<script>console.log('Email sent to : {$user->user_email}')</script>";
+            echo "<script>console.log('Result : {$result}')</script>";
+        } 
     }
-    return $formatted_email_recipient;
 }
 
-// add_action( 'init', 'create_post_type' );
-// function create_post_type() {
-//   register_post_type( 'acme_product',
-//     array(
-//       'labels' => array(
-//         'name' => __( 'Products' ),
-//         'singular_name' => __( 'Product' )
-//       ),
-//       'public' => true,
-//       'has_archive' => true,
-//     )
-//   );
-// }
+if(!function_exists('getCommaSeparatedUserEmails')){
+    /**
+     * Get all administrator users
+     * @return String Comma separated list of all administrator users
+     */
+    function getCommaSeparatedUserEmails(){
+        $users = get_users('role=Administrator');
+        $email_counter = 1;
+        $formatted_email_recipient = '';
+        foreach ($users as $user) {
+            $formatted_email_recipient .= $user->user_email;
+            if($email_counter < count($users)){
+                $formatted_email_recipient .= ',';
+            }
+            $email_counter++;
+        }
+        return $formatted_email_recipient;
+    }
+}
 
-
-
+/**
+ * Adds 'episode' in query vars
+ */
 function add_query_vars_filter( $vars ){
   $vars[] = "episode";
   return $vars;
 }
 add_filter( 'query_vars', 'add_query_vars_filter' );
 
-// add_action('init','add_author_more_rewrite_rule');
-// function add_author_more_rewrite_rule()
-// {
-//     add_rewrite_rule(
-//         '(\d*)$',
-//         '?episode=$matches[1]',
-//         'top'
-//     );
-// }
-
-// add_filter( 'init', 'add_author_more_query_var' );
-// function add_author_more_query_var()
-// {
-//     global $wp;
-//     $wp->add_query_var( 'episode' );
-// }
-// 
-
-/* The Event Manager plugin */
+/**
+ * The Event Manager plugin - Change label from 'Events' to 'Schedules'
+ */
 add_filter( 'tribe_event_label_singular', 'event_display_name' );
 function event_display_name() {
     return 'Schedule';
