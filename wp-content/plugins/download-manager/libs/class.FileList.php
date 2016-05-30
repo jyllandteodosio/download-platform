@@ -519,6 +519,7 @@ class FileList
         $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file)."&ind=".$ind : $sfile;
         $buttonText = !self::checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
         $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
+        $isFileClickable = !self::checkFileInCart($fileID) ? "" : "disabled-links";
         $isFileRemovable = !self::checkFileInCart($fileID) ? "" : "added-to-cart";
         $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 48, "...");
         if($thumb){
@@ -541,7 +542,7 @@ class FileList
         $fhtml .=           "<div class='file-thumb'>".$file_thumb."</div>";
         $fhtml .= "         <div class='show-meta'>";
         $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
-        $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID}'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' >{$buttonText}</a>";
+        $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID} $isFileClickable'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' >{$buttonText}</a>";
         $fhtml .= "         </div>";
         $fhtml .= "         <span class='close-btn' data-file-id='{$fileID}' data-user-id='{$userID}'><i class='fa fa-lg fa-times'></i></span>";
         $fhtml .= "     </div>";
@@ -586,6 +587,7 @@ class FileList
                                         event.preventDefault();
                                         var form = jQuery(this);
                                         var form_submitted_id = form.attr('id');
+                                        jQuery('#'+form_submitted_id+' .add-to-cart-btn').addClass('disabled-links').text('Adding..');
                                         console.log(form.attr('id'));
                                         jQuery.post(
                                             ajaxurl, 
@@ -603,6 +605,7 @@ class FileList
                                                     jQuery('#'+form_submitted_id+' .add-to-cart-btn').html(addedText);
                                                     updateCartCount();
                                                 }else if (response == 'failed') {
+                                                    jQuery('#'+form_submitted_id+' .add-to-cart-btn').removeClass('disabled-links').html(addedText);
                                                     console.log('insert failed');
                                                 }
                                             }
@@ -613,6 +616,7 @@ class FileList
                                         event.preventDefault();
                                         var button = jQuery(this);
                                         var file_id = jQuery(this).attr('data-file-id');
+                                        jQuery('.add-to-cart-btn.'+file_id).addClass('disabled-links').text('Adding..');
                                         jQuery.post(
                                             ajaxurl, 
                                             {   'action': 'add_to_cart',
@@ -631,12 +635,12 @@ class FileList
                                                 console.log(response);
 
                                                 if(response == 'success'){
-                                                    /* TODO: .prop in span not working */
                                                     jQuery('.show-items > .'+file_id+'').addClass('added-to-cart');
                                                     jQuery('.add-to-cart-btn.'+file_id).html(addedText);
                                                     updateCartCount();
                                                 }else if (response == 'failed') {
-                                                    console.log('insert failed');
+                                                    jQuery('.add-to-cart-btn.'+file_id).removeClass('disabled-links').html(addedText);
+                                                    console.log('add to cart failed');
                                                 }
                                             }
                                         );
@@ -645,6 +649,8 @@ class FileList
                                     jQuery('.close-btn').click(function(event){
                                         var button = jQuery(this);
                                         var file_id = jQuery(this).attr('data-file-id');
+                                        jQuery('.show-items > .'+file_id+'').addClass('disabled-links');
+                                        jQuery('.add-to-cart-btn.'+file_id).text('Removing...');
                                         jQuery.post(
                                             ajaxurl, 
                                             {   'action': 'remove_to_cart',
@@ -658,9 +664,11 @@ class FileList
                                                 if(response == 'success'){
                                                     jQuery('.show-items > .'+file_id+'').removeClass('added-to-cart');
                                                     /* Show add button */
-                                                    jQuery('.add-to-cart-btn.'+file_id).text('".__("Add to Cart","wpdmpro")."');
+                                                    jQuery('.add-to-cart-btn.'+file_id).text('".__("Add to Cart","wpdmpro")."').removeClass('disabled-links');
                                                     updateCartCount();
                                                 }else if (response == 'failed') {
+                                                    jQuery('.add-to-cart-btn.'+file_id).removeClass('disabled-links').html(addedText);
+                                                    jQuery('.show-items > .'+file_id+'').removeClass('disabled-links');
                                                     console.log('delete failed');
                                                 }
                                             }

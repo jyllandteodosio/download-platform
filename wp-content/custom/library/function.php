@@ -416,25 +416,31 @@ if(!function_exists('bulk_add_to_cart')){
 
     	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
     	    $cart_data['file_data']		= unserializeForm($_POST['data']);
-
+            $cart_data_count = count($cart_data['file_data']);
+            $empty_table_detector = true;
     	    foreach ( $cart_data['file_data'] as $key => $value) {
+                $empty_table_detector = $cart_data_count == 1 ? ($key == '' ? false : true): true ;
     	    	$cart_data_serialized[$key]			= $value;//urldecode($value);
     	    	$cart_data_unserialized[$key]		= unserialize($cart_data_serialized[$key]);
                 $cart_data_unserialized[$key]['download_url'] = urldecode($cart_data_unserialized[$key]['download_url']);
     	    }
-    	    $user_id = get_current_user_id( );
-    	    $cart_entry_count = getCustomCartCount();
+            if($empty_table_detector){
+        	    $user_id = get_current_user_id( );
+        	    $cart_entry_count = getCustomCartCount();
 
-    		if($cart_entry_count == 0 ){
-    	    	$serialized_cart = serialize($cart_data_unserialized);
-    	    	$return_value = insertToCustomCart($serialized_cart);
-    		}else {
-    			$cart_entry = fetchEntryFromCustomCart();
-    			$unserialized_cart = unserialize($cart_entry);
-                $serialized_cart = serialize($unserialized_cart+$cart_data_unserialized);
-    	   		// $serialized_cart = serialize(array_merge($unserialized_cart, $cart_data_unserialized));
-    	   		$return_value = updateToCustomCart($serialized_cart);
-    		}
+        		if($cart_entry_count == 0 ){
+        	    	$serialized_cart = serialize($cart_data_unserialized);
+        	    	$return_value = insertToCustomCart($serialized_cart);
+        		}else {
+        			$cart_entry = fetchEntryFromCustomCart();
+        			$unserialized_cart = unserialize($cart_entry);
+                    $serialized_cart = serialize($unserialized_cart+$cart_data_unserialized);
+        	   		// $serialized_cart = serialize(array_merge($unserialized_cart, $cart_data_unserialized));
+        	   		$return_value = updateToCustomCart($serialized_cart);
+        		}
+            }else{
+                $return_value = 0;
+            }
     	}else {
     		$return_value = 0;
     	}
@@ -915,7 +921,7 @@ if(!function_exists('structure_reports_data')){
     }
 }
 
-if(!function_exists('structure_reports_data')){
+if(!function_exists('download_file')){
     /**
      * Ajax function for downloading specific files to cart and saving it to reports log
      */
