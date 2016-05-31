@@ -8,11 +8,11 @@ Description:Validate posts specified fields before saving data.  If there are ch
 add_action('admin_enqueue_scripts', 'admin_edit_validation');
 
 function admin_edit_validation($hook) {
- 
+    
 	if( $hook != 'post.php' ) 
 		return;
-    
     $options = get_option( 'aev_settings', false );
+    
     
     if($options['aev_text_field_0']){ ?>
      <script>
@@ -21,9 +21,11 @@ function admin_edit_validation($hook) {
         
 <?php 
     
-	wp_enqueue_script( 'aev-confirm', plugin_dir_url( __FILE__ ) . 'js/jquery-confirm.js' , array('jquery') );
-    wp_enqueue_style( 'style-name', plugin_dir_url( __FILE__ ) . 'js/jquery-confirm.css' );
-	wp_enqueue_script( 'aev', plugin_dir_url( __FILE__ ) . 'js/aev.js' , array('jquery') );
+	wp_enqueue_script( 'aev-confirm', plugin_dir_url( __FILE__ ) . 'assets/jquery-confirm.js' , array('jquery') );
+    wp_enqueue_style( 'aev-confirm-css', plugin_dir_url( __FILE__ ) . 'assets/jquery-confirm.css' );
+    wp_enqueue_script( 'aev-bootstrap-js', plugin_dir_url( __FILE__ ) . 'assets/bootstrap.min.js' , array('jquery') );
+    wp_enqueue_style( 'aev-bootstrap-css', plugin_dir_url( __FILE__ ) . 'assets/bootstrap.min.css' );
+	wp_enqueue_script( 'aev', plugin_dir_url( __FILE__ ) . 'assets/aev.js' , array('jquery') );
     }
 }
 
