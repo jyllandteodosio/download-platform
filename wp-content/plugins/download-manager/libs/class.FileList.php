@@ -587,7 +587,7 @@ class FileList
                                         event.preventDefault();
                                         var form = jQuery(this);
                                         var form_submitted_id = form.attr('id');
-                                        jQuery('#'+form_submitted_id+' .add-to-cart-btn').addClass('disabled-links').text('Adding..');
+                                        jQuery('#'+form_submitted_id+' .add-to-cart-btn').addClass('disabled-links');
                                         console.log(form.attr('id'));
                                         jQuery.post(
                                             ajaxurl, 
@@ -605,7 +605,7 @@ class FileList
                                                     jQuery('#'+form_submitted_id+' .add-to-cart-btn').html(addedText);
                                                     updateCartCount();
                                                 }else if (response == 'failed') {
-                                                    jQuery('#'+form_submitted_id+' .add-to-cart-btn').removeClass('disabled-links').html(addedText);
+                                                    jQuery('#'+form_submitted_id+' .add-to-cart-btn').removeClass('disabled-links');
                                                     console.log('insert failed');
                                                 }
                                             }
@@ -662,7 +662,7 @@ class FileList
                                                 console.log('remove:');
                                                 console.log(response);
                                                 if(response == 'success'){
-                                                    jQuery('.show-items > .'+file_id+'').removeClass('added-to-cart');
+                                                    jQuery('.show-items > .'+file_id+'').removeClass('added-to-cart').removeClass('disabled-links');
                                                     /* Show add button */
                                                     jQuery('.add-to-cart-btn.'+file_id).text('".__("Add to Cart","wpdmpro")."').removeClass('disabled-links');
                                                     updateCartCount();
