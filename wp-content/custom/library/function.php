@@ -958,54 +958,6 @@ if(!function_exists('download_file')){
     add_action('wp_ajax_download_file', 'download_file');
 }
 
-// TODO : lipat yung code below sa proper location
-/**
- * Custom Css for 'Add New Operator' in Admin Dashboard.
- */
-function custom_css_profile_builder() {
-  echo '
-    <style type="text/css">
-      #wppb-register-user li {
-        width: 45%;
-        overflow: hidden;
-        margin-top: 16px;
-      }
-      #wppb-register-user label {
-        margin-bottom: 9px;
-        padding: 15px 10px;
-        line-height: 1.3;
-        vertical-align: middle;
-        font-weight: bold;
-      }
-      #wppb-register-user select,
-      #wppb-register-user input {
-        margin-bottom: 9px;
-        line-height: 1.3;
-        vertical-align: middle;
-        float: right;
-        width: 314px;
-      }
-      #wppb-register-user input#send_credentials_via_email {
-        float: none;
-        width: auto;
-        margin-bottom: 0px;
-      }
-      #wppb-register-user .wppb-send-credentials-checkbox,
-      #wppb-register-user p.form-submit {
-        margin-top: 30px;
-      }
-      #wppb-register-user .send-credentials-via-email-container{
-        display: inline-block;
-        float: right;
-      }
-      #wppb-register-user p.form-submit input {
-        float: none;
-        width: auto;
-      } 
-    </style>';
-}
-add_action('admin_head', 'custom_css_profile_builder');
-
 /* HOMEPAGE QUERIES */
 if (!function_exists('getFeaturedBanners')) {
     /**

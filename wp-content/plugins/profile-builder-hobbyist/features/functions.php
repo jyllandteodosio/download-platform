@@ -272,6 +272,10 @@ function wppb_print_cpt_script( $hook ){
     if (( $hook == 'profile-builder_page_profile-builder-add-user' ) ) {
 			wp_enqueue_style( 'wppb-back-end-style', WPPB_PLUGIN_URL . 'assets/css/style-front-end.css', false, PROFILE_BUILDER_VERSION );
 	}
+	if ( ( file_exists( WPPB_PLUGIN_DIR . '/assets/css/rtl.css' ) )){
+		wp_register_style( 'wppb_stylesheet_rtl', WPPB_PLUGIN_URL . 'assets/css/rtl-add-user.css' );
+        wp_enqueue_style( 'wppb_stylesheet_rtl' );
+	}
 
 	if ( isset( $_GET['post_type'] ) || isset( $_GET['post'] ) ){
 		if ( isset( $_GET['post_type'] ) )
@@ -288,6 +292,7 @@ function wppb_print_cpt_script( $hook ){
     if ( file_exists ( WPPB_PLUGIN_DIR.'/update/update-checker.php' ) ) {
         wp_enqueue_script( 'wppb-sitewide', WPPB_PLUGIN_URL . 'assets/js/jquery-pb-sitewide.js', array(), PROFILE_BUILDER_VERSION, true );
     }
+
     wp_enqueue_style( 'wppb-serial-notice-css', WPPB_PLUGIN_URL . 'assets/css/serial-notice.css', false, PROFILE_BUILDER_VERSION );
 }
 add_action( 'admin_enqueue_scripts', 'wppb_print_cpt_script' );
