@@ -454,3 +454,8 @@ ul#navigation {
     color: #1E78C6;
 }
 .w3eden h3.panel-heading input[type=checkbox]{ margin: -2px 5px 0 0px !important;}
+
+/*Added by Dianne D.R. - Hides Download Manager update notification*/
+div.updated.error {
+    display: none; 
+}
