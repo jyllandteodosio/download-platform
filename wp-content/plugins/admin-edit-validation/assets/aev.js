@@ -3,8 +3,9 @@ jQuery(document).ready(function($){
     
     //console.log(aevtovalidate);
     allfields = aevtovalidate.split(',');
+    dialogclasses = dialogclasses ? dialogclasses : 'col-md-4 col-md-offset-4' ;
     
-    var itemTitle = $('#title').val();
+    
     var fieldarrOriginal = {};
     $.each(allfields, function(ind, item){
         fieldarrOriginal[item] = $('#'+item).val();
@@ -34,7 +35,8 @@ jQuery(document).ready(function($){
                 confirmButton: 'Update',
                 cancelButton: 'Review Changes',
                 confirmButtonClass: 'btn btn-primary',
-                cancelButtonClass: 'btn btn-default btn-close',                
+                columnClass: ''+ dialogclasses,
+                cancelButtonClass: 'btn btn-default btn-close',
                 confirm: function(){
                    $('#post').submit();
                 },

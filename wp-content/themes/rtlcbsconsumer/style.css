@@ -416,6 +416,7 @@ a:hover {
 	width: 100%;
 	background-color: #141415;
 	z-index: 9;
+    margin-top:-1px;
 }
 
 #featured-menu > li {
@@ -490,18 +491,23 @@ a:hover {
 	position: relative;
 	padding-left: 0;
 	padding-right: 0;
+    min-height:170px;
 }
 
-#showsToday .today-link {
+.more-featured-link {
+    margin-top:22px;
+}
+
+.more-featured-link .today-link {
 	text-decoration: underline;
 }
 
-#showsToday .today-link:hover,
-#showsToday .today-link:focus {
+.more-featured-link .today-link:hover,
+.more-featured-link .today-link:focus {
 	text-decoration: none;
 }
 
-#showsToday .today-link > span {
+.more-featured-link .today-link > span {
 	margin-left: 5px;
 	font-size: 8px;
 	vertical-align: 2px;
@@ -585,6 +591,7 @@ a:hover {
 	margin-bottom: 20px;
 	font-size: 22px;
 	font-weight: bold;
+    display:inline-block;
 }
 
 /* Home - Spotlight */
@@ -620,6 +627,7 @@ a:hover {
 
 .spotlight-details {
 	padding: 10px;
+    position: relative;
 }
 
 .spotlight-title {
@@ -630,6 +638,11 @@ a:hover {
 .spotlight-excerpt {
 	margin: 10px 0;
 	line-height: 19px;
+}
+
+.spotlight-show-container .spotlight-details .link-button {
+    position: absolute;
+    bottom:0;
 }
 
 @media (min-width: 640px) and (max-width: 767px) {
@@ -1351,6 +1364,15 @@ a:hover {
 	text-align: center;
 }
 
+
+.primary-sidebar {
+    border-radius:5px;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    background: #fff;
+    overflow:hidden;
+    padding:10px 0;
+}
 /* Swiper
 ----------------------------------*/
 .swiper-button-default-white {

@@ -47,11 +47,12 @@ get_header( 'rtl' ); ?>
 	<div class="panel-body">
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
-				<?php
+				<?php if(function_exists('tribe_get_events')){
 					$events = tribe_get_events( array(
 					    'start_date'   => current_time('Y-m-d').' 00:00',
     					'end_date'     => current_time('Y-m-d').' 23:59'
 					) );
+                    
 					if(count($events) > 0):
 						foreach ( $events as $event ):?>
 
@@ -68,18 +69,19 @@ get_header( 'rtl' ); ?>
 			            <?php endforeach;
 			        else:?>
 			        	<span class="shows-message">No scheduled show today.</span>
-			        <?php endif;
+			        <?php endif; }
 				?>
 			</div>	
 		</div>	
 		<div class="today-nav swiper-button-prev"></div>
    	<div class="today-nav swiper-button-next"></div>	
-		<div class="text-center"><a href="<?php echo get_site_url(2); ?>/featured-shows" class="today-link">View Featured Shows<span class="glyphicon glyphicon-play"></span></a></div>
+		
 	</div>
 </div>
 <div class="section row">
 	<div class="col-xs-12 col-lg-6">
 		<h2 class="section-title">Spotlight</h2>
+		<div class="text-center pull-right more-featured-link"><a href="<?php echo get_site_url(2); ?>/featured-shows" class="today-link">View Featured Shows<span class="glyphicon glyphicon-play"></span></a></div>
 		<div class="row">
 			<?php
 				switch_to_blog( 1 );
@@ -91,7 +93,9 @@ get_header( 'rtl' ); ?>
 	                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
 	                		<div class="spotlight-show-container col-xs-12 col-sm-6 col-md-3 col-lg-12">
 								<div class="spotlight-show">
-									<div class="spotlight-photo" style="background-image: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>');"></div>
+									<div class="spotlight-photo" style="background: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>') no-repeat center center; background-size:100%;">
+									   
+									</div>
 									<div class="spotlight-details">
 										<h3 class="spotlight-title"><?php the_title(); ?></h3>
 										<p class="spotlight-excerpt"><?php echo strip_tags(mb_strimwidth(get_the_excerpt(),0,150, '...'));?></p>
@@ -105,7 +109,7 @@ get_header( 'rtl' ); ?>
 		</div>
 	</div>
 	<div id="widget-home-sidebar" class="col-xs-12 col-lg-6">
-		<h2 class="section-t itle">What's on RTL CBS Entertainment HD</h2>
+		<h2 class="section-title">What's on RTL CBS Entertainment HD</h2>
 		<div id="home-video-player" class="video-player-container">
 			<div class="video-player">
 				<iframe id="vimeoplayer" width="700" height="300" src="http://player.vimeo.com/video/127580017?api=1&player_id=vimeoplayer" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
