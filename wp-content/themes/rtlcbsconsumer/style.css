@@ -250,6 +250,17 @@ a:hover {
     box-sizing: border-box !important;
 }
 
+.wpcf7 span.wpcf7-not-valid-tip {
+    margin-top: 0.3125rem;
+    font-size: 12px;
+}
+
+.wpcf7 div.wpcf7-validation-errors, .wpcf7 div.wpcf7-mail-sent-ok {
+    font-size: 12px;  
+    padding: 0.3125rem;
+    margin: 0 auto;
+}
+
 
 @media (min-width: 992px) and (max-width: 1199px) {
 	.social-footer span {
