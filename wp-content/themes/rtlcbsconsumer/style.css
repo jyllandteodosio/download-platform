@@ -166,6 +166,91 @@ a:hover {
 	vertical-align: top;
 }
 
+
+.login-wrap {
+    padding: 5.625rem 0 9.375rem;
+    color: #000;
+    background: #e6e6e6;
+    width: 45rem;
+    margin: 0 auto;
+    -webkit-border-top-left-radius: 0.1875rem;
+    -moz-border-top-left-radius: 0.1875rem;
+    border-top-left-radius: 0.1875rem;
+    -webkit-border-top-right-radius: 0.1875rem;
+    -moz-border-top-right-radius: 0.1875rem;
+    border-top-right-radius: 0.1875rem;
+    -webkit-border-bottom-right-radius: 0.1875rem;
+    -moz-border-bottom-right-radius: 0.1875rem;
+    border-bottom-right-radius: 0.1875rem;
+    -webkit-border-bottom-left-radius: 0.1875rem;
+    -moz-border-bottom-left-radius: 0.1875rem;
+    border-bottom-left-radius: 0.1875rem;
+    padding: 1.25rem 1.5625rem;
+    font-size:16px;
+}
+
+
+.login-wrap .panel-title{
+    font-size: 25px;
+    color: #dc2328;
+    font-weight: 300;
+    margin-bottom: 0.3125rem;
+    text-align:left;
+}
+
+.login-wrap #wppb-login-wrap .login-username input, .login-wrap #wppb-login-wrap .login-password input, .login-wrap #wppb-login-wrap .wpcf7-text, .login-wrap #wppb-login-wrap .wpcf7-email, .login-wrap #wppb-login-wrap .wpcf7-textarea {
+    width: 100%;
+    background: #d4d4d4;
+    padding: 0.625rem;
+    margin-top: 0.5rem;
+}
+
+.wppb-user-forms input[type="text"], .wppb-user-forms input[type="email"], .wppb-user-forms input[type="url"], .wppb-user-forms input[type="password"], .wppb-user-forms input[type="search"], .wppb-user-forms textarea {
+    color: #666;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.wppb-user-forms input:not([type="button"]):not([type="reset"]):not([type="submit"]), .wppb-user-forms select, .wppb-user-forms textarea {
+    font-size: 100%;
+    margin: 0;
+    vertical-align: baseline;
+}
+
+.login-wrap .login-submit input, .login-wrap #wppb-recover-password-button, .login-wrap #lh_password_changer-form-submit, .login-wrap .wpcf7-submit {
+    color: #fff;
+    padding: 0.625rem;
+    display: block;
+    width: 100%;
+    background: #dc2328;
+    border: 0.0625rem solid #9a181c;
+    cursor: pointer;
+    -webkit-border-top-left-radius: 0.1875rem;
+    -moz-border-top-left-radius: 0.1875rem;
+    border-top-left-radius: 0.1875rem;
+    -webkit-border-top-right-radius: 0.1875rem;
+    -moz-border-top-right-radius: 0.1875rem;
+    border-top-right-radius: 0.1875rem;
+    -webkit-border-bottom-right-radius: 0.1875rem;
+    -moz-border-bottom-right-radius: 0.1875rem;
+    border-bottom-right-radius: 0.1875rem;
+    -webkit-border-bottom-left-radius: 0.1875rem;
+    -moz-border-bottom-left-radius: 0.1875rem;
+    border-bottom-left-radius: 0.1875rem;
+}
+
+
+.login-wrap .login-submit input:hover, .login-wrap #wppb-recover-password-button:hover, .login-wrap #lh_password_changer-form-submit:hover, .login-wrap .wpcf7-submit:hover {
+    background: #bf161a;
+}
+
+.wppb-user-forms, .wppb-user-forms * {
+    -webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+}
+
+
 @media (min-width: 992px) and (max-width: 1199px) {
 	.social-footer span {
 		display: block;
@@ -472,6 +557,10 @@ a:hover {
 	margin-bottom: 12px;
 	font-size: 14px;
 	font-weight: bold;
+}
+
+.max-width {
+    width:100%;
 }
 
 @media (max-width: 768px) {
