@@ -117,7 +117,7 @@
       });
    }
 
-   $( window ).on( 'resize', function() {
+   $( window ).on( 'resize', function() { try { 
       if( $('.video-playlist').length >= 1 ) {
          if( $( window ).innerWidth() < 992 ) {
             $( '.video-playlist' ).mCustomScrollbar( 'destroy' );
@@ -146,6 +146,7 @@
             videoPlayer.update();
             videoPlayer.attachEvents();
          } else {
+            
             if( videoPlayer ) videoPlayer.destroy( false, true );
             $( '.video-playlist-side' ).removeClass( 'swiper-container' );
             $( '.video-playlist-side .video-show-container' ).removeClass( 'swiper-wrapper' );
@@ -153,8 +154,9 @@
             $( '.video-playlist-side-container .video-playlist' ).mCustomScrollbar({
                theme: 'dark',
             });
+            
       }
-      }
+      } }catch(e){}
    });
 
 
