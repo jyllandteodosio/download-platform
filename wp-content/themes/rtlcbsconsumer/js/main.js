@@ -17,6 +17,8 @@
 		pagination: '.swiper-pagination',
 		paginationClickable: true,	
 		loop: true,
+        preventClicks: false, 
+        preventClicksPropagation: true,
 	});
 
 	var todaySlideShow = new Swiper( '#today-slideshow', {
@@ -34,7 +36,9 @@
             	992: {
             		slidesPerView: 4
             	}
-            }
+            },
+        preventClicks: false, 
+        preventClicksPropagation: true,
 	});
 
    var otherSlideShow = new Swiper( '#other-shows-slideshow', {
@@ -52,7 +56,9 @@
             slidesPerView: 2,
             slidesPerGroup: 2
          }
-      }
+      },
+       preventClicks: false, 
+        preventClicksPropagation: true,
    });
 
    var latestSlideShow = new Swiper( '#latest-episodes-slideshow', {
@@ -65,7 +71,9 @@
          1199: {
             slidesPerView: 1
          },
-      }
+      },
+       preventClicks: false, 
+        preventClicksPropagation: true,
    });
 
    homeVideoPlayer = new Swiper( '#home-video-player .video-playlist', {
@@ -82,7 +90,9 @@
          359: {
             slidesPerView: 1
          }
-      }
+      },
+       preventClicks: false, 
+        preventClicksPropagation: true,
    });
 
    $( '.content-area .fixed-height' ).mCustomScrollbar({
@@ -140,7 +150,9 @@
                      359: {
                         slidesPerView: 1
                      }
-                  }
+                  },
+                   preventClicks: false, 
+        preventClicksPropagation: true,
                });
             }
             videoPlayer.update();

@@ -131,6 +131,10 @@ a:hover {
 	vertical-align: -3px;
 }
 
+.social-header a {
+    vertical-align: middle;
+}
+
 .facebook {
 	font-size: 0;
 	display: inline-block;
@@ -154,9 +158,11 @@ a:hover {
 }
 
 .social-footer {
-	margin-top: 10px;
+	/*margin-top: 10px;*/
 	margin-bottom: 10px;
 }
+
+
 
 .social-footer span {
 	vertical-align: -5px;
@@ -674,6 +680,10 @@ a:hover {
 
 #showsToday .text-center {
 	margin-top: 10px;
+}
+
+.no-padding {
+    padding:0 ;
 }
 
 @media (max-width: 767px) {
