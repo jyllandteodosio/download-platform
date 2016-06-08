@@ -17,6 +17,8 @@
 		pagination: '.swiper-pagination',
 		paginationClickable: true,	
 		loop: true,
+        preventClicks: false, 
+        preventClicksPropagation: true,
 	});
 
 	var todaySlideShow = new Swiper( '#today-slideshow', {
@@ -34,7 +36,9 @@
             	992: {
             		slidesPerView: 4
             	}
-            }
+            },
+        preventClicks: false, 
+        preventClicksPropagation: true,
 	});
 
    var otherSlideShow = new Swiper( '#other-shows-slideshow', {
@@ -52,7 +56,9 @@
             slidesPerView: 2,
             slidesPerGroup: 2
          }
-      }
+      },
+       preventClicks: false, 
+        preventClicksPropagation: true,
    });
 
    var latestSlideShow = new Swiper( '#latest-episodes-slideshow', {
@@ -65,7 +71,9 @@
          1199: {
             slidesPerView: 1
          },
-      }
+      },
+       preventClicks: false, 
+        preventClicksPropagation: true,
    });
 
    homeVideoPlayer = new Swiper( '#home-video-player .video-playlist', {
@@ -82,7 +90,9 @@
          359: {
             slidesPerView: 1
          }
-      }
+      },
+       preventClicks: false, 
+        preventClicksPropagation: true,
    });
 
    $( '.content-area .fixed-height' ).mCustomScrollbar({
@@ -117,7 +127,7 @@
       });
    }
 
-   $( window ).on( 'resize', function() {
+   $( window ).on( 'resize', function() { try { 
       if( $('.video-playlist').length >= 1 ) {
          if( $( window ).innerWidth() < 992 ) {
             $( '.video-playlist' ).mCustomScrollbar( 'destroy' );
@@ -140,12 +150,15 @@
                      359: {
                         slidesPerView: 1
                      }
-                  }
+                  },
+                   preventClicks: false, 
+        preventClicksPropagation: true,
                });
             }
             videoPlayer.update();
             videoPlayer.attachEvents();
          } else {
+            
             if( videoPlayer ) videoPlayer.destroy( false, true );
             $( '.video-playlist-side' ).removeClass( 'swiper-container' );
             $( '.video-playlist-side .video-show-container' ).removeClass( 'swiper-wrapper' );
@@ -153,8 +166,9 @@
             $( '.video-playlist-side-container .video-playlist' ).mCustomScrollbar({
                theme: 'dark',
             });
+            
       }
-      }
+      } }catch(e){}
    });
 
 
