@@ -59,7 +59,7 @@ get_header( 'rtl' ); ?>
 			                <div class="swiper-slide">
 								<div class="time">
 									<span class="timeslot"><?php echo tribe_get_start_date($event->ID, false, Tribe__Date_Utils::TIMEFORMAT);//echo get_field('airing_schedule') ? date('h:i a',get_field('airing_schedule')) : date('h:i a');?></span>
-									<span class="timezone">(<?php echo $event->post_content;?>)</span>
+									<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
 								</div>
 								<div class="swiper-description">
 									<span class="title"><?php echo $event->post_title; ?></span>

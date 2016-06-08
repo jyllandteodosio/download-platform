@@ -55,3 +55,9 @@
 .tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]>a {
     background-color: #DC2B2C;
 }
+
+/* Append custom text in description area of calendar */
+.tribe-event-description > p::after,
+.tribe-events-list-event-description > p::after {
+	content: " JKT/BKK";
+}
