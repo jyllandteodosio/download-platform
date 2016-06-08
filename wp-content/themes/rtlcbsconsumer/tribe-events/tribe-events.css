@@ -58,6 +58,7 @@
 
 /* Append custom text in description area of calendar */
 .tribe-event-description > p::after,
-.tribe-events-list-event-description > p::after {
+.tribe-events-list-event-description > p::after,
+.tribe-events-single-event-description > p::after {
 	content: " JKT/BKK";
 }
