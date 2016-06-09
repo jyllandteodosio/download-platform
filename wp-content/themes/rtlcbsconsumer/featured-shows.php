@@ -68,7 +68,17 @@ get_header( 'rtl' ); ?>
 <div class="section">
 	<div class="video-player-container video-player-side-container clearfix">
 		<div class="video-player">
-			<iframe id="vimeoplayer" width="700" height="400" src="http://player.vimeo.com/video/127580017?api=1&player_id=vimeoplayer" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+			<?php
+				$query_show = getAllShows($channel,1);
+				if($query_show->have_posts()):
+				    while($query_show->have_posts()) : $query_show->the_post();
+				        $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+				        $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+				        if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
+							<iframe id="vimeoplayer" width="700" height="400" src="http://player.vimeo.com/video/<?php echo get_field('vimeo_id')?>?api=1&player_id=vimeoplayer" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+				    <?php endif;endwhile;
+				endif;
+			?>
 		</div>
 		<div class="video-playlist-container video-playlist-side-container">
 			<div id="video-playlist" class="video-playlist video-playlist-side swiper-container">

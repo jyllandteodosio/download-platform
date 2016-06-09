@@ -997,9 +997,16 @@ if (!function_exists('getAllShows')) {
      * @param  string  $query_var      Either page or paged
      * @return Object                  Returns featured shows.
      */
-    function getAllShows($channel = 'entertainment'){
+    function getAllShows($channel = 'entertainment', $count = null){
         $args = array(
                     'post_type' => 'wpdmpro', 
+                    'meta_query' => array(
+                            array(
+                                'key' => 'vimeo_id',
+                                'value'   => array(''),
+                                'compare' => 'NOT IN'
+                            )
+                        ),
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
@@ -1008,6 +1015,9 @@ if (!function_exists('getAllShows')) {
                         ),
                       )
                   );
+        if ($count != null && is_numeric($count)){
+            $args['posts_per_page'] = $count;
+        }
         $query_shows = new WP_Query( $args );
         return $query_shows;
     }
