@@ -1064,6 +1064,7 @@ a:hover {
 .show.show-wide .show-thumbnail-container {
 	float: left;
 	width: 45%;
+	min-height: 172px;
 }
 
 .show.show-wide .show-details {

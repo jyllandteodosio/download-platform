@@ -48,9 +48,7 @@ switch_to_blog( 1 );?>
 					while( $episode->fetch() ):?>
 						<div class="swiper-slide">
 							<a href="<?php echo(get_site_url(2)."/".$post->post_name.'?ep='.$episode->field('post_name'))?>" class="show show-wide">
-								<div class="show-thumbnail-container">
-									<img src="<?php echo wp_get_attachment_image_src(get_post_thumbnail_id($episode->field('id')), 'thumbnail-size', true)[0];?>" class="show-thumbnail" />
-								</div>
+								<div class="show-thumbnail-container" style="background: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id($episode->field('id')), 'full', true)[0]; ?>') no-repeat center center; background-size:cover; "></div>
 								<div class="show-details">
 									<div class="episode">Episode <?php echo $episode->field('episode_number');?></div>
 									<div class="episode-title"><?php echo $episode->field('post_title');?></div>

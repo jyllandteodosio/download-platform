@@ -56,7 +56,7 @@ get_header( 'rtl' ); ?>
 									<p class="spotlight-excerpt"><?php echo strip_tags(mb_strimwidth(get_the_excerpt(),0,150, '...'));?></p>
 									<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>" class="link-button">View More</a>
 								</div>
-								<div class="spotlight-photo" style="background: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'full', true)[0]; ?>') no-repeat center center; background-size:100%; "></div>
+								<div class="spotlight-photo" style="background: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'full', true)[0]; ?>') no-repeat center center; background-size:cover; "></div>
 							</div>
 						</div>
 	                <?php endif;

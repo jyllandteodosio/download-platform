@@ -93,7 +93,7 @@ get_header( 'rtl' ); ?>
 	                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
 	                		<div class="spotlight-show-container col-xs-12 col-sm-6 col-md-3 col-lg-12">
 								<div class="spotlight-show">
-									<div class="spotlight-photo" style="background: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>') no-repeat center center; background-size:100%;">
+									<div class="spotlight-photo" style="background: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>') no-repeat center center; background-size:cover;">
 									   
 									</div>
 									<div class="spotlight-details">
