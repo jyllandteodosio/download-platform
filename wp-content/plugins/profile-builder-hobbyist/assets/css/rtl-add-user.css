@@ -1,4 +1,4 @@
-#wppb-register-user li {
+      #wppb-register-user li {
         width: 45%;
         overflow: hidden;
         margin-top: 16px;
@@ -35,3 +35,13 @@
         float: none;
         width: auto;
       } 
+      .wppb-form-error {
+        display: block;
+        padding: 0px 10px;
+        width: 190px;
+        color: #ca0000;
+      }
+      .wppb-description-delimiter {
+        display: block;
+        padding: 0 10px;
+      }
