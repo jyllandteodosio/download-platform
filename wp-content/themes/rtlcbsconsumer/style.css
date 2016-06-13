@@ -857,8 +857,8 @@ a:hover {
 /* 404
 ----------------------------------*/
 .error404 .section {
-	text-align: center;
-	padding: 20px 0;
+	/*text-align: center;*/
+	/*padding: 20px 0;*/
 }
 
 .img-404 {
@@ -1109,6 +1109,7 @@ a:hover {
 .show-synopsis {
 	background: #000;
 	padding: 30px;
+	text-align: left;
 }
 
 .show-synopsis img {
