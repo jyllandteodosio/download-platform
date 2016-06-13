@@ -1,0 +1,11 @@
+.clearfix:before, 
+.container:before, 
+.container-fluid:before, 
+.row:before, 
+.btn-toolbar:before {
+    content: none;
+}
+
+.repeater > table > thead > tr > th.remove:before{
+     content: "Action"; 
+}

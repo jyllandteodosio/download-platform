@@ -28,6 +28,8 @@ function admin_edit_validation($hook) {
         wp_enqueue_script( 'aev-bootstrap-js', plugin_dir_url( __FILE__ ) . 'assets/bootstrap.min.js' , array('jquery') );
         wp_enqueue_style( 'aev-bootstrap-css', plugin_dir_url( __FILE__ ) . 'assets/bootstrap.min.css' );
         wp_enqueue_script( 'aev', plugin_dir_url( __FILE__ ) . 'assets/aev.js' , array('jquery') );
+        wp_enqueue_style( 'aev-css', plugin_dir_url( __FILE__ ) . 'assets/aev.css' );
+
     }
     
     
