@@ -27,7 +27,7 @@ get_header( 'rtl' ); ?>
 								<span class="timezone"><?php echo get_field('airing_time_jkt') ? "(".date('h:i a',get_field('airing_time_jkt'))." JKT/BKK)" : "";?></span>
 							</div>
 							<span class="title"><?php the_title(); ?></span>
-							<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,320,"...");?></p>
+							<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,300,"...");?></p>
 							<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>" class="view-more">View More</a>
 						</div>	
 					</div> 
