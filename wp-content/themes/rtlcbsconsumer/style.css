@@ -1755,11 +1755,11 @@ a:hover {
 		width: 606px;
 	}
 		#featured-slideshow .swiper-description.left-info {
-		padding-right: 17%;
+		padding-right: 15%;
 	}
 
 	#featured-slideshow .swiper-description.right-info {
-		padding-left: 17%;
+		padding-left: 15%;
 	}
 }
 
