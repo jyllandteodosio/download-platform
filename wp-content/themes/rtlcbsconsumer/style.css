@@ -1141,6 +1141,8 @@ a:hover {
 .show-banner {
 	position: relative;
 	line-height: 1;
+	height: 363px;
+    overflow: hidden;
 }
 
 .show-banner-video-container {
@@ -1524,6 +1526,8 @@ a:hover {
 #featured-slideshow {
 	border-radius: 6px;
 	box-shadow: 0 0 20px #000;
+	height: 329px;
+    overflow: hidden;
 }
 
 #featured-slideshow .day {
@@ -1637,7 +1641,6 @@ a:hover {
 }
 
 @media (max-width: 639px) {
-
 	#featured-slideshow .description,
 	#featured-slideshow .day,
 	#featured-slideshow .time {
