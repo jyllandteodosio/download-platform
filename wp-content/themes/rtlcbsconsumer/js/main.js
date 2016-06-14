@@ -11,7 +11,7 @@
    ----------------------------------*/
 	var homeSwiper = new Swiper( '#featured-slideshow', {
 		speed: 1000,
-		autoHeight: true,
+		// autoHeight: true,
 		autoplay: 4000,
 		effect: 'fade',
 		pagination: '.swiper-pagination',
