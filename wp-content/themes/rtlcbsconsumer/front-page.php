@@ -85,7 +85,7 @@ get_header( 'rtl' ); ?>
 		<div class="row">
 			<?php
 				switch_to_blog( 1 );
-				$query_shows = getAllShows($channel);
+				$query_shows = getAllShows($channel, 4);
 				if($query_shows->have_posts()):
 	                while($query_shows->have_posts()) : $query_shows->the_post();
 	            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);

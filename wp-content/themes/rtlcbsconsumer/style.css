@@ -1066,7 +1066,10 @@ a:hover {
 	width: 45%;
 	min-height: 172px;
 }
-
+.show .show-thumbnail-container{
+	height: 300px;
+    overflow: hidden;
+}
 .show.show-wide .show-details {
 	padding-right: 0;
 	width: calc(100% - 235px);
