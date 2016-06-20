@@ -1061,15 +1061,19 @@ a:hover {
 	margin: 0 auto;
 }
 
+.other-slideshow-container .show .show-thumbnail-container{
+	height: 300px;
+    overflow: hidden;
+}
+.other-slideshow-container .show.show-wide .show-thumbnail-container{
+	height: auto;
+}
 .show.show-wide .show-thumbnail-container {
 	float: left;
 	width: 45%;
 	min-height: 172px;
 }
-.other-slideshow-container .show .show-thumbnail-container{
-	height: 300px;
-    overflow: hidden;
-}
+
 .show.show-wide .show-details {
 	padding-right: 0;
 	width: calc(100% - 235px);
