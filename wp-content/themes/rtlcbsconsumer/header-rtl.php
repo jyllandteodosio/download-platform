@@ -57,7 +57,7 @@
 							<div class="social-header visible-md visible-lg">
 							<span>Follow us on:</span>
 							<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="facebook">Facebook</a>
-							<a href="http://www.twitter.com" title="Twitter" class="twitter">Twitter</a>
+							<a href="https://twitter.com/RTLCBSEntertain" title="Twitter" class="twitter">Twitter</a>
 							<span><?php echo date("l, F j, Y");  ?></span>
 						</div>
 						</div><!--/.nav-collapse -->

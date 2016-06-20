@@ -170,7 +170,8 @@
       }
       } }catch(e){}
    });
-
+   
+   $('#other-shows-slideshow .show-details').matchHeight();
 
    /* Video Player
    ----------------------------------*/
@@ -198,4 +199,7 @@
    $( '.close-video' ).on( 'click', function() {
       $( '.show-banner-video-container' ).addClass( 'hide' );
    });
+
+
+
 })( jQuery );

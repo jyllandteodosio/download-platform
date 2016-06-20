@@ -93,7 +93,7 @@ get_header( 'rtl' ); ?>
 	                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
 	                		<div class="spotlight-show-container col-xs-12 col-sm-6 col-md-3 col-lg-12">
 								<div class="spotlight-show">
-									<div class="spotlight-photo" style="background: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>') no-repeat center center; background-size:cover;">
+									<div class="spotlight-photo" style="background: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>') no-repeat top center; background-size:cover;">
 									   
 									</div>
 									<div class="spotlight-details">
@@ -135,7 +135,9 @@ get_header( 'rtl' ); ?>
 				                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 				                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
 				                    	<div class="video-show swiper-slide active" data-vimeo-id="<?php the_field('vimeo_id'); ?>">
-											<img src="<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>" class="video-thumbnail">
+				                    		<div class="thumbnail-container">
+												<img src="<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>" class="video-thumbnail">
+											</div>
 											<span class="video-title"><?php the_title(); ?></span>
 										</div>
 				                <?php endif;endwhile;
