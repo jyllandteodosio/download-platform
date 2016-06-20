@@ -10,7 +10,7 @@ get_header( 'rtl' ); ?>
 			switch_to_blog( 1 );
 			$channel = 'entertainment';
 
-			$query_show = getAllShows($channel,1);
+			$query_show = getAllShows($channel,1,true);
 			if($query_show->have_posts()):
 				while($query_show->have_posts()) : $query_show->the_post();
 				    $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
