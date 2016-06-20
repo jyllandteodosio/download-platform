@@ -24,7 +24,7 @@ get_header( 'rtl' ); ?>
 			<div id="video-playlist" class="video-playlist video-playlist-side swiper-container">
 				<div class="video-show-container swiper-wrapper">
 					<?php
-						$query_shows_2 = getAllShows($channel);
+						$query_shows_2 = getAllShows($channel, null, true);
 						if($query_shows_2->have_posts()):
 							$counter = 1;
 				            while($query_shows_2->have_posts()) : $query_shows_2->the_post();

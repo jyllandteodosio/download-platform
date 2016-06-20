@@ -113,7 +113,7 @@ get_header( 'rtl' ); ?>
 		<div id="home-video-player" class="video-player-container">
 			<div class="video-player">
 				<?php
-					$query_show = getAllShows($channel,1);
+					$query_show = getAllShows($channel,1,true);
 					if($query_show->have_posts()):
 				        while($query_show->have_posts()) : $query_show->the_post();
 				            $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
@@ -128,7 +128,7 @@ get_header( 'rtl' ); ?>
 				<div id="video-playlist" class="video-playlist swiper-container">
 					<div class="video-show-container swiper-wrapper">
 						<?php
-							$query_shows = getAllShows($channel);
+							$query_shows = getAllShows($channel, null, true);
 							if($query_shows->have_posts()):
 				                while($query_shows->have_posts()) : $query_shows->the_post();
 				            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
