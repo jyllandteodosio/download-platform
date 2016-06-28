@@ -1218,11 +1218,19 @@ if (!function_exists('getMonthsPromos')) {
         if($query_shows->have_posts()){
           while($query_shows->have_posts()) { 
             $query_shows->the_post();
+            // echo "<pre>";
+            // print_r(get_post());
+            // echo "</pre>";
             $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
             $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
             if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
-              if( have_rows('add_promo_files') ):
-                while( have_rows('add_promo_files') ): the_row();
+            // echo "<pre>";
+            // print_r(have_rows('add_promo_files',get_the_ID()));
+            // echo get_the_ID()."<br>";
+            // print_r(get_field( "add_promo_files" ,get_the_ID()));
+            // echo "</pre>";
+              if( have_rows('add_promo_files',get_the_ID()) ):
+                while( have_rows('add_promo_files',get_the_ID()) ): the_row();
                   $promo['operator_group'] = get_sub_field('operator_group');
                   $promo['promo_start'] = get_sub_field('promo_start') != '' ? get_sub_field('promo_start') : date('Ymd');
                   $promo['promo_end'] = get_sub_field('promo_end') != '' ? get_sub_field('promo_end') : date('Ymd');
