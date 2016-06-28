@@ -58,3 +58,6 @@ wp-config.php
 node_modules/
 
 db-connect-test.php
+
+#Live server phpmyadmin link node
+phpmyadmin
