@@ -1201,9 +1201,11 @@ if (!function_exists('getMonthsPromos')) {
      * @usage returns an array of promo files, otherwise empty array
      */
     function getMonthsPromos($category = 'on-air', $promo_filter = 'this-month'){
+        wp_reset_query();
         $channel = $_SESSION['channel'];
         $args = array(
                     'post_type' => 'wpdmpro', 
+                    'posts_per_page' => -1,
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
@@ -1213,14 +1215,11 @@ if (!function_exists('getMonthsPromos')) {
                       )
                   );
         $query_shows = new WP_Query( $args );
-
+        //echo  $query_shows->request;
         $promos = array();
         if($query_shows->have_posts()){
           while($query_shows->have_posts()) { 
             $query_shows->the_post();
-            // echo "<pre>";
-            // print_r(get_post());
-            // echo "</pre>";
             $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
             $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
             if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
