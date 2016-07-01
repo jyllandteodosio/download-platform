@@ -64,19 +64,22 @@ if( !function_exists('getFilePath') ) {
 	}
 }
 
-if( !function_exists('checkFileType') ){
+if( !function_exists('checkIfImageFile') ){
 	/**
 	 * Description:                 Checks the file type of a specified file        
 	 * @param  string $sfile    	File name
-	 * @param  string $fileType 	File type (image)
+     * @param  string $fileType     File type (image)
+	 * @param  string $pureImageFile	'pure' if files should all be an actual image file not including .EPS files
 	 * @return bool           
 	 */
-	function checkFileType($sfile, $fileType){
+	function checkIfImageFile($sfile, $fileType, $pureImageFile = null){
         $imgext = "";
         $ext = getFileExtension($sfile);
 
-        if($fileType == 'image'){
-            $imgext = array('png','jpg','jpeg', 'gif',);
+        if($fileType == 'image' && $pureImageFile == 'pure'){
+            $imgext = array('png','jpg','jpeg', 'gif');
+        }else {
+            $imgext = array('png','jpg','jpeg', 'gif', 'eps');
         }
         return in_array($ext, $imgext) ? 1 : 0;
     }

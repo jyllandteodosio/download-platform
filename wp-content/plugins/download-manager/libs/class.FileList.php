@@ -380,26 +380,10 @@ class FileList
                         $ind = \WPDM_Crypt::Encrypt($sfile);
                         $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
 
-                        if(checkFileType($sfile, 'image') && $prefix != self::$prefix_list['promos']){
+                        if(checkIfImageFile($sfile, 'image') && $prefix != self::$prefix_list['promos']){
 
                             $filepath = wpdm_download_url($file) . "&ind=" . $ind;
-                            // $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(10000, 10000));
-                            // $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(300, 100));
-                            $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(500, 300));
-                            // $thumb = wpdm_dynamic_thumb(getFilePath($sfile), array(400, 200));
-                            // $thumb = 'http://192.168.1.167/rtlcbsasia/wp-content/uploads/download-manager-files/1458699373wpdm_show-1-featured-img';//UPLOAD_DIR.$sfile;
-                            // echo "dynamic thumb - ".wpdm_dynamic_thumb(getFilePath($sfile), array(270, 296));
-                            // echo "<br>plain thumb - ".getFilePath($sfile);
-                            // echo "UPLOAD_BASE-".wp_upload_dir();
-                            // $upload_dir = wp_upload_dir();
-                            // $user_dirname = $upload_dir['basedir'];
-                            // echo $sfile;
-
-                            // $uploads = wp_upload_dir(); 
-                            // // echo $uploads['baseurl'];
-                            // echo '<img src="' . esc_url( $uploads['baseurl'] . '/download-manager-files/'.$sfile ) . '" href="#">';
-
-                            // die();
+                            $thumb = checkIfImageFile($sfile, 'image', 'pure' ) ? wpdm_dynamic_thumb(getFilePath($sfile), array(500, 300)) : null;
                             /* SHOW IMAGES ========================================================================== */
                             //KEY
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
