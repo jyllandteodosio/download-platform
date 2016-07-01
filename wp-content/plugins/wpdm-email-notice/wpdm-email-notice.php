@@ -12,6 +12,7 @@ PROMO ROW ID REFERENCE =========================================================
     		[field_56bda97f2303e] => Promo Category
             [field_56bda9b52303f] => Upload Date
             [field_56bda9eb23040] => ID
+            [field_57760648a7ca2] => Promo ID
             [field_56bda9fc23041] => Promo Start
             [field_56bdaa1123042] => Promo End
             [field_56bdaa2523043] => File Name
