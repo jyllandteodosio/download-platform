@@ -31,10 +31,6 @@ class Package {
 
         $vars = get_post($ID, ARRAY_A);
 
-        // echo "<pre>";
-        // print_r($vars); die();
-        // echo "</pre>";
-
         $vars['title'] = stripcslashes($vars['post_title']);
         $vars['description'] = stripcslashes($vars['post_content']);
         $vars['description'] = wpautop(stripslashes($vars['description']));
@@ -78,6 +74,7 @@ class Package {
         $vars['page_url'] = get_permalink($vars['ID']);
 
         // Added by Dianne D.R. - custom shortcodes for file segregations
+      
         // Shows - Images
         if(strpos("_".$template,'[file_category,key]')) $vars['file_category,key'] = \WPDM\libs\FileList::CategorizedFileList($vars, "key");
         if(strpos("_".$template,'[file_category,epi]')) $vars['file_category,epi'] = \WPDM\libs\FileList::CategorizedFileList($vars, "epi");
