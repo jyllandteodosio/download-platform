@@ -1575,6 +1575,7 @@ a:hover {
 #featured-slideshow .title {
 	font-size: 35px;
 	font-weight: bold;
+	line-height: 1;
 }
 
 #featured-slideshow .description {

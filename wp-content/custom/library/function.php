@@ -1242,6 +1242,7 @@ if (!function_exists('getMonthsPromos')) {
                     $promo['promo_start'] = get_sub_field('promo_start') != '' ? date("d/n/Y", strtotime(get_sub_field('promo_start'))) : '';
                     $promo['promo_end'] = get_sub_field('promo_end') != '' ? date("d/n/Y", strtotime(get_sub_field('promo_end'))) : '';
                     $promo['id'] = get_sub_field('id') != '' ? get_sub_field('id') : '';
+                    $promo['promo_id'] = get_sub_field('promo_id') != '' ? get_sub_field('promo_id') : '';
                     $promo['file_name'] = get_sub_field('file_name') != '' ? get_sub_field('file_name') : '';
                     $promo['program_tx'] = get_sub_field('program_tx') != '' ? get_sub_field('program_tx') : '';
                     $promo['prog_title_stunts'] = get_sub_field('prog_title_stunts') != '' ? get_sub_field('prog_title_stunts') : '';
