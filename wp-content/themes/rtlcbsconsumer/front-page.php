@@ -34,10 +34,10 @@ get_header( 'rtl' ); ?>
 								<span class="timeslot"><?php 
 									echo (get_field('airing_schedule_format')=="date") ? date('l',strtotime(get_field('airing_schedule')))." " : "";
 									echo get_field('airing_time') ? 
-											date('h:i a',get_field('airing_time')) 
+											date('g:i a',get_field('airing_time')) 
 											: "";
 								?></span>
-								<span class="timezone"><?php echo get_field('airing_time_jkt') ? "(".date('h:i a',get_field('airing_time_jkt'))." JKT/BKK)" : "";?></span>
+								<span class="timezone"><?php echo get_field('airing_time_jkt') ? "(".date('g:i a',get_field('airing_time_jkt'))." JKT/BKK)" : "";?></span>
 							</div>
 							<span class="title"><?php the_title(); ?></span>
 							<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,300,"...");?></p>

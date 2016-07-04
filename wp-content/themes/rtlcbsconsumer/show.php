@@ -14,7 +14,7 @@ switch_to_blog( 1 );?>
 		<?php $banner_text_alignment = get_field('banner_text_alignment') == 'right' ? "right-info" : "left-info";?>
 		<div class="show-banner-description <?php echo $banner_text_alignment; ?>">
 			<span class="date"><?php echo get_field('airing_schedule') ? date('F d, Y',get_field('airing_schedule')) : date('F d, Y');?></span>
-			<span class="time">Live at <?php echo get_field('airing_schedule') ? date('h:i a',get_field('airing_schedule')) : date('h:i a');?> <small>(<?php echo get_field('airing_time_jkt') ? date('h:i a',get_field('airing_time_jkt')) : date('h:i a');?> JKT/BKK)</small></span>
+			<span class="time">Live at <?php echo get_field('airing_schedule') ? date('g:i a',get_field('airing_schedule')) : date('g:i a');?> <small>(<?php echo get_field('airing_time_jkt') ? date('h:i a',get_field('airing_time_jkt')) : date('h:i a');?> JKT/BKK)</small></span>
 			<a href="#" class="watch-video"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>Watch Video</a>
 		</div>
 	</div>
