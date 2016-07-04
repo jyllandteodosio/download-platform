@@ -529,8 +529,9 @@ class FileList
         $isFileClickable = !self::checkFileInCart($fileID) ? "" : "disabled-links";
         $isFileRemovable = !self::checkFileInCart($fileID) ? "" : "added-to-cart";
         $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 48, "...");
+       
         if($thumb){
-            $file_thumb = "<img src='{$thumb}' alt='{$fileTitle}' />";
+            $file_thumb = '<img src="'.$thumb.'" alt="{$fileTitle}" />';
         }else{
             $ext = getFileExtension($sfile);
             $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
