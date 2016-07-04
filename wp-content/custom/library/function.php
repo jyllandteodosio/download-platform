@@ -79,7 +79,7 @@ if( !function_exists('checkIfImageFile') ){
         if($fileType == 'image' && $pureImageFile == 'pure'){
             $imgext = array('png','jpg','jpeg', 'gif');
         }else {
-            $imgext = array('png','jpg','jpeg', 'gif', 'eps');
+            $imgext = array('png','jpg','jpeg', 'gif', 'eps', 'ai', 'psd', 'psb');
         }
         return in_array($ext, $imgext) ? 1 : 0;
     }
