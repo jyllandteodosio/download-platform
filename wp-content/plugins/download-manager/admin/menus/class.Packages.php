@@ -67,16 +67,25 @@ class Packages
     function uploadFile(){
         check_ajax_referer('wpdm_admin_upload_file');
         if(!current_user_can('upload_files')) die('-2');
-        if(file_exists(UPLOAD_DIR.$_FILES['package_file']['name']) && get_option('__wpdm_overwrrite_file',0)==1){
+        /** Commented out origin block if code - by Dianne D.R.  */
+        /*if(file_exists(UPLOAD_DIR.$_FILES['package_file']['name']) && get_option('__wpdm_overwrrite_file',0)==1){
             @unlink(UPLOAD_DIR.$_FILES['package_file']['name']);
         }
-        if(file_exists(UPLOAD_DIR.$_FILES['package_file']['name']))
+        if(file_exists(UPLOAD_DIR.$_FILES['package_file']['name'])){
             $filename = time().'wpdm_'.$_FILES['package_file']['name'];
-        else
+        }else
             $filename = $_FILES['package_file']['name'];
         move_uploaded_file($_FILES['package_file']['tmp_name'],UPLOAD_DIR.$filename);
         //@unlink($status['file']);
+        echo $filename;*/
+        /** End of origin block if code */
+
+        /** Custom code to avoid duplicate file uploads but creates double database entry - by Dianne D.R.  */
+        $filename = $_FILES['package_file']['name'];
+        move_uploaded_file($_FILES['package_file']['tmp_name'],UPLOAD_DIR.$filename);
         echo $filename;
+        /** End of custom code */
+        
         exit;
     }
 
