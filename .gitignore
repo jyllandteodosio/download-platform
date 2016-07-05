@@ -44,6 +44,8 @@ favico.ico
 /wp-content/images
 /wp-content/image
 /wp-content/plugins/download-manager/cache
+/wp-content/plugins/wordfence/tmp
+/wp-content/wflogs/config.php
 /wp-content/exports
 /wp-content/ewww
 
