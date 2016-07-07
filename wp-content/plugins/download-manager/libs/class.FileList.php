@@ -524,10 +524,10 @@ class FileList
         $ind = \WPDM_Crypt::Encrypt($sfile);
         $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
         $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file)."&ind=".$ind : $sfile;
-        $buttonText = !self::checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
-        $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
-        $isFileClickable = !self::checkFileInCart($fileID) ? "" : "disabled-links";
-        $isFileRemovable = !self::checkFileInCart($fileID) ? "" : "added-to-cart";
+        $buttonText = !checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
+        $isFileAdded = !checkFileInCart($fileID) ? "" : "disabled";
+        $isFileClickable = !checkFileInCart($fileID) ? "" : "disabled-links";
+        $isFileRemovable = !checkFileInCart($fileID) ? "" : "added-to-cart";
         $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 48, "...");
       
         if($thumb!= "" && file_exists(WPDM_CACHE_DIR.basename($thumb))){
@@ -558,22 +558,6 @@ class FileList
        
         return $fhtml;
     }
-
-    /**
-     * @usage function to check if a specific file is present in the cart
-     * @param $fileID
-     * @return bool
-     * @usage returns 1 if file is present in the cart, otherwise 0
-     */
-    public static function checkFileInCart($fileID){
-        $cart_array = get_custom_cart_contents();
-	$cart_array_filtered = array_filter($cart_array);
-        if(!empty($cart_array_filtered)){
-            return array_key_exists($fileID, $cart_array);
-        }
-        return 0;
-    }
-
 
     /**
      * @usage function to generate show custom script

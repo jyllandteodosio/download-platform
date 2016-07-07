@@ -1256,6 +1256,19 @@ if (!function_exists('getMonthsPromos')) {
                     $promo['post_id'] = get_the_ID();
                     $promo['user_id'] = get_current_user_id();
 
+                    // if(get_sub_field('thumbnail') == ''){
+                    //     $ext = strtolower(getFileExtension($promo['attached_file']));
+                    //     $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
+                    // }else {
+                    //     $thumb = get_sub_field('thumbnail');
+                    // }
+                    $ext = strtolower(getFileExtension($promo['attached_file']));
+                    $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
+                    $promo['thumb'] = $thumb;
+
+                    // $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
+                    $promo['isFileAdded'] = !checkFileInCart($promo['id']) ? "" : "disabled-links";
+
                     if(strtolower($promo['category']) == $category)
                       array_push($promos, $promo);
                   }
@@ -1270,6 +1283,22 @@ if (!function_exists('getMonthsPromos')) {
     }
 }
 
+if (!function_exists('checkFileInCart')){
+    /**
+     * @usage function to check if a specific file is present in the cart
+     * @param $fileID
+     * @return bool
+     * @usage returns 1 if file is present in the cart, otherwise 0
+     */
+    function checkFileInCart($fileID){
+        $cart_array = get_custom_cart_contents();
+        $cart_array_filtered = array_filter($cart_array);
+        if(!empty($cart_array_filtered)){
+            return array_key_exists($fileID, $cart_array);
+        }
+        return 0;
+    }
+}
 if (!function_exists('custom_get_country_groups')){
     /**
      * Get Country groups declared in profile builder plugin
