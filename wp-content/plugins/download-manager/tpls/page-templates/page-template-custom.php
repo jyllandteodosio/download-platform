@@ -18,7 +18,7 @@
 	      	</div>
 	      	<div class="half other-information pull-left">
 	        	<h3>Cast:</h3>
-	        	<p>[acf_cast]</p>
+	        	<p class="cast">[acf_cast]</p>
 	        	<h3 class="legal-heading">Legal Notice</h3>
 	        	<p>[acf_legal_notice]</p>
 	        </div>
