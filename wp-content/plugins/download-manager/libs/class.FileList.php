@@ -369,7 +369,12 @@ class FileList
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
                 $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
       
-                // Start structuring the container html of file list
+                /* Sort files by file title */
+                $filename_sort = array();
+                foreach ($allfiles as $key => $row) {
+                    $filename_sort[$key] = $fileinfo[$key]['title'];
+                }
+                array_multisort($filename_sort, SORT_ASC, $allfiles);
 
                 if (is_array($allfiles)) {
                     foreach ($allfiles as $fileID => $sfileOriginal) {
@@ -531,11 +536,11 @@ class FileList
         $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 48, "...");
       
         if($thumb!= "" && file_exists(WPDM_CACHE_DIR.basename($thumb))){
-            $file_thumb = '<img src="'.$thumb.'" alt="{$fileTitle}" />';
+            $file_thumb = '<img src="'.$thumb.'" alt="'.$fileTitle.'" title="'.$fileTitle.'" />';
         }else{
             $ext = strtolower(getFileExtension($sfile));
             $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
-            $file_thumb = "<img class='file-ico' src='{$thumb}' alt='{$fileTitle}' />";
+            $file_thumb = "<img class='file-ico' src='{$thumb}' alt='{$fileTitle}' title='{$fileTitle}' />";
         }
 
         // echo "thumb: ".$file_thumb;
