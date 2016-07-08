@@ -48,6 +48,8 @@ favico.ico
 /wp-content/wflogs/config.php
 /wp-content/exports
 /wp-content/ewww
+/wp-content/cache
+
 
 #ignore wordpress wp-config.php
 wp-config.php
