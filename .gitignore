@@ -50,6 +50,8 @@ favico.ico
 /wp-content/exports
 /wp-content/ewww
 /wp-content/cache
+/wp-content/wflogs
+/wp-content/wp-cache-config.php
 
 
 #ignore wordpress wp-config.php
