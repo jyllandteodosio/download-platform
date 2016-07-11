@@ -353,6 +353,18 @@ class FileList
                                     'channel_boiler'    => 'boiler',
                                     'channel_catchup'   => 'catch'
                                     );
+    private static $operator_prefix_list = array(
+                                    /* PREFIX FOR SHOW IMAGES*/
+                                    // 'singtel'           => 'Singtel', 
+                                    // 'starhub'           => 'StarHub', 
+                                    // 'nowtv'             => 'nowTV', 
+                                    // 'leeco'             => 'LeEco',
+                                    // 'truevisions'       => 'TrueVisions',
+                                    // 'hypptv'            => 'HyppTV',
+                                    // 'kvisions'          => 'K-Visions',
+                                    // 'skycable'          => 'SKYCable',
+                                    'affiliate'         => 'Affiliate'
+                                    );
 
     /**
      * @usage Callback function for [images_key_art] tag
@@ -478,10 +490,11 @@ class FileList
 
                             /* SHOW DOCUMENTS ===================================================================================== */
                             // CM_EPG
-                            
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
+                                if ( current_user_can( 'manage_options' ) || contains($fileTitle, self::$operator_prefix_list['affiliate']) || contains($fileTitle, get_current_user_operator_group()) ){
+                                    $files_counter++;
+                                    $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
+                                }
                             }
                             // CM_HIG
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_highlights']){
