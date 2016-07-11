@@ -370,14 +370,18 @@ class FileList
                 $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
       
                 /* Sort files by file title */
-                // $filename_sort = array();
-                // foreach ($allfiles as $key => $row) {
-                //     $filename_sort[$key] = $fileinfo[$key]['title'];
-                // }
-                // array_multisort($filename_sort, SORT_ASC, $allfiles);
+                $filename_sort = array();
+                foreach ($allfiles as $key => $row) {
+                    $filename_sort[$key] = $fileinfo[$key]['title'];
+                }
+                asort($filename_sort);
+                $allfiles_sorted = array();
+                foreach ($filename_sort as $key => $value) {
+                    $allfiles_sorted[$key] = $allfiles[$key];
+                }
 
-                if (is_array($allfiles)) {
-                    foreach ($allfiles as $fileID => $sfileOriginal) {
+                if (is_array($allfiles_sorted)) {
+                    foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
                         $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
                         $fileTitle = $prefix != self::$prefix_list['promos'] ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
                         $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
