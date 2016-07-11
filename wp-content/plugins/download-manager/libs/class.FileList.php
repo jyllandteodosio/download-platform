@@ -370,11 +370,11 @@ class FileList
                 $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
       
                 /* Sort files by file title */
-                $filename_sort = array();
-                foreach ($allfiles as $key => $row) {
-                    $filename_sort[$key] = $fileinfo[$key]['title'];
-                }
-                array_multisort($filename_sort, SORT_ASC, $allfiles);
+                // $filename_sort = array();
+                // foreach ($allfiles as $key => $row) {
+                //     $filename_sort[$key] = $fileinfo[$key]['title'];
+                // }
+                // array_multisort($filename_sort, SORT_ASC, $allfiles);
 
                 if (is_array($allfiles)) {
                     foreach ($allfiles as $fileID => $sfileOriginal) {
