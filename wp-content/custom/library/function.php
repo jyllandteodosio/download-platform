@@ -68,7 +68,7 @@ if( !function_exists('checkIfImageFile') ){
 	/**
 	 * Description:                 Checks the file type of a specified file        
 	 * @param  string $sfile    	File name
-     * @param  string $fileType     File type (image)
+     * @param  string $fileType     File type (image). For future improvements, include docs etc.
 	 * @param  string $pureImageFile	'pure' if files should all be an actual image file not including .EPS files
 	 * @return bool           
 	 */
@@ -1267,7 +1267,7 @@ if (!function_exists('getMonthsPromos')) {
                     $promo['thumb'] = $thumb;
 
                     // $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
-                    $promo['isFileAdded'] = !checkFileInCart($promo['id']) ? "" : "disabled-links";
+                    $promo['isFileAdded'] = !checkFileInCart($promo['id']) ? "" : "disabled-links added-to-cart";
 
                     if(strtolower($promo['category']) == $category)
                       array_push($promos, $promo);
