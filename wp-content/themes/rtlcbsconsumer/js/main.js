@@ -172,6 +172,7 @@
    });
    
    $('#other-shows-slideshow .show-details').matchHeight();
+   $('.swiper-description').matchHeight();
 
    /* Video Player
    ----------------------------------*/

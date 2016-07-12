@@ -641,6 +641,11 @@ a:hover {
 #today-slideshow .swiper-description {
 	padding: 8px;
 	background: #252424;
+	text-transform: capitalize;
+}
+
+#today-slideshow .today-show-thumb-container img {
+	width: 100%;
 }
 
 #showsToday .swiper-button-prev {
