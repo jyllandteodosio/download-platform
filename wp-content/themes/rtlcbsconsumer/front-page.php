@@ -62,8 +62,8 @@ get_header( 'rtl' ); ?>
 			<div class="swiper-wrapper">
 				<?php if(function_exists('tribe_get_events')){
 					$events = tribe_get_events( array(
-					    // 'start_date'   => current_time('Y-m-d').' 00:00',
-    					// 'end_date'     => current_time('Y-m-d').' 23:59'
+					    'start_date'   => current_time('Y-m-d').' 00:00',
+    					'end_date'     => current_time('Y-m-d').' 23:59'
 					) );
                     
 					if(count($events) > 0):
