@@ -11,7 +11,7 @@
    ----------------------------------*/
 	var homeSwiper = new Swiper( '#featured-slideshow', {
 		speed: 1000,
-		// autoHeight: true,
+		autoHeight: true,
 		autoplay: 4000,
 		effect: 'fade',
 		pagination: '.swiper-pagination',
@@ -173,6 +173,9 @@
    
    $('#other-shows-slideshow .show-details').matchHeight();
    $('.swiper-description').matchHeight();
+   $('.spotlight-details').matchHeight();
+   $('.show-details .show-description').matchHeight();
+   $('.spotlight-show-container .spotlight-excerpt').matchHeight();
 
    /* Video Player
    ----------------------------------*/

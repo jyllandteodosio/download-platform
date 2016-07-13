@@ -337,6 +337,10 @@ a:hover {
 	.navbar-inverse .navbar-nav > li > a {
 		color: #fff;
 	}
+
+	#featured-slideshow .swiper-description {
+		width: 58%;
+	}
 }
 
 /* LAYOUT
@@ -753,11 +757,6 @@ a:hover {
 .spotlight-excerpt {
 	margin: 10px 0;
 	line-height: 19px;
-}
-
-.spotlight-show-container .spotlight-details .link-button {
-    position: absolute;
-    bottom:0;
 }
 
 @media (min-width: 640px) and (max-width: 767px) {
@@ -1332,8 +1331,9 @@ a:hover {
 }
 
 .video-player-side-container .video-show {
-	height: 120px;
+	height: 135px;
     overflow: hidden;
+    margin-bottom: 10px;
 }
 
 .video-playlist .video-show.active::before {
@@ -1353,7 +1353,7 @@ a:hover {
 }
 
 .video-thumbnail {
-	width: 85%;
+	width: 100%;
 }
 
 .video-playlist-container .swiper-button-next, 
@@ -1486,7 +1486,7 @@ a:hover {
 }
 
 #home-video-player .thumbnail-container {
-	height: 60px;
+	height: 115px;
     overflow: hidden;
 }
 #home-video-player .video-thumbnail {
@@ -1556,7 +1556,7 @@ a:hover {
 #featured-slideshow {
 	border-radius: 6px;
 	box-shadow: 0 0 20px #000;
-	height: 329px;
+	/*height: 329px;*/
     overflow: hidden;
 }
 
@@ -1783,10 +1783,6 @@ a:hover {
 
 	#featured-slideshow .swiper-container {
 		max-height: 400px;
-	}
-
-	#featured-slideshow .swiper-description {
-		width: 606px;
 	}
 		#featured-slideshow .swiper-description.left-info {
 		padding-right: 15%;
