@@ -83,7 +83,7 @@ get_header( 'rtl' ); ?>
 								$show_id = getPostIdByTitle($event->post_title);
 								if($show_id != ''):
 									$image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_id), 'single-post-thumbnail' );?>
-									<p class="today-show-thumb-container" style="background: url('<?php echo $image[0];?>') no-repeat top center; background-size:cover;">/p>
+									<p class="today-show-thumb-container" style="background: url('<?php echo $image[0];?>') no-repeat top center; background-size:cover;"></p>
 								<?php endif;
 								restore_current_blog();?>
 							</div>
