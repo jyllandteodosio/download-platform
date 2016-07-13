@@ -1353,7 +1353,7 @@ a:hover {
 }
 
 .video-thumbnail {
-	width: 85%;
+	width: 100%;
 }
 
 .video-playlist-container .swiper-button-next, 
@@ -1486,7 +1486,7 @@ a:hover {
 }
 
 #home-video-player .thumbnail-container {
-	height: 60px;
+	height: 115px;
     overflow: hidden;
 }
 #home-video-player .video-thumbnail {
