@@ -221,6 +221,20 @@ function getPostIdBySlug($slug){
 
     return $post_id;
 }
+
+function getPostIdByTitle($title){
+    global $wpdb;  
+    $prep_title = str_replace("'","\'",$title); 
+    $show_query_string = "  SELECT DISTINCT p.id
+                            FROM $wpdb->posts p 
+                            JOIN $wpdb->postmeta pm
+                            ON p.id = pm.post_id
+                            WHERE p.post_title LIKE '%".$prep_title."'
+                            AND p.post_status = 'publish'
+                            AND p.post_type = 'wpdmpro'";                         
+    $show_id = $wpdb->get_var( $show_query_string );
+    return $show_id;
+}
 /* END OF DATABASE FUNCTIONS */
 
 if( !function_exists('get_current_user_role') ){

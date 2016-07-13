@@ -79,21 +79,17 @@ get_header( 'rtl' ); ?>
 									<p class="details"></p>
 								</div>
 								<?php
-									switch_to_blog( 1 );
-									$query = new WP_Query( array( 's' => $event->post_title ) );
-									if ( $query->have_posts() ) {
-										$image = wp_get_attachment_image_src( get_post_thumbnail_id( get_the_ID()), 'single-post-thumbnail' );
-										restore_current_blog();?>
-										<p class="today-show-thumb-container">
-											<?php if($image[0] != ""): ?>
-												<img src="<?php echo $image[0];?>" alt="">
-											<?php endif;?>
-										</p>
-										<?php wp_reset_postdata();
-									} else {
-										// no posts found
-									}
-								?>
+								switch_to_blog( 1 );
+								$show_id = getPostIdByTitle($event->post_title);
+								if($show_id != ''):
+									$image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_id), 'single-post-thumbnail' );?>
+									<p class="today-show-thumb-container">
+									<?php if($image[0] != ""): ?>
+										<img src="<?php echo $image[0];?>" alt="">
+									<?php endif;?>
+									</p>
+								<?php endif;
+								restore_current_blog();?>
 							</div>
 			            <?php endforeach;
 			        else:?>
