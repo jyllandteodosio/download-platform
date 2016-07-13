@@ -51,8 +51,9 @@
 #tribe_events_filters_wrapper input[type=submit], 
 .tribe-events-button, .tribe-events-button.tribe-active:hover, 
 .tribe-events-button.tribe-inactive, .tribe-events-button:hover, 
-.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-], 
-.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]>a {
+.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]
+/*.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]>a*/
+ {
     background-color: #DC2B2C;
 }
 
@@ -61,4 +62,30 @@
 .tribe-events-list-event-description > p::after,
 .tribe-events-single-event-description > p::after {
 	content: " JKT/BKK";
+}
+
+/* Tablet view ================================================================================================ */
+.tribe-events-calendar td.tribe-events-past div[id*=tribe-events-daynum-]>a, 
+.tribe-events-calendar div[id*=tribe-events-daynum-] a,
+.tribe-events-calendar td div[id*=tribe-events-daynum-] {
+    color: #fff;
+}
+
+.tribe-events-calendar td div[id*=tribe-events-daynum-],
+.tribe-events-calendar td.tribe-events-present.mobile-active div[id*=tribe-events-daynum-] a,
+.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]>a {
+	background: transparent;
+	color: #fff;
+}
+
+.tribe-events-calendar td.mobile-active,
+#tribe-events-content .tribe-events-calendar .mobile-active:hover,
+.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-],
+#tribe-events-content .tribe-events-calendar td.tribe-events-present.mobile-active:hover, 
+.tribe-events-calendar td.tribe-events-present.mobile-active,
+.tribe-events-calendar td.tribe-events-present.mobile-active div[id*=tribe-events-daynum-],
+.tribe-events-calendar .mobile-active div[id*=tribe-events-daynum-],,
+#tribe-events-content .tribe-events-calendar td.tribe-events-othermonth.mobile-active {
+	background-color: #730F11;
+	color: #fff;
 }

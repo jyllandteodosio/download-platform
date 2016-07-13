@@ -759,11 +759,6 @@ a:hover {
 	line-height: 19px;
 }
 
-.spotlight-show-container .spotlight-details .link-button {
-  /*  position: absolute;
-    bottom:0;*/
-}
-
 @media (min-width: 640px) and (max-width: 767px) {
 	.spotlight-show-container {
 		width: 50%;
