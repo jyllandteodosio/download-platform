@@ -644,8 +644,8 @@ a:hover {
 	text-transform: capitalize;
 }
 
-#today-slideshow .today-show-thumb-container img {
-	width: 100%;
+#today-slideshow .today-show-thumb-container{
+	min-height: 160px;
 }
 
 #showsToday .swiper-button-prev {
