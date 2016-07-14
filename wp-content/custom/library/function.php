@@ -631,7 +631,10 @@ if(!function_exists('get_custom_cart_contents')){
 function custom_posts_where( $where){
     global $wpdb;
     if(isset($wpdb->letter_filter) && $wpdb->letter_filter != null && $wpdb->letter_filter != ''){
-        $where .= " AND SUBSTRING( post_title, 1, 1 ) ='".$wpdb->letter_filter."' ";
+        if($wpdb->letter_filter != 'others')
+            $where .= " AND post_title LIKE '".$wpdb->letter_filter."%' ";
+        else 
+            $where .= " AND post_title REGEXP '^[0-9#$%^&*()+=;,.{}]' ";
     }
     if(isset($wpdb->search_filter) && $wpdb->search_filter != null && $wpdb->search_filter != ''){
         $where .= " AND post_title LIKE '%".$wpdb->search_filter."%'";
