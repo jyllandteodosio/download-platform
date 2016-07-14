@@ -62,8 +62,8 @@ get_header( 'rtl' ); ?>
 			<div class="swiper-wrapper">
 				<?php if(function_exists('tribe_get_events')){
 					$events = tribe_get_events( array(
-					    'start_date'   => current_time('Y-m-d').' 00:00',
-    					'end_date'     => current_time('Y-m-d').' 23:59'
+					    // 'start_date'   => current_time('Y-m-d').' 00:00',
+    					// 'end_date'     => current_time('Y-m-d').' 23:59'
 					) );
                     
 					if(count($events) > 0):
@@ -83,7 +83,7 @@ get_header( 'rtl' ); ?>
 								$show_id = getPostIdByTitle($event->post_title);
 								if($show_id != ''):
 									$image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_id), 'single-post-thumbnail' );?>
-									<p class="today-show-thumb-container" style="background: url('<?php echo $image[0];?>') no-repeat top center; background-size:cover;">/p>
+									<p class="today-show-thumb-container" style="background: url('<?php echo $image[0];?>') no-repeat top center; background-size:cover;">
 								<?php endif;
 								restore_current_blog();?>
 							</div>

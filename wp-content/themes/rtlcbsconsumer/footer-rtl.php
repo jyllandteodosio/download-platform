@@ -29,7 +29,7 @@
 									'theme_location' => 'about',
 								) ); ?>
 							</div>
-							<div class="col-sm-4 no-padding">
+							<div class="col-sm-4">
 								<div class="social-footer clearfix">
 									<p><span>Follow Us: </span>
 									<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="social facebook">Facebook</a>	
