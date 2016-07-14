@@ -1239,7 +1239,7 @@ if (!function_exists('getMonthsPromos')) {
      * @return array
      * @usage returns an array of promo files, otherwise empty array
      */
-    function getMonthsPromos($category = 'on-air', $promo_filter = 'this-month'){
+    function getMonthsPromos($category = 'on-air', $promo_filter = 'all'){
         wp_reset_query();
         $channel = $_SESSION['channel'];
         $args = array(
@@ -1262,11 +1262,7 @@ if (!function_exists('getMonthsPromos')) {
             $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
             $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
             if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
-            // echo "<pre>";
-            // print_r(have_rows('add_promo_files',get_the_ID()));
-            // echo get_the_ID()."<br>";
-            // print_r(get_field( "add_promo_files" ,get_the_ID()));
-            // echo "</pre>";
+
               if( have_rows('add_promo_files',get_the_ID()) ):
                 while( have_rows('add_promo_files',get_the_ID()) ): the_row();
                   $promo['operator_group'] = get_sub_field('operator_group');
@@ -1292,17 +1288,10 @@ if (!function_exists('getMonthsPromos')) {
                     $promo['post_id'] = get_the_ID();
                     $promo['user_id'] = get_current_user_id();
 
-                    // if(get_sub_field('thumbnail') == ''){
-                    //     $ext = strtolower(getFileExtension($promo['attached_file']));
-                    //     $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
-                    // }else {
-                    //     $thumb = get_sub_field('thumbnail');
-                    // }
                     $ext = strtolower(getFileExtension($promo['attached_file']));
                     $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
                     $promo['thumb'] = $thumb;
 
-                    // $isFileAdded = !self::checkFileInCart($fileID) ? "" : "disabled";
                     $promo['isFileAdded'] = !checkFileInCart($promo['id']) ? "" : "disabled-links added-to-cart";
 
                     if(strtolower($promo['category']) == $category)
