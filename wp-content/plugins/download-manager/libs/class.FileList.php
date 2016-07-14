@@ -380,7 +380,7 @@ class FileList
             if (count($file['files']) > 0) {
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
                 $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
-      
+            
                 /* Sort files by file title */
                 $filename_sort = array();
                 foreach ($allfiles as $key => $row) {
@@ -491,8 +491,22 @@ class FileList
                             /* SHOW DOCUMENTS ===================================================================================== */
                             // CM_EPG
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
-                                if ( current_user_can( 'manage_options' ) || contains($fileTitle, self::$operator_prefix_list['affiliate']) || contains($fileTitle, get_current_user_operator_group()) ){
-                                    $files_counter++;
+                                $files_counter++;
+                                $current_operator_group = get_current_user_operator_group();
+                                if ( get_current_user_role() == "administrator"){
+                                    $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
+                                }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
+                                    $exclusive_epg_check = 0;
+                                    foreach ($allfiles_sorted as $key => $value) {
+                                        if(contains($fileinfo[$key]['title'], $current_operator_group)){
+                                            $exclusive_epg_check = 1;
+                                            break;
+                                        }
+                                    }
+                                    if(!$exclusive_epg_check){
+                                        $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
+                                    }
+                                }else if(contains($fileTitle, $current_operator_group)){
                                     $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                                 }
                             }
