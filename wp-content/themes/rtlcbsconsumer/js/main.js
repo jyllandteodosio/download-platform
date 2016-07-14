@@ -171,7 +171,7 @@
       } }catch(e){}
    });
    
-   $('#other-shows-slideshow .show-details').matchHeight();
+   // $('#other-shows-slideshow .show-details').matchHeight();
    $('.swiper-description').matchHeight();
    $('.spotlight-details').matchHeight();
    $('.show-details .show-description').matchHeight();
