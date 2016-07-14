@@ -64,6 +64,25 @@ if( !function_exists('getFilePath') ) {
 	}
 }
 
+if( !function_exists('getFileAbsolutePathByURL') ) {
+    /**
+     * Description:                 Transform a URL path to Local Absolute path. Useful in getting media file absolute path.
+     * @param  string $url_path     Full URL path of a file.
+     * @return string               Absolute file path
+     */
+    function getFileAbsolutePathByURL($url_path) {
+        $current_absolute_path = dirname(__FILE__);
+        $current_absolute_path_segments = explode('\wp-content', $current_absolute_path);
+        $base_url = get_site_url();
+        /* Replace url path to absolute path */
+        $full_raw_absolute_path = str_replace($base_url,$current_absolute_path_segments[0],$url_path);
+        /* Replace forwardslash with backslash */
+        $full_absolute_path = str_replace('/','\\',$full_raw_absolute_path);
+        return $full_absolute_path;
+    }
+}
+
+
 if( !function_exists('checkIfImageFile') ){
 	/**
 	 * Description:                 Checks the file type of a specified file        

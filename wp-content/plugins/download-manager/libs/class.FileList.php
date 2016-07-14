@@ -559,6 +559,7 @@ class FileList
         $userID = get_current_user_id( );
         $ind = \WPDM_Crypt::Encrypt($sfile);
         $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
+        $absolute_file_path = getFileAbsolutePathByURL($sfile);
         $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file)."&ind=".$ind : $sfile;
         $buttonText = !checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
         $isFileAdded = !checkFileInCart($fileID) ? "" : "disabled";
@@ -573,19 +574,16 @@ class FileList
             $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
             $file_thumb = "<img class='file-ico' src='{$thumb}' alt='{$fileTitle}' title='{$fileTitle}' />";
         }
-
-        // echo "thumb: ".$file_thumb;
-        // die();
         // FORM : INPUT FIELDS - use by bulk add to cart
         $cart_data = prepare_cart_data(null,$fileTitle,$filepath,urlencode($downloadUrl),$postID,$fileType,$userID,$thumb);
         $serialized_cart = serialize($cart_data);
         $fhtml .= "<input type='hidden' name='{$fileID}' value='{$serialized_cart}'>";
-
         // FILE PANEL CONTAINER 
         $fhtml .= "     <div class='item {$fileID} {$isFileRemovable}'>";
         $fhtml .=           "<div class='file-thumb'>".$file_thumb."</div>";
         $fhtml .= "         <div class='show-meta'>";
         $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
+        $fhtml .= "             <p class='file-size'>".wpdm_file_size($absolute_file_path)."</p>";
         $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID} $isFileClickable'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' >{$buttonText}</a>";
         $fhtml .= "         </div>";
         $fhtml .= "         <span class='close-btn' data-file-id='{$fileID}' data-user-id='{$userID}'><i class='fa fa-lg fa-times'></i></span>";
