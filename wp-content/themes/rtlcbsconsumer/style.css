@@ -1485,14 +1485,9 @@ a:hover {
 	margin-top: 15px;
 }
 
-#home-video-player .thumbnail-container {
-	height: 115px;
-    overflow: hidden;
-}
 #home-video-player .video-thumbnail {
 	font-size: 10px;
 	height: auto;
-	margin-bottom: 20px;
 }
 
 @media (max-width: 639px) {
@@ -1669,6 +1664,17 @@ a:hover {
 		display: block;
 		max-width: 105px;
 	}
+
+	#home-video-player .thumbnail-container {
+		height: 115px;
+	    overflow: hidden;
+	}
+	#home-video-player .video-thumbnail {
+		font-size: 10px;
+		height: auto;
+		margin-bottom: 20px;
+	}
+
 }
 
 @media (max-width: 639px) {
