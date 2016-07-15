@@ -1240,7 +1240,7 @@ if (!function_exists('getMonthsPromos')) {
      * @return array
      * @usage returns an array of promo files, otherwise empty array
      */
-    function getMonthsPromos($category = 'on-air', $promo_filter = 'all'){
+    function getMonthsPromos($category = 'on-air', $promo_filter = 'this-month'){
         wp_reset_query();
         $channel = $_SESSION['channel'];
         $args = array(
