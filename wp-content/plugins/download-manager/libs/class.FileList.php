@@ -630,6 +630,7 @@ class FileList
                                     var ajaxurl = '{$siteurl}';
                                     var cartnonce = '{$cartnonce}';
                                     var addedText = \"Added&nbsp;&nbsp;<i class='fa fa-check'></i>\";
+                                    var addText = '".__("Add to Cart","wpdmpro")."';
                                     jQuery('.table-files').submit(function(event) {
                                         event.preventDefault();
                                         var form = jQuery(this);
@@ -686,7 +687,7 @@ class FileList
                                                     jQuery('.add-to-cart-btn.'+file_id).html(addedText);
                                                     updateCartCount();
                                                 }else if (response == 'failed') {
-                                                    jQuery('.add-to-cart-btn.'+file_id).removeClass('disabled-links').html(addedText);
+                                                    jQuery('.add-to-cart-btn.'+file_id).removeClass('disabled-links').html(addText);
                                                     console.log('add to cart failed');
                                                 }
                                             }

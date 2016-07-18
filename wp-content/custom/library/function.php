@@ -1359,6 +1359,7 @@ if (!function_exists('getMonthsPromos')) {
                     $promo['thumb'] = $thumb;
 
                     $promo['isFileAdded'] = !checkFileInCart($promo['id']) ? "" : "disabled-links added-to-cart";
+                    $promo['buttonText'] = !checkFileInCart($promo['id']) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
 
                     if(strtolower($promo['category']) == $category)
                       array_push($promos, $promo);
