@@ -365,6 +365,7 @@ class FileList
                                     // 'skycable'          => 'SKYCable',
                                     'affiliate'         => 'Affiliate'
                                     );
+    private static $specific_thumbs_prefix = 'SPECIFICTHUMBS';
 
     /**
      * @usage Callback function for [images_key_art] tag
@@ -380,11 +381,14 @@ class FileList
             if (count($file['files']) > 0) {
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
                 $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
-            
+                $specific_thumbnails = array(); /* Thumbnails container for TIF files */
                 /* Sort files by file title */
                 $filename_sort = array();
                 foreach ($allfiles as $key => $row) {
-                    $filename_sort[$key] = $fileinfo[$key]['title'];
+                    if (!contains($fileinfo[$key]['title'],self::$specific_thumbs_prefix))
+                        $filename_sort[$key] = $fileinfo[$key]['title'];
+                    else
+                        $specific_thumbnails[$key]  = $fileinfo[$key]['title'];
                 }
                 asort($filename_sort);
                 $allfiles_sorted = array();
@@ -403,7 +407,8 @@ class FileList
 
                         if(checkIfImageFile($sfile, 'image') && $prefix != self::$prefix_list['promos']){
                             $filepath = wpdm_download_url($file) . "&ind=" . $ind;
-                            $thumb = checkIfImageFile($sfile, 'image', 'pure' ) ? wpdm_dynamic_thumb(getFilePath($sfile), array(500, 300)) : null;
+                            $thumb = getImageThumbnail($sfile, $specific_thumbnails);
+
                             /* SHOW IMAGES ========================================================================== */
                             //KEY
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
@@ -493,8 +498,11 @@ class FileList
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
                                 $files_counter++;
                                 $current_operator_group = get_current_user_operator_group();
+                                $generate_epg_panel = false;
+                                $thumb = getEPGThumbnail($fileTitle);
+
                                 if ( get_current_user_role() == "administrator"){
-                                    $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
+                                    $generate_epg_panel = true;
                                 }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
                                     $exclusive_epg_check = 0;
                                     foreach ($allfiles_sorted as $key => $value) {
@@ -504,10 +512,13 @@ class FileList
                                         }
                                     }
                                     if(!$exclusive_epg_check){
-                                        $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
+                                        $generate_epg_panel = true;
                                     }
                                 }else if(contains($fileTitle, $current_operator_group)){
-                                    $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
+                                    $generate_epg_panel = true;
+                                }
+                                if($generate_epg_panel){
+                                    $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', $thumb, $file);
                                 }
                             }
                             // CM_HIG
@@ -566,14 +577,24 @@ class FileList
         $isFileClickable = !checkFileInCart($fileID) ? "" : "disabled-links";
         $isFileRemovable = !checkFileInCart($fileID) ? "" : "added-to-cart";
         $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 48, "...");
-      
-        if($thumb!= "" && file_exists(WPDM_CACHE_DIR.basename($thumb))){
+        
+        /* Check if EPG file - will assign a special thumbnail if ever */
+        if(contains($sfile,self::$prefix_list['channel_epg'])){
+            $thumb_path = getFileAbsolutePathByURL($thumb);
+        }
+        else {
+            $thumb_path = WPDM_CACHE_DIR.basename($thumb);
+        }
+
+        /* Will assign a thumbnail preview */
+        if($thumb!= "" && file_exists($thumb_path)){
             $file_thumb = '<img src="'.$thumb.'" alt="'.$fileTitle.'" title="'.$fileTitle.'" />';
         }else{
             $ext = strtolower(getFileExtension($sfile));
             $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
             $file_thumb = "<img class='file-ico' src='{$thumb}' alt='{$fileTitle}' title='{$fileTitle}' />";
         }
+
         // FORM : INPUT FIELDS - use by bulk add to cart
         $cart_data = prepare_cart_data(null,$fileTitle,$filepath,urlencode($downloadUrl),$postID,$fileType,$userID,$thumb);
         $serialized_cart = serialize($cart_data);
@@ -609,6 +630,7 @@ class FileList
                                     var ajaxurl = '{$siteurl}';
                                     var cartnonce = '{$cartnonce}';
                                     var addedText = \"Added&nbsp;&nbsp;<i class='fa fa-check'></i>\";
+                                    var addText = '".__("Add to Cart","wpdmpro")."';
                                     jQuery('.table-files').submit(function(event) {
                                         event.preventDefault();
                                         var form = jQuery(this);
@@ -665,7 +687,7 @@ class FileList
                                                     jQuery('.add-to-cart-btn.'+file_id).html(addedText);
                                                     updateCartCount();
                                                 }else if (response == 'failed') {
-                                                    jQuery('.add-to-cart-btn.'+file_id).removeClass('disabled-links').html(addedText);
+                                                    jQuery('.add-to-cart-btn.'+file_id).removeClass('disabled-links').html(addText);
                                                     console.log('add to cart failed');
                                                 }
                                             }
