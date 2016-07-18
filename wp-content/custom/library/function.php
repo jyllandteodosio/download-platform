@@ -84,8 +84,8 @@ if( !function_exists('getFileAbsolutePathByURL') ) {
      */
     function getFileAbsolutePathByURL($url_path) {
         $current_absolute_path = dirname(__FILE__);
-        $current_absolute_path_segments = explode('/wp-content', $current_absolute_path); /* For live server */
-        // $current_absolute_path_segments = explode('\wp-content', $current_absolute_path); /* For Local Only*/
+        // $current_absolute_path_segments = explode('/wp-content', $current_absolute_path); /* For live server */
+        $current_absolute_path_segments = explode('\wp-content', $current_absolute_path); /* For Local Only*/
         $base_url = get_site_url();
         // Replace url path to absolute path 
         $full_absolute_path = str_replace($base_url,$current_absolute_path_segments[0],$url_path);
@@ -120,9 +120,10 @@ if( !function_exists('checkIfImageFile') ){
 
 if( !function_exists('getImageThumbnail') ) {
     /**
-     * Description:                 Remove file extension of a specified file name
-     * @param  string $sfile        The source string(3894343983483_KEY_349304930.jpg)
-     * @return string               file name without extension
+     * Description:                         Get image special thumbnail for non web compatible file format
+     * @param  string $filename             Filename of original file
+     * @param  array $specific_thumbnails   Array of special uploaded image files
+     * @return string                       Associated special thumbnail for the given filename if available
      */
     function getImageThumbnail($filename, $specific_thumbnails = null) {
         if (checkIfImageFile($filename,'image','notpure') && $specific_thumbnails != null){
@@ -138,6 +139,32 @@ if( !function_exists('getImageThumbnail') ) {
             $thumnail_name = $filename;
         }
         $thumb = checkIfImageFile($thumnail_name, 'image', 'pure' ) ? wpdm_dynamic_thumb(getFilePath($thumnail_name), array(500, 300)) : null;
+        return $thumb;
+    }
+}
+
+if( !function_exists('getEPGThumbnail') ) {
+    /**
+     * Description:                        Get assigned EPG thumbnail for the given EPG file
+     * @param  string $fileTitle           File title of epg file
+     * @return string                      Associated EPG thumbnail for the given filename if available
+     */
+    function getEPGThumbnail($fileTitle) {
+        $epg_thumbnails = array();
+        if( have_rows('epg_thumbnail') ):
+            while ( have_rows('epg_thumbnail') ) : the_row();
+                $operator_group = strtolower(get_sub_field('operator_group_name'));
+                $thumbnail_path = get_sub_field('epg_image_thumbnail');
+                if(($operator_group!="" && $operator_group != null) && ($thumbnail_path != "" && $thumbnail_path != null)){
+                    $epg_thumbnails[$operator_group] = $thumbnail_path;
+                }
+            endwhile;
+        endif;
+        foreach ($epg_thumbnails as $operator_group_key => $thumbnail_url) {
+            if(contains($fileTitle,$operator_group_key)){
+                $thumb = $thumbnail_url;
+            }
+        }
         return $thumb;
     }
 }
