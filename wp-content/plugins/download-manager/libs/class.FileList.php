@@ -365,6 +365,7 @@ class FileList
                                     // 'skycable'          => 'SKYCable',
                                     'affiliate'         => 'Affiliate'
                                     );
+    private static $specific_thumbs_prefix = 'SPECIFICTHUMBS';
 
     /**
      * @usage Callback function for [images_key_art] tag
@@ -380,11 +381,14 @@ class FileList
             if (count($file['files']) > 0) {
                 $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
                 $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
-            
+                $specific_thumbnails = array(); /* Thumbnails container for TIF files */
                 /* Sort files by file title */
                 $filename_sort = array();
                 foreach ($allfiles as $key => $row) {
-                    $filename_sort[$key] = $fileinfo[$key]['title'];
+                    if (!contains($fileinfo[$key]['title'],self::$specific_thumbs_prefix))
+                        $filename_sort[$key] = $fileinfo[$key]['title'];
+                    else
+                        $specific_thumbnails[$key]  = $fileinfo[$key]['title'];
                 }
                 asort($filename_sort);
                 $allfiles_sorted = array();
@@ -403,7 +407,8 @@ class FileList
 
                         if(checkIfImageFile($sfile, 'image') && $prefix != self::$prefix_list['promos']){
                             $filepath = wpdm_download_url($file) . "&ind=" . $ind;
-                            $thumb = checkIfImageFile($sfile, 'image', 'pure' ) ? wpdm_dynamic_thumb(getFilePath($sfile), array(500, 300)) : null;
+                            $thumb = getImageThumbnail($sfile, $specific_thumbnails);
+                            
                             /* SHOW IMAGES ========================================================================== */
                             //KEY
                             if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){

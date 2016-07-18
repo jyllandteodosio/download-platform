@@ -51,6 +51,18 @@ if( !function_exists('getFileExtension') ) {
 	}
 }
 
+if( !function_exists('removeFileExtension') ) {
+    /**
+     * Description:                 Remove file extension of a specified file name
+     * @param  string $sfile        The source string(3894343983483_KEY_349304930.jpg)
+     * @return string               file name without extension
+     */
+    function removeFileExtension($filename) {
+        $withoutExt = preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename);
+        return $withoutExt;
+    }
+}
+
 if( !function_exists('getFilePath') ) {
 	/**
 	 * Description:					Get file upload path of a specified file name
@@ -83,7 +95,6 @@ if( !function_exists('getFileAbsolutePathByURL') ) {
     }
 }
 
-
 if( !function_exists('checkIfImageFile') ){
 	/**
 	 * Description:                 Checks the file type of a specified file        
@@ -98,12 +109,39 @@ if( !function_exists('checkIfImageFile') ){
 
         if($fileType == 'image' && $pureImageFile == 'pure'){
             $imgext = array('png','jpg','jpeg', 'gif');
+        } else if($fileType == 'image' && $pureImageFile == 'notpure'){
+            $imgext = array('eps', 'ai', 'psd', 'psb', 'tif');
         }else {
             $imgext = array('png','jpg','jpeg', 'gif', 'eps', 'ai', 'psd', 'psb', 'tif');
         }
         return in_array($ext, $imgext) ? 1 : 0;
     }
 }
+
+if( !function_exists('getImageThumbnail') ) {
+    /**
+     * Description:                 Remove file extension of a specified file name
+     * @param  string $sfile        The source string(3894343983483_KEY_349304930.jpg)
+     * @return string               file name without extension
+     */
+    function getImageThumbnail($filename, $specific_thumbnails = null) {
+        if (checkIfImageFile($filename,'image','notpure') && $specific_thumbnails != null){
+            $sfile_withoutext = removeFileExtension($filename);
+            foreach ($specific_thumbnails as $specificthumbnail_key => $specificthumbnail_value) {
+                if(contains($specificthumbnail_value,$sfile_withoutext)){
+                    $thumnail_name = $specificthumbnail_value;
+                }else {
+                    $thumnail_name = $filename;
+                }
+            }
+        }else {
+            $thumnail_name = $filename;
+        }
+        $thumb = checkIfImageFile($thumnail_name, 'image', 'pure' ) ? wpdm_dynamic_thumb(getFilePath($thumnail_name), array(500, 300)) : null;
+        return $thumb;
+    }
+}
+
 
 /**
  * Database functions for Custom Cart
