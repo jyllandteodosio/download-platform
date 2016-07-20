@@ -37,7 +37,7 @@ get_header( 'rtl' ); ?>
 								<div class="schedule-date-container">
 									<h2>
 										<span class="schedule-day"><?php echo $date->format("l");?></span>
-										<span class="schedule-date"><?php echo $date->format("M d, Y");?></span>
+										<span class="schedule-date"><?php echo $date->format("F d, Y");?></span>
 									</h2>
 								</div>	
 								<div class="highlight-container">
@@ -72,30 +72,6 @@ get_header( 'rtl' ); ?>
 
 					endif;
 				?>
-			<!-- <div id="schedule-slideshow" class="swiper-container">
-				<div class="swiper-wrapper">
-					<div class="swiper-slide">
-						<div class="schedule-date-container">
-							<h2>
-								<span class="schedule-day">Sunday</span>
-								<span class="schedule-date">June 29, 2014</span>
-							</h2>
-						</div>	
-						<div class="highlight-container">
-							<span class="title">Highlight</span>
-							<span class="icon"><i class="fa fa-star" aria-hidden="true"></i></span>
-						</div>
-						<div class="schedule-shows">
-							<p class="today-show-thumb-container" style="background: url('http://192.168.1.167/rtlcbsasia/wp-content/uploads/2016/03/Chrisley_family-e1467276229174.jpg') no-repeat top center; background-size:cover;"></p>
-							<div class="time">
-								<span class="timeslot">21:00</span>
-								<span class="timezone">(20:00 JKT/BKK)</span>
-								<h3>America's Got talent</h3>
-							</div>
-						</div>
-					</div>
-				</div>	
-			</div> -->
 				</div>	
 			</div>
 			<div class="today-nav swiper-button-prev"></div>

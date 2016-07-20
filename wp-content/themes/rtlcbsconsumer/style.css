@@ -917,6 +917,8 @@ a:hover {
 
 .page-template-schedule .entry-content {
 	background: #101010;
+	background: url('images/rtl-striped-bg.jpg') repeat top center;
+	background-attachment: fixed;
 }
 #schedule-slideshow .schedule-date-container {
 	background: #900b0e;
