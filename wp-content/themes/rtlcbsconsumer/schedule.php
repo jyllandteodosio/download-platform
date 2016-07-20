@@ -7,7 +7,6 @@ $style = ( $bannerUrl ) ? 'style="background-image: url(\'' . $bannerUrl . '\');
 get_header( 'rtl' ); ?>
 
 <div class="content-area calendar-area">
-	<?php //if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
 	<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 		<header class="entry-header" <?php echo $style; ?>>
 			<h1 class="entry-title"><?php the_title(); ?></h1> <?php edit_post_link(); ?>
@@ -28,6 +27,27 @@ get_header( 'rtl' ); ?>
 						$interval = new DateInterval('P1D');
 						$daterange = new DatePeriod($begin, $interval ,$end);
 
+						$time_list = array();
+						foreach($daterange as $date):
+							$events = tribe_get_events( array(
+								'start_date'   => $date->format("Y-m-d").' 00:00',
+			    				'end_date'     => $date->format("Y-m-d").' 23:59'
+							) );
+								if(count($events) > 0):
+									foreach ($events as $event) :
+										$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
+										if(!in_array($show_start_time, $time_list)){
+									        array_push($time_list, $show_start_time);
+									    }
+									endforeach;
+								endif;
+						endforeach;
+						asort($time_list);
+						$time_list_rebased = array_values($time_list);
+						// echo "<pre>";
+						// 			    print_r($time_list_rebased);
+						// 			    echo "</pre>";
+
 						foreach($daterange as $date):
 							$events = tribe_get_events( array(
 								'start_date'   => $date->format("Y-m-d").' 00:00',
@@ -44,9 +64,22 @@ get_header( 'rtl' ); ?>
 									<span class="title">Highlight</span>
 									<span class="icon"><i class="fa fa-star" aria-hidden="true"></i></span>
 								</div>
+									
+								
 								<?php
+								$show_counter = 0;
 								if(count($events) > 0):
-									foreach ($events as $event) :?>
+									foreach ($events as $event) :
+										$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
+										
+										$next_skip = true;
+
+										while($next_skip == true):
+										if($time_list_rebased[$show_counter] == $show_start_time):
+											// echo "YES";
+											$next_skip = false;
+											// echo "<br>compare:".$time_list_rebased[$show_counter]."=".$show_start_time;
+										?>
 										<div class="schedule-shows" title="<?php echo $event->post_title;?>">
 											<?php
 												switch_to_blog( 1 );
@@ -65,8 +98,15 @@ get_header( 'rtl' ); ?>
 											</div>
 										</div>
 									<?php
+										else: ?>
+											<div class="schedule-shows" style="min-height:160px;"></div>
+										<?php 
+										endif;
+										$show_counter++;
+										endwhile;
 									endforeach;
 								endif;?>
+
 							</div>
 						<?php endforeach;
 
@@ -74,11 +114,12 @@ get_header( 'rtl' ); ?>
 				?>
 				</div>	
 			</div>
-			<div class="today-nav swiper-button-prev"></div>
-	   		<div class="today-nav swiper-button-next"></div>	
+			<div class="schedule-slideshow-button">
+				<div class="today-nav swiper-button-prev"></div>
+		   		<div class="today-nav swiper-button-next"></div>	
+	   		</div>
 		</div>
 	</article>
-	<?php //endwhile; endif; ?>
 </div>
 
 <?php get_footer( 'rtl' ); ?>
