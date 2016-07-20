@@ -947,6 +947,9 @@ a:hover {
 	color: #a8a9ab;
 	padding-left: 8px;
 }
+#schedule-slideshow .schedule-shows {
+	position: relative;
+}
 #schedule-slideshow .time {
 	bottom: 0;
 }

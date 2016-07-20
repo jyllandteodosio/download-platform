@@ -70,7 +70,7 @@ get_header( 'rtl' ); ?>
 						while ($event = current($events) )
 						{
 						    $next_show = next($events);?>
-						    <div class="swiper-slide">
+						    <div class="swiper-slide" title="<?php echo $event->post_title;?>">
 								<div class="time">
 									<?php
 									$current_time = time();
