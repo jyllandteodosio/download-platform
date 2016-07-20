@@ -623,10 +623,21 @@ a:hover {
 }
 
 #today-slideshow .time {
-	padding: 0 8px 13px;
+	padding: 8px;
 	position: absolute;
     background: rgba(0, 0, 0, 0.81);
     width: 100%;
+}
+#today-slideshow .nowplaying {
+	display: block;
+}
+.arrow-right {
+  width: 0; 
+  height: 0; 
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 8px solid #d41d24;
+  display: inline-block;
 }
 
 #today-slideshow .timeslot {

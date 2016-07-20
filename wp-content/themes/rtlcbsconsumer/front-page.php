@@ -71,6 +71,7 @@ get_header( 'rtl' ); ?>
 
 			                <div class="swiper-slide">
 								<div class="time">
+									<!-- <span class="nowplaying"><div class="arrow-right"></div> Now Playing...</span> -->
 									<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
 									<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
 								</div>
