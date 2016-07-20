@@ -67,11 +67,18 @@ get_header( 'rtl' ); ?>
 					) );
                     
 					if(count($events) > 0):
-						foreach ( $events as $event ):?>
-
-			                <div class="swiper-slide">
+						while ($event = current($events) )
+						{
+						    $next_show = next($events);?>
+						    <div class="swiper-slide">
 								<div class="time">
-									<!-- <span class="nowplaying"><div class="arrow-right"></div> Now Playing...</span> -->
+									<?php
+									$current_time = time();
+									$current_show_time = strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT));
+									$next_show_time = strtotime(tribe_get_start_date($next_show->ID, false, Tribe__Date_Utils::DBTIMEFORMAT));
+									if( $current_time>=$current_show_time && $current_time<=$next_show_time):?>
+										<span class="nowplaying"><div class="arrow-right"></div> Now Playing...</span>
+									<?php endif;?>
 									<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
 									<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
 								</div>
@@ -90,7 +97,10 @@ get_header( 'rtl' ); ?>
 								</div>
 								
 							</div>
-			            <?php endforeach;
+
+							<?php
+						}
+						
 			        else:?>
 			        	<span class="shows-message">No scheduled show today.</span>
 			        <?php endif; }
