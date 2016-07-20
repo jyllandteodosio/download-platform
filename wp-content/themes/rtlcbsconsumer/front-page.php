@@ -88,10 +88,10 @@ get_header( 'rtl' ); ?>
 									$background_image = "";
 									if($show_id != ''):
 										$image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_id), 'single-post-thumbnail' );
-										$background_image = $image[0] != "" ? "background: url('".$image[0]."')" : "";
+										$background_image = $image[0] != "" ? "background: url('".$image[0]."') no-repeat top center;" : "";
 									endif;
 									restore_current_blog();?>
-								<p class="today-show-thumb-container" style="<?php echo $background_image;?> no-repeat top center; background-size:cover;"></p>
+								<p class="today-show-thumb-container" style="<?php echo $background_image;?> background-size:cover;"></p>
 								<div class="swiper-description">
 									<span class="title"><?php echo mb_strimwidth($event->post_title,0,24,"...") ?></span>
 								</div>
