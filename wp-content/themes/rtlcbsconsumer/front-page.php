@@ -71,22 +71,23 @@ get_header( 'rtl' ); ?>
 
 			                <div class="swiper-slide">
 								<div class="time">
-									<span class="timeslot"><?php echo tribe_get_start_date($event->ID, false, Tribe__Date_Utils::TIMEFORMAT);//echo get_field('airing_schedule') ? date('h:i a',get_field('airing_schedule')) : date('h:i a');?></span>
+									<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
 									<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
 								</div>
-								<div class="swiper-description">
-									<span class="title"><?php echo $event->post_title; ?></span>
-									<p class="details"></p>
-								</div>
 								<?php
-								switch_to_blog( 1 );
-								$show_id = getPostIdByTitle($event->post_title);
-								if($show_id != ''):
-									$image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_id), 'single-post-thumbnail' );?>
-									<p class="today-show-thumb-container" style="background: url('<?php echo $image[0];?>') no-repeat top center; background-size:cover;"></p>
-
-								<?php endif;
-								restore_current_blog();?>
+									switch_to_blog( 1 );
+									$show_id = getPostIdByTitle($event->post_title);
+									$background_image = "";
+									if($show_id != ''):
+										$image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_id), 'single-post-thumbnail' );
+										$background_image = $image[0] != "" ? "background: url('".$image[0]."')" : "";
+									endif;
+									restore_current_blog();?>
+								<p class="today-show-thumb-container" style="<?php echo $background_image;?> no-repeat top center; background-size:cover;"></p>
+								<div class="swiper-description">
+									<span class="title"><?php echo mb_strimwidth($event->post_title,0,24,"...") ?></span>
+								</div>
+								
 							</div>
 			            <?php endforeach;
 			        else:?>

@@ -172,7 +172,7 @@
    });
    
    // $('#other-shows-slideshow .show-details').matchHeight();
-   $('.swiper-description').matchHeight();
+   // $('.swiper-description').matchHeight();
    $('.spotlight-details').matchHeight();
    $('.show-details .show-description').matchHeight();
    $('.spotlight-show-container .spotlight-excerpt').matchHeight();

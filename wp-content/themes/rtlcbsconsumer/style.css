@@ -599,8 +599,7 @@ a:hover {
 
 #showsToday .panel-body {
 	position: relative;
-	padding-left: 0;
-	padding-right: 0;
+	padding: 0 0 6px;
     min-height:170px;
 }
 
@@ -625,6 +624,9 @@ a:hover {
 
 #today-slideshow .time {
 	padding: 0 8px 13px;
+	position: absolute;
+    background: rgba(0, 0, 0, 0.81);
+    width: 100%;
 }
 
 #today-slideshow .timeslot {
@@ -650,6 +652,7 @@ a:hover {
 
 #today-slideshow .today-show-thumb-container{
 	min-height: 160px;
+	margin-bottom: 0;
 }
 
 @media (max-width: 767px) {
