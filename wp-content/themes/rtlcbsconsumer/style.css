@@ -665,7 +665,6 @@ a:hover {
 }
 
 .today-show-thumb-container{
-	min-height: 160px;
 	margin-bottom: 0;
 }
 
@@ -950,6 +949,12 @@ a:hover {
 #schedule-slideshow .highlight-container .icon {
 	color: #a8a9ab;
 	padding-left: 8px;
+}
+#schedule-slideshow .schedule-shows,
+.today-show-thumb-container {
+	min-height:160px;
+	background-size: cover;
+	background-repeat: no-repeat;
 }
 #schedule-slideshow .schedule-shows {
 	position: relative;

@@ -60,16 +60,13 @@ get_header( 'rtl' ); ?>
 	<div class="panel-body">
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
-				<?php if(function_exists('tribe_get_events')){
-					$events = tribe_get_events( array(
-					    'start_date'   => current_time('Y-m-d').' 00:00',
-    					'end_date'     => current_time('Y-m-d').' 23:59'
-					) );
+		<?php   if(function_exists('tribe_get_events')):
+					$events = getTribeEvents(current_time('Y-m-d').' 00:00',current_time('Y-m-d').' 23:59');
                     
 					if(count($events) > 0):
-						while ($event = current($events) )
-						{
-						    $next_show = next($events);?>
+						while ($event = current($events) ):
+						    $next_show = next($events);
+						    $background_image = getFeaturedImageByTitle($event->post_title);?>
 						    <div class="swiper-slide" title="<?php echo $event->post_title;?>">
 								<div class="time">
 									<?php
@@ -82,16 +79,7 @@ get_header( 'rtl' ); ?>
 									<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
 									<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
 								</div>
-								<?php
-									switch_to_blog( 1 );
-									$show_id = getPostIdByTitle($event->post_title);
-									$background_image = "";
-									if($show_id != ''):
-										$image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_id), 'single-post-thumbnail' );
-										$background_image = $image[0] != "" ? "background: url('".$image[0]."') no-repeat top center;" : "";
-									endif;
-									restore_current_blog();?>
-								<p class="today-show-thumb-container" style="<?php echo $background_image;?> background-size:cover;"></p>
+								<p class="today-show-thumb-container" style="<?php echo $background_image;?>"></p>
 								<div class="swiper-description">
 									<span class="title"><?php echo mb_strimwidth($event->post_title,0,24,"...") ?></span>
 								</div>
@@ -99,12 +87,11 @@ get_header( 'rtl' ); ?>
 							</div>
 
 							<?php
-						}
-						
+						endwhile;
 			        else:?>
 			        	<span class="shows-message">No scheduled show today.</span>
-			        <?php endif; }
-				?>
+			<?php   endif; 
+				endif; ?>
 			</div>	
 		</div>	
 		<div class="today-nav swiper-button-prev"></div>
