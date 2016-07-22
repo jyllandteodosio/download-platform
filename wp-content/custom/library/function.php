@@ -153,15 +153,15 @@ if( !function_exists('getEPGThumbnail') ) {
         $epg_thumbnails = array();
         if( have_rows('epg_thumbnail') ):
             while ( have_rows('epg_thumbnail') ) : the_row();
-                $operator_group = strtolower(get_sub_field('operator_group_name'));
+                $epg_month = strtolower(get_sub_field('epg_month'));
                 $thumbnail_path = get_sub_field('epg_image_thumbnail');
-                if(($operator_group!="" && $operator_group != null) && ($thumbnail_path != "" && $thumbnail_path != null)){
-                    $epg_thumbnails[$operator_group] = $thumbnail_path;
+                if(($epg_month!="" && $epg_month != null) && ($thumbnail_path != "" && $thumbnail_path != null)){
+                    $epg_thumbnails[$epg_month] = $thumbnail_path;
                 }
             endwhile;
         endif;
-        foreach ($epg_thumbnails as $operator_group_key => $thumbnail_url) {
-            if(contains($fileTitle,$operator_group_key)){
+        foreach ($epg_thumbnails as $epg_month_key => $thumbnail_url) {
+            if(contains($fileTitle,$epg_month_key)){
                 $thumb = $thumbnail_url;
             }
         }
