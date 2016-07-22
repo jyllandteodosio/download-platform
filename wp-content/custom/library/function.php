@@ -169,6 +169,98 @@ if( !function_exists('getEPGThumbnail') ) {
     }
 }
 
+if( !function_exists('getDateRange')) {
+    /**
+     * Description:         Get an array of dates based on specified span of time
+     * @param  string $span Span of dates. e.g. This week dates = this-week 
+     * @return Array        Array of dates
+     */
+    function getDateRange($span = 'this-week'){
+        $beginning_date = date( 'Y-m-d');
+        $ending_date = date( 'Y-m-d');
+        if($span == 'this-week'){
+            $beginning_date = date( 'Y-m-d', strtotime( 'sunday last week' ) );
+            $ending_date = date( 'Y-m-d', strtotime( 'saturday this week' ) );
+        }
+
+        $begin = new DateTime( $beginning_date );
+        $end = new DateTime( $ending_date );
+        $end = $end->modify( '+1 day' ); 
+        $interval = new DateInterval('P1D');
+        $daterange = new DatePeriod($begin, $interval ,$end);
+
+        return $daterange;
+    }
+}
+
+if( !function_exists('getTribeEvents')) {
+    /**
+     * Description:                 Get all tribe events for the given date range.
+     * @param  Date $start_date     Start date
+     * @param  Date $end_date       End date
+     * @return Array                Array of events
+     */
+    function getTribeEvents($start_date,$end_date){
+        $start_date = $start_date != '' || $start_date != null ? $start_date : date("Y-m-d H:i");
+        $end_date   = $end_date != '' || $end_date != null ? $end_date : date("Y-m-d H:i");
+        $events = tribe_get_events( array(
+                    'start_date'   => $start_date,
+                    'end_date'     => $end_date
+                ) );
+
+        return $events;
+    }
+}
+
+if( !function_exists('getTribeEventsUniqueStartTime')) {
+    /**
+     * Decription                Will return an array of unique timeslot in ascending order 
+     * @param  Array $daterange  Range of dates to query
+     * @return Array             Array of unique timeslots
+     */
+    function getTribeEventsUniqueStartTime($daterange = array()){
+        $time_list_rebased = array();
+        if(!empty($daterange)):
+            $time_list = array();
+            foreach($daterange as $date):
+                $events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');
+                if(count($events) > 0):
+                    foreach ($events as $event) :
+                        $show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
+                        if(!in_array($show_start_time, $time_list)){
+                            array_push($time_list, $show_start_time);
+                        }
+                    endforeach;
+                endif;
+            endforeach;
+            asort($time_list);
+            $time_list_rebased = array_values($time_list);
+        endif;
+        return $time_list_rebased;
+    }
+}
+
+if( !function_exists('getFeaturedImageByTitle')) {
+    /**
+     * Decription                Will return an array of unique timeslot in ascending order 
+     * @param  Array $daterange  Range of dates to query
+     * @return Array             Array of unique timeslots
+     */
+    function getFeaturedImageByTitle($post_title = ""){
+        $current_blog_id = get_current_blog_id();
+        if ($current_blog_id != 1) switch_to_blog( 1 );
+        $show_id = getPostIdByTitle($post_title);
+        $background_image = "";
+        if($show_id != ''):
+            $image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_id), 'single-post-thumbnail' );
+            $background_image = $image[0] != "" ? "background-image: url('".$image[0]."')" : "";
+        endif;
+        if ($current_blog_id != 1) restore_current_blog();
+
+        return $background_image;
+    }
+}
+
 
 /**
  * Database functions for Custom Cart

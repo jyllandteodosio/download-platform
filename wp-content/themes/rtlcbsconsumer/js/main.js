@@ -95,6 +95,26 @@
         preventClicksPropagation: true,
    });
 
+   var scheduleSlideShow = new Swiper( '#schedule-slideshow', {
+      slidesPerView: 4,
+      spaceBetween: 0,
+      nextButton: '.today-nav.swiper-button-next',
+      prevButton: '.today-nav.swiper-button-prev',
+            breakpoints: {
+               640: {
+                  slidesPerView: 1
+               },
+               768: {
+                  slidesPerView: 3
+               }, 
+               992: {
+                  slidesPerView: 4
+               }
+            },
+        preventClicks: false, 
+        preventClicksPropagation: true,
+   });
+
    $( '.content-area .fixed-height' ).mCustomScrollbar({
       axis: 'y',
       'theme': 'red'
@@ -172,7 +192,7 @@
    });
    
    // $('#other-shows-slideshow .show-details').matchHeight();
-   $('.swiper-description').matchHeight();
+   // $('.swiper-description').matchHeight();
    $('.spotlight-details').matchHeight();
    $('.show-details .show-description').matchHeight();
    $('.spotlight-show-container .spotlight-excerpt').matchHeight();

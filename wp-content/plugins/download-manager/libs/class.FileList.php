@@ -570,7 +570,7 @@ class FileList
         $userID = get_current_user_id( );
         $ind = \WPDM_Crypt::Encrypt($sfile);
         $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
-        // $absolute_file_path = getFileAbsolutePathByURL($sfile);
+        $absolute_file_path = getFileAbsolutePathByURL($sfile);
         $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file)."&ind=".$ind : $sfile;
         $buttonText = !checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
         $isFileAdded = !checkFileInCart($fileID) ? "" : "disabled";
@@ -604,7 +604,7 @@ class FileList
         $fhtml .=           "<div class='file-thumb'>".$file_thumb."</div>";
         $fhtml .= "         <div class='show-meta'>";
         $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
-        // $fhtml .= "             <p class='file-size'>".wpdm_file_size($absolute_file_path)."</p>";
+        $fhtml .= "             <p class='file-size'>".wpdm_file_size($absolute_file_path)."</p>";
         $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID} $isFileClickable'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' >{$buttonText}</a>";
         $fhtml .= "         </div>";
         $fhtml .= "         <span class='close-btn' data-file-id='{$fileID}' data-user-id='{$userID}'><i class='fa fa-lg fa-times'></i></span>";

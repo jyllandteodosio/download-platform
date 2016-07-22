@@ -60,39 +60,38 @@ get_header( 'rtl' ); ?>
 	<div class="panel-body">
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
-				<?php if(function_exists('tribe_get_events')){
-					$events = tribe_get_events( array(
-					    'start_date'   => current_time('Y-m-d').' 00:00',
-    					'end_date'     => current_time('Y-m-d').' 23:59'
-					) );
+		<?php   if(function_exists('tribe_get_events')):
+					$events = getTribeEvents(current_time('Y-m-d').' 00:00',current_time('Y-m-d').' 23:59');
                     
 					if(count($events) > 0):
-						foreach ( $events as $event ):?>
-
-			                <div class="swiper-slide">
+						while ($event = current($events) ):
+						    $next_show = next($events);
+						    $background_image = getFeaturedImageByTitle($event->post_title);?>
+						    <div class="swiper-slide" title="<?php echo $event->post_title;?>">
 								<div class="time">
-									<span class="timeslot"><?php echo tribe_get_start_date($event->ID, false, Tribe__Date_Utils::TIMEFORMAT);//echo get_field('airing_schedule') ? date('h:i a',get_field('airing_schedule')) : date('h:i a');?></span>
+									<?php
+									$current_time = time();
+									$current_show_time = strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT));
+									$next_show_time = strtotime(tribe_get_start_date($next_show->ID, false, Tribe__Date_Utils::DBTIMEFORMAT));
+									if( $current_time>=$current_show_time && $current_time<=$next_show_time):?>
+										<span class="nowplaying"><div class="arrow-right"></div> Now Playing...</span>
+									<?php endif;?>
+									<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
 									<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
 								</div>
+								<p class="today-show-thumb-container" style="<?php echo $background_image;?>"></p>
 								<div class="swiper-description">
-									<span class="title"><?php echo $event->post_title; ?></span>
-									<p class="details"></p>
+									<span class="title"><?php echo mb_strimwidth($event->post_title,0,24,"...") ?></span>
 								</div>
-								<?php
-								switch_to_blog( 1 );
-								$show_id = getPostIdByTitle($event->post_title);
-								if($show_id != ''):
-									$image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_id), 'single-post-thumbnail' );?>
-									<p class="today-show-thumb-container" style="background: url('<?php echo $image[0];?>') no-repeat top center; background-size:cover;"></p>
-
-								<?php endif;
-								restore_current_blog();?>
+								
 							</div>
-			            <?php endforeach;
+
+							<?php
+						endwhile;
 			        else:?>
 			        	<span class="shows-message">No scheduled show today.</span>
-			        <?php endif; }
-				?>
+			<?php   endif; 
+				endif; ?>
 			</div>	
 		</div>	
 		<div class="today-nav swiper-button-prev"></div>
