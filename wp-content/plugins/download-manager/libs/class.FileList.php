@@ -396,6 +396,10 @@ class FileList
                     $allfiles_sorted[$key] = $allfiles[$key];
                 }
 
+                echo "<pre>";
+                print_r($allfiles_sorted);
+                echo "</pre>";
+
                 if (is_array($allfiles_sorted)) {
                     foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
                         $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
@@ -416,22 +420,22 @@ class FileList
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             //EPI
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // GAL
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['gallery']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['gallery']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // LOG
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos'] && $category == 'show'){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos'] && $category == 'show'){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // OTHERS
-                            if( !contains($fileTitle, self::$prefix_list['key_art']) && !contains($fileTitle, self::$prefix_list['episodic_stills']) && !contains($fileTitle, self::$prefix_list['gallery']) && !contains($fileTitle, self::$prefix_list['logos']) && $prefix == self::$prefix_list['others']){
+                            else if( !contains($fileTitle, self::$prefix_list['key_art']) && !contains($fileTitle, self::$prefix_list['episodic_stills']) && !contains($fileTitle, self::$prefix_list['gallery']) && !contains($fileTitle, self::$prefix_list['logos']) && $prefix == self::$prefix_list['others']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
@@ -439,17 +443,17 @@ class FileList
 
                             /* CHANNEL MATERIALS IMAGE ========================================================================== */
                             // CM_LOG
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_logos'] && $category == 'channel'){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_logos'] && $category == 'channel'){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // CM_ELE
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_elements']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_elements']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
                             // CM_OTH
-                            if( !contains($fileTitle, self::$prefix_list['channel_logos']) && !contains($fileTitle, self::$prefix_list['channel_elements']) && $prefix == self::$prefix_list['channel_others']){
+                            else if( !contains($fileTitle, self::$prefix_list['channel_logos']) && !contains($fileTitle, self::$prefix_list['channel_elements']) && $prefix == self::$prefix_list['channel_others']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
                             }
@@ -472,22 +476,22 @@ class FileList
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // EPK
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['transcripts']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['transcripts']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // FAC
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fact_sheet']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fact_sheet']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // FON
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fonts']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fonts']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // DOTH
-                            if( !contains($fileTitle, self::$prefix_list['synopses']) && !contains($fileTitle, self::$prefix_list['transcripts']) && !contains($fileTitle, self::$prefix_list['fact_sheet']) && !contains($fileTitle, self::$prefix_list['fonts']) && $prefix == self::$prefix_list['document_others']){
+                            else if( !contains($fileTitle, self::$prefix_list['synopses']) && !contains($fileTitle, self::$prefix_list['transcripts']) && !contains($fileTitle, self::$prefix_list['fact_sheet']) && !contains($fileTitle, self::$prefix_list['fonts']) && $prefix == self::$prefix_list['document_others']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
@@ -495,7 +499,7 @@ class FileList
 
                             /* SHOW DOCUMENTS ===================================================================================== */
                             // CM_EPG
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
                                 $files_counter++;
                                 $current_operator_group = get_current_user_operator_group();
                                 $generate_epg_panel = false;
@@ -522,22 +526,22 @@ class FileList
                                 }
                             }
                             // CM_HIG
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_highlights']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_highlights']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // CM_BRA
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_brand']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_brand']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // CM_BOI
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_boiler']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_boiler']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
                             // CM_CAT
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_catchup']){
+                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_catchup']){
                                 $files_counter++;
                                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
                             }
