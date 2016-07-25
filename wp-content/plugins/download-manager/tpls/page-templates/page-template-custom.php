@@ -87,9 +87,13 @@
         </div><!-- keyart-tab-contents -->
 
         <div class="show-items-wrap episodicstills-tab-contents">
+          <p class="show-category-note">[acf_category_note]</p>
           <form id='table-epi' class="table-files" method='post' >
             <div class="filter-wrap clear text-left">
               <input type='submit'  class="show-filter" value='Select All'>
+              <select name="episode_code" id="episode_code" style="color:#000">
+                [acf_episode_code]
+              </select>
             </div><!-- filter-wrap -->
           <div class="show-items">
             [file_category,epi]

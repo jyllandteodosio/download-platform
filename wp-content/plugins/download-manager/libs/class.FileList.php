@@ -453,9 +453,10 @@ class FileList
         // FORM : INPUT FIELDS - use by bulk add to cart
         $cart_data = prepare_cart_data(null,$fileTitle,$filepath,urlencode($downloadUrl),$postID,$fileType,$userID,$thumb);
         $serialized_cart = serialize($cart_data);
-        $fhtml .= "<input type='hidden' name='{$fileID}' value='{$serialized_cart}'>";
+        
         // FILE PANEL CONTAINER 
         $fhtml .= "     <div class='item {$fileID} {$isFileRemovable}'>";
+        $fhtml .= "         <input type='hidden' name='{$fileID}' value='{$serialized_cart}'>";
         $fhtml .=           "<div class='file-thumb'>".$file_thumb."</div>";
         $fhtml .= "         <div class='show-meta'>";
         $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
@@ -466,6 +467,18 @@ class FileList
         $fhtml .= "     </div>";
         $fhtml .= "     ";
        
+        return $fhtml;
+    }
+
+    public static function EpisodeCodes() {
+        $episode_code = get_field('episode_code');
+        $episode_code_list = explode(',',$episode_code);
+        $fhtml = '';
+        $fhtml .= "<option value='all'>All Episodes</option>";
+        foreach ($episode_code_list as $key => $value) {
+            $fhtml .= "<option value='".trim($value)."'>Episode ".trim($value)."</option>";
+        }
+        
         return $fhtml;
     }
 
@@ -486,6 +499,22 @@ class FileList
                                     var cartnonce = '{$cartnonce}';
                                     var addedText = \"Added&nbsp;&nbsp;<i class='fa fa-check'></i>\";
                                     var addText = '".__("Add to Cart","wpdmpro")."';
+                                    
+                                    jQuery( '#episode_code' )
+                                      .change(function () {
+                                        var str = '';
+                                        jQuery( '#episode_code option:selected' ).each(function() {
+                                          str += jQuery( this ).val();
+                                        });
+                                        if(str == 'all') {
+                                            showAllShowItems();
+                                            console.log('show all');
+                                        }else {
+                                            showAllShowItems();
+                                            jQuery('.episodicstills-tab-contents .show-items .item:not(:contains(\"Epi'+str+'-\"))').hide();
+                                        }
+                                    });
+                            
                                     jQuery('.table-files').submit(function(event) {
                                         event.preventDefault();
                                         var form = jQuery(this);
@@ -590,6 +619,10 @@ class FileList
                                                 jQuery('.show-cart span.counter').text(response);
                                             }
                                         );
+                                    }
+
+                                    function showAllShowItems(){
+                                        jQuery('.episodicstills-tab-contents .show-items .item').show();
                                     }
                                 });
                             </script>";
