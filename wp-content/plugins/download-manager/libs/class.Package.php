@@ -163,7 +163,7 @@ class Package {
                     $allfiles_sorted[$key] = $allfiles[$key];
                 }
 
-
+                /* For Promo Files */
                 if (is_array($allpromofiles)) {
                     foreach ($allpromofiles as $fileID => $sfileOriginal) {
                         $sfile = $sfileOriginal['attached_file'];
@@ -178,7 +178,7 @@ class Package {
                     }
                 }
 
-               
+               /* For all WPDM Files */
                 if (is_array($allfiles_sorted)) {
                     foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
                         $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
@@ -213,9 +213,6 @@ class Package {
                                     $categorized_files[self::$prefix_list['others']][$fileID] = $sfileOriginal;
                                 }
                                  /* END SHOW IMAGES ======================================================================= */
-                                // else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_logos']){
-                                //     $categorized_files[self::$prefix_list['channel_logos']][$fileID] = $sfileOriginal;
-                                // }
                                 // CM_ELE
                                 else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_elements']){
                                     $categorized_files[self::$prefix_list['channel_elements']][$fileID] = $sfileOriginal;
@@ -322,7 +319,6 @@ class Package {
             if(strpos("_".$template,'[file_category,cm_cat]')) $vars['file_category,cm_cat'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_catchup']], "catch","channel",$file,$specific_thumbnails,'document', $fileinfo);
             // Channel Materials - Images
             if(strpos("_".$template,'[file_category,cm_log]')) $vars['file_category,cm_log'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['logos']], "logo","channel",$file,$specific_thumbnails,'image', $fileinfo);
-            // if(strpos("_".$template,'[file_category,cm_log]')) $vars['file_category,cm_log'] = \WPDM\libs\FileList::CategorizedFileList($vars, "logo", 'channel');
             if(strpos("_".$template,'[file_category,cm_ele]')) $vars['file_category,cm_ele'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_elements']], "elements","channel",$file,$specific_thumbnails,'image', $fileinfo);
             if(strpos("_".$template,'[file_category,cm_oth]')) $vars['file_category,cm_oth'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_others']], "cm_oth","channel",$file,$specific_thumbnails,'image', $fileinfo);
             
