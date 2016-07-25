@@ -7,6 +7,46 @@ class Package {
     public $ID;
     public $PackageData = array();
 
+        private static $prefix_list = array(
+                                    /* PREFIX FOR SHOW IMAGES*/
+                                    'key_art'           => 'key', 
+                                    'episodic_stills'   => 'epi', 
+                                    'gallery'           => 'gallery', 
+                                    'logos'             => 'logo',
+                                    'others'            => 'oth',
+                                    /* PREFIX FOR CHANNEL MATERIALS IMAGE*/
+                                    'channel_logos'     => 'logo', 
+                                    'channel_elements'  => 'elements', 
+                                    'channel_others'    => 'cm_oth', 
+                                    /* PREFIX FOR SHOW DOCUMENTS */
+                                    'synopses'          => 'synopsis',
+                                    'transcripts'       => 'trans',
+                                    'fact_sheet'        => 'fact',
+                                    'fonts'             => 'font',
+                                    'document_others'   => 'doth',
+                                    /* PROMO */
+                                    'promos'            => 'promo',
+                                    /* PREFIX FOR CHANNEL MATERIALS DOCUMENT */
+                                    'channel_epg'       => 'epg',
+                                    'channel_highlights'=> 'highlights',
+                                    'channel_brand'     => 'brand',
+                                    'channel_boiler'    => 'boiler',
+                                    'channel_catchup'   => 'catch'
+                                    );
+         private static $operator_prefix_list = array(
+                                    /* PREFIX FOR SHOW IMAGES*/
+                                    // 'singtel'           => 'Singtel', 
+                                    // 'starhub'           => 'StarHub', 
+                                    // 'nowtv'             => 'nowTV', 
+                                    // 'leeco'             => 'LeEco',
+                                    // 'truevisions'       => 'TrueVisions',
+                                    // 'hypptv'            => 'HyppTV',
+                                    // 'kvisions'          => 'K-Visions',
+                                    // 'skycable'          => 'SKYCable',
+                                    'affiliate'         => 'Affiliate'
+                                    );
+    private static $specific_thumbs_prefix = 'SPECIFICTHUMBS';
+
     function __construct($ID = null){
         global $post;
         if(!$ID && $post->post_type == 'wpdmpro') $ID = $post->ID;
@@ -74,32 +114,222 @@ class Package {
         $vars['page_url'] = get_permalink($vars['ID']);
 
         // Added by Dianne D.R. - custom shortcodes for file segregations
-      
+        
+        $file['files'] = maybe_unserialize($vars['files']);
+        $fhtml = '';
+        $files_counter = 0;
+
+        $prefix_list_image = array(
+                                    'key_art'           => 'key', 
+                                    'episodic_stills'   => 'epi', 
+                                    'gallery'           => 'gallery', 
+                                    'logos'             => 'logo',
+                                    'others'            => 'oth',
+                                    'channel_logos'     => 'logo', 
+                                    'channel_elements'  => 'elements', 
+                                    'channel_others'    => 'cm_oth');
+        $prefix_list_document = array(
+                                    'synopses'          => 'synopsis',
+                                    'transcripts'       => 'trans',
+                                    'fact_sheet'        => 'fact',
+                                    'fonts'             => 'font',
+                                    'document_others'   => 'doth',
+                                    /* PREFIX FOR CHANNEL MATERIALS DOCUMENT */
+                                    'channel_epg'       => 'epg',
+                                    'channel_highlights'=> 'highlights',
+                                    'channel_brand'     => 'brand',
+                                    'channel_boiler'    => 'boiler',
+                                    'channel_catchup'   => 'catch');
+        $categorized_files = array();
+        if(checkPackageDownloadAvailabilityDate($vars['publish_date'], $vars['expire_date'])){
+             if (count($file['files']) > 0) {
+                $fileinfo = isset($vars['fileinfo']) ? $vars['fileinfo'] : array();
+                $allfiles = is_array($file['files']) ? $file['files'] : array();
+                $allpromofiles = have_rows( "add_promo_files" ) ? get_field( "add_promo_files" ) : array();
+                // $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
+                $specific_thumbnails = array(); /* Thumbnails container for TIF files */
+
+                /* Sort files by file title */
+                $filename_sort = array();
+                foreach ($allfiles as $key => $row) {
+                    if (!contains($fileinfo[$key]['title'],self::$specific_thumbs_prefix))
+                        $filename_sort[$key] = $fileinfo[$key]['title'];
+                    else
+                        $specific_thumbnails[$key]  = $fileinfo[$key]['title'];
+                }
+                asort($filename_sort);
+
+                $allfiles_sorted = array();
+                foreach ($filename_sort as $key => $value) {
+                    $allfiles_sorted[$key] = $allfiles[$key];
+                }
+
+
+                if (is_array($allpromofiles)) {
+                    foreach ($allpromofiles as $fileID => $sfileOriginal) {
+                        $sfile = $sfileOriginal['attached_file'];
+                        $fileTitle = $sfileOriginal['file_name'];
+                        $fileID = $sfileOriginal['id'];
+                        $thumb = "";
+                        $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
+                        if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($sfileOriginal['promo_start'],$sfileOriginal['promo_end'], 'current') ) {
+                            $thumb = $sfileOriginal['thumbnail'];
+                            $categorized_files[self::$prefix_list['promos']][$fileID] = $sfileOriginal;
+                        }
+                    }
+                }
+
+               
+                if (is_array($allfiles_sorted)) {
+                    foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
+                        $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
+                        $fileTitle = $prefix != self::$prefix_list['promos'] ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
+                        // $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
+                        // $thumb = "";
+                        // $ind = \WPDM_Crypt::Encrypt($sfile);
+                        $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
+
+                        if(checkIfImageFile($sfile, 'image')){
+                            /* SHOW IMAGES ========================================================================== */
+                            foreach ($prefix_list_image as $prefix_name => $prefix) {
+                                // KEY
+                                if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
+                                    $categorized_files[self::$prefix_list['key_art']][$fileID] = $sfileOriginal;
+                                }
+                                // EPI
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
+                                    $categorized_files[self::$prefix_list['episodic_stills']][$fileID] = $sfileOriginal;
+                                }
+                                // GAL
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['gallery']){
+                                    $categorized_files[self::$prefix_list['gallery']][$fileID] = $sfileOriginal;
+                                }
+                                // LOG
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos']){
+                                    $categorized_files[self::$prefix_list['logos']][$fileID] = $sfileOriginal;
+                                }
+                                // OTHERS
+                                else if( !contains($fileTitle, self::$prefix_list['key_art']) 
+                                    && !contains($fileTitle, self::$prefix_list['episodic_stills']) 
+                                    && !contains($fileTitle, self::$prefix_list['gallery']) 
+                                    && !contains($fileTitle, self::$prefix_list['logos']) 
+                                    && $prefix == self::$prefix_list['others']){
+                                    $categorized_files[self::$prefix_list['others']][$fileID] = $sfileOriginal;
+                                }
+                                 /* END SHOW IMAGES ======================================================================= */
+                                // else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_logos']){
+                                //     $categorized_files[self::$prefix_list['channel_logos']][$fileID] = $sfileOriginal;
+                                // }
+                                // CM_ELE
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_elements']){
+                                    $categorized_files[self::$prefix_list['channel_elements']][$fileID] = $sfileOriginal;
+                                }
+                                // CM_OTH
+                                else if( !contains($fileTitle, self::$prefix_list['channel_logos']) && !contains($fileTitle, self::$prefix_list['channel_elements']) && $prefix == self::$prefix_list['channel_others']){
+                                    $categorized_files[self::$prefix_list['channel_others']][$fileID] = $sfileOriginal;
+                                }     
+                            }
+                            
+                        } else{
+                            foreach ($prefix_list_document as $prefix_name => $prefix) {
+                                // SYN
+                                if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['synopses']){
+                                    $categorized_files[self::$prefix_list['synopses']][$fileID] = $sfileOriginal;
+                                }
+                                // EPK
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['transcripts']){
+                                    $categorized_files[self::$prefix_list['transcripts']][$fileID] = $sfileOriginal;
+                                }
+                                // FAC
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fact_sheet']){
+                                    $categorized_files[self::$prefix_list['fact_sheet']][$fileID] = $sfileOriginal;
+                                }
+                                // FON
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fonts']){
+                                    $categorized_files[self::$prefix_list['fonts']][$fileID] = $sfileOriginal;
+                                }
+                                // DOTH
+                                else if( !contains($fileTitle, self::$prefix_list['synopses']) && !contains($fileTitle, self::$prefix_list['transcripts']) && !contains($fileTitle, self::$prefix_list['fact_sheet']) && !contains($fileTitle, self::$prefix_list['fonts']) && $prefix == self::$prefix_list['document_others']){
+                                    $categorized_files[self::$prefix_list['document_others']][$fileID] = $sfileOriginal;
+                                }
+                                // CM_EPG
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
+                                    $current_operator_group = get_current_user_operator_group();
+                                    $generate_epg_panel = false;
+                                    $thumb = getEPGThumbnail($fileTitle);
+
+                                    if ( get_current_user_role() == "administrator"){
+                                        $generate_epg_panel = true;
+                                    }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
+                                        $exclusive_epg_check = 0;
+                                        foreach ($allfiles_sorted as $key => $value) {
+                                            if(contains($fileinfo[$key]['title'], $current_operator_group)){
+                                                $exclusive_epg_check = 1;
+                                                break;
+                                            }
+                                        }
+                                        if(!$exclusive_epg_check){
+                                            $generate_epg_panel = true;
+                                        }
+                                    }else if(contains($fileTitle, $current_operator_group)){
+                                        $generate_epg_panel = true;
+                                    }
+                                    if($generate_epg_panel){
+                                        $categorized_files[self::$prefix_list['channel_epg']][$fileID] = $sfileOriginal;
+                                    }
+                                }
+                                // CM_HIG
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_highlights']){
+                                    $categorized_files[self::$prefix_list['channel_highlights']][$fileID] = $sfileOriginal;
+                                }
+                                // CM_BRA
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_brand']){
+                                    $categorized_files[self::$prefix_list['channel_brand']][$fileID] = $sfileOriginal;
+                                }
+                                // CM_BOI
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_boiler']){
+                                    $categorized_files[self::$prefix_list['channel_boiler']][$fileID] = $sfileOriginal;
+                                }
+                                // CM_CAT
+                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_catchup']){
+                                    $categorized_files[self::$prefix_list['channel_catchup']][$fileID] = $sfileOriginal;
+                                }
+                            }
+                        }
+
+
+                    }
+                }
+
+             }
+        }
+
         // Shows - Images
-        if(strpos("_".$template,'[file_category,key]')) $vars['file_category,key'] = \WPDM\libs\FileList::CategorizedFileList($vars, "key");
-        if(strpos("_".$template,'[file_category,epi]')) $vars['file_category,epi'] = \WPDM\libs\FileList::CategorizedFileList($vars, "epi");
-        if(strpos("_".$template,'[file_category,gal]')) $vars['file_category,gal'] = \WPDM\libs\FileList::CategorizedFileList($vars, "gallery");
-        if(strpos("_".$template,'[file_category,log]')) $vars['file_category,log'] = \WPDM\libs\FileList::CategorizedFileList($vars, "logo");
-        if(strpos("_".$template,'[file_category,oth]')) $vars['file_category,oth'] = \WPDM\libs\FileList::CategorizedFileList($vars, "oth");
+        if(strpos("_".$template,'[file_category,key]')) $vars['file_category,key'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['key_art']], "key","show",$file,$specific_thumbnails,'image', $fileinfo);
+        if(strpos("_".$template,'[file_category,epi]')) $vars['file_category,epi'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['episodic_stills']], "epi","show",$file,$specific_thumbnails,'image', $fileinfo);
+        if(strpos("_".$template,'[file_category,gal]')) $vars['file_category,gal'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['gallery']], "gallery","show",$file,$specific_thumbnails,'image', $fileinfo);
+        if(strpos("_".$template,'[file_category,log]')) $vars['file_category,log'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['logos']], "logo","show",$file,$specific_thumbnails,'image', $fileinfo);
+        if(strpos("_".$template,'[file_category,oth]')) $vars['file_category,oth'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['others']], "oth","show",$file,$specific_thumbnails,'image', $fileinfo);
         // Shows - Documents
-        if(strpos("_".$template,'[file_category,syn]')) $vars['file_category,syn'] = \WPDM\libs\FileList::CategorizedFileList($vars, "synopsis");
-        if(strpos("_".$template,'[file_category,epk]')) $vars['file_category,epk'] = \WPDM\libs\FileList::CategorizedFileList($vars, "trans");
-        if(strpos("_".$template,'[file_category,fac]')) $vars['file_category,fac'] = \WPDM\libs\FileList::CategorizedFileList($vars, "fact");
-        if(strpos("_".$template,'[file_category,fon]')) $vars['file_category,fon'] = \WPDM\libs\FileList::CategorizedFileList($vars, "font");
-        if(strpos("_".$template,'[file_category,doth]')) $vars['file_category,doth'] = \WPDM\libs\FileList::CategorizedFileList($vars, "doth");
+        if(strpos("_".$template,'[file_category,syn]')) $vars['file_category,syn'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['synopses']], "synopsis","show",$file,$specific_thumbnails,'document', $fileinfo);
+        if(strpos("_".$template,'[file_category,epk]')) $vars['file_category,epk'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['transcripts']], "trans","show",$file,$specific_thumbnails,'document', $fileinfo);
+        if(strpos("_".$template,'[file_category,fac]')) $vars['file_category,fac'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['fact_sheet']], "fact","show",$file,$specific_thumbnails,'document', $fileinfo);
+        if(strpos("_".$template,'[file_category,fon]')) $vars['file_category,fon'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['fonts']], "font","show",$file,$specific_thumbnails,'document', $fileinfo);
+        if(strpos("_".$template,'[file_category,doth]')) $vars['file_category,doth'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['document_others']], "doth","show",$file,$specific_thumbnails,'document', $fileinfo);
         // Shows - Promos
-        if(strpos("_".$template,'[file_category,promo]')) $vars['file_category,promo'] = \WPDM\libs\FileList::CategorizedFileList($vars, "promo");
+        if(strpos("_".$template,'[file_category,promo]')) $vars['file_category,promo'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['promos']], "promo","show",$file,$specific_thumbnails,self::$prefix_list['promos'], $fileinfo);
 
         // Channel Materials - Documents
-        if(strpos("_".$template,'[file_category,cm_epg]')) $vars['file_category,cm_epg'] = \WPDM\libs\FileList::CategorizedFileList($vars, "epg");
-        if(strpos("_".$template,'[file_category,cm_hig]')) $vars['file_category,cm_hig'] = \WPDM\libs\FileList::CategorizedFileList($vars, "highlights");
-        if(strpos("_".$template,'[file_category,cm_bra]')) $vars['file_category,cm_bra'] = \WPDM\libs\FileList::CategorizedFileList($vars, "brand");
-        if(strpos("_".$template,'[file_category,cm_boi]')) $vars['file_category,cm_boi'] = \WPDM\libs\FileList::CategorizedFileList($vars, "boiler");
-        if(strpos("_".$template,'[file_category,cm_cat]')) $vars['file_category,cm_cat'] = \WPDM\libs\FileList::CategorizedFileList($vars, "catch");
+        if(strpos("_".$template,'[file_category,cm_epg]')) $vars['file_category,cm_epg'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_epg']], "epg","channel",$file,$specific_thumbnails,'document', $fileinfo);
+        if(strpos("_".$template,'[file_category,cm_hig]')) $vars['file_category,cm_hig'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_highlights']], "highlights","channel",$file,$specific_thumbnails,'document', $fileinfo);
+        if(strpos("_".$template,'[file_category,cm_bra]')) $vars['file_category,cm_bra'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_brand']], "brand","channel",$file,$specific_thumbnails,'document', $fileinfo);
+        if(strpos("_".$template,'[file_category,cm_boi]')) $vars['file_category,cm_boi'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_boiler']], "boiler","channel",$file,$specific_thumbnails,'document', $fileinfo);
+        if(strpos("_".$template,'[file_category,cm_cat]')) $vars['file_category,cm_cat'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_catchup']], "catch","channel",$file,$specific_thumbnails,'document', $fileinfo);
         // Channel Materials - Images
-        if(strpos("_".$template,'[file_category,cm_log]')) $vars['file_category,cm_log'] = \WPDM\libs\FileList::CategorizedFileList($vars, "logo", 'channel');
-        if(strpos("_".$template,'[file_category,cm_ele]')) $vars['file_category,cm_ele'] = \WPDM\libs\FileList::CategorizedFileList($vars, "elements");
-        if(strpos("_".$template,'[file_category,cm_oth]')) $vars['file_category,cm_oth'] = \WPDM\libs\FileList::CategorizedFileList($vars, "cm_oth");
+        if(strpos("_".$template,'[file_category,cm_log]')) $vars['file_category,cm_log'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['logos']], "logo","channel",$file,$specific_thumbnails,'image', $fileinfo);
+        // if(strpos("_".$template,'[file_category,cm_log]')) $vars['file_category,cm_log'] = \WPDM\libs\FileList::CategorizedFileList($vars, "logo", 'channel');
+        if(strpos("_".$template,'[file_category,cm_ele]')) $vars['file_category,cm_ele'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_elements']], "elements","channel",$file,$specific_thumbnails,'image', $fileinfo);
+        if(strpos("_".$template,'[file_category,cm_oth]')) $vars['file_category,cm_oth'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_others']], "cm_oth","channel",$file,$specific_thumbnails,'image', $fileinfo);
         
 
         $vars['searchform'] = \WPDM\libs\FileList::getSearchForm();

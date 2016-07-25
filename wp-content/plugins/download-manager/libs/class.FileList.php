@@ -373,188 +373,80 @@ class FileList
      * @return string
      * @usage Generate file list with preview - key art images
      */
-    public static function CategorizedFileList($file, $prefix = null, $category = 'show'){
-        $file['files'] = maybe_unserialize($file['files']);
-        $fhtml = '';
-        $files_counter = 0;
-        if(checkPackageDownloadAvailabilityDate($file['publish_date'], $file['expire_date'])){
-            if (count($file['files']) > 0) {
-                $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
-                $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
-                $specific_thumbnails = array(); /* Thumbnails container for TIF files */
-                /* Sort files by file title */
-                $filename_sort = array();
-                foreach ($allfiles as $key => $row) {
-                    if (!contains($fileinfo[$key]['title'],self::$specific_thumbs_prefix))
-                        $filename_sort[$key] = $fileinfo[$key]['title'];
-                    else
-                        $specific_thumbnails[$key]  = $fileinfo[$key]['title'];
-                }
-                asort($filename_sort);
-                $allfiles_sorted = array();
-                foreach ($filename_sort as $key => $value) {
-                    $allfiles_sorted[$key] = $allfiles[$key];
-                }
+    public static function CategorizedFileList($allfiles_sorted, $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null){
+        // $file['files'] = maybe_unserialize($file['files']);
+        // $fhtml = '';
+        // $files_counter = 0;
+        // if(checkPackageDownloadAvailabilityDate($file['publish_date'], $file['expire_date'])){
+            // if (count($file['files']) > 0) {
+                // $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
+                // $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
+                // $specific_thumbnails = array(); /* Thumbnails container for TIF files */
+                // /* Sort files by file title */
+                // $filename_sort = array();
+                // foreach ($allfiles as $key => $row) {
+                //     if (!contains($fileinfo[$key]['title'],self::$specific_thumbs_prefix))
+                //         $filename_sort[$key] = $fileinfo[$key]['title'];
+                //     else
+                //         $specific_thumbnails[$key]  = $fileinfo[$key]['title'];
+                // }
+                // asort($filename_sort);
+                // $allfiles_sorted = array();
+                // foreach ($filename_sort as $key => $value) {
+                //     $allfiles_sorted[$key] = $allfiles[$key];
+                // }
+                // echo "dinne";
+                
+                // echo "<pre>";
+                // print_r($allfiles_sorted);
+                // echo "</pre>";
 
-                echo "<pre>";
-                print_r($allfiles_sorted);
-                echo "</pre>";
-
+                $files_counter = count($allfiles_sorted);
                 if (is_array($allfiles_sorted)) {
                     foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
                         $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
-                        $fileTitle = $prefix != self::$prefix_list['promos'] ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
+                        // echo "<br>this--".(isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '');
+                        $fileTitle = $prefix != self::$prefix_list['promos'] ? 
+                                            isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
+                                                $fileinfo[$sfile]['title']:
+                                                (isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? 
+                                                    $fileinfo[$fileID]['title']:
+                                                    preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  
+                                            :  $sfileOriginal['file_name'];
+
+
                         $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
                         $thumb = "";
                         $ind = \WPDM_Crypt::Encrypt($sfile);
                         $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
-
-                        if(checkIfImageFile($sfile, 'image') && $prefix != self::$prefix_list['promos']){
+                        // echo "<br>".$fileTitle;
+                        // if(checkIfImageFile($sfile, 'image') && $prefix != self::$prefix_list['promos']){
                             $filepath = wpdm_download_url($file) . "&ind=" . $ind;
-                            $thumb = getImageThumbnail($sfile, $specific_thumbnails);
+                            $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
 
                             /* SHOW IMAGES ========================================================================== */
                             //KEY
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
-                            }
-                            //EPI
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
-                            }
-                            // GAL
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['gallery']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
-                            }
-                            // LOG
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos'] && $category == 'show'){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
-                            }
-                            // OTHERS
-                            else if( !contains($fileTitle, self::$prefix_list['key_art']) && !contains($fileTitle, self::$prefix_list['episodic_stills']) && !contains($fileTitle, self::$prefix_list['gallery']) && !contains($fileTitle, self::$prefix_list['logos']) && $prefix == self::$prefix_list['others']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
-                            }
-                            /* END SHOW IMAGES ======================================================================= */
-
-                            /* CHANNEL MATERIALS IMAGE ========================================================================== */
-                            // CM_LOG
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_logos'] && $category == 'channel'){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
-                            }
-                            // CM_ELE
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_elements']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
-                            }
-                            // CM_OTH
-                            else if( !contains($fileTitle, self::$prefix_list['channel_logos']) && !contains($fileTitle, self::$prefix_list['channel_elements']) && $prefix == self::$prefix_list['channel_others']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
-                            }
+                            // if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
+                            //     $files_counter++;
+                            //     $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
+                            // }
+                            // //EPI
+                            // else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
+                            //     $files_counter++;
+                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file);
+                            // }
+                           
                             
-                        }
-                        else if ( $prefix == self::$prefix_list['promos'] ){
-                            // $files_counter++;
-                            if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($sfileOriginal['promo_start'],$sfileOriginal['promo_end'], 'current') ) {
-                                $files_counter++;
-                                $thumb = $sfileOriginal['thumbnail'];
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, self::$prefix_list['promos'], $thumb);
-                            }
-                        }
-                        else{
-                            /* SHOW DOCUMENTS ===================================================================================== */
-                            // $files_counter++;
-                            // SYN
-                            if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['synopses']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
-                            }
-                            // EPK
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['transcripts']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
-                            }
-                            // FAC
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fact_sheet']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
-                            }
-                            // FON
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fonts']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
-                            }
-                            // DOTH
-                            else if( !contains($fileTitle, self::$prefix_list['synopses']) && !contains($fileTitle, self::$prefix_list['transcripts']) && !contains($fileTitle, self::$prefix_list['fact_sheet']) && !contains($fileTitle, self::$prefix_list['fonts']) && $prefix == self::$prefix_list['document_others']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
-                            }
-                            /* END SHOW DOCUMENTS ================================================================================= */
-
-                            /* SHOW DOCUMENTS ===================================================================================== */
-                            // CM_EPG
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
-                                $files_counter++;
-                                $current_operator_group = get_current_user_operator_group();
-                                $generate_epg_panel = false;
-                                $thumb = getEPGThumbnail($fileTitle);
-
-                                if ( get_current_user_role() == "administrator"){
-                                    $generate_epg_panel = true;
-                                }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
-                                    $exclusive_epg_check = 0;
-                                    foreach ($allfiles_sorted as $key => $value) {
-                                        if(contains($fileinfo[$key]['title'], $current_operator_group)){
-                                            $exclusive_epg_check = 1;
-                                            break;
-                                        }
-                                    }
-                                    if(!$exclusive_epg_check){
-                                        $generate_epg_panel = true;
-                                    }
-                                }else if(contains($fileTitle, $current_operator_group)){
-                                    $generate_epg_panel = true;
-                                }
-                                if($generate_epg_panel){
-                                    $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', $thumb, $file);
-                                }
-                            }
-                            // CM_HIG
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_highlights']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
-                            }
-                            // CM_BRA
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_brand']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
-                            }
-                            // CM_BOI
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_boiler']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
-                            }
-                            // CM_CAT
-                            else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_catchup']){
-                                $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'document', null, $file);
-                            }
-                            /* END SHOW DOCUMENTS ================================================================================= */
-                        }
+                        // }
+                       
                     }
 
                 }
-            }
+            // }
 
-        }else{
-            $fhtml .= "This package is not available for download";
-        }
+        // }else{
+        //     $fhtml .= "This package is not available for download";
+        // }
         if ($files_counter > 0){
             return $fhtml;
         }else {
