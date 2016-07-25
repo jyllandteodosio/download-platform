@@ -427,16 +427,22 @@ class FileList
         
         /* Check if EPG file - will assign a special thumbnail if ever */
         if(contains($sfile,self::$prefix_list['channel_epg'])){
-            $thumb_path = getFileAbsolutePathByURL($thumb);
+            $thumb_path = getEPGThumbnail($fileTitle);
         }
         else {
             $thumb_path = WPDM_CACHE_DIR.basename($thumb);
         }
 
-        /* Will assign a thumbnail preview */
+        /* Will assign a thumbnail preview for image files */
         if($thumb!= "" && file_exists($thumb_path)){
             $file_thumb = '<img src="'.$thumb.'" alt="'.$fileTitle.'" title="'.$fileTitle.'" />';
-        }else{
+        }
+        /* Will assign a thumbnail preview For EPG Files */
+        else if(contains($sfile,self::$prefix_list['channel_epg']) && file_exists(getFileAbsolutePathByURL($thumb_path))){
+            $file_thumb = '<img src="'.$thumb_path.'" alt="'.$fileTitle.'" title="'.$fileTitle.'" />';
+        }
+        /* Will assign a thumbnail preview for non image files */
+        else{
             $ext = strtolower(getFileExtension($sfile));
             $thumb_path =  WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
             $default_thumb_path =  WPDM_BASE_URL.'assets/file-type-icons/_blank.png';

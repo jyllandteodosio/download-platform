@@ -249,7 +249,6 @@ class Package {
                                 else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
                                     $current_operator_group = get_current_user_operator_group();
                                     $generate_epg_panel = false;
-                                    $thumb = getEPGThumbnail($fileTitle);
 
                                     if ( get_current_user_role() == "administrator"){
                                         $generate_epg_panel = true;
@@ -267,6 +266,7 @@ class Package {
                                     }else if(contains($fileTitle, $current_operator_group)){
                                         $generate_epg_panel = true;
                                     }
+                                    // $sfileOriginal['thumbnail'] = $thumb;
                                     if($generate_epg_panel){
                                         $categorized_files[self::$prefix_list['channel_epg']][$fileID] = $sfileOriginal;
                                     }
