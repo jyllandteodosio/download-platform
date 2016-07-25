@@ -374,79 +374,30 @@ class FileList
      * @usage Generate file list with preview - key art images
      */
     public static function CategorizedFileList($allfiles_sorted, $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null){
-        // $file['files'] = maybe_unserialize($file['files']);
-        // $fhtml = '';
-        // $files_counter = 0;
-        // if(checkPackageDownloadAvailabilityDate($file['publish_date'], $file['expire_date'])){
-            // if (count($file['files']) > 0) {
-                // $fileinfo = isset($file['fileinfo']) ? $file['fileinfo'] : array();
-                // $allfiles = $prefix != self::$prefix_list['promos'] ? is_array($file['files']) ? $file['files'] : array() : get_field( "add_promo_files" );
-                // $specific_thumbnails = array(); /* Thumbnails container for TIF files */
-                // /* Sort files by file title */
-                // $filename_sort = array();
-                // foreach ($allfiles as $key => $row) {
-                //     if (!contains($fileinfo[$key]['title'],self::$specific_thumbs_prefix))
-                //         $filename_sort[$key] = $fileinfo[$key]['title'];
-                //     else
-                //         $specific_thumbnails[$key]  = $fileinfo[$key]['title'];
-                // }
-                // asort($filename_sort);
-                // $allfiles_sorted = array();
-                // foreach ($filename_sort as $key => $value) {
-                //     $allfiles_sorted[$key] = $allfiles[$key];
-                // }
-                // echo "dinne";
-                
-                // echo "<pre>";
-                // print_r($allfiles_sorted);
-                // echo "</pre>";
 
-                $files_counter = count($allfiles_sorted);
-                if (is_array($allfiles_sorted)) {
-                    foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
-                        $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
-                        // echo "<br>this--".(isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '');
-                        $fileTitle = $prefix != self::$prefix_list['promos'] ? 
-                                            isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
-                                                $fileinfo[$sfile]['title']:
-                                                (isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? 
-                                                    $fileinfo[$fileID]['title']:
-                                                    preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  
-                                            :  $sfileOriginal['file_name'];
+        $files_counter = count($allfiles_sorted);
+        if (is_array($allfiles_sorted)) {
+            foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
+                $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
+                $fileTitle = $prefix != self::$prefix_list['promos'] ? 
+                                    isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
+                                        $fileinfo[$sfile]['title']:
+                                        (isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? 
+                                            $fileinfo[$fileID]['title']:
+                                            preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  
+                                    :  $sfileOriginal['file_name'];
 
 
-                        $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
-                        $thumb = "";
-                        $ind = \WPDM_Crypt::Encrypt($sfile);
-                        $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
-                        // echo "<br>".$fileTitle;
-                        // if(checkIfImageFile($sfile, 'image') && $prefix != self::$prefix_list['promos']){
-                            $filepath = wpdm_download_url($file) . "&ind=" . $ind;
-                            $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
+                $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
+                $thumb = "";
+                $ind = \WPDM_Crypt::Encrypt($sfile);
+                $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
+                $filepath = wpdm_download_url($file) . "&ind=" . $ind;
+                $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
+                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file);              
+            }
+        }
 
-                            /* SHOW IMAGES ========================================================================== */
-                            //KEY
-                            // if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
-                            //     $files_counter++;
-                            //     $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, 'image', $thumb, $file);
-                            // }
-                            // //EPI
-                            // else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
-                            //     $files_counter++;
-                                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file);
-                            // }
-                           
-                            
-                        // }
-                       
-                    }
-
-                }
-            // }
-
-        // }else{
-        //     $fhtml .= "This package is not available for download";
-        // }
         if ($files_counter > 0){
             return $fhtml;
         }else {
@@ -487,7 +438,9 @@ class FileList
             $file_thumb = '<img src="'.$thumb.'" alt="'.$fileTitle.'" title="'.$fileTitle.'" />';
         }else{
             $ext = strtolower(getFileExtension($sfile));
-            $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
+            $thumb_path =  WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
+            $default_thumb_path =  WPDM_BASE_URL.'assets/file-type-icons/_blank.png';
+            $thumb = file_exists(getFileAbsolutePathByURL($thumb_path)) ? $thumb_path : $default_thumb_path;
             $file_thumb = "<img class='file-ico' src='{$thumb}' alt='{$fileTitle}' title='{$fileTitle}' />";
         }
 

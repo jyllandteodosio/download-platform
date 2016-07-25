@@ -84,8 +84,8 @@ if( !function_exists('getFileAbsolutePathByURL') ) {
      */
     function getFileAbsolutePathByURL($url_path) {
         $current_absolute_path = dirname(__FILE__);
-        // $current_absolute_path_segments = explode('/wp-content', $current_absolute_path); /* For live server */
-        $current_absolute_path_segments = explode('\wp-content', $current_absolute_path); /* For Local Only*/
+        $current_absolute_path_segments = explode('/wp-content', $current_absolute_path); /* For live server */
+        // $current_absolute_path_segments = explode('\wp-content', $current_absolute_path); /* For Local Only*/
         $base_url = get_site_url();
         // Replace url path to absolute path 
         $full_absolute_path = str_replace($base_url,$current_absolute_path_segments[0],$url_path);
