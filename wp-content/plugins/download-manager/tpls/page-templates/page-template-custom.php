@@ -91,8 +91,8 @@
           <form id='table-epi' class="table-files" method='post' >
             <div class="filter-wrap clear text-left">
               <input type='submit'  class="show-filter" value='Select All'>
-              <select name="episode_code" id="episode_code" style="color:#000">
-                [acf_episode_code]
+              <select name="episode_code" id="episode_code" class="filter_select">
+                <option value='all'>All Episodes</option>
               </select>
             </div><!-- filter-wrap -->
           <div class="show-items">
@@ -142,6 +142,9 @@
           <form id='table-syn' class="table-files" method='post' >
             <div class="filter-wrap clear text-left">
               <input type='submit'  class="show-filter" value='Select All'>
+              <select name="synopsis_code" id="document_synopsis_code" class="filter_select synopsis_code">
+                <option value='all'>All Episodes</option>
+              </select>
             </div><!-- filter-wrap -->
            <div class="show-items">
             [file_category,syn]
@@ -154,6 +157,9 @@
           <form id='table-syn' class="table-files" method='post' >
             <div class="filter-wrap clear text-left">
               <input type='submit'  class="show-filter" value='Select All'>
+               <select name="synopsis_code" id="synopsis_code" class="filter_select synopsis_code">
+                <option value='all'>All Episodes</option>
+              </select>
             </div><!-- filter-wrap -->
           <div class="show-items">
                 [file_category,syn]

@@ -471,15 +471,19 @@ class FileList
     }
 
     public static function EpisodeCodes() {
-        $episode_code = get_field('episode_code');
-        $episode_code_list = explode(',',$episode_code);
-        $fhtml = '';
-        $fhtml .= "<option value='all'>All Episodes</option>";
-        foreach ($episode_code_list as $key => $value) {
-            $fhtml .= "<option value='".trim($value)."'>Episode ".trim($value)."</option>";
-        }
+        // $episode_code = get_field('episode_code');
+        // $episode_code_list = explode(',',$episode_code);
+        // $fhtml = '';
+        // $fhtml .= "<option value='all'>All Episodes</option>";
+        // foreach ($episode_code_list as $key => $value) {
+        //     $fhtml .= "<option value='".trim($value)."'>Episode ".trim($value)."</option>";
+        // }
         
-        return $fhtml;
+        // return $fhtml;
+        // 
+        $titles = array ( 'ELE-epi0006-0817i.jpg', 'ELE-epi0006-0825i.jpg' , 'ELE-epi0007-0066i.jpg', 'ELE-epi0007-0074i.jpg', 'ELE-epi0008-0039i.jpg', 'ELE-epi0008-0054i.jpg');
+        
+
     }
 
     /**
@@ -500,20 +504,10 @@ class FileList
                                     var addedText = \"Added&nbsp;&nbsp;<i class='fa fa-check'></i>\";
                                     var addText = '".__("Add to Cart","wpdmpro")."';
                                     
-                                    jQuery( '#episode_code' )
-                                      .change(function () {
-                                        var str = '';
-                                        jQuery( '#episode_code option:selected' ).each(function() {
-                                          str += jQuery( this ).val();
-                                        });
-                                        if(str == 'all') {
-                                            showAllShowItems();
-                                            console.log('show all');
-                                        }else {
-                                            showAllShowItems();
-                                            jQuery('.episodicstills-tab-contents .show-items .item:not(:contains(\"Epi'+str+'-\"))').hide();
-                                        }
-                                    });
+                                    //tab_class, prefix, filter_id
+                                    populateEpisodeFilter('episodicstills-tab-contents','id', 'epi', 'episode_code');
+                                    populateEpisodeFilter('documents-tab-contents', 'id', 'synopsis', 'document_synopsis_code');
+                                    populateEpisodeFilter('synopses-tab-contents', 'id', 'synopsis', 'synopsis_code');
                             
                                     jQuery('.table-files').submit(function(event) {
                                         event.preventDefault();
@@ -621,8 +615,82 @@ class FileList
                                         );
                                     }
 
-                                    function showAllShowItems(){
-                                        jQuery('.episodicstills-tab-contents .show-items .item').show();
+                                    function showAllShowItems(tab_class){
+                                        jQuery('.'+tab_class+' .show-items .item').show();
+                                    }
+
+                                    function populateEpisodeFilter(tab_class,attribute_type, prefix, filter_id) {
+                                        var attr_type = attribute_type == 'id' ? '#' : '.';
+                                        var episodes_list = new Array();
+                                        var file_title_epi;
+                                        var file_title_epi_no;
+                                        var text_nodes = jQuery('.'+tab_class+' .show-items .item .show-meta p:first-child')
+                                          .contents()
+                                          .filter(function() {
+                                            return this.nodeType === 3; //Node.TEXT_NODE
+                                          });
+                                    
+                                        jQuery.each(text_nodes, function( index, value ) {
+                                            file_title_epi = value.textContent.split(prefix);  /* will return something like this : '0006' */
+                                            if(file_title_epi[1] != undefined){
+                                                file_title_epi = file_title_epi[1].split('-');
+                                                file_title_epi_no = parseInt(file_title_epi);
+                                                console.log(prefix+':'+file_title_epi_no);
+                                                if (!isNaN(file_title_epi_no)){
+                                                    episodes_list.push(file_title_epi_no);
+                                                }
+                                            }
+                                        });
+                                        if(episodes_list.length > 0) {
+                                            jQuery.unique(episodes_list).sort();
+                                            jQuery.each(episodes_list, function( index, value ) {
+                                                jQuery(attr_type+filter_id)
+                                                     .append(jQuery('<option></option>')
+                                                                .attr('value',value)
+                                                                .text('Episode '+value)); 
+                                            })
+                                            console.log( 'Episodes - '+ episodes_list);   
+                                        } 
+                                        addSelectFilterListener(tab_class,attribute_type,filter_id,prefix);
+                                    }
+
+                                    function addSelectFilterListener(tab_class,attribute_type,select_filter_id,prefix){
+                                        var attr_type = attribute_type == 'id' ? '#' : '.';
+                                        jQuery( attr_type+select_filter_id )
+                                          .change(function () {
+                                            var str = '';
+                                            jQuery( attr_type+select_filter_id+' option:selected' ).each(function() {
+                                              str += jQuery( this ).val();
+                                            });
+                                            if(str == 'all') {
+                                                showAllShowItems(tab_class);
+                                                console.log('show all');
+                                            }else {
+                                                showAllShowItems(tab_class);
+                                                console.log('prefix : '+prefix);
+                                                var search_results_not = '';
+                                                var search_results = '';
+                                                var search_result_countdown = 4;
+                                                while(search_results.length == 0 && search_result_countdown > 0){
+                                                    console.log('search result countdown:'+ search_result_countdown);
+                                                    var search_string = prefix+pad(str,search_result_countdown--);
+                                                    search_results = jQuery('.'+tab_class+' .show-items .item:contains(\"'+search_string+'\")');
+                                                    search_results_not = jQuery('.'+tab_class+' .show-items .item:not(:contains(\"'+search_string+'\"))');
+                                                    console.log('search length : '+search_results.length);
+                                                    if(search_results.length > 0){
+                                                        search_results_not.hide();
+                                                        console.log('Search String : '+search_string);
+                                                    }
+                                                    
+                                                }
+                                                
+                                            }
+                                        });
+                                    }
+
+                                    function pad (str, max) {
+                                      str = str.toString();
+                                      return str.length < max ? pad('0' + str, max) : str;
                                     }
                                 });
                             </script>";
