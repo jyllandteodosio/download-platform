@@ -300,7 +300,6 @@ class Package {
             // Shows - Images
             if(strpos("_".$template,'[file_category,key]')) $vars['file_category,key'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['key_art']], "key","show",$file,$specific_thumbnails,'image', $fileinfo);
             if(strpos("_".$template,'[file_category,epi]')) $vars['file_category,epi'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['episodic_stills']], "epi","show",$file,$specific_thumbnails,'image', $fileinfo);
-            $vars['acf_episode_code'] = \WPDM\libs\FileList::EpisodeCodes();
 
             if(strpos("_".$template,'[file_category,gal]')) $vars['file_category,gal'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['gallery']], "gallery","show",$file,$specific_thumbnails,'image', $fileinfo);
             if(strpos("_".$template,'[file_category,log]')) $vars['file_category,log'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['logos']], "logo","show",$file,$specific_thumbnails,'image', $fileinfo);

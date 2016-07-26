@@ -470,22 +470,6 @@ class FileList
         return $fhtml;
     }
 
-    public static function EpisodeCodes() {
-        // $episode_code = get_field('episode_code');
-        // $episode_code_list = explode(',',$episode_code);
-        // $fhtml = '';
-        // $fhtml .= "<option value='all'>All Episodes</option>";
-        // foreach ($episode_code_list as $key => $value) {
-        //     $fhtml .= "<option value='".trim($value)."'>Episode ".trim($value)."</option>";
-        // }
-        
-        // return $fhtml;
-        // 
-        $titles = array ( 'ELE-epi0006-0817i.jpg', 'ELE-epi0006-0825i.jpg' , 'ELE-epi0007-0066i.jpg', 'ELE-epi0007-0074i.jpg', 'ELE-epi0008-0039i.jpg', 'ELE-epi0008-0054i.jpg');
-        
-
-    }
-
     /**
      * @usage function to generate show custom script
      * @param none
@@ -505,9 +489,9 @@ class FileList
                                     var addText = '".__("Add to Cart","wpdmpro")."';
                                     
                                     //tab_class, prefix, filter_id
-                                    populateEpisodeFilter('episodicstills-tab-contents','id', 'epi', 'episode_code');
-                                    populateEpisodeFilter('documents-tab-contents', 'id', 'synopsis', 'document_synopsis_code');
-                                    populateEpisodeFilter('synopses-tab-contents', 'id', 'synopsis', 'synopsis_code');
+                                    populateEpisodeFilter('episodicstills-tab-contents','id', '".self::$prefix_list['episodic_stills']."', 'episode_code');
+                                    populateEpisodeFilter('documents-tab-contents', 'id', '".self::$prefix_list['synopses']."', 'document_synopsis_code');
+                                    populateEpisodeFilter('synopses-tab-contents', 'id', '".self::$prefix_list['synopses']."', 'synopsis_code');
                             
                                     jQuery('.table-files').submit(function(event) {
                                         event.preventDefault();
