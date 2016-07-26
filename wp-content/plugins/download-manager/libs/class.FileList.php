@@ -488,7 +488,6 @@ class FileList
                                     var addedText = \"Added&nbsp;&nbsp;<i class='fa fa-check'></i>\";
                                     var addText = '".__("Add to Cart","wpdmpro")."';
                                     
-                                    //tab_class, prefix, filter_id
                                     populateEpisodeFilter('episodicstills-tab-contents','id', '".self::$prefix_list['episodic_stills']."', 'episode_code');
                                     populateEpisodeFilter('documents-tab-contents', 'id', '".self::$prefix_list['synopses']."', 'document_synopsis_code');
                                     populateEpisodeFilter('synopses-tab-contents', 'id', '".self::$prefix_list['synopses']."', 'synopsis_code');
@@ -615,7 +614,7 @@ class FileList
                                           });
                                     
                                         jQuery.each(text_nodes, function( index, value ) {
-                                            file_title_epi = value.textContent.split(prefix);  /* will return something like this : '0006' */
+                                            file_title_epi = value.textContent.toLowerCase().split(prefix);  /* will return something like this : '0006' */
                                             if(file_title_epi[1] != undefined){
                                                 file_title_epi = file_title_epi[1].split('-');
                                                 file_title_epi_no = parseInt(file_title_epi);
@@ -640,6 +639,12 @@ class FileList
 
                                     function addSelectFilterListener(tab_class,attribute_type,select_filter_id,prefix){
                                         var attr_type = attribute_type == 'id' ? '#' : '.';
+                                        /* Make contains search case insensitive */
+                                        jQuery.expr[':'].contains = jQuery.expr.createPseudo(function(arg) {
+                                            return function( elem ) {
+                                                return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+                                            };
+                                        });
                                         jQuery( attr_type+select_filter_id )
                                           .change(function () {
                                             var str = '';
@@ -676,6 +681,8 @@ class FileList
                                       str = str.toString();
                                       return str.length < max ? pad('0' + str, max) : str;
                                     }
+
+
                                 });
                             </script>";
         return $fhtml;

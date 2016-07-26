@@ -139,6 +139,7 @@
         </div><!-- others-tab-contents -->
 
         <div class="show-items-wrap documents-tab-contents active-tab-content">
+          <p class="show-category-note">[acf_category_note]</p>
           <form id='table-syn' class="table-files" method='post' >
             <div class="filter-wrap clear text-left">
               <input type='submit'  class="show-filter" value='Select All'>
@@ -154,6 +155,7 @@
         </div><!-- documents-tab-contents -->
         
         <div class="show-items-wrap synopses-tab-contents">
+          <p class="show-category-note">[acf_category_note]</p>
           <form id='table-syn' class="table-files" method='post' >
             <div class="filter-wrap clear text-left">
               <input type='submit'  class="show-filter" value='Select All'>
