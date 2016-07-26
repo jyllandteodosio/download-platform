@@ -625,7 +625,8 @@ class FileList
                                             }
                                         });
                                         if(episodes_list.length > 0) {
-                                            jQuery.unique(episodes_list).sort();
+                                            jQuery.unique(episodes_list);
+                                            episodes_list.sort(sortNumber);
                                             jQuery.each(episodes_list, function( index, value ) {
                                                 jQuery(attr_type+filter_id)
                                                      .append(jQuery('<option></option>')
@@ -680,6 +681,10 @@ class FileList
                                     function pad (str, max) {
                                       str = str.toString();
                                       return str.length < max ? pad('0' + str, max) : str;
+                                    }
+
+                                    function sortNumber(a,b) {
+                                        return a - b;
                                     }
 
 
