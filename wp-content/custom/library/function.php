@@ -84,7 +84,6 @@ if( !function_exists('getFileAbsolutePathByURL') ) {
      */
     function getFileAbsolutePathByURL($url_path) {
         $current_absolute_path = dirname(__FILE__);
-        echo $_SERVER["REMOTE_ADDR"];
         $current_absolute_path_segments = explode('/wp-content', $current_absolute_path); /* For live server */
         // $current_absolute_path_segments = explode('\wp-content', $current_absolute_path); /* For Local Only*/
         $base_url = get_site_url();
