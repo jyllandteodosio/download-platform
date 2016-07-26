@@ -418,7 +418,7 @@ class FileList
         $ind = \WPDM_Crypt::Encrypt($sfile);
         $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
         $absolute_file_path = getFileAbsolutePathByURL($sfile);
-        $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file)."&ind=".$ind : $sfile;
+        $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file).$postID."&ind=".$ind : $sfile;
         $buttonText = !checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
         $isFileAdded = !checkFileInCart($fileID) ? "" : "disabled";
         $isFileClickable = !checkFileInCart($fileID) ? "" : "disabled-links";
