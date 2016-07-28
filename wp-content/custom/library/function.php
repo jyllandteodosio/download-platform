@@ -175,12 +175,15 @@ if( !function_exists('getDateRange')) {
      * @param  string $span Span of dates. e.g. This week dates = this-week 
      * @return Array        Array of dates
      */
-    function getDateRange($span = 'this-week'){
+    function getDateRange($span = 'start-today'){
         $beginning_date = date( 'Y-m-d');
         $ending_date = date( 'Y-m-d');
         if($span == 'this-week'){
             $beginning_date = date( 'Y-m-d', strtotime( 'sunday last week' ) );
             $ending_date = date( 'Y-m-d', strtotime( 'saturday this week' ) );
+        }else if($span == 'start-today'){
+            $beginning_date = date( 'Y-m-d');
+            $ending_date = date( 'Y-m-d', strtotime( "+6 day" ) );
         }
 
         $begin = new DateTime( $beginning_date );
