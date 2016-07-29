@@ -261,24 +261,40 @@ if( !function_exists('getTribeEventsUniqueStartTime')) {
     }
 }
 
-if( !function_exists('getFeaturedImageByTitle')) {
+if( !function_exists('getShowInfoByTitle')) {
     /**
      * Decription                Will return an array of unique timeslot in ascending order 
      * @param  Array $daterange  Range of dates to query
      * @return Array             Array of unique timeslots
      */
-    function getFeaturedImageByTitle($post_title = ""){
+    function getShowInfoByTitle($post_title = ""){
         $current_blog_id = get_current_blog_id();
         if ($current_blog_id != 1) switch_to_blog( 1 );
-        $show_id = getPostIdByTitle($post_title);
+        $show_info = getPostInfoByTitle($post_title);
+
         $background_image = "";
-        if($show_id != ''):
-            $image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_id), 'single-post-thumbnail' );
+        if($show_info != ''):
+            $image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_info['id']), 'single-post-thumbnail' );
             $background_image = $image[0] != "" ? "background-image: url('".$image[0]."')" : "";
         endif;
         if ($current_blog_id != 1) restore_current_blog();
 
-        return $background_image;
+        $show_info['background_image'] = $background_image;
+        return $show_info;
+    }
+}
+
+if( !function_exists('getSlugByTitle')) {
+    /**
+     * Decription                Will return an array of unique timeslot in ascending order 
+     * @param  Array $daterange  Range of dates to query
+     * @return Array             Array of unique timeslots
+     */
+    function getSlugByTitle($post_title = ""){
+        $current_blog_id = get_current_blog_id();
+        if ($current_blog_id != 1) switch_to_blog( 1 );
+        $show_slug = getPostSlugByTitle($post_title);
+        return $show_slug;
     }
 }
 
@@ -420,19 +436,20 @@ function getPostIdBySlug($slug){
     return $post_id;
 }
 
-function getPostIdByTitle($title){
+function getPostInfoByTitle($title){
     global $wpdb;  
     $prep_title = str_replace("'","\'",$title); 
-    $show_query_string = "  SELECT DISTINCT p.id
+    $show_query_string = "  SELECT DISTINCT p.id, p.post_name
                             FROM $wpdb->posts p 
                             JOIN $wpdb->postmeta pm
                             ON p.id = pm.post_id
                             WHERE p.post_title LIKE '%".$prep_title."'
                             AND p.post_status = 'publish'
                             AND p.post_type = 'wpdmpro'";                         
-    $show_id = $wpdb->get_var( $show_query_string );
-    return $show_id;
+    $show_info = $wpdb->get_row( $show_query_string , ARRAY_A);
+    return $show_info;
 }
+
 /* END OF DATABASE FUNCTIONS */
 
 if( !function_exists('get_current_user_role') ){
