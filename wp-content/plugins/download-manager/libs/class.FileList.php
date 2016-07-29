@@ -460,7 +460,7 @@ class FileList
         $fhtml .=           "<div class='file-thumb'>".$file_thumb."</div>";
         $fhtml .= "         <div class='show-meta'>";
         $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
-        $fhtml .= "             <p class='file-size'>".wpdm_file_size($absolute_file_path)."</p>";
+        $fhtml .= "             <p class='file-size'>".custom_wpdm_file_size($absolute_file_path,0)."</p>";
         $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID} $isFileClickable'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' >{$buttonText}</a>";
         $fhtml .= "         </div>";
         $fhtml .= "         <span class='close-btn' data-file-id='{$fileID}' data-user-id='{$userID}'><i class='fa fa-lg fa-times'></i></span>";
