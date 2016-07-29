@@ -66,7 +66,8 @@ get_header( 'rtl' ); ?>
 					if(count($events) > 0):
 						while ($event = current($events) ):
 						    $next_show = next($events);
-						    $background_image = getFeaturedImageByTitle($event->post_title);?>
+						    $show_info = getShowInfoByTitle($event->post_title);?>
+						   
 						    <div class="swiper-slide" title="<?php echo $event->post_title;?>">
 								<div class="time">
 									<?php
@@ -79,13 +80,12 @@ get_header( 'rtl' ); ?>
 									<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
 									<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
 								</div>
-								<p class="today-show-thumb-container" style="<?php echo $background_image;?>"></p>
+								<a href="<?php echo site_url($show_info['post_name']);?>"><p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p></a>
 								<div class="swiper-description">
 									<span class="title"><?php echo mb_strimwidth($event->post_title,0,24,"...") ?></span>
 								</div>
 								
 							</div>
-
 							<?php
 						endwhile;
 			        else:?>
