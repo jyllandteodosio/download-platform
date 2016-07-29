@@ -95,6 +95,24 @@ if( !function_exists('getFileAbsolutePathByURL') ) {
     }
 }
 
+if (!function_exists('custom_wpdm_file_size')){
+    /**
+     * @usage Calculate file size
+     * @param $file
+     * @return float|int|mixed|string
+     */
+    function custom_wpdm_file_size($file, $decimal_place = 2){
+        if(file_exists($file))
+            $size = filesize($file);
+        else if(file_exists(UPLOAD_DIR.$file))
+            $size = filesize(UPLOAD_DIR.$file);
+        else $size = 0;
+        $size = $size / 1024;
+        if ($size > 1024) $size = number_format($size / 1024, $decimal_place) . ' MB';
+        else $size = number_format($size, $decimal_place) . ' KB';
+        return $size;
+    }
+}
 if( !function_exists('checkIfImageFile') ){
 	/**
 	 * Description:                 Checks the file type of a specified file        
