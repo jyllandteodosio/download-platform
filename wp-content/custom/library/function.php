@@ -200,8 +200,11 @@ if( !function_exists('getDateRange')) {
             $beginning_date = date( 'Y-m-d', strtotime( 'sunday last week' ) );
             $ending_date = date( 'Y-m-d', strtotime( 'saturday this week' ) );
         }else if($span == 'start-today'){
-            $beginning_date = date( 'Y-m-d');
-            $ending_date = date( 'Y-m-d', strtotime( "+6 day" ) );
+            $date_try = strtotime(date('2016-07-01'));
+            $beginning_date = date( 'Y-m-d', $date_try);
+            $ending_date = date( 'Y-m-d', strtotime("+6 day", $date_try ) );
+            // $beginning_date = date( 'Y-m-d');
+            // $ending_date = date( 'Y-m-d', strtotime( "+6 day" ) );
         }
 
         $begin = new DateTime( $beginning_date );

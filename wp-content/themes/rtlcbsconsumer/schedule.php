@@ -18,8 +18,10 @@ get_header( 'rtl' ); ?>
 					if(function_exists('tribe_get_events')):
 						$daterange = getDateRange();
 						$time_list_rebased = getTribeEventsUniqueStartTime($daterange);
-
+						$events_counter = 0;
 						foreach($daterange as $date):
+							$events_counter++;
+							$is_hidden = $events_counter > 1 ? "visibility-hidden" : "";
 							$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');?>
 							<div class="swiper-slide">
 								<div class="schedule-date-container">
@@ -29,8 +31,8 @@ get_header( 'rtl' ); ?>
 									</h2>
 								</div>	
 								<div class="highlight-container">
-									<span class="title">Highlight</span>
-									<span class="icon"><i class="fa fa-star" aria-hidden="true"></i></span>
+									<span class="title <?php echo $is_hidden;?>">Highlight</span>
+									<span class="icon <?php echo $is_hidden;?>"><i class="fa fa-star" aria-hidden="true"></i></span>
 								</div>
 									
 								<?php

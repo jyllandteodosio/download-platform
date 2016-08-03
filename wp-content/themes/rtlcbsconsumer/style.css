@@ -53,6 +53,10 @@ a:hover {
 	padding: 0px 20px;
 }
 
+.visibility-hidden {
+	visibility: hidden;
+}
+
 /* BOOTSTRAP OVERRIDES
 ----------------------------------*/
 @media (min-width: 1200px) {
