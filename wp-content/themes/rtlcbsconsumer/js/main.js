@@ -225,5 +225,6 @@
    });
 
 
+   // $(".swiper-slide.swiper-slide-active").stick_in_parent();
 
 })( jQuery );

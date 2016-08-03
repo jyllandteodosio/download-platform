@@ -80,6 +80,7 @@ function rtlcbsconsumer_scripts() {
 	wp_enqueue_script( 'plugins', get_template_directory_uri() . '/js/plugins.js', false, 1.0, true);
 	wp_enqueue_script( 'froogaloop', '//f.vimeocdn.com/js/froogaloop2.min.js', false, 1.0, true);
 	wp_enqueue_script( 'jquery-match-height', 'https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js', false, 1.0, true);
+	wp_enqueue_script( 'sticky-kit', get_template_directory_uri() . '/js/sticky-kit.js', false, 1.0, true);
 	wp_enqueue_script( 'main-js', get_template_directory_uri() . '/js/main.js', false, 1.0, true);
 }
 add_action( 'wp_enqueue_scripts', 'rtlcbsconsumer_scripts' );
