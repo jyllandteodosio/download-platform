@@ -200,11 +200,11 @@ if( !function_exists('getDateRange')) {
             $beginning_date = date( 'Y-m-d', strtotime( 'sunday last week' ) );
             $ending_date = date( 'Y-m-d', strtotime( 'saturday this week' ) );
         }else if($span == 'start-today'){
-            $date_try = strtotime(date('2016-07-01'));
-            $beginning_date = date( 'Y-m-d', $date_try);
-            $ending_date = date( 'Y-m-d', strtotime("+6 day", $date_try ) );
-            // $beginning_date = date( 'Y-m-d');
-            // $ending_date = date( 'Y-m-d', strtotime( "+6 day" ) );
+            // $date_try = strtotime(date('2016-07-01'));
+            // $beginning_date = date( 'Y-m-d', $date_try);
+            // $ending_date = date( 'Y-m-d', strtotime("+6 day", $date_try ) );
+            $beginning_date = date( 'Y-m-d');
+            $ending_date = date( 'Y-m-d', strtotime( "+6 day" ) );
         }
 
         $begin = new DateTime( $beginning_date );
@@ -231,7 +231,6 @@ if( !function_exists('getTribeEvents')) {
                     'start_date'   => $start_date,
                     'end_date'     => $end_date
                 ) );
-
         return $events;
     }
 }
@@ -250,10 +249,13 @@ if( !function_exists('getTribeEventsUniqueStartTime')) {
                 $events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');
                 if(count($events) > 0):
                     foreach ($events as $event) :
-                        $show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
-                        if(!in_array($show_start_time, $time_list)){
-                            array_push($time_list, $show_start_time);
-                        }
+                        $show_info = getShowInfoByTitle($event->post_title);
+                        if($show_info['featured_show'] == 'featured'):
+                            $show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
+                            if(!in_array($show_start_time, $time_list)){
+                                array_push($time_list, $show_start_time);
+                            }
+                        endif;
                     endforeach;
                 endif;
             endforeach;
@@ -280,9 +282,11 @@ if( !function_exists('getShowInfoByTitle')) {
             $image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_info['id']), 'single-post-thumbnail' );
             $background_image = $image[0] != "" ? "background-image: url('".$image[0]."')" : "";
         endif;
+        $show_info['featured_show'] = get_field('featured_show',$show_info['id'])[0];
         if ($current_blog_id != 1) restore_current_blog();
 
         $show_info['background_image'] = $background_image;
+
         return $show_info;
     }
 }
