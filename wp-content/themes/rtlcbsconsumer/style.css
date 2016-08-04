@@ -959,6 +959,7 @@ a:hover {
 	min-height:160px;
 	background-size: cover;
 	background-repeat: no-repeat;
+	margin: .5px .5px .5px 0;
 }
 #schedule-slideshow .schedule-shows.no-preview .today-show-thumb-container {
 	display: none;
