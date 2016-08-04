@@ -40,13 +40,14 @@ get_header( 'rtl' ); ?>
 								if(count($events) > 0):
 									foreach ($events as $event) :
 										$show_info = getShowInfoByTitle($event->post_title);
-										$is_no_preview = $show_info['featured_show'] != 'featured' ? "no-preview" : "";
+										
 											$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
 											$next_skip = true;
+											$show_info = getShowInfoByTitle($event->post_title);
 											while($next_skip == true):
 												if($time_list_rebased[$show_counter] == $show_start_time): 
-													$next_skip = false;
-													$show_info = getShowInfoByTitle($event->post_title);?>
+													$is_no_preview = $show_info['featured_show'] != 'featured' ? "no-preview" : "";
+													$next_skip = false;?>
 														<a href="<?php echo site_url($show_info['post_name']);?>">
 															<div class="schedule-shows <?php echo $is_no_preview." ".$show_counter;?>" title="<?php echo $event->post_title;?>">
 																<p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p>
@@ -58,7 +59,7 @@ get_header( 'rtl' ); ?>
 															</div>
 														</a>
 										<?php   else: ?>
-													<div class="schedule-shows <?php echo $is_no_preview." ".$show_counter;?>"></div>
+													<div class="schedule-shows no-preview <?php echo $show_counter;?>"></div>
 										<?php   endif;
 												$show_counter++;
 											endwhile;
