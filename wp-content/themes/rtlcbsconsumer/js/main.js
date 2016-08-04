@@ -224,7 +224,4 @@
       $( '.show-banner-video-container' ).addClass( 'hide' );
    });
 
-
-   // $(".swiper-slide.swiper-slide-active").stick_in_parent();
-
 })( jQuery );

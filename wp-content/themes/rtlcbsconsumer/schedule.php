@@ -40,7 +40,7 @@ get_header( 'rtl' ); ?>
 								if(count($events) > 0):
 									foreach ($events as $event) :
 										$show_info = getShowInfoByTitle($event->post_title);
-										if($show_info['featured_show'] == 'featured'):
+										$is_no_preview = $show_info['featured_show'] != 'featured' ? "no-preview" : "";
 											$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
 											$next_skip = true;
 											while($next_skip == true):
@@ -48,7 +48,7 @@ get_header( 'rtl' ); ?>
 													$next_skip = false;
 													$show_info = getShowInfoByTitle($event->post_title);?>
 														<a href="<?php echo site_url($show_info['post_name']);?>">
-															<div class="schedule-shows" title="<?php echo $event->post_title;?>">
+															<div class="schedule-shows <?php echo $is_no_preview." ".$show_counter;?>" title="<?php echo $event->post_title;?>">
 																<p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p>
 																<div class="time">
 																	<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
@@ -58,12 +58,10 @@ get_header( 'rtl' ); ?>
 															</div>
 														</a>
 										<?php   else: ?>
-													<div class="schedule-shows"></div>
+													<div class="schedule-shows <?php echo $is_no_preview." ".$show_counter;?>"></div>
 										<?php   endif;
 												$show_counter++;
 											endwhile;
-										endif;
-										
 									endforeach;
 								endif;?>
 							</div>
@@ -79,4 +77,16 @@ get_header( 'rtl' ); ?>
 	</article>
 </div>
 
+
 <?php get_footer( 'rtl' ); ?>
+
+<script>
+	(function( $ ) {
+		var show_counter = <?php echo $show_counter;?>;
+		console.log(show_counter);
+		for (var i = 0; i <= show_counter; i++) {
+			$('.schedule-shows.'+i).matchHeight();
+		};
+	})( jQuery );
+	
+</script>

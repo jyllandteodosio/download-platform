@@ -960,6 +960,12 @@ a:hover {
 	background-size: cover;
 	background-repeat: no-repeat;
 }
+#schedule-slideshow .schedule-shows.no-preview .today-show-thumb-container {
+	display: none;
+}
+#schedule-slideshow .schedule-shows.no-preview {
+	min-height:64px;
+}
 #schedule-slideshow .schedule-shows {
 	position: relative;
 }
