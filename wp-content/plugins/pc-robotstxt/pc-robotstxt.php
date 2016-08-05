@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: Robots.txt
-Version: 1.4
+Plugin Name: Virtual Robots.txt
+Version: 1.8
 Plugin URI: http://infolific.com/technology/software-worth-using/robots-txt-plugin-for-wordpress
 Description: Automatically creates a virtual robots.txt file for your site.
 Author: Marios Alexandrou
@@ -90,22 +90,22 @@ class pc_robotstxt {
 			
 			$options = $this->get_options();
 
-			$output = "# This virtual robots.txt file was created by the Robots.txt WordPress plugin.\n";
-			$output .= "# For more info visit: https://www.wordpress.org/plugins/pc-robotstxt/\n";
+			$output = "# This virtual robots.txt file was created by the Virtual Robots.txt WordPress plugin: https://www.wordpress.org/plugins/pc-robotstxt/\n";
 
 			if ( '' != $options['user_agents'] ) {
-				$output .= stripslashes( $options['user_agents'] );
+				$output .= stripcslashes( $options['user_agents'] );
 			}
 				
 			// if there's an existing sitemap file or we're using pc-xml-sitemap plugin add a reference..
+			$protocol = ( ( !empty($_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) || $_SERVER['SERVER_PORT'] == 443 ) ? "https://" : "http://";
 			if ( file_exists( $_SERVER['DOCUMENT_ROOT'].'/sitemap.xml.gz' ) ) {
-				$output .= "\n\n".'Sitemap: http://'.$_SERVER['HTTP_HOST'].'/sitemap.xml.gz';
+				$output .= "\n\n".'Sitemap: '.$protocol.$_SERVER['HTTP_HOST'].'/sitemap.xml.gz';
 			} elseif ( class_exists('pc_xml_sitemap' ) || file_exists($_SERVER['DOCUMENT_ROOT'].'/sitemap.xml' ) ) {
-				$output .= "\n\n".'Sitemap: http://'.$_SERVER['HTTP_HOST'].'/sitemap.xml';
+				$output .= "\n\n".'Sitemap: '.$protocol.$_SERVER['HTTP_HOST'].'/sitemap.xml';
 			}
 		
 			header('Status: 200 OK', true, 200);
-			header('Content-type: text/plain; charset='.get_bloginfo('charset'));
+			header('Content-type: text/plain; charset=' . get_bloginfo('charset'));
 			echo $output;
 			exit;
 
