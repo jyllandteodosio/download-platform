@@ -39,14 +39,17 @@ if (!function_exists('contains')) {
 
 if( !function_exists('getFileExtension') ) {
 	/**
-	 * Description:					Get file extension of a specified file name
-	 * @param  string $sfile 		The source string(3894343983483_KEY_349304930.jpg)
-	 * @return string 				file extension
+	 * Description:					        Get file extension of a specified file name
+     * @param  string $sfile                The source string(3894343983483_KEY_349304930.jpg)
+	 * @param  string $maintain_case 	    False to convert extension to lowercase, else will maintain the case
+	 * @return string 				        file extension
 	 */
-	function getFileExtension($sfile) {
+	function getFileExtension($sfile,$maintain_case = false) {
 		$ext = explode(".", $sfile);
         $ext = end($ext);
-        $ext = strtolower($ext);
+        if(!$maintain_case){
+            $ext = strtolower($ext);
+        }
         return $ext;
 	}
 }
