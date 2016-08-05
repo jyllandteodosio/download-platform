@@ -1473,9 +1473,9 @@ if (!function_exists('getMonthsPromos')) {
                   if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($promo['promo_start'],$promo['promo_end'], $promo_filter)){
 
                     $promo['category'] = get_sub_field('category') != '' ? get_sub_field('category') : '';
-                    $promo['upload_date'] = get_sub_field('upload_date') != '' ? date("d/n/Y", strtotime(get_sub_field('upload_date'))) : '';
-                    $promo['promo_start'] = get_sub_field('promo_start') != '' ? date("d/n/Y", strtotime(get_sub_field('promo_start'))) : '';
-                    $promo['promo_end'] = get_sub_field('promo_end') != '' ? date("d/n/Y", strtotime(get_sub_field('promo_end'))) : '';
+                    $promo['upload_date'] = get_sub_field('upload_date') != '' ? date("n/d/Y", strtotime(get_sub_field('upload_date'))) : '';
+                    $promo['promo_start'] = get_sub_field('promo_start') != '' ? date("n/d/Y", strtotime(get_sub_field('promo_start'))) : '';
+                    $promo['promo_end'] = get_sub_field('promo_end') != '' ? date("n/d/Y", strtotime(get_sub_field('promo_end'))) : '';
                     $promo['id'] = get_sub_field('id') != '' ? get_sub_field('id') : '';
                     $promo['promo_id'] = get_sub_field('promo_id') != '' ? get_sub_field('promo_id') : '';
                     $promo['file_name'] = get_sub_field('file_name') != '' ? get_sub_field('file_name') : '';
