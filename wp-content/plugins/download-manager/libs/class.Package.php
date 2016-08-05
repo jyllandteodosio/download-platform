@@ -7,7 +7,8 @@ class Package {
     public $ID;
     public $PackageData = array();
 
-        private static $prefix_list = array(
+    // Added by Dianne D.R. - custom vars
+    private static $prefix_list = array(
                                     /* PREFIX FOR SHOW IMAGES*/
                                     'key_art'           => 'key', 
                                     'episodic_stills'   => 'epi', 
@@ -33,19 +34,11 @@ class Package {
                                     'channel_boiler'    => 'boiler',
                                     'channel_catchup'   => 'catch'
                                     );
-         private static $operator_prefix_list = array(
-                                    /* PREFIX FOR SHOW IMAGES*/
-                                    // 'singtel'           => 'Singtel', 
-                                    // 'starhub'           => 'StarHub', 
-                                    // 'nowtv'             => 'nowTV', 
-                                    // 'leeco'             => 'LeEco',
-                                    // 'truevisions'       => 'TrueVisions',
-                                    // 'hypptv'            => 'HyppTV',
-                                    // 'kvisions'          => 'K-Visions',
-                                    // 'skycable'          => 'SKYCable',
+    private static $operator_prefix_list = array(
                                     'affiliate'         => 'Affiliate'
                                     );
     private static $specific_thumbs_prefix = 'SPECIFICTHUMBS';
+    // End of custom vars
 
     function __construct($ID = null){
         global $post;
@@ -83,6 +76,7 @@ class Package {
         $vars['acf_legal_notice'] = get_field( "legal_notice" );
         $vars['acf_category_note'] = get_field( "show_category_note" );
         $vars['acf_promo_files'] = serialize(get_field( "add_promo_files" ));
+        // End of custom shortcodes
 
         //Featured Image
         $src = wp_get_attachment_image_src(get_post_thumbnail_id($vars['ID']), 'full', false, '');
@@ -115,7 +109,7 @@ class Package {
         $vars['page_url'] = get_permalink($vars['ID']);
 
         // Added by Dianne D.R. - custom shortcodes for file segregations
-        
+        // @todo:: minify code
         $file['files'] = maybe_unserialize($vars['files']);
         $fhtml = '';
         $files_counter = 0;
@@ -327,12 +321,13 @@ class Package {
         }else{
             $vars['file_category,key'] = "<p style='color:black'>This package is not available for download</p>";
         }
-
+        
         $vars['searchform'] = \WPDM\libs\FileList::getSearchForm();
         
         // Shows - Custom Script
         if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = \WPDM\libs\FileList::getScriptFile();
 
+        // End of custom 
 
         if(!isset($vars['btnclass']))
             $vars['btnclass'] = '[btnclass]';
