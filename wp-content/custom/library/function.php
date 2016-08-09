@@ -1705,6 +1705,17 @@ if(!function_exists('new_modify_user_table_row')){
     add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
 }
 
+if( !function_exists('remove_user_name_column') ){
+    /**
+     * Remove Name column in users list table
+     */
+    add_action('manage_users_columns','remove_user_name_column');
+    function remove_user_name_column($column_headers) {
+        unset($column_headers['name']);
+        return $column_headers;
+    }
+}
+
 if(!function_exists('setRtlReportList')){
     /**
      * To generate query string of RTL Report List
