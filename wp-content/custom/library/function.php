@@ -1908,7 +1908,7 @@ function event_display_name_plural_lowercase() {
 function global_custom_field($key = '') {
     $output = '';
     if($key != '' && $key != null){
-        $page = get_page_by_path( $key );
+        $page = get_page_by_path( 'global_custom_field' );
         $output = get_post_meta(get_the_ID($page), $key, true);
     }
     return $output;
