@@ -1908,8 +1908,8 @@ function event_display_name_plural_lowercase() {
 function global_custom_field($key = '') {
     $output = '';
     if($key != '' && $key != null){
-        $page = get_page_by_path( 'global_custom_fields' );
-        $output = get_post_meta(get_the_ID($page), $key, true);
+        $page_object = get_page_by_path( 'global-custom-fields' );
+        $output = get_post_meta(get_the_ID($page_object), $key, true);
     }
     return $output;
 }
