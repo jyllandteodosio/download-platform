@@ -1897,3 +1897,19 @@ add_filter( 'tribe_event_label_plural_lowercase', 'event_display_name_plural_low
 function event_display_name_plural_lowercase() {
     return 'schedules';
 }
+
+
+/* Global Custom Fields */
+/**
+ * Description:        Returns the value of a global custom field via field name
+ * @param  string $key Field name of the custom field
+ * @return string      Value of the custom field
+ */
+function global_custom_field($key = '') {
+    $output = '';
+    if($key != '' && $key != null){
+        $page = get_page_by_path( $key );
+        $output = get_post_meta(get_the_ID($page), $key, true);
+    }
+    return $output;
+}
