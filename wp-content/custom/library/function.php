@@ -1909,7 +1909,7 @@ function global_custom_field($key = '') {
     $output = '';
     if($key != '' && $key != null){
         $page_object = get_page_by_path( 'global-custom-fields' );
-        $output = get_post_meta($page_object->ID, $key, true);\
+        $output = get_post_meta($page_object->ID, $key, true);
     }
     return $output;
 }
