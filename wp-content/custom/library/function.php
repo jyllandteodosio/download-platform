@@ -1673,38 +1673,6 @@ if (!function_exists('get_user_info')) {
     }
 }
 
-if (!function_exists('new_modify_user_table')){
-    /**
-     * Add custom column to Users table
-     */
-    function new_modify_user_table( $column ) {
-        $column['operator_group'] = 'Operator Group';
-        $column['country_group'] = 'Country Group';
-        return $column;
-    }
-    add_filter( 'manage_users_columns', 'new_modify_user_table' );
-}
-
-if(!function_exists('new_modify_user_table_row')){
-    /**
-     * Populate custom column in Users table
-     */
-    function new_modify_user_table_row( $val, $column_name, $user_id ) {
-        $user = get_userdata( $user_id );
-        switch ($column_name) {
-            case 'operator_group' :
-                return get_user_meta($user_id, 'operator_group', true) != "" ? get_user_meta($user_id, 'operator_group', true) : "None";
-                break;
-            case 'country_group' :
-                return get_country_name(get_user_meta($user_id, 'country_group', true));
-                break;
-            default:
-        }
-        return $return;
-    }
-    add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
-}
-
 if(!function_exists('setRtlReportList')){
     /**
      * To generate query string of RTL Report List
