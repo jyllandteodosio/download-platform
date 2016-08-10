@@ -1673,6 +1673,17 @@ if (!function_exists('get_user_info')) {
     }
 }
 
+if(!function_exists('modify_user_table_row')){
+    /**
+     * Override Country Group column in Users table
+     */
+    function modify_user_table_row( $val, $column_name, $user_id ) {
+        $user = get_userdata( $user_id );
+        return $column_name == 'country_group' ? get_country_name(get_user_meta($user_id, 'country_group', true)) : $val;
+    }
+    add_filter( 'manage_users_custom_column', 'modify_user_table_row', 10, 3 );
+}
+
 if(!function_exists('setRtlReportList')){
     /**
      * To generate query string of RTL Report List

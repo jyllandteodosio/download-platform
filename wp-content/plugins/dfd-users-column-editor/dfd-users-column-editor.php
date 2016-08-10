@@ -1,8 +1,8 @@
 <?php 
     /*
     Plugin Name: Users Column Editor
-    Description: Add or remove columns of users table.
-    Dianne Katherine Delos Reyes
+    Description: Remove or add custom field columns in users table.
+    Author: Dianne Katherine Delos Reyes
     Version: 1.0
     */
    
@@ -16,7 +16,7 @@ if( !function_exists('remove_user_name_column') ){
     
     function remove_user_name_column($column_headers) {
     	$options = get_option( 'dfd_upe_option_name', false );
-    	$options_exploded = explode(',',$options['remove_column_header']);
+    	$options_exploded = array_map('trim', explode(',',$options['remove_column_header']));
 
     	foreach ($options_exploded as $value) {
     		unset($column_headers[$value]);
@@ -32,7 +32,7 @@ if (!function_exists('new_modify_user_table')){
      */
     function new_modify_user_table( $column ) {
         $options = get_option( 'dfd_upe_option_name', false );
-        $additional_options_exploded_name = explode(',',$options['additional_column_fields_name']);
+        $additional_options_exploded_name = array_map('trim', explode(',',$options['additional_column_fields_name']));
         $additional_options_exploded_label = explode(',',$options['additional_column_fields_label']);
 
         $counter = 0;
@@ -51,18 +51,9 @@ if(!function_exists('new_modify_user_table_row')){
      */
     function new_modify_user_table_row( $val, $column_name, $user_id ) {
         $user = get_userdata( $user_id );
-        switch ($column_name) {
-            case 'country_group' :
-                return get_country_name(get_user_meta($user_id, 'country_group', true));
-                break;
-            default:
-                return get_user_meta($user_id, $column_name, true) != "" ? get_user_meta($user_id, $column_name, true) : "None";
-                break;
-        }
-        return $return;
+        return get_user_meta($user_id, $column_name, true) != "" ? get_user_meta($user_id, $column_name, true) : "None";
     }
     add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
-
 }
 
 
@@ -72,6 +63,16 @@ class DFDUsersColumnEditor
      * Holds the values to be used in the fields callbacks
      */
     private $options;
+    private $help_text = array(
+                            'section_info'                      => 'Fill out the form below to customize users table.',
+                            'remove_column_headers'             => 'Enter a comma separated list of column ID you want to hide. 
+                                                                    <br>e.g. (name,email)',
+                            'additional_column_fields_name'     => 'Enter a comma separated list of custom field names you want to add. 
+                                                                    <br>e.g. (my_custom_field_1, my_custom_field_2)',
+                            'additional_column_fields_label'    => 'Enter a comma separated list of custom field labels you want to add (Visible for the user).
+                                                                    <br>Should have a corresponding column field name above.
+                                                                    <br>e.g. (My Custom Field 1, My Custom Field 2)'
+        );
 
     /**
      * Start up
@@ -135,7 +136,7 @@ class DFDUsersColumnEditor
 
         add_settings_section(
             'setting_section_id', // ID
-            'My Custom Settings', // Title
+            'Users Table Custom Settings', // Title
             array( $this, 'print_section_info' ), // Callback
             'dfd-upe-setting-admin' // Page
         );  
@@ -150,7 +151,7 @@ class DFDUsersColumnEditor
 
         add_settings_field(
             'additional_column_fields_name', // ID
-            'Additional Column Custom Field Name', // Title 
+            'Custom Field Names to Add', // Title 
             array( $this, 'additional_column_fields_name_callback' ), // Callback
             'dfd-upe-setting-admin', // Page
             'setting_section_id' // Section           
@@ -158,7 +159,7 @@ class DFDUsersColumnEditor
 
          add_settings_field(
             'additional_column_fields_label', // ID
-            'Additional Column Label', // Title 
+            'Custom Field Labels to Add', // Title 
             array( $this, 'additional_column_fields_label_callback' ), // Callback
             'dfd-upe-setting-admin', // Page
             'setting_section_id' // Section           
@@ -190,7 +191,7 @@ class DFDUsersColumnEditor
      */
     public function print_section_info()
     {
-        print 'Enter a comma separated list of field names you want to hide. e.g. (name,email) :';
+        print $this->help_text['section_info'];
     }
 
     /** 
@@ -199,7 +200,8 @@ class DFDUsersColumnEditor
     public function remove_column_headers_callback()
     {
         printf(
-            '<input type="text" id="remove_column_header" name="dfd_upe_option_name[remove_column_header]" value="%s" />',
+            '<input type="text" class="regular-text" id="remove_column_header" name="dfd_upe_option_name[remove_column_header]" value="%s" />
+            <p class="description">'.$this->help_text['remove_column_headers'].'</p>',
             isset( $this->options['remove_column_header'] ) ? esc_attr( $this->options['remove_column_header']) : ''
         );
     }
@@ -210,7 +212,8 @@ class DFDUsersColumnEditor
     public function additional_column_fields_name_callback()
     {
         printf(
-            '<input type="text" id="additional_column_fields_name" name="dfd_upe_option_name[additional_column_fields_name]" value="%s" />',
+            '<input type="text" class="regular-text" id="additional_column_fields_name" name="dfd_upe_option_name[additional_column_fields_name]" value="%s" />
+            <p class="description">'.$this->help_text['additional_column_fields_name'].'</p>',
             isset( $this->options['additional_column_fields_name'] ) ? esc_attr( $this->options['additional_column_fields_name']) : ''
         );
     }
@@ -221,7 +224,8 @@ class DFDUsersColumnEditor
     public function additional_column_fields_label_callback()
     {
         printf(
-            '<input type="text" id="additional_column_fields_label" name="dfd_upe_option_name[additional_column_fields_label]" value="%s" />',
+            '<input type="text" class="regular-text" id="additional_column_fields_label" name="dfd_upe_option_name[additional_column_fields_label]" value="%s" />
+            <p class="description">'.$this->help_text['additional_column_fields_label'].'</p>',
             isset( $this->options['additional_column_fields_label'] ) ? esc_attr( $this->options['additional_column_fields_label']) : ''
         );
     }
