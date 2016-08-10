@@ -37,8 +37,10 @@ if (!function_exists('new_modify_user_table')){
 
         $counter = 0;
         foreach ($additional_options_exploded_name as $value) {
-            $column[$value] = $additional_options_exploded_label[$counter];
-            $counter++;
+            if($value != '' && $value != null){
+                $column[$value] = $additional_options_exploded_label[$counter];
+                $counter++;
+            }
         }
         return $column;
     }
