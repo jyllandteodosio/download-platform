@@ -1859,6 +1859,7 @@ add_filter( 'query_vars', 'add_query_vars_filter' );
 /**
  * The Event Manager plugin - Change label from 'Events' to 'Schedules'
  */
+// @todo : create a plugin for the codes below (Events manager title customizer)
 add_filter( 'tribe_event_label_singular', 'event_display_name' );
 function event_display_name() {
     return 'Schedule';
