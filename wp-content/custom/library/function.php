@@ -1659,6 +1659,7 @@ if (!function_exists('custom_get_rtl_channels')){
 if (!function_exists('get_country_name')) {
     
     function get_country_name($iso = 'PH'){
+        $iso = strtoupper($iso);
         $country_groups = custom_get_country_groups();
         return $country_groups[$iso];
     }
