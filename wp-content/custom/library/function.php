@@ -1894,3 +1894,57 @@ function global_custom_field($key = '') {
     }
     return $output;
 }
+
+
+function file_sweeper(){
+    global $wpdb;
+
+        $query_string = "   SELECT p.post_title, pm.meta_value
+                            FROM `rtl21016_posts` p
+                            JOIN `rtl21016_postmeta` pm ON p.id = pm.post_id
+                            WHERE p.post_type='wpdmpro'
+                            AND pm.meta_key = '__wpdm_files'
+                            ";
+        $raw_operator_accounts = $wpdb->get_results($query_string, ARRAY_A);
+
+        $file_lists = array();
+        $unserialized_files = array();
+        foreach ($raw_operator_accounts as $key => $value) {
+            $unserialized_files = unserialize($value['meta_value']);
+            foreach ($unserialized_files as $key => $value) {
+                array_push($file_lists, $value);
+            }
+        }
+
+        $directory_file_lists = array();
+        $upload_dir = wp_upload_dir();
+        $user_dirname = $upload_dir['basedir'].'/download-manager-files/';
+        // echo "directory-".$user_dirname;
+
+        $log_directory;
+        foreach(glob($user_dirname.'/*.*') as $file) {
+            array_push($directory_file_lists,basename($file));
+            // echo "file: ".$file."<br>";
+        }
+
+        $leftover_files = array_diff($directory_file_lists,$file_lists);
+
+        foreach ($leftover_files as $value) {
+            unlink($user_dirname.$value);
+        }
+
+        echo "<pre>";
+        // print_r($raw_operator_accounts);
+        // print_r($unserialized_files);
+        echo "count-".count($leftover_files);
+        print_r($leftover_files);
+        echo "count-".count($directory_file_lists);
+        print_r($directory_file_lists);
+        echo "count-".count($file_lists);
+        echo "unique:".count(array_count_values($file_lists));
+        print_r($file_lists);
+        echo "</pre>";
+
+        // unlink($user_dirname.'1$_SimpleAW_Owners Manual.psb');
+    die('sweep');
+}
