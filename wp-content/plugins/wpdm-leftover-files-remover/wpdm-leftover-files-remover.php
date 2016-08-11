@@ -30,7 +30,6 @@ class DFDLeftoverFilesRemover
 		$this->detect_leftover_files();
 
 		add_action('admin_menu', array( $this, "wpdm_file_sweeper_plugin_menu"));
-		// add_action( 'admin_init', array( $this, 'page_init' ) );
 	}
 
 	/**
