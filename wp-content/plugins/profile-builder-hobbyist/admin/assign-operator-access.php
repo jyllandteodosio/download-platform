@@ -12,7 +12,7 @@ if (!isset($wpdb->custom_cart)) {
  * @return void
  */
 function wppb_assign_operator_access_submenu_page() {
-	add_submenu_page( 'profile-builder', __( 'Assign Operator Access', 'profile-builder' ), __( 'Assign Operator Access', 'profile-builder' ), 'manage_options', 'profile-builder-assign-operator-access', 'wppb_assign_operator_access_content' );
+	add_submenu_page( 'profile-builder', __( 'Assign Operator', 'profile-builder' ), __( 'Assign Operator Access', 'profile-builder' ), 'manage_options', 'profile-builder-assign-operator-access', 'wppb_assign_operator_access_content' );
 }
 add_action( 'admin_menu', 'wppb_assign_operator_access_submenu_page',  1);
 
