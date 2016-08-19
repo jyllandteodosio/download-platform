@@ -587,34 +587,36 @@ if( !function_exists('set_channel_access') ){
      * @return Bool Returns 1 if user has an access, else 0
      */
     function set_channel_access($channel = 'entertainment', $use_default = false){
-        global $wpdb;
-        $user_id = get_current_user_id( );
-        $country_group = get_current_user_country_group();
-        $operator_group = get_current_user_operator_group();
-        $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" )[0];
-        $array_access = unserialize($access);
-        
-        if(!empty($array_access)){
-            // echo "-not admin-";
-            $array_access_simplified = array();
-            foreach ($array_access as $key => $value) {
-                array_push($array_access_simplified,$value);
+        $return_value = 0;
+        if(is_user_logged_in()){
+            global $wpdb;
+            $user_id = get_current_user_id( );
+            $country_group = get_current_user_country_group();
+            $operator_group = get_current_user_operator_group();
+            $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" )[0];
+            $array_access = unserialize($access);
+            
+            if(!empty($array_access)){
+                // echo "-not admin-";
+                $array_access_simplified = array();
+                foreach ($array_access as $key => $value) {
+                    array_push($array_access_simplified,$value);
+                }
+                $return_value = in_array($channel, $array_access_simplified);
+                if($use_default) 
+                    set_default_channel($array_access_simplified[0]);
+                else
+                    $_SESSION['channel'] = $channel;
+                // echo '$use_default-'.$use_default;
+            }else if (get_current_user_role() == 'administrator'){
+                // echo "-admin-";
+                $return_value = 1;
+                set_default_channel($channel);
+            }else {
+                $return_value = 0;
+                $_SESSION['channel'] = 'none';
             }
-            $return_value = in_array($channel, $array_access_simplified);
-            if($use_default) 
-                set_default_channel($array_access_simplified[0]);
-            else
-                $_SESSION['channel'] = $channel;
-            // echo '$use_default-'.$use_default;
-        }else if (get_current_user_role() == 'administrator'){
-            // echo "-admin-";
-            $return_value = 1;
-            set_default_channel($channel);
-        }else {
-            $return_value = 0;
-            $_SESSION['channel'] = 'none';
         }
-
         return $return_value;
     }
 }
@@ -625,24 +627,28 @@ if( !function_exists('check_if_have_channel_access') ){
      * @return Bool Returns 1 if user has an access, else 0
      */
     function check_if_have_channel_access($channel = 'entertainment'){
-        global $wpdb;
-        $user_id = get_current_user_id( );
-        $country_group = get_current_user_country_group();
-        $operator_group = get_current_user_operator_group();
-        $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" )[0];
-        $array_access = unserialize($access);
-        
-        if(!empty($array_access)){
-            $array_access_simplified = array();
-            foreach ($array_access as $key => $value) {
-                array_push($array_access_simplified,$value);
-            }
-            $return_value = in_array($channel, $array_access_simplified);
+        $return_value = 0;
+        if(is_user_logged_in()){
+            global $wpdb;
+            $user_id = get_current_user_id( );
+            $country_group = get_current_user_country_group();
+            $operator_group = get_current_user_operator_group();
+            $raw_access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" );
+            $access = count($raw_access) > 0 ? $raw_access[0] : "";
+            $array_access = unserialize($access);
 
-        }else if (get_current_user_role() == 'administrator'){
-            $return_value = 1;
-        }else {
-            $return_value = 0;
+            if(!empty($array_access)){
+                $array_access_simplified = array();
+                foreach ($array_access as $key => $value) {
+                    array_push($array_access_simplified,$value);
+                }
+                $return_value = in_array($channel, $array_access_simplified);
+
+            }else if (get_current_user_role() == 'administrator'){
+                $return_value = 1;
+            }else {
+                $return_value = 0;
+            }
         }
         return $return_value;
     }
