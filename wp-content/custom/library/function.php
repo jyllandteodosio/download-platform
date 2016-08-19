@@ -321,16 +321,18 @@ function getUsersByRole($role = 'administrator'){
 function getCustomCartContents(){
     global $wpdb;
     $userID = get_current_user_id( );
-    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID} AND channel = '{$channel}'" );
+    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    // $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID} AND channel = '{$channel}'" );
+    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID}" );
     return $rawCart;
 }
 
 function getCustomCartCount(){
 	global $wpdb;
     $user_id = get_current_user_id( );
-    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-	$cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
+    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    // $cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
+	$cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
 
 	return $cart_entry_count;
 }
@@ -338,12 +340,17 @@ function getCustomCartCount(){
 function getCustomCartItemsCount(){
     global $wpdb;
     $user_id = get_current_user_id( );
-    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
+    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    // $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
+    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
    
     if (!empty($rawCart)) {
         $rawCart = unserialize(trim($rawCart->meta_file));
-        $return_value = count($rawCart);
+        if($rawCart !== false){
+            $return_value = count($rawCart);
+        }else {
+            $return_value = 0;
+        }
     }else{
         $return_value = 0;
     }
@@ -354,12 +361,17 @@ function getCustomCartItemsCount(){
 function ajaxGetCustomCartItemsCount(){
     global $wpdb;
     $user_id = get_current_user_id( );
-    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
+    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    // $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
+    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
    
     if (!empty($rawCart)) {
         $rawCart = unserialize($rawCart->meta_file);
-        $return_value = count($rawCart);
+        if ($rawCart !== false){
+            $return_value = count($rawCart);
+        }else {
+            $return_value = 0;
+        }
     }else{
         $return_value = 0;
     }
@@ -372,12 +384,12 @@ add_action('wp_ajax_get_custom_cart_items_count', 'ajaxGetCustomCartItemsCount')
 function insertToCustomCart($serialized_cart){
 	global $wpdb;
     $user_id = get_current_user_id( );
-    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
 	$return_value = $wpdb->insert(
 	        				$wpdb->custom_cart,
 					        array(
 					            'user_id' => $user_id,
-                                'channel' => $channel,
+                                // 'channel' => $channel,
 					            'meta_file' => $serialized_cart,
 					            'created_at' => date('Y-m-d H:i:s')
 					        )
@@ -388,13 +400,13 @@ function insertToCustomCart($serialized_cart){
 function updateToCustomCart($serialized_cart){
 	global $wpdb;
     $user_id = get_current_user_id( );
-    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
 	$return_value = $wpdb->update( 
 							$wpdb->custom_cart, 
 							array('meta_file' => $serialized_cart), 
 							array( 
-                                'user_id' => $user_id,
-                                'channel' => $channel
+                                'user_id' => $user_id
+                                // ,'channel' => $channel
                                 )
 						);
 	return $return_value;
@@ -403,8 +415,9 @@ function updateToCustomCart($serialized_cart){
 function fetchEntryFromCustomCart(){
 	global $wpdb;
     $user_id = get_current_user_id( );
-    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-    $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" )[0];
+    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    // $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" )[0];
+    $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" )[0];
 
     return $cart_entry;
 }
@@ -413,12 +426,12 @@ function deleteToCustomCart(){
 	global $wpdb;
 
     $user_id = get_current_user_id( );
-    $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
 	$return_value = $wpdb->delete( 
                             $wpdb->custom_cart, 
                             array( 
-                                'user_id' => $user_id,
-                                'channel' => $channel
+                                'user_id' => $user_id
+                                // ,'channel' => $channel
                             ) 
                         );
 	return $return_value;
