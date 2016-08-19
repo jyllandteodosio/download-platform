@@ -110,6 +110,8 @@ class Package {
 
         // Added by Dianne D.R. - custom shortcodes for file segregations
         // @todo:: minify code
+        if(function_exists('set_last_visited_show')) set_last_visited_show();
+
         $file['files'] = maybe_unserialize($vars['files']);
         $fhtml = '';
         $files_counter = 0;

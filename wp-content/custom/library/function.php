@@ -654,6 +654,18 @@ if( !function_exists('check_if_have_channel_access') ){
     }
 }
 
+
+if( !function_exists('set_last_visited_show') ){
+    /**
+     *saves show link of last visited show
+     */
+    function set_last_visited_show(){
+        global $post;
+        $post_slug=$post->post_name;
+        $_SESSION['last_visited_show'] = $post_slug;
+    }
+}
+
 if( !function_exists('set_default_channel') ){
     /**
      *Check if logged user has an access to a certain channel
