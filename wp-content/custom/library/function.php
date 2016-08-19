@@ -621,6 +621,16 @@ if( !function_exists('set_channel_access') ){
     }
 }
 
+if( !function_exists('set_selected_channel') ){
+    /**
+     *Set channel access
+     * @return Bool Returns 1 if user has an access, else 0
+     */
+    function set_selected_channel($channel = 'entertainment'){
+        $_SESSION['channel'] = $channel;
+    }
+}
+
 if( !function_exists('check_if_have_channel_access') ){
     /**
      *Check if logged user has an access to a certain channel
@@ -663,6 +673,7 @@ if( !function_exists('set_last_visited_show') ){
         global $post;
         $post_slug=$post->post_name;
         $_SESSION['last_visited_show'] = $post_slug;
+        $_SESSION['channel_of_last_visited_show'] = $_SESSION['channel'];
     }
 }
 
@@ -1418,8 +1429,11 @@ if (!function_exists('checkShowAssignedChannel')) {
     function checkShowAssignedChannel($posd_id, $channel){
         $terms = get_the_terms($posd_id,'wpdmcategory');
         $return_value = 0;
+        /* Check if current session channel matches the show */
         foreach ($terms as $key => $value) {
             if ($value->slug == $channel || $value->slug == 'shows-'.$channel){
+                $return_value = 1;
+            }else if (check_if_have_channel_access($value->slug)){
                 $return_value = 1;
             }
         }
