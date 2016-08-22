@@ -779,20 +779,25 @@ if(!function_exists('remove_to_cart')){
             $cart_entry_count = getCustomCartCount();
 
             if($cart_entry_count == 1 ){
-                $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
+                // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
         //          $cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
-                $cart_entry = unserialize($wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']} AND channel = '{$channel}'" )[0]);
-                $meta_file_count = count($cart_entry);
+                $raw_cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']}");
+                $cart_entry = is_string($raw_cart_entry[0]) ? unserialize($raw_cart_entry[0]) : false;
+                $meta_file_count = is_array($cart_entry) ? count($cart_entry) : 0;
 
-                if(array_key_exists($cart_data['file_id'],$cart_entry)) {
-                    if($meta_file_count > 1){
-                        unset($cart_entry[$cart_data['file_id']]);
-                        $serialized_cart = serialize($cart_entry);
-                        $return_value = updateToCustomCart($serialized_cart);
-                    }else {
-                        $return_value = deleteToCustomCart();
+                if($cart_entry!==false){
+                    if(array_key_exists($cart_data['file_id'],$cart_entry)) {
+                        if($meta_file_count > 1){
+                            unset($cart_entry[$cart_data['file_id']]);
+                            $serialized_cart = serialize($cart_entry);
+                            $return_value = updateToCustomCart($serialized_cart);
+                        }else {
+                            $return_value = deleteToCustomCart();
+                        }
+                        $return_value = "success";
                     }
-                    $return_value = "success";
+                }else {
+                    $return_value = "failed";
                 }
             }else {
                 $return_value = "failed";
