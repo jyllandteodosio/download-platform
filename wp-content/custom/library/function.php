@@ -419,8 +419,8 @@ function fetchEntryFromCustomCart(){
     $user_id = get_current_user_id( );
     // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
     // $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" )[0];
-    $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" )[0];
-
+    $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
+    $cart_entry = is_array($cart_entry) ? $cart_entry[0] : false;
     return $cart_entry;
 }
 
@@ -525,12 +525,14 @@ if( !function_exists('get_current_user_operator_access') ){
         $user_id = get_current_user_id( );
         $country_group = get_current_user_country_group();
         $operator_group = get_current_user_operator_group();
-        $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" )[0];
-        $array_access = unserialize($access);
+        $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" );
+        $array_access = is_array($access) ? unserialize($access[0]) : false;
      
         $array_access_simplified = array();
-        foreach ($array_access as $key => $value) {
-            array_push($array_access_simplified,$value);
+        if($array_access !== false){
+            foreach ($array_access as $key => $value) {
+                array_push($array_access_simplified,$value);
+            }
         }
         
         return $array_access_simplified;
@@ -595,10 +597,10 @@ if( !function_exists('set_channel_access') ){
             $user_id = get_current_user_id( );
             $country_group = get_current_user_country_group();
             $operator_group = get_current_user_operator_group();
-            $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" )[0];
-            $array_access = unserialize($access);
+            $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" );
+            $array_access = is_array($access) ? unserialize($access[0]) : false;
             
-            if(!empty($array_access)){
+            if(!empty($array_access) && $array_access !== false){
                 // echo "-not admin-";
                 $array_access_simplified = array();
                 foreach ($array_access as $key => $value) {
@@ -647,9 +649,9 @@ if( !function_exists('check_if_have_channel_access') ){
             $operator_group = get_current_user_operator_group();
             $raw_access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" );
             $access = count($raw_access) > 0 ? $raw_access[0] : "";
-            $array_access = unserialize($access);
+            $array_access = is_string($access) ? unserialize($access) : false;
 
-            if(!empty($array_access)){
+            if(!empty($array_access) && $array_access !== false){
                 $array_access_simplified = array();
                 foreach ($array_access as $key => $value) {
                     array_push($array_access_simplified,$value);
@@ -1164,30 +1166,33 @@ if(!function_exists('insertToCustomReports')){
      */
     function insertToCustomReports($serialized_cart){
         global $wpdb;
+        $return_value = 0;
 
         $unserialized_cart = unserialize($serialized_cart);
 
-        foreach ($unserialized_cart as $file_id => $value) {
+        if($unserialized_cart !== false){
+            foreach ($unserialized_cart as $file_id => $value) {
 
-            $user_id = get_current_user_id( );
-            $country_group = get_current_user_country_group($user_id);
-            $operator_group = get_current_user_operator_group($user_id);
+                $user_id = get_current_user_id( );
+                $country_group = get_current_user_country_group($user_id);
+                $operator_group = get_current_user_operator_group($user_id);
 
-            $return_value = $wpdb->insert(
-                                    $wpdb->custom_reports,
-                                    array(
-                                        'user_id' => $user_id,
-                                        'country_group' => $country_group,
-                                        'operator_group' => $operator_group,
-                                        'post_id' => $value['post_id'],
-                                        'file_id' => $file_id,
-                                        'file_title' => $value['file_title'],
-                                        'file_path' => $value['file_path'],
-                                        'file_type' => $value['file_type'],
-                                        'download_url' => $value['download_url'],
-                                        'created_at' => date('Y-m-d H:i:s')
-                                    )
-                                );
+                $return_value = $wpdb->insert(
+                                        $wpdb->custom_reports,
+                                        array(
+                                            'user_id' => $user_id,
+                                            'country_group' => $country_group,
+                                            'operator_group' => $operator_group,
+                                            'post_id' => $value['post_id'],
+                                            'file_id' => $file_id,
+                                            'file_title' => $value['file_title'],
+                                            'file_path' => $value['file_path'],
+                                            'file_type' => $value['file_type'],
+                                            'download_url' => $value['download_url'],
+                                            'created_at' => date('Y-m-d H:i:s')
+                                        )
+                                    );
+            }
         }
         return $return_value;
     }
@@ -1228,7 +1233,7 @@ if(!function_exists('download_file')){
             $cart_data['file_id']       = $_POST['file-id'];
 
             $raw_cart_data = fetchEntryFromCustomCart();
-            $unserialized_cart = unserialize($raw_cart_data);
+            $unserialized_cart = is_string($raw_cart_data) ? unserialize($raw_cart_data) : false;
             $return_value = insertToCustomReports(serialize(structure_reports_data($cart_data)));
             
             $cart_files_count = count($unserialized_cart);
@@ -1590,14 +1595,16 @@ if (!function_exists('custom_get_country_groups')){
         global $wpdb;
 
         $raw_operator_group = $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'wppb_manage_fields' ");
-        $unserialized_operator_group = unserialize($raw_operator_group);
+        $unserialized_operator_group = is_string($raw_operator_group) ? unserialize($raw_operator_group) : false;
 
         $operator_groups = array();
-        $operator_groups_options = explode( ',', $unserialized_operator_group[0]['options']);
-        $operator_groups_labels = explode( ',', $unserialized_operator_group[0]['labels']);
+        if($unserialized_operator_group !== false){
+            $operator_groups_options = explode( ',', $unserialized_operator_group[0]['options']);
+            $operator_groups_labels = explode( ',', $unserialized_operator_group[0]['labels']);
 
-        foreach ($operator_groups_options as $key => $value) {
-            $operator_groups[$value] = $operator_groups_labels[$key];
+            foreach ($operator_groups_options as $key => $value) {
+                $operator_groups[$value] = $operator_groups_labels[$key];
+            }
         }
         return $operator_groups;
     }
