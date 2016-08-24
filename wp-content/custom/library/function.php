@@ -87,13 +87,19 @@ if( !function_exists('getFileAbsolutePathByURL') ) {
      */
     function getFileAbsolutePathByURL($url_path) {
         $current_absolute_path = dirname(__FILE__);
-        $current_absolute_path_segments = explode('/wp-content', $current_absolute_path); /* For live server */
-        // $current_absolute_path_segments = explode('\wp-content', $current_absolute_path); /* For Local Only*/
         $base_url = get_site_url();
+        if(contains($base_url,'192.168.')){
+            $current_absolute_path_segments = explode('\wp-content', $current_absolute_path); /* For Local Only*/
+        }else{
+            $current_absolute_path_segments = explode('/wp-content', $current_absolute_path); /* For live server */
+        }
+        
         // Replace url path to absolute path 
         $full_absolute_path = str_replace($base_url,$current_absolute_path_segments[0],$url_path);
-        // Replace forwardslash with backslash 
-        // $full_absolute_path = str_replace('/','\\',$full_raw_absolute_path); /* For Local Only */
+        // Replace forwardslash with backslash - not working recently
+        // if(contains($base_url,'192.168.')){
+        //     $full_absolute_path = str_replace('/','\\',$full_raw_absolute_path); /* For Local Only */
+        // }
         return $full_absolute_path;
     }
 }
@@ -116,6 +122,7 @@ if (!function_exists('custom_wpdm_file_size')){
         return $size;
     }
 }
+
 if( !function_exists('checkIfImageFile') ){
 	/**
 	 * Description:                 Checks the file type of a specified file        
@@ -1567,6 +1574,100 @@ if (!function_exists('getMonthsPromos')) {
 
         return $promos;
     }
+}
+
+if (!function_exists('get_promos')) {
+    /**
+     * @usage function to get promo under a given category
+     * @param $category
+     * @return array
+     * @usage returns an array of promo files, otherwise empty array
+     */
+    //$category = 'on-air', $promo_filter = 'this-month'
+    function get_promos(){
+        $promononce = $_POST['promononce'];
+        if (!empty($_POST) && wp_verify_nonce($promononce, '__promo_rtl_nonce__') ){
+            $category = 'on-air';
+            $promo_filter = $_POST['promo-timeline'];
+
+            wp_reset_query();
+            $channel = $_SESSION['channel'];
+            $args = array(
+                        'post_type' => 'wpdmpro', 
+                        'posts_per_page' => -1,
+                        'tax_query' => array(
+                            array(
+                              'taxonomy' => 'wpdmcategory',
+                              'field'    => 'slug',
+                              'terms'    => array('shows-'.$channel,'channel-materials-'.$channel ),
+                            ),
+                          )
+                      );
+            $query_shows = new WP_Query( $args );
+            //echo  $query_shows->request;
+            $promos = array();
+            if($query_shows->have_posts()){
+              while($query_shows->have_posts()) { 
+                $query_shows->the_post();
+                $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+                $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+                if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
+
+                  if( have_rows('add_promo_files',get_the_ID()) ):
+                    while( have_rows('add_promo_files',get_the_ID()) ): the_row();
+                      $promo['operator_group'] = get_sub_field('operator_group');
+                      $promo['promo_start'] = get_sub_field('promo_start') != '' ? get_sub_field('promo_start') : date('Ymd');
+                      $promo['promo_end'] = get_sub_field('promo_end') != '' ? get_sub_field('promo_end') : date('Ymd');
+                      $operator_group_promo_access = isset($promo['operator_group']) ? $promo['operator_group'] : 'all';
+
+                      if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($promo['promo_start'],$promo['promo_end'], $promo_filter)){
+
+                        $promo['category'] = get_sub_field('category') != '' ? get_sub_field('category') : '';
+                        $promo['upload_date'] = get_sub_field('upload_date') != '' ? date("n/d/Y", strtotime(get_sub_field('upload_date'))) : '';
+                        $promo['promo_start'] = get_sub_field('promo_start') != '' ? date("n/d/Y", strtotime(get_sub_field('promo_start'))) : '';
+                        $promo['promo_end'] = get_sub_field('promo_end') != '' ? date("n/d/Y", strtotime(get_sub_field('promo_end'))) : '';
+                        $promo['id'] = get_sub_field('id') != '' ? get_sub_field('id') : '';
+                        $promo['promo_id'] = get_sub_field('promo_id') != '' ? get_sub_field('promo_id') : '';
+                        $promo['file_name'] = get_sub_field('file_name') != '' ? get_sub_field('file_name') : '';
+                        $promo['program_tx'] = get_sub_field('program_tx') != '' ? get_sub_field('program_tx') : '';
+                        $promo['prog_title_stunts'] = get_sub_field('prog_title_stunts') != '' ? get_sub_field('prog_title_stunts') : '';
+                        $promo['version'] = get_sub_field('version') != '' ? get_sub_field('version') : '';
+                        $promo['duration'] = get_sub_field('duration') != '' ? get_sub_field('duration') : '';
+                        $promo['notes'] = get_sub_field('notes') != '' ? get_sub_field('notes') : '';
+                        $promo['attached_file'] = get_sub_field('attached_file') != '' ? get_sub_field('attached_file') : '';
+                        $promo['post_id'] = get_the_ID();
+                        $promo['user_id'] = get_current_user_id();
+
+                        $ext = strtolower(getFileExtension($promo['attached_file']));
+                        $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
+                        $promo['thumb'] = $thumb;
+
+                        $promo['isFileAdded'] = !checkFileInCart($promo['id']) ? "" : "disabled-links added-to-cart";
+                        $promo['buttonText'] = !checkFileInCart($promo['id']) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
+
+                        $absolute_file_path = getFileAbsolutePathByURL($promo['attached_file']);
+                        $promo['file_size'] = custom_wpdm_file_size($absolute_file_path, 0);
+
+                        // if(strtolower($promo['category']) == $category)
+                        array_push($promos, $promo);
+                      }
+                    endwhile;
+                  endif;
+                endif;
+              }
+            } 
+            wp_reset_query();
+
+            // return $promos;
+            
+        }
+        // print_r($promos);
+        echo json_encode($promos);
+        die();
+    }
+
+    add_action( 'wp_ajax_get_promos', 'get_promos' );
+    // add_action( 'wp_ajax_nopriv_set_session_notice', 'get_promos' );
 }
 
 if (!function_exists('checkFileInCart')){
