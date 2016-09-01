@@ -750,8 +750,8 @@ if(!function_exists('add_to_cart')){
     	global $wpdb;
     	$cartnonce = $_POST['cartnonce'];
     	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
-    		$cart_data = prepare_cart_data($_POST['file-id'],$_POST['file-title'], $_POST['file-path'], $_POST['download-url'],$_POST['post-id'],$_POST['file-type'],$_POST['user-id'],$_POST['thumb']);
-    	    $cart_array = structure_cart_data($cart_data);
+            $cart_data = prepare_cart_data($_POST);
+    		$cart_array = structure_cart_data($cart_data);
     	    $cart_entry_count = getCustomCartCount();
     		if($cart_entry_count == 0 ){
     	    	$serialized_cart = serialize($cart_array);
@@ -840,15 +840,16 @@ if(!function_exists('prepare_cart_data')){
     /**
      * function to prepare cart data before structuring for serialization
      */
-    function prepare_cart_data($fileID=null, $fileTitle=null, $filepath=null, $downloadUrl=null, $posdID=null, $fileType=null, $userID=null, $thumb=null){
-    	if($fileID != null) $cart_data['file_id'] = $fileID;
-        $cart_data['file_title'] 	= $fileTitle;
-        $cart_data['file_path']     = $filepath;
-        $cart_data['download_url'] 	= $downloadUrl;
-        $cart_data['post_id'] 		= $posdID;
-        $cart_data['file_type'] 	= $fileType;
-        $cart_data['user_id'] 		= $userID;
-        $cart_data['thumb']         = $thumb;
+    function prepare_cart_data($post_data){
+        $cart_data['file_id']       = isset($post_data['file-id']) ? $post_data['file-id'] : null;
+        $cart_data['file_title'] 	= isset($post_data['file-title']) ? $post_data['file-title'] : null;
+        $cart_data['file_path']     = isset($post_data['file-path']) ? $post_data['file-path'] : null;
+        $cart_data['download_url'] 	= isset($post_data['download-url']) ? $post_data['download-url'] : null;
+        $cart_data['post_id'] 		= isset($post_data['post-id']) ? $post_data['post-id'] : null;
+        $cart_data['file_type'] 	= isset($post_data['file-type']) ? $post_data['file-type'] : null;
+        $cart_data['user_id'] 		= isset($post_data['user-id']) ? $post_data['user-id'] : null;
+        $cart_data['thumb']         = isset($post_data['thumb']) ? $post_data['thumb'] : null;
+        $cart_data['channel']       = isset($post_data['channel']) ? $post_data['channel'] : null;
         return $cart_data;
     }
 }
@@ -866,7 +867,8 @@ if(!function_exists('structure_cart_data')){
     	    			'post_id' => $cart_data['post_id'],
     		    		'file_type' => $cart_data['file_type'],
     		    		'user_id' => $cart_data['user_id'],
-    		    		'thumb' => $cart_data['thumb']
+                        'thumb' => $cart_data['thumb'],
+    		    		'channel' => $cart_data['channel']
         			)
         	);
     	return $cart_array;
@@ -881,12 +883,20 @@ if(!function_exists('get_custom_cart_contents')){
      */
     function get_custom_cart_contents($fileType = null){
     	$rawCart = getCustomCartContents();
+        
         $myCart = array();
         if (!empty($rawCart)) {
         	$rawCart = unserialize($rawCart->meta_file);
+
         	if ($fileType != '' || $fileType != null) {
         		foreach ($rawCart as $key => $value) {
+                    // echo "<pre>";
+                    // print_r($value);
+                    // echo "</pre>";
+                    // echo "<br>diane:".$fileType.'-'.$value['file_type'];
+                    // echo "<br>compare:".$value['file_type'] == $fileType;
         			if($value['file_type'] == $fileType){
+                        // echo "<br>same";
         				$myCart[$key] = array (
         			    			'file_title' => $value['file_title'],
                                     'file_path' => $value['file_path'],
@@ -896,12 +906,16 @@ if(!function_exists('get_custom_cart_contents')){
         				    		'user_id' => $value['user_id'],
         				    		'thumb' => $value['thumb']
         		    			);
+                        // print_r($myCart);
         			}
         		}
         	}else {
         		$myCart = $rawCart;
         	}
         }
+        // echo "<pre>";
+        //     print_r($myCart);
+        //     echo "</pre>";
     	return $myCart != null ? $myCart : array();
     }
 }
