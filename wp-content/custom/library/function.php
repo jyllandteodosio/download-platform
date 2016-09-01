@@ -887,35 +887,21 @@ if(!function_exists('get_custom_cart_contents')){
         $myCart = array();
         if (!empty($rawCart)) {
         	$rawCart = unserialize($rawCart->meta_file);
-
-        	if ($fileType != '' || $fileType != null) {
         		foreach ($rawCart as $key => $value) {
-                    // echo "<pre>";
-                    // print_r($value);
-                    // echo "</pre>";
-                    // echo "<br>diane:".$fileType.'-'.$value['file_type'];
-                    // echo "<br>compare:".$value['file_type'] == $fileType;
-        			if($value['file_type'] == $fileType){
-                        // echo "<br>same";
-        				$myCart[$key] = array (
+                    $channel = isset($value['channel']) && $value['channel'] != '' ? strtolower($value['channel']) : strtolower($_SESSION['channel']);
+                    $file_type = isset($value['file_type']) && $value['file_type'] != '' ? strtolower($value['file_type']) : 'image';
+        				$myCart[$channel][$file_type][$key] = array (
         			    			'file_title' => $value['file_title'],
                                     'file_path' => $value['file_path'],
         			    			'download_url' => $value['download_url'],
         			    			'post_id' => $value['post_id'],
         				    		'file_type' => $value['file_type'],
         				    		'user_id' => $value['user_id'],
-        				    		'thumb' => $value['thumb']
+                                    'thumb' => $value['thumb'],
+        				    		'channel' => $value['channel']
         		    			);
-                        // print_r($myCart);
-        			}
         		}
-        	}else {
-        		$myCart = $rawCart;
-        	}
         }
-        // echo "<pre>";
-        //     print_r($myCart);
-        //     echo "</pre>";
     	return $myCart != null ? $myCart : array();
     }
 }
