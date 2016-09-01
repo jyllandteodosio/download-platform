@@ -881,16 +881,20 @@ if(!function_exists('get_custom_cart_contents')){
      * @param  String $fileType     Either image, promo or file
      * @return Array                Cart Contents
      */
-    function get_custom_cart_contents($fileType = null){
+    function get_custom_cart_contents($fileType = null,$format = null){
     	$rawCart = getCustomCartContents();
         
+        // echo "<pre>";
+        // print_r($rawCart);
+        // echo "<pre>";
         $myCart = array();
         if (!empty($rawCart)) {
         	$rawCart = unserialize($rawCart->meta_file);
         		foreach ($rawCart as $key => $value) {
                     $channel = isset($value['channel']) && $value['channel'] != '' ? strtolower($value['channel']) : strtolower($_SESSION['channel']);
                     $file_type = isset($value['file_type']) && $value['file_type'] != '' ? strtolower($value['file_type']) : 'image';
-        				$myCart[$channel][$file_type][$key] = array (
+        			if($format == 'categorized'){	
+                        $myCart[$channel][$file_type][$key] = array (
         			    			'file_title' => $value['file_title'],
                                     'file_path' => $value['file_path'],
         			    			'download_url' => $value['download_url'],
@@ -900,6 +904,18 @@ if(!function_exists('get_custom_cart_contents')){
                                     'thumb' => $value['thumb'],
         				    		'channel' => $value['channel']
         		    			);
+                    }else {
+                        $myCart[$key] = array (
+                                    'file_title' => $value['file_title'],
+                                    'file_path' => $value['file_path'],
+                                    'download_url' => $value['download_url'],
+                                    'post_id' => $value['post_id'],
+                                    'file_type' => $value['file_type'],
+                                    'user_id' => $value['user_id'],
+                                    'thumb' => $value['thumb'],
+                                    'channel' => $value['channel']
+                                );
+                    }
         		}
         }
     	return $myCart != null ? $myCart : array();
@@ -1679,6 +1695,10 @@ if (!function_exists('checkFileInCart')){
      */
     function checkFileInCart($fileID){
         $cart_array = get_custom_cart_contents();
+        // echo "<pre>";
+        // print_r($cart_array);
+        // echo "</pre>";
+        // echo "<br>";
         $cart_array_filtered = array_filter($cart_array);
         if(!empty($cart_array_filtered)){
             return array_key_exists($fileID, $cart_array);
