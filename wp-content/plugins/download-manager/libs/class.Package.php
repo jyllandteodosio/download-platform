@@ -57,7 +57,6 @@ class Package {
 
     function Prepare($ID = null, $template = null)
     {
-
         //if (isset($this->PackageData['formatted'])) return $this;
 
         if($ID == null) $ID = $this->ID;
@@ -69,14 +68,6 @@ class Package {
         $vars['description'] = wpautop(stripslashes($vars['description']));
         $vars['description'] = do_shortcode(stripslashes($vars['description']));
         $vars['excerpt'] = stripcslashes(strip_tags($vars['post_excerpt']));
-        // Added by Dianne D.R. - custom shortcodes
-        $vars['acf_show_reference_name'] = get_field( "show_reference_name" );
-        $vars['acf_banner_image'] = get_field( "banner_image" );
-        $vars['acf_cast'] = get_field( "cast" );
-        $vars['acf_legal_notice'] = get_field( "legal_notice" );
-        $vars['acf_category_note'] = global_custom_field('show_category_note');
-        $vars['acf_promo_files'] = serialize(get_field( "add_promo_files" ));
-        // End of custom shortcodes
 
         //Featured Image
         $src = wp_get_attachment_image_src(get_post_thumbnail_id($vars['ID']), 'full', false, '');
@@ -108,7 +99,19 @@ class Package {
         $vars['page_link'] = "<a href='" . get_permalink($vars['ID']) . "'>{$vars['title']}</a>";
         $vars['page_url'] = get_permalink($vars['ID']);
 
+    // Execute only for a specific show
+    if( contains($_SERVER['REQUEST_URI'],'download') ) :
         // Added by Dianne D.R. - custom shortcodes for file segregations
+        // Added by Dianne D.R. - custom shortcodes from acf
+        $vars['acf_show_reference_name'] = get_field( "show_reference_name" );
+        $vars['acf_banner_image'] = get_field( "banner_image" );
+        $vars['acf_cast'] = get_field( "cast" );
+        $vars['acf_legal_notice'] = get_field( "legal_notice" );
+        $vars['acf_category_note'] = global_custom_field('show_category_note');
+        $vars['acf_promo_files'] = serialize(get_field( "add_promo_files" ));
+        $vars['searchform'] = \WPDM\libs\FileList::getSearchForm();
+        // End of custom shortcodes from acf
+        
         // @todo:: minify code
         if(function_exists('set_last_visited_show')) set_last_visited_show();
 
@@ -139,7 +142,7 @@ class Package {
                                     'channel_catchup'   => 'catch');
         $categorized_files = array();
         if(checkPackageDownloadAvailabilityDate($vars['publish_date'], $vars['expire_date'])){
-             if (count($file['files']) > 0) {
+            if (count($file['files']) > 0) {
                 $fileinfo = isset($vars['fileinfo']) ? $vars['fileinfo'] : array();
                 $allfiles = is_array($file['files']) ? $file['files'] : array();
                 $allpromofiles = have_rows( "add_promo_files" ) ? get_field( "add_promo_files" ) : array();
@@ -178,11 +181,26 @@ class Package {
                /* For all WPDM Files */
                 if (is_array($allfiles_sorted)) {
                     foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
-                        $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
-                        $fileTitle = $prefix != self::$prefix_list['promos'] ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
+                        // $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
+                        // $fileTitle = $prefix != self::$prefix_list['promos'] ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
+                        $sfile = $sfileOriginal;
+                        $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
+                                        $fileinfo[$sfile]['title']:
+                                        (isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? 
+                                            $fileinfo[$fileID]['title']:
+                                            preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile))
+                                        );
+                        // $fileTitle = $prefix != self::$prefix_list['promos'] ? 
+                        //                 isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
+                        //                     $fileinfo[$sfile]['title']:
+                        //                     (isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? 
+                        //                         $fileinfo[$fileID]['title']:
+                        //                         preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  
+                        //                 :$sfileOriginal['file_name'];
                         $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
-
+                        echo "<br>fileTitle: ".$fileTitle;
                         if(checkIfImageFile($sfile, 'image')){
+
                             /* SHOW IMAGES ========================================================================== */
                             foreach ($prefix_list_image as $prefix_name => $prefix) {
                                 // KEY
@@ -291,7 +309,7 @@ class Package {
                     }
                 }
 
-             }
+            }
 
             // Shows - Images
             if(strpos("_".$template,'[file_category,key]')) $vars['file_category,key'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['key_art']], "key","show",$file,$specific_thumbnails,'image', $fileinfo);
@@ -324,12 +342,10 @@ class Package {
             $vars['file_category,key'] = "<p style='color:black'>This package is not available for download</p>";
         }
         
-        $vars['searchform'] = \WPDM\libs\FileList::getSearchForm();
-        
         // Shows - Custom Script
         if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = \WPDM\libs\FileList::getScriptFile();
-
         // End of custom 
+    endif;
 
         if(!isset($vars['btnclass']))
             $vars['btnclass'] = '[btnclass]';
