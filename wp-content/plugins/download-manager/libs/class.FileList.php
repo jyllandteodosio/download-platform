@@ -374,7 +374,7 @@ class FileList
      * @usage Generate file list with preview - key art images
      */
     public static function CategorizedFileList($allfiles_sorted, $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null){
-
+        $fhtml = '';
         if (is_array($allfiles_sorted)) {
             foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
                 $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
