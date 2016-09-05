@@ -750,8 +750,8 @@ if(!function_exists('add_to_cart')){
     	global $wpdb;
     	$cartnonce = $_POST['cartnonce'];
     	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
-    		$cart_data = prepare_cart_data($_POST['file-id'],$_POST['file-title'], $_POST['file-path'], $_POST['download-url'],$_POST['post-id'],$_POST['file-type'],$_POST['user-id'],$_POST['thumb']);
-    	    $cart_array = structure_cart_data($cart_data);
+            $cart_data = prepare_cart_data($_POST);
+    		$cart_array = structure_cart_data($cart_data);
     	    $cart_entry_count = getCustomCartCount();
     		if($cart_entry_count == 0 ){
     	    	$serialized_cart = serialize($cart_array);
@@ -830,7 +830,11 @@ if(!function_exists('unserializeForm')){
         foreach($strArray as $item) {
             $item = urldecode($item);
             list($k, $v) = explode('=', $item);
-            $returndata[ $k ] = $v;
+            /* Check if valid data */
+            if(unserialize($v) !== false)
+                $returndata[ $k ] = $v;
+            else
+                continue;
         }
         return $returndata;
     }
@@ -840,15 +844,16 @@ if(!function_exists('prepare_cart_data')){
     /**
      * function to prepare cart data before structuring for serialization
      */
-    function prepare_cart_data($fileID=null, $fileTitle=null, $filepath=null, $downloadUrl=null, $posdID=null, $fileType=null, $userID=null, $thumb=null){
-    	if($fileID != null) $cart_data['file_id'] = $fileID;
-        $cart_data['file_title'] 	= $fileTitle;
-        $cart_data['file_path']     = $filepath;
-        $cart_data['download_url'] 	= $downloadUrl;
-        $cart_data['post_id'] 		= $posdID;
-        $cart_data['file_type'] 	= $fileType;
-        $cart_data['user_id'] 		= $userID;
-        $cart_data['thumb']         = $thumb;
+    function prepare_cart_data($post_data){
+        $cart_data['file_id']       = isset($post_data['file-id']) ? $post_data['file-id'] : null;
+        $cart_data['file_title'] 	= isset($post_data['file-title']) ? $post_data['file-title'] : null;
+        $cart_data['file_path']     = isset($post_data['file-path']) ? $post_data['file-path'] : null;
+        $cart_data['download_url'] 	= isset($post_data['download-url']) ? $post_data['download-url'] : null;
+        $cart_data['post_id'] 		= isset($post_data['post-id']) ? $post_data['post-id'] : null;
+        $cart_data['file_type'] 	= isset($post_data['file-type']) ? $post_data['file-type'] : null;
+        $cart_data['user_id'] 		= isset($post_data['user-id']) ? $post_data['user-id'] : null;
+        $cart_data['thumb']         = isset($post_data['thumb']) ? $post_data['thumb'] : null;
+        $cart_data['channel']       = isset($post_data['channel']) ? $post_data['channel'] : null;
         return $cart_data;
     }
 }
@@ -866,7 +871,8 @@ if(!function_exists('structure_cart_data')){
     	    			'post_id' => $cart_data['post_id'],
     		    		'file_type' => $cart_data['file_type'],
     		    		'user_id' => $cart_data['user_id'],
-    		    		'thumb' => $cart_data['thumb']
+                        'thumb' => $cart_data['thumb'],
+    		    		'channel' => $cart_data['channel']
         			)
         	);
     	return $cart_array;
@@ -879,28 +885,42 @@ if(!function_exists('get_custom_cart_contents')){
      * @param  String $fileType     Either image, promo or file
      * @return Array                Cart Contents
      */
-    function get_custom_cart_contents($fileType = null){
+    function get_custom_cart_contents($fileType = null,$format = null){
     	$rawCart = getCustomCartContents();
+        
+        // echo "<pre>";
+        // print_r($rawCart);
+        // echo "<pre>";
         $myCart = array();
         if (!empty($rawCart)) {
         	$rawCart = unserialize($rawCart->meta_file);
-        	if ($fileType != '' || $fileType != null) {
         		foreach ($rawCart as $key => $value) {
-        			if($value['file_type'] == $fileType){
-        				$myCart[$key] = array (
+                    $channel = isset($value['channel']) && $value['channel'] != '' ? strtolower($value['channel']) : strtolower($_SESSION['channel']);
+                    $file_type = isset($value['file_type']) && $value['file_type'] != '' ? strtolower($value['file_type']) : 'image';
+        			if($format == 'categorized'){	
+                        $myCart[$channel][$file_type][$key] = array (
         			    			'file_title' => $value['file_title'],
                                     'file_path' => $value['file_path'],
         			    			'download_url' => $value['download_url'],
         			    			'post_id' => $value['post_id'],
         				    		'file_type' => $value['file_type'],
         				    		'user_id' => $value['user_id'],
-        				    		'thumb' => $value['thumb']
+                                    'thumb' => $value['thumb'],
+        				    		'channel' => $value['channel']
         		    			);
-        			}
+                    }else {
+                        $myCart[$key] = array (
+                                    'file_title' => $value['file_title'],
+                                    'file_path' => $value['file_path'],
+                                    'download_url' => $value['download_url'],
+                                    'post_id' => $value['post_id'],
+                                    'file_type' => $value['file_type'],
+                                    'user_id' => $value['user_id'],
+                                    'thumb' => $value['thumb'],
+                                    'channel' => $value['channel']
+                                );
+                    }
         		}
-        	}else {
-        		$myCart = $rawCart;
-        	}
         }
     	return $myCart != null ? $myCart : array();
     }
@@ -1679,6 +1699,10 @@ if (!function_exists('checkFileInCart')){
      */
     function checkFileInCart($fileID){
         $cart_array = get_custom_cart_contents();
+        // echo "<pre>";
+        // print_r($cart_array);
+        // echo "</pre>";
+        // echo "<br>";
         $cart_array_filtered = array_filter($cart_array);
         if(!empty($cart_array_filtered)){
             return array_key_exists($fileID, $cart_array);

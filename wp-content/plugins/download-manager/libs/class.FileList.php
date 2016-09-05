@@ -415,6 +415,7 @@ class FileList
         $fhtml = "";
         $postID = get_the_id();
         $userID = get_current_user_id( );
+        $channel = $_SESSION['channel'];
         $ind = \WPDM_Crypt::Encrypt($sfile);
         $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
         $absolute_file_path = getFileAbsolutePathByURL($sfile);
@@ -451,7 +452,16 @@ class FileList
         }
 
         // FORM : INPUT FIELDS - use by bulk add to cart
-        $cart_data = prepare_cart_data(null,$fileTitle,$filepath,urlencode($downloadUrl),$postID,$fileType,$userID,$thumb);
+        $cart_array['file-id'] = $fileID; 
+        $cart_array['file-title'] = $fileTitle; 
+        $cart_array['file-path'] = $filepath; 
+        $cart_array['download-url'] = urlencode($downloadUrl); 
+        $cart_array['post-id'] = $postID; 
+        $cart_array['file-type'] = $fileType;
+        $cart_array['user-id'] = $userID;
+        $cart_array['thumb'] = $thumb;
+        $cart_array['channel'] = $channel;
+        $cart_data = prepare_cart_data($cart_array);
         $serialized_cart = serialize($cart_data);
         
         // FILE PANEL CONTAINER 
@@ -461,7 +471,7 @@ class FileList
         $fhtml .= "         <div class='show-meta'>";
         $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
         $fhtml .= "             <p class='file-size'>".custom_wpdm_file_size($absolute_file_path,0)."</p>";
-        $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID} $isFileClickable'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' >{$buttonText}</a>";
+        $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID} $isFileClickable'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' data-channel='{$channel}' >{$buttonText}</a>";
         $fhtml .= "         </div>";
         $fhtml .= "         <span class='close-btn' data-file-id='{$fileID}' data-user-id='{$userID}'><i class='fa fa-lg fa-times'></i></span>";
         $fhtml .= "     </div>";
@@ -537,6 +547,7 @@ class FileList
                                                 'file-type' : jQuery(this).attr('data-file-type'),
                                                 'user-id'   : jQuery(this).attr('data-user-id'),
                                                 'thumb'     : jQuery(this).attr('data-thumb'),
+                                                'channel'     : jQuery(this).attr('data-channel'),
                                                 'cartnonce'     : cartnonce
                                             },
                                             function(response) {
