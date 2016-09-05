@@ -375,7 +375,6 @@ class FileList
      */
     public static function CategorizedFileList($allfiles_sorted, $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null){
 
-        $files_counter = count($allfiles_sorted);
         if (is_array($allfiles_sorted)) {
             foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
                 $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
@@ -398,11 +397,7 @@ class FileList
             }
         }
 
-        if ($files_counter > 0){
-            return $fhtml;
-        }else {
-            return "<p style='color:black'>No files available for download.</p>";
-        }
+        return $fhtml;
     }
 
     /**
