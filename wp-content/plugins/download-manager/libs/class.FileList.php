@@ -391,6 +391,7 @@ class FileList
                 $thumb = "";
                 $ind = \WPDM_Crypt::Encrypt($sfile);
                 $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
+                $file['ID'] = null;
                 $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                 $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file);              

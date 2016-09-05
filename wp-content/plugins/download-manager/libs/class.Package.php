@@ -120,7 +120,7 @@ class Package {
         
         // @todo:: minify code
         if(function_exists('set_last_visited_show')) set_last_visited_show();
-
+        // $file['ID'] = $this->ID;
         $file['files'] = maybe_unserialize($vars['files']);
         $fhtml = '';
         $files_counter = 0;
