@@ -188,6 +188,9 @@ auEa+7b+FGTKs7dUo2BNGR7OVifK4GZ8w/ajS0TelhrSRi3BBQCGXLzUO/UURUAh
 		} catch (wfWAFBlockSQLiException $e) {
 			$this->eventBus->blockSQLi($ip, $e);
 			$this->blockAction($e);
+			
+		} catch (wfWAFLogException $e) {
+			$this->logAction($e);
 		}
 
 		$this->runCron();
@@ -306,11 +309,20 @@ auEa+7b+FGTKs7dUo2BNGR7OVifK4GZ8w/ajS0TelhrSRi3BBQCGXLzUO/UURUAh
 				$cron = array(
 					new wfWAFCronFetchRulesEvent(time() +
 						(86400 * ($this->getStorageEngine()->getConfig('isPaid') ? .5 : 7))),
+					new wfWAFCronFetchIPListEvent(time() + 86400),
 				);
 				$this->getStorageEngine()->setConfig('cron', $cron);
 			}
 
 			// Any migrations to newer versions go here.
+			if ($currentVersion === '1.0.0') {
+				$cron = $this->getStorageEngine()->getConfig('cron');
+				if (is_array($cron)) {
+					$cron[] = new wfWAFCronFetchIPListEvent(time() + 86400);
+				}
+				$this->getStorageEngine()->setConfig('cron', $cron);
+			}
+			
 			$this->getStorageEngine()->setConfig('version', WFWAF_VERSION);
 		}
 	}
@@ -736,6 +748,10 @@ HTML
 		header('HTTP/1.0 403 Forbidden');
 		exit($this->getBlockedMessage());
 	}
+	
+	public function logAction($e) {
+		$this->getStorageEngine()->logAttack(array('logged'), $e->getParamKey(), $e->getParamValue(), $this->getRequest());
+	}
 
 	/**
 	 * @return string
@@ -888,6 +904,9 @@ HTML
 						if (is_array($jsonData) && array_key_exists('success', $jsonData)) {
 							$this->getStorageEngine()->truncateAttackData();
 							$this->getStorageEngine()->unsetConfig('attackDataNextInterval');
+						}
+						if (array_key_exists('data', $jsonData) && array_key_exists('watchedIPList', $jsonData['data'])) {
+							$this->getStorageEngine()->setConfig('watchedIPs', $jsonData['data']['watchedIPList']);
 						}
 					}
 				} else if (is_string($response->getBody()) && preg_match('/next check in: ([0-9]+)/', $response->getBody(), $matches)) {
@@ -1320,6 +1339,50 @@ class wfWAFCronFetchRulesEvent extends wfWAFCronEvent {
 	}
 }
 
+class wfWAFCronFetchIPListEvent extends wfWAFCronEvent {
+	
+	public function fire() {
+		$waf = $this->getWaf();
+		if (!$waf) {
+			return;
+		}
+		$guessSiteURL = sprintf('%s://%s/', $waf->getRequest()->getProtocol(), $waf->getRequest()->getHost());
+		try {
+			
+			$request = new wfWAFHTTP();
+			$request->setHeaders(array(
+				'Content-Type' => 'application/json',
+			));
+			$response = wfWAFHTTP::post(WFWAF_API_URL_SEC . "?" . http_build_query(array(
+					'action' => 'send_waf_attack_data',
+					'k'      => $waf->getStorageEngine()->getConfig('apiKey'),
+					's'        => $waf->getStorageEngine()->getConfig('siteURL') ? $waf->getStorageEngine()->getConfig('siteURL') : $guessSiteURL,
+				), null, '&'), '[]', $request);
+			
+			if ($response instanceof wfWAFHTTPResponse && $response->getBody()) {
+				$jsonData = wfWAFUtils::json_decode($response->getBody(), true);
+				if (array_key_exists('data', $jsonData) && array_key_exists('watchedIPList', $jsonData['data'])) {
+					$waf->getStorageEngine()->setConfig('watchedIPs', $jsonData['data']['watchedIPList']);
+				}
+			}
+		} catch (wfWAFHTTPTransportException $e) {
+			error_log($e->getMessage());
+		}
+	}
+	
+	/**
+	 * @return wfWAFCronEvent|bool
+	 */
+	public function reschedule() {
+		$waf = $this->getWaf();
+		if (!$waf) {
+			return false;
+		}
+		$newEvent = new self(time() + 86400);
+		return $newEvent;
+	}
+}
+
 class wfWAFEventBus implements wfWAFObserver {
 
 	private $observers = array();
@@ -1538,6 +1601,9 @@ class wfWAFBlockXSSException extends wfWAFRunException {
 }
 
 class wfWAFBlockSQLiException extends wfWAFRunException {
+}
+
+class wfWAFLogException extends wfWAFRunException {
 }
 
 class wfWAFBuildRulesException extends wfWAFException {
