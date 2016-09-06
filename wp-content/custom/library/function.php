@@ -605,11 +605,11 @@ if( !function_exists('set_channel_access') ){
             $country_group = get_current_user_country_group();
             $operator_group = get_current_user_operator_group();
             $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" );
-            $array_access = is_array($access) ? unserialize($access[0]) : false;
             
             if(!empty($array_access) && $array_access !== false){
                 // echo "-not admin-";
                 $array_access_simplified = array();
+                $array_access = is_array($access) && count($access) > 0 ? unserialize($access[0]) : false;
                 foreach ($array_access as $key => $value) {
                     array_push($array_access_simplified,$value);
                 }
@@ -618,7 +618,6 @@ if( !function_exists('set_channel_access') ){
                     set_default_channel($array_access_simplified[0]);
                 else
                     $_SESSION['channel'] = $channel;
-                // echo '$use_default-'.$use_default;
             }else if (get_current_user_role() == 'administrator'){
                 // echo "-admin-";
                 $return_value = 1;

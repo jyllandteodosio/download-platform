@@ -374,8 +374,7 @@ class FileList
      * @usage Generate file list with preview - key art images
      */
     public static function CategorizedFileList($allfiles_sorted, $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null){
-
-        $files_counter = count($allfiles_sorted);
+        $fhtml = '';
         if (is_array($allfiles_sorted)) {
             foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
                 $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
@@ -392,17 +391,14 @@ class FileList
                 $thumb = "";
                 $ind = \WPDM_Crypt::Encrypt($sfile);
                 $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
+                $file['ID'] = null;
                 $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                 $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file);              
             }
         }
 
-        if ($files_counter > 0){
-            return $fhtml;
-        }else {
-            return "<p style='color:black'>No files available for download.</p>";
-        }
+        return $fhtml;
     }
 
     /**
