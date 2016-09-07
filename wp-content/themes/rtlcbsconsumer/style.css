@@ -652,7 +652,7 @@ a:hover {
 }
 
 #schedule-slideshow .timeslot {
-	/*font-size: 15px;*/
+	font-size: 15px;
 }
 
 #today-slideshow .timezone,
@@ -969,7 +969,7 @@ a:hover {
 	display: none;
 }
 #schedule-slideshow .schedule-shows.no-preview {
-	min-height:64px;
+	min-height:70px;
 }
 #schedule-slideshow .schedule-shows {
 	position: relative;
@@ -981,6 +981,7 @@ a:hover {
 	margin: 0;
     font-size: 15px;
     font-weight: bold;
+    min-height: 32px;
 }
 
 .page-template-videos .content-area {

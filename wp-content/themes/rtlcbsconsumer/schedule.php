@@ -55,9 +55,9 @@ get_header( 'rtl' ); ?>
 															<div class="schedule-shows <?php echo $is_no_preview." ".$show_counter;?>" title="<?php echo $event->post_title;?>">
 																<!-- <p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p> -->
 																<div class="time">
-																	<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
+																	<span class="timeslot"><?php echo date('H:i A',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
 																	<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
-																	<h3><?php echo mb_strimwidth($event->post_title,0,20,"...") ?></h3>
+																	<h3><?php echo mb_strimwidth($event->post_title,0,45,"...") ?></h3>
 																</div>
 															</div>
 														</a>
