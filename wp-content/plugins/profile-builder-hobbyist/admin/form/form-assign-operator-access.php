@@ -112,6 +112,7 @@
                     'data'      : form.serialize(),
                     'cartnonce' : cartnonce
                 },function(response) {
+                	console.log("Response:"+response);
                     jQuery("#message").removeClass("hidden");
                     jQuery("#message p").text(response);
                     location.reload();
