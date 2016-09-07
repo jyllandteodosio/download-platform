@@ -833,11 +833,7 @@ if(!function_exists('unserializeForm')){
         foreach($strArray as $item) {
             $item = urldecode($item);
             list($k, $v) = explode('=', $item);
-            /* Check if valid data */
-            if(unserialize($v) !== false)
-                $returndata[ $k ] = $v;
-            else
-                continue;
+            $returndata[ $k ] = $v;
         }
         return $returndata;
     }
