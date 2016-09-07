@@ -37,6 +37,9 @@ get_header( 'rtl' ); ?>
 									
 								<?php
 								$show_counter = 0;
+								// echo "<pre>";
+								// print_r($events);
+								// echo "</pre>";
 								if(count($events) > 0):
 									foreach ($events as $event) :
 										$show_info = getShowInfoByTitle($event->post_title);
@@ -46,11 +49,11 @@ get_header( 'rtl' ); ?>
 											$show_info = getShowInfoByTitle($event->post_title);
 											while($next_skip == true):
 												if($time_list_rebased[$show_counter] == $show_start_time): 
-													$is_no_preview = $show_info['featured_show'] != 'featured' ? "no-preview" : "";
+													$is_no_preview = "no-preview";//$show_info['featured_show'] != 'featured' ? "no-preview" : "";
 													$next_skip = false;?>
 														<a href="<?php echo site_url($show_info['post_name']);?>">
 															<div class="schedule-shows <?php echo $is_no_preview." ".$show_counter;?>" title="<?php echo $event->post_title;?>">
-																<p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p>
+																<!-- <p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p> -->
 																<div class="time">
 																	<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
 																	<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>

@@ -651,6 +651,10 @@ a:hover {
 	font-weight: bold;
 }
 
+#schedule-slideshow .timeslot {
+	/*font-size: 15px;*/
+}
+
 #today-slideshow .timezone,
 #schedule-slideshow .timezone {
 	font-size: 12px;
