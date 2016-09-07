@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: image, attachment, optimize, optimization, lossless, lossy, photo, picture, seo, compression, gmagick, jpegtran, gifsicle, optipng, pngout, pngquant, jpegmini, tinyjpg, tinypng, webp, wp-cli 
 Requires at least: 4.4
 Tested up to: 4.6
-Stable tag: 2.9.6
+Stable tag: 2.9.8
 License: GPLv3
 
 Reduce image sizes in WordPress including NextGEN, GRAND FlAGallery, FooGallery and more using lossless/lossy methods and image format conversion.
@@ -31,6 +31,10 @@ The tools used for optimization are [jpegtran](http://jpegclub.org/jpegtran/), [
 EWWW Image Optimizer calls optimization utilities directly which is well suited to shared hosting situations where these utilities may already be installed. Pre-compiled binaries/executables are provided for optipng, gifsicle, pngquant, cwebp, and jpegtran. Pngout can be installed with one-click from the settings page. If none of that works, there is a cloud option that will work for any site.
 
 If you need a version of this plugin for cloud use only, see [EWWW Image Optimizer Cloud](https://wordpress.org/plugins/ewww-image-optimizer-cloud/). It is much more compact as it does not contain any binaries or any mention of the exec() function.
+
+= Support =
+
+If you need assistance using the plugin, please visit our [Support Page](https://ewww.io/contact-us/). The forums are community supported only.
 
 = Bulk Optimize =
 
@@ -113,7 +117,7 @@ To receive updates when new strings are available for translation, you can signu
 1. *Recommended* Visit the settings page to enable/disable specific tools and turn on advanced optimization features.
 1. Done!
 
-If these steps do not work, more detailed instructions are available below the video tutorials.
+If these steps do not work, more detailed instructions are available below the video tutorials. If you need further assistance using the plugin, please visit our [Support Page](https://ewww.io/contact-us/). The forums are community supported only.
 
 At the bottom of this page, you will find a list of known working webhosts. If you have any contributions or corrections to these lists, please contact me via the form at https://ewww.io/contact-us/
 
@@ -252,6 +256,29 @@ Pngout, TinyJPG/TinyPNG, JPEGmini, and Pngquant were recommended by EWWW IO user
 
 * feature requests are sticky at the top of the support forums, vote for the ones you like: https://wordpress.org/support/plugin/ewww-image-optimizer
 * If you would like to help translate this plugin in your language, get started here: https://translate.wordpress.org/projects/wp-plugins/ewww-image-optimizer/
+
+= 2.9.8 =
+* fixed: also disable parallel mode iternally if background testing is not successful
+* fixed: fatal error when WP Retina 2x is enabled with EWWW's parallel mode
+* fixed: parallel opt would hang if resizes were missing
+* fixed: prevent background test from accidentally spawning more tests
+* fixed: background test stuck in queue indefinitely if it didn't succeed
+
+= 2.9.7 =
+* fixed: cached value for multisite uploads directory incorrect on some sites
+* fixed: retina/hidpi images required separate async task with parallel optimization
+* fixed: retina function would try to run an async optimization even if the file didn't exist
+* fixed: one-time convert links (like JPG2PNG) from Media Library not working when Parallel mode enabled
+* fixed: images with transparency were being converted if PNG2JPG enabled regardless of JPG background setting when using API
+* fixed: mime-type meta for resizes updated on conversion and restoration
+* fixed: resizes were being checked, even if no filename was available
+* added: thread limit for parallel optimization, set to 5, can be modified by filter
+* added: filter to modify timeout for parallel optimization
+* added: filter to disable (or modify) the suffix added to converted images
+* added: debugging page to view and clear background optimization queues (must have EWWW's debug setting enabled) - under Media menu
+* changed: parallel mode only enabled if using API or your images have more than 5 resizes each
+* changed: background mode only enabled if background test succeeds (on plugin upgrade)
+* changed: file types with disabled optimization no longer included in unoptimized image counts
 
 = 2.9.6 =
 * fixed: set_time_limit() was still being called in a couple spots even if set_time_limit() is disabled by PHP
