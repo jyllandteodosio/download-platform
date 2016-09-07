@@ -606,18 +606,22 @@ if( !function_exists('set_channel_access') ){
             $operator_group = get_current_user_operator_group();
             $access = $wpdb->get_col( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" );
             
-            if(!empty($array_access) && $array_access !== false){
+            if(!empty($access) && $access !== false){
                 // echo "-not admin-";
                 $array_access_simplified = array();
                 $array_access = is_array($access) && count($access) > 0 ? unserialize($access[0]) : false;
-                foreach ($array_access as $key => $value) {
-                    array_push($array_access_simplified,$value);
+                if(!empty($array_access) && $array_access !== false){
+                    foreach ($array_access as $key => $value) {
+                        array_push($array_access_simplified,$value);
+                    }
+                    $return_value = in_array($channel, $array_access_simplified);
+                    if($use_default) 
+                        set_default_channel($array_access_simplified[0]);
+                    else
+                        $_SESSION['channel'] = $channel;
+                }else {
+                    $_SESSION['channel'] = 'none';
                 }
-                $return_value = in_array($channel, $array_access_simplified);
-                if($use_default) 
-                    set_default_channel($array_access_simplified[0]);
-                else
-                    $_SESSION['channel'] = $channel;
             }else if (get_current_user_role() == 'administrator'){
                 // echo "-admin-";
                 $return_value = 1;
