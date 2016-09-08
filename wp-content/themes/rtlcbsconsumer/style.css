@@ -601,6 +601,12 @@ a:hover {
 	width: calc(100% - 90px);
 }
 
+@media (max-width: 1199px) {
+	#showsToday {
+		width: calc(100% - 50px);
+	}
+}
+
 #showsToday .panel-body {
 	position: relative;
 	padding: 0 0 6px;
