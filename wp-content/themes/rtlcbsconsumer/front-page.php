@@ -40,7 +40,7 @@ get_header( 'rtl' ); ?>
 								<span class="timezone"><?php echo get_field('airing_time_jkt') ? "(".date('g:i a',get_field('airing_time_jkt'))." JKT/BKK)" : "";?></span>
 							</div>
 							<span class="title"><?php the_title(); ?></span>
-							<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,300,"...");?></p>
+							<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,320,"...");?></p>
 							<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>" class="view-more">View More</a>
 						</div>	
 					</div> 
@@ -61,7 +61,8 @@ get_header( 'rtl' ); ?>
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
 		<?php   if(function_exists('tribe_get_events')):
-					$events = getTribeEvents(current_time('Y-m-d').' 00:00',current_time('Y-m-d').' 23:59');
+					$events = getTribeEvents(date('2016-07-01').' 00:00',current_time('Y-m-d').' 23:59');
+					// $events = getTribeEvents(current_time('Y-m-d').' 00:00',current_time('Y-m-d').' 23:59');
                     
 					if(count($events) > 0):
 						while ($event = current($events) ):
