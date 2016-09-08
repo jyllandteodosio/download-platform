@@ -1345,6 +1345,9 @@ if (!function_exists('getAllShows')) {
         if ($count != null && is_numeric($count)){
             $args['posts_per_page'] = $count;
         }
+        echo "<pre>";
+        print_r($args);
+        echo "</pre>";
         $query_shows = new WP_Query( $args );
         return $query_shows;
     }
