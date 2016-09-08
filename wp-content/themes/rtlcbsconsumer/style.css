@@ -1023,8 +1023,14 @@ a:hover {
 
 @media (max-width: 991px) {
 	.page-template-schedule .content-area {
-		padding-left: 20px;
-		padding-right: 20px;
+		padding-left: 40px;
+		padding-right: 40px;
+	}
+	.schedule-slideshow-button .swiper-button-prev {
+		left: 6px;
+	}
+	.schedule-slideshow-button .swiper-button-next {
+		right: 4px;
 	}
 }
 
@@ -1036,6 +1042,9 @@ a:hover {
 	.page-template-videos .content-area {
 		padding: 10px 0 25px;
 		min-height: auto;
+	}
+	.schedule-slideshow-button .swiper-button-next {
+	    right: 4px;
 	}
 }
 
@@ -1714,6 +1723,9 @@ a:hover {
 	margin-top: 10px;
 	margin-bottom: 9px;
 	line-height: 19px;
+}
+#featured-slideshow .description br {
+	display: none;
 }
 
 #featured-slideshow .view-more,
