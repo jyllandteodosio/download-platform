@@ -1295,7 +1295,11 @@ a:hover {
 	padding: 30px;
 	text-align: left;
 }
-
+@media (max-width: 639px){
+	.show-synopsis {
+	    padding: 10px 20px;
+	}
+}
 .show-synopsis img {
 	margin: 0 auto;
 }

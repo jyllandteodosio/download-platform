@@ -71,7 +71,7 @@
          500: {
             slidesPerView: 1,
             slidesPerGroup: 1,
-            slidesPerColumn: 1,
+            slidesPerColumn: 1
          },
       },
        preventClicks: false, 
