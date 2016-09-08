@@ -1288,9 +1288,8 @@ if (!function_exists('getFeaturedBanners')) {
      * @param  integer $count   Number of desired result
      * @return Object           Returns queried featured banners
      */
-    function getFeaturedBanners($channel = 'entertainment',$count = 5){
+    function getFeaturedBanners($channel = 'entertainment',$count = null){
         $args = array(
-                    'posts_per_page' => $count,
                     'post_type' => 'wpdmpro', 
                     'tax_query' => array(
                         array(
@@ -1307,6 +1306,9 @@ if (!function_exists('getFeaturedBanners')) {
                         )
                       )
                   );
+        if ($count != null && $count > 0){
+            $args ['posts_per_page'] = $count;
+        }
         $query_shows = new WP_Query( $args );
         return $query_shows;  
     }
