@@ -1764,9 +1764,30 @@ a:hover {
 	}
 }
 
+@media (max-width: 991px) and (min-width: 768px) {
+	#featured-slideshow .day {
+		font-size: 15px;
+		line-height: 0;
+	}
+	#featured-slideshow .time {
+	    font-size: 12px;
+	    line-height: 1;
+	}
+	#featured-slideshow .title {
+	    font-size: 20px;
+	    line-height: 1;
+	}
+	#featured-slideshow .description {
+	    line-height: 15px;
+	}
+	#featured-slideshow .view-more{
+	     margin: 0; 
+	}
+}
+
 @media (max-width: 767px) {
 	#featured-slideshow .day {
-		font-size: 21px;
+		font-size: 18px;
 	}
 
 	#featured-slideshow .time {
@@ -1853,6 +1874,13 @@ a:hover {
 	padding: 20px 30px;
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e3000000', endColorstr='#00ffffff', GradientType=1 );
 }
+
+@media (max-width: 991px) and (min-width: 768px) {
+	#featured-slideshow .swiper-description {
+		padding: 10px 30px;
+	}
+}
+
 
 .left-info {
 	left: 0;
