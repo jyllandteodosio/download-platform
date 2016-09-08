@@ -1239,6 +1239,24 @@ a:hover {
   	float: right;
    padding: 10px 0;
 }
+@media (max-width: 1199px){
+	.show.show-wide .show-details {
+	    width: calc(100% - 200px);
+	}
+}
+@media (max-width: 991px){
+	.show.show-wide .show-details {
+	    width: 100%;
+	}
+	.show.show-wide .show-thumbnail-container {
+	    width: 100%;
+	}
+}
+@media (max-width: 767px){
+	.other-slideshow-container .show .show-thumbnail-container {
+	    height: 180px;
+	}
+}
 
 .show.show-wide .show-description {
 	margin: 0 10px;

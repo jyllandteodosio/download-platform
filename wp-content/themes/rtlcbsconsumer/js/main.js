@@ -49,8 +49,8 @@
       prevButton: '.other-shows-nav.swiper-button-prev',
       breakpoints: {
          639: {
-         slidesPerView: 1,
-         slidesPerGroup: 1
+            slidesPerView: 1,
+            slidesPerGroup: 1
          },
          991: {
             slidesPerView: 2,
@@ -68,15 +68,11 @@
       nextButton: '.latest-episodes-nav.swiper-button-next',
       prevButton: '.latest-episodes-nav.swiper-button-prev',
       breakpoints: {
-         // 640: {
-         //    slidesPerView: 1
-         // },
-         // 768: {
-         //    slidesPerView: 3
-         // }, 
-         // 1199: {
-         //    slidesPerView: 1
-         // },
+         500: {
+            slidesPerView: 1,
+            slidesPerGroup: 1,
+            slidesPerColumn: 1,
+         },
       },
        preventClicks: false, 
         preventClicksPropagation: true,
