@@ -1213,6 +1213,20 @@ a:hover {
 .other-slideshow-container .show.show-wide .show-thumbnail-container{
 	height: auto;
 }
+@media (max-width:425px){
+	.other-slideshow-container {
+		width: calc(100% - 50px);
+	}
+	.other-slideshow-container .show .show-thumbnail-container {
+	    height: 180px;
+	}
+	.swiper-button-prev {
+	    left: -5px;
+	}
+	.swiper-button-next{
+	    right: -5px;
+	}
+}
 .show.show-wide .show-thumbnail-container {
 	float: left;
 	width: 45%;
