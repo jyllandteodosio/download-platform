@@ -12,7 +12,7 @@
 	var homeSwiper = new Swiper( '#featured-slideshow', {
 		speed: 1000,
 		autoHeight: true,
-		// autoplay: 4000,
+		autoplay: 4000,
 		effect: 'fade',
 		pagination: '.swiper-pagination',
 		paginationClickable: true,	
@@ -68,9 +68,15 @@
       nextButton: '.latest-episodes-nav.swiper-button-next',
       prevButton: '.latest-episodes-nav.swiper-button-prev',
       breakpoints: {
-         1199: {
-            slidesPerView: 1
-         },
+         // 640: {
+         //    slidesPerView: 1
+         // },
+         // 768: {
+         //    slidesPerView: 3
+         // }, 
+         // 1199: {
+         //    slidesPerView: 1
+         // },
       },
        preventClicks: false, 
         preventClicksPropagation: true,

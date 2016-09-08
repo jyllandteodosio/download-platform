@@ -1293,7 +1293,7 @@ a:hover {
 .show-banner {
 	position: relative;
 	line-height: 1;
-	height: 363px;
+	height: auto;
     overflow: hidden;
 }
 
@@ -1685,6 +1685,11 @@ a:hover {
 @media (min-width: 1200px) {
 	#widget-home-sidebar {
 		padding-left: 50px;
+	}
+}
+@media (min-width: 768px) {
+	#widget-home-sidebar .section-title {
+		display: block;
 	}
 }
 
