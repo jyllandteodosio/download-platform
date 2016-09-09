@@ -1330,6 +1330,7 @@ if (!function_exists('getAllShows')) {
                                 )
                             );
         $args = array(
+                    'posts_per_page' => -1,
                     'post_type' => 'wpdmpro', 
                     'tax_query' => array(
                         array(
@@ -1346,6 +1347,7 @@ if (!function_exists('getAllShows')) {
             $args['posts_per_page'] = $count;
         }
         $query_shows = new WP_Query( $args );
+        // echo "query:".$query_shows->request;
         return $query_shows;
     }
 }
