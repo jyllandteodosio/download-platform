@@ -1291,6 +1291,8 @@ if (!function_exists('getFeaturedBanners')) {
     function getFeaturedBanners($channel = 'entertainment',$count = null){
         $args = array(
                     'post_type' => 'wpdmpro', 
+                    'orderby'   => 'title',
+                    'order'     => 'ASC',
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
