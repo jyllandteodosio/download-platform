@@ -1332,6 +1332,8 @@ if (!function_exists('getAllShows')) {
         $args = array(
                     'posts_per_page' => -1,
                     'post_type' => 'wpdmpro', 
+                    'orderby'   => 'title',
+                    'order'     =>  'ASC',
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
@@ -1339,6 +1341,7 @@ if (!function_exists('getAllShows')) {
                           'terms'    => ' shows-'.$channel,
                         ),
                       )
+
                   );
         if($have_vimeo){
             $args['meta_query'] = $vimeo_meta_query;
