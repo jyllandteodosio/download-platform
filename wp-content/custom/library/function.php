@@ -277,7 +277,7 @@ if( !function_exists('getTribeEventsUniqueStartTime')) {
 
 if( !function_exists('getShowInfoByTitle')) {
     /**
-     * Decription                Will return an array of unique timeslot in ascending order 
+     * Decription                Will return an array of show information via show title
      * @param  Array $daterange  Range of dates to query
      * @return Array             Array of unique timeslots
      */
@@ -302,7 +302,7 @@ if( !function_exists('getShowInfoByTitle')) {
 
 if( !function_exists('getSlugByTitle')) {
     /**
-     * Decription                Will return an array of unique timeslot in ascending order 
+     * Decription                Will return the show slug via title
      * @param  Array $daterange  Range of dates to query
      * @return Array             Array of unique timeslots
      */
@@ -336,7 +336,7 @@ function getCustomCartContents(){
     return $rawCart;
 }
 
-function getCustomCartCount(){
+function getCustomCartCount($data_to_count = 'cart'){
 	global $wpdb;
     $user_id = get_current_user_id( );
     // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
