@@ -318,13 +318,15 @@ if( !function_exists('getSlugByTitle')) {
 /**
  * Database functions for Custom Cart
  */
-function getUsersByRole($role = 'administrator'){
-    $args = array(
-                'role' => $role
-            );
-    $query_users = new WP_User_Query( $args );
-    $users = $query_users->get_results();
-    return $users;
+if (!function_exists('getUsersByRole')){
+    function getUsersByRole($role = 'administrator'){
+        $args = array(
+                    'role' => $role
+                );
+        $query_users = new WP_User_Query( $args );
+        $users = $query_users->get_results();
+        return $users;
+    }
 }
 
 if (!function_exists('getCustomCartData')){
@@ -362,12 +364,14 @@ if (!function_exists('getCustomCartData')){
     }
 }
 
-function ajaxGetCustomCartItemsCount(){
-    $return_value = getCustomCartData('items count');
-    echo $return_value;
-    die();
+if (!function_exists('ajaxGetCustomCartItemsCount')){
+    function ajaxGetCustomCartItemsCount(){
+        $return_value = getCustomCartData('items count');
+        echo $return_value;
+        die();
+    }
+    add_action('wp_ajax_get_custom_cart_items_count', 'ajaxGetCustomCartItemsCount');
 }
-add_action('wp_ajax_get_custom_cart_items_count', 'ajaxGetCustomCartItemsCount');
 
 function insertToCustomCart($serialized_cart){
 	global $wpdb;
@@ -480,7 +484,7 @@ if( !function_exists('get_current_user_role') ){
 
 if( !function_exists('get_current_user_operator_group') ){
     /**
-     * Get current role of logged user.
+     * Get current operator group of logged user.
      * @return String|bool Returns user role if logged in, else return false;
      */
     function get_current_user_operator_group($user_id = NULL){
@@ -1255,19 +1259,22 @@ if(!function_exists('download_file')){
     add_action('wp_ajax_download_file', 'download_file');
 }
 
-/* HOMEPAGE QUERIES */
-if (!function_exists('getFeaturedBanners')) {
+if (!function_exists('getFeaturedShows')) {
     /**
-     * Get banners of featured shows
-     * @param  string  $channel Either entertainment or extreme
-     * @param  integer $count   Number of desired result
-     * @return Object           Returns queried featured banners
+     * Get featured shows (paginated)
+     * @param  string  $channel        Either entertainment or extreme
+     * @param  integer $posts_per_page Desired number of post per page
+     * @param  string  $query_var      Either page or paged
+     * @return Object                  Returns featured shows.
      */
-    function getFeaturedBanners($channel = 'entertainment',$count = null){
+    function getFeaturedShows($channel = 'entertainment', $posts_per_page = null, $query_var = 'page' ){
+        $paged = ( get_query_var($query_var) ) ? get_query_var($query_var) : 1;
+
         $args = array(
                     'post_type' => 'wpdmpro', 
                     'orderby'   => 'title',
                     'order'     => 'ASC',
+                    'paged' => $paged,
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
@@ -1284,12 +1291,13 @@ if (!function_exists('getFeaturedBanners')) {
                       )
                   );
         if ($count != null && $count > 0){
-            $args ['posts_per_page'] = $count;
+            $args ['posts_per_page'] = $posts_per_page;
         }
         $query_shows = new WP_Query( $args );
-        return $query_shows;  
+        return $query_shows;
     }
 }
+
 if (!function_exists('getAllShows')) {
     /**
      * Get featured shows (paginated)
@@ -1331,39 +1339,7 @@ if (!function_exists('getAllShows')) {
         return $query_shows;
     }
 }
-if (!function_exists('getFeaturedShows')) {
-    /**
-     * Get featured shows (paginated)
-     * @param  string  $channel        Either entertainment or extreme
-     * @param  integer $posts_per_page Desired number of post per page
-     * @param  string  $query_var      Either page or paged
-     * @return Object                  Returns featured shows.
-     */
-    function getFeaturedShows($channel = 'entertainment', $posts_per_page = 1, $query_var = 'paged' ){
-        $paged = ( get_query_var($query_var) ) ? get_query_var($query_var) : 1;
-        $args = array(
-                    'posts_per_page' => $posts_per_page,
-                    'post_type' => 'wpdmpro', 
-                    'paged' => $paged,
-                    'tax_query' => array(
-                        array(
-                          'taxonomy' => 'wpdmcategory',
-                          'field'    => 'slug',
-                          'terms'    => ' shows-'.$channel,
-                        ),
-                      ),
-                    'meta_query'  => array(
-                        array(
-                          'key'   => 'featured_show',
-                          'value'   => 'featured',
-                          'compare' => 'LIKE'
-                        )
-                      )
-                  );
-        $query_shows = new WP_Query( $args );
-        return $query_shows;
-    }
-}
+
 
 if (!function_exists('getRecentFileUploadsCount')){
     /**
