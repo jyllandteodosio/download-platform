@@ -327,40 +327,43 @@ function getUsersByRole($role = 'administrator'){
     return $users;
 }
 
-function getCustomCartContents(){
-    global $wpdb;
-    $userID = get_current_user_id( );
-    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-    // $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID} AND channel = '{$channel}'" );
-    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$userID}" );
-    return $rawCart;
-}
+if (!function_exists('getCustomCartData')){
+    /**
+     * Description:                  Returns cart count entry, cart contents or items count
+     * @param  string $data_to_count 'cart count' - Cart entry count (1 or 0).
+     *                               'items count' - Cart items count
+     *                               'cart contents' - Array of cart files
+     * @return Integer               Cart count or contents
+     */
+    function getCustomCartData($data = 'cart count'){
+        global $wpdb;
+        $user_id = get_current_user_id( );
+        $return_value = 0;
+       
+        $cart_entry = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
 
-function getCustomCartCount($data_to_count = 'cart'){
-    global $wpdb;
-    $user_id = get_current_user_id( );
-    $return_count = 0;
-    
-    $cart_entry = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
+        if ($data == 'cart count'){
+            $return_value = !empty($cart_entry) ? count($cart_entry) : 0;
 
-    if ($data_to_count == 'cart'){ /* Will return the number of cart entry. 1 or 0 */
-        $return_count = !empty($cart_entry) ? count($cart_entry) : 0;
-
-    }else if ($data_to_count == 'items') { /* Will return the number of files in the cart */
-        if (!empty($cart_entry)) {
-            $rawCart = unserialize(trim($cart_entry->meta_file));
-            if($rawCart !== false){
-                $return_count = count($rawCart);
+        }else if ($data == 'items count') {
+            if (!empty($cart_entry)) {
+                $rawCart = unserialize(trim($cart_entry->meta_file));
+                if($rawCart !== false){
+                    $return_value = count($rawCart);
+                }
             }
-        }
-    }
 
-    return $return_count;
+        }else if ($data == 'cart contents') { 
+            $cart_data_unserialized = unserialize($cart_entry->meta_file);
+            $return_value = $cart_data_unserialized !== false ? $cart_data_unserialized : array();
+        }
+
+        return $return_value;
+    }
 }
 
 function ajaxGetCustomCartItemsCount(){
-    $return_value = getCustomCartCount('items');
-
+    $return_value = getCustomCartData('items count');
     echo $return_value;
     die();
 }
@@ -697,7 +700,7 @@ if(!function_exists('bulk_add_to_cart')){
     	    }
             if($empty_table_detector){
         	    $user_id = get_current_user_id( );
-        	    $cart_entry_count = getCustomCartCount();
+        	    $cart_entry_count = getCustomCartData();
 
         		if($cart_entry_count == 0 ){
         	    	$serialized_cart = serialize($cart_data_unserialized);
@@ -731,7 +734,7 @@ if(!function_exists('add_to_cart')){
     	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_cart_nonce__') ){ 
             $cart_data = prepare_cart_data($_POST);
     		$cart_array = structure_cart_data($cart_data);
-    	    $cart_entry_count = getCustomCartCount();
+    	    $cart_entry_count = getCustomCartData();
     		if($cart_entry_count == 0 ){
     	    	$serialized_cart = serialize($cart_array);
     		    $return_value = insertToCustomCart($serialized_cart);
@@ -764,7 +767,7 @@ if(!function_exists('remove_to_cart')){
             $cart_data['file_id']       = $_POST['file-id'];
             $cart_data['user_id']       = $_POST['user-id'];
 
-            $cart_entry_count = getCustomCartCount();
+            $cart_entry_count = getCustomCartData();
 
             if($cart_entry_count == 1 ){
                 // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
@@ -861,14 +864,10 @@ if(!function_exists('get_custom_cart_contents')){
      * @return Array                Cart Contents
      */
     function get_custom_cart_contents($fileType = null,$format = null){
-    	$rawCart = getCustomCartContents();
+    	$rawCart = getCustomCartData('cart contents');
         
-        // echo "<pre>";
-        // print_r($rawCart);
-        // echo "<pre>";
         $myCart = array();
         if (!empty($rawCart)) {
-        	$rawCart = unserialize($rawCart->meta_file);
         		foreach ($rawCart as $key => $value) {
                     $channel = isset($value['channel']) && $value['channel'] != '' ? strtolower($value['channel']) : strtolower($_SESSION['channel']);
                     $file_type = isset($value['file_type']) && $value['file_type'] != '' ? strtolower($value['file_type']) : 'image';
