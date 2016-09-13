@@ -337,53 +337,29 @@ function getCustomCartContents(){
 }
 
 function getCustomCartCount($data_to_count = 'cart'){
-	global $wpdb;
-    $user_id = get_current_user_id( );
-    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-    // $cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
-	$cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
-
-	return $cart_entry_count;
-}
-
-function getCustomCartItemsCount(){
     global $wpdb;
     $user_id = get_current_user_id( );
-    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-    // $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
-    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
-   
-    if (!empty($rawCart)) {
-        $rawCart = unserialize(trim($rawCart->meta_file));
-        if($rawCart !== false){
-            $return_value = count($rawCart);
-        }else {
-            $return_value = 0;
+    $return_count = 0;
+    
+    $cart_entry = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
+
+    if ($data_to_count == 'cart'){ /* Will return the number of cart entry. 1 or 0 */
+        $return_count = !empty($cart_entry) ? count($cart_entry) : 0;
+
+    }else if ($data_to_count == 'items') { /* Will return the number of files in the cart */
+        if (!empty($cart_entry)) {
+            $rawCart = unserialize(trim($cart_entry->meta_file));
+            if($rawCart !== false){
+                $return_count = count($rawCart);
+            }
         }
-    }else{
-        $return_value = 0;
     }
 
-    return $return_value;
+    return $return_count;
 }
 
 function ajaxGetCustomCartItemsCount(){
-    global $wpdb;
-    $user_id = get_current_user_id( );
-    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-    // $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
-    $rawCart = $wpdb->get_row( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
-   
-    if (!empty($rawCart)) {
-        $rawCart = unserialize($rawCart->meta_file);
-        if ($rawCart !== false){
-            $return_value = count($rawCart);
-        }else {
-            $return_value = 0;
-        }
-    }else{
-        $return_value = 0;
-    }
+    $return_value = getCustomCartCount('items');
 
     echo $return_value;
     die();
