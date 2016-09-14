@@ -1492,6 +1492,8 @@ if (!function_exists('getMonthsPromos')) {
     function getMonthsPromos($category = 'on-air', $promo_filter = 'this-month'){
         wp_reset_query();
         $channel = $_SESSION['channel'];
+
+
         $args = array(
                     'post_type' => 'wpdmpro', 
                     'posts_per_page' => -1,
@@ -1504,7 +1506,7 @@ if (!function_exists('getMonthsPromos')) {
                       )
                   );
         $query_shows = new WP_Query( $args );
-        //echo  $query_shows->request;
+        // echo  $query_shows->request;
         $promos = array();
         if($query_shows->have_posts()){
           while($query_shows->have_posts()) { 
@@ -1557,7 +1559,6 @@ if (!function_exists('getMonthsPromos')) {
           }
         } 
         wp_reset_query();
-
         return $promos;
     }
 }
@@ -1580,7 +1581,6 @@ if (!function_exists('get_promos')) {
         echo json_encode($promos);
         die();
     }
-
     add_action( 'wp_ajax_get_promos', 'get_promos' );
 }
 
@@ -1593,10 +1593,6 @@ if (!function_exists('checkFileInCart')){
      */
     function checkFileInCart($fileID){
         $cart_array = get_custom_cart_contents();
-        // echo "<pre>";
-        // print_r($cart_array);
-        // echo "</pre>";
-        // echo "<br>";
         $cart_array_filtered = array_filter($cart_array);
         if(!empty($cart_array_filtered)){
             return array_key_exists($fileID, $cart_array);
@@ -1735,7 +1731,11 @@ if (!function_exists('custom_get_rtl_channels')){
 }
 
 if (!function_exists('get_country_name')) {
-    
+    /**
+     * Description:        Returns country name via ISO
+     * @param  string $iso ISO code of country
+     * @return string      Country group name
+     */
     function get_country_name($iso = 'PH'){
         $iso = strtoupper($iso);
         $country_groups = custom_get_country_groups();
@@ -1744,7 +1744,12 @@ if (!function_exists('get_country_name')) {
 }
 
 if (!function_exists('get_user_info')) {
-    
+    /**
+     * Description             Returns a specific user info like email and login name
+     * @param  string $user_id User ID of user
+     * @param  string $data    data to fetch. email or login name
+     * @return string          Data requested
+     */
     function get_user_info($user_id, $data='email'){
         $user_info = get_userdata($user_id);
         $info = $data == 'email' ? $user_info->user_email : ($data == 'login' ? $user_info->user_login : "");
@@ -1836,43 +1841,6 @@ if(!function_exists('set_session_notice')){
     add_action( 'wp_ajax_nopriv_set_session_notice', 'set_session_notice' );
 }
 
-// ENQUEUE SCRIPTS
-// function my_scripts(){
-//     wp_enqueue_script('moment_js', "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js");
-// }
-// add_action("admin_enqueue_scripts", 'my_scripts');
-
-// echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
-// add_filter( 'cron_schedules', 'myprefix_add_weekly_cron_schedule' );
-// function myprefix_add_weekly_cron_schedule( $schedules ) {
-//     $schedules['minute'] = array(
-//         'interval' => 60, // 1 week in seconds
-//         'display'  => __( 'Per Minute' ),
-//     );
- 
-//     return $schedules;
-// }
-
-// // add_action( 'my_hourly_event',  'update_db_hourly' );
-
-// if ( ! wp_next_scheduled( 'my_hourly_event' ) ) {
-//     // wp_schedule_event( time(), 'minute', 'my_hourly_event' );
-// }
-// function update_db_hourly() {
-//     global $wpdb;
-//     $wpdb->insert( 
-//         'rtl21016_cron', 
-//         array( 
-//             'test' => 'value1'
-//         ) 
-//     );
-//     // testing();
-
-// } // end update_csv_hourly
-
-// wp_clear_scheduled_hook( 'my_hourly_event' );
-// add_action( 'init', 'testing', 100 );
-
 if(!function_exists('send_monthly_report')){
     /**
      * Send monthly reports to all administrator users
@@ -1903,26 +1871,6 @@ if(!function_exists('send_monthly_report')){
             echo "<script>console.log('Email sent to : {$user->user_email}')</script>";
             echo "<script>console.log('Result : {$result}')</script>";
         } 
-    }
-}
-
-if(!function_exists('getCommaSeparatedUserEmails')){
-    /**
-     * Get all administrator users
-     * @return String Comma separated list of all administrator users
-     */
-    function getCommaSeparatedUserEmails(){
-        $users = get_users('role=Administrator');
-        $email_counter = 1;
-        $formatted_email_recipient = '';
-        foreach ($users as $user) {
-            $formatted_email_recipient .= $user->user_email;
-            if($email_counter < count($users)){
-                $formatted_email_recipient .= ',';
-            }
-            $email_counter++;
-        }
-        return $formatted_email_recipient;
     }
 }
 
