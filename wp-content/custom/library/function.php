@@ -39,7 +39,6 @@ if (!isset($wpdb->exportsreports_reports)) {
 General Custom Helper Functions
 ====================================================================================================================================
  */
-
 if (!function_exists('contains')) {
     /**
      * Description:					Check if a string contains a specified character
@@ -354,7 +353,6 @@ if( !function_exists('checkIfImageFile') ){
     }
 }
 
-
 /*
 General Customized
 ====================================================================================================================================
@@ -397,7 +395,6 @@ function add_query_vars_filter( $vars ){
   return $vars;
 }
 add_filter( 'query_vars', 'add_query_vars_filter' );
-
 
 
 /*
@@ -451,12 +448,10 @@ if (!function_exists('ajaxGetCustomCartItemsCount')){
 function insertToCustomCart($serialized_cart){
     global $wpdb;
     $user_id = get_current_user_id( );
-    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
     $return_value = $wpdb->insert(
                             $wpdb->custom_cart,
                             array(
                                 'user_id' => $user_id,
-                                // 'channel' => $channel,
                                 'meta_file' => $serialized_cart,
                                 'created_at' => date('Y-m-d H:i:s')
                             )
@@ -467,13 +462,11 @@ function insertToCustomCart($serialized_cart){
 function updateToCustomCart($serialized_cart){
     global $wpdb;
     $user_id = get_current_user_id( );
-    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
     $return_value = $wpdb->update( 
                             $wpdb->custom_cart, 
                             array('meta_file' => $serialized_cart), 
                             array( 
                                 'user_id' => $user_id
-                                // ,'channel' => $channel
                                 )
                         );
     return $return_value;
@@ -483,12 +476,10 @@ function deleteToCustomCart(){
     global $wpdb;
 
     $user_id = get_current_user_id( );
-    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
     $return_value = $wpdb->delete( 
                             $wpdb->custom_cart, 
                             array( 
                                 'user_id' => $user_id
-                                // ,'channel' => $channel
                             ) 
                         );
     return $return_value;
@@ -497,8 +488,6 @@ function deleteToCustomCart(){
 function fetchEntryFromCustomCart(){
     global $wpdb;
     $user_id = get_current_user_id( );
-    // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-    // $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" )[0];
     $cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$user_id}" );
     $cart_entry = is_array($cart_entry) ? $cart_entry[0] : false;
     return $cart_entry;
@@ -533,7 +522,6 @@ if(!function_exists('bulk_add_to_cart')){
                     $cart_entry = fetchEntryFromCustomCart();
                     $unserialized_cart = unserialize($cart_entry);
                     $serialized_cart = serialize($unserialized_cart+$cart_data_unserialized);
-                    // $serialized_cart = serialize(array_merge($unserialized_cart, $cart_data_unserialized));
                     $return_value = updateToCustomCart($serialized_cart);
                 }
             }else{
@@ -566,7 +554,6 @@ if(!function_exists('add_to_cart')){
                 $cart_entry = fetchEntryFromCustomCart();
                 $unserialized_cart = unserialize($cart_entry);
                 $serialized_cart = serialize($unserialized_cart+$cart_array);
-                // $serialized_cart = serialize(array_merge($unserialized_cart, $cart_array));
                 $return_value = updateToCustomCart($serialized_cart);
             }
         }else {
@@ -594,8 +581,6 @@ if(!function_exists('remove_to_cart')){
             $cart_entry_count = getCustomCartData();
 
             if($cart_entry_count == 1 ){
-                // $channel = isset($_SESSION['channel']) ? $_SESSION['channel'] : 'none';
-        //          $cart_entry_count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->custom_cart WHERE user_id = {$user_id} AND channel = '{$channel}'" );
                 $raw_cart_entry = $wpdb->get_col( "SELECT meta_file FROM $wpdb->custom_cart WHERE user_id = {$cart_data['user_id']}");
                 $cart_entry = is_string($raw_cart_entry[0]) ? unserialize($raw_cart_entry[0]) : false;
                 $meta_file_count = is_array($cart_entry) ? count($cart_entry) : 0;
