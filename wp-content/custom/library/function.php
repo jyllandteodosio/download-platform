@@ -1382,7 +1382,7 @@ if (!function_exists('getFeaturedShows')) {
                         )
                       )
                   );
-        if ($count != null && $count > 0){
+        if ($posts_per_page != null && $posts_per_page > 0){
             $args ['posts_per_page'] = $posts_per_page;
         }
         $query_shows = new WP_Query( $args );
