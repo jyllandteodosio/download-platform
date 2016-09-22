@@ -77,6 +77,36 @@ function add_query_vars_filter( $vars ){
 }
 add_filter( 'query_vars', 'add_query_vars_filter' );
 
+/**
+ * To override Activate page function
+ */
+function rtl_wpmu_signup_user_notification( $user, $user_email, $key, $meta = array() ) {
+    // Send email with activation link.
+    $admin_email = get_site_option( 'admin_email' );
+    if ( $admin_email == '' )
+        $admin_email = 'support@' . $_SERVER['SERVER_NAME'];
+    $from_name = get_site_option( 'site_name' ) == '' ? 'WordPress' : esc_html( get_site_option( 'site_name' ) );
+    $message_headers = "From: \"{$from_name}\" <{$admin_email}>\n" . "Content-Type: text/plain; charset=\"" . get_option('blog_charset') . "\"\n";
+    $message = sprintf(
+        apply_filters( 'wpmu_signup_user_notification_email',
+            __( "To activate your user, please click the following link:\n\n%s\n\nAfter you activate, you will receive *another email* with your login." ),
+            $user, $user_email, $key, $meta
+        ),
+        site_url( "activate/?key=$key" )
+    );
+    // TODO: Don't hard code activation link.
+    $subject = sprintf(
+        apply_filters( 'wpmu_signup_user_notification_subject',
+            __( '[%1$s] Activate %2$s' ),
+            $user, $user_email, $key, $meta
+        ),
+        $from_name,
+        $user
+    );
+    wp_mail( $user_email, wp_specialchars_decode( $subject ), $message, $message_headers );
+    return true;
+}
+add_filter('wpmu_signup_user_notification', 'rtl_wpmu_signup_user_notification', 10, 4);
 
 /*
 Custom Cart
