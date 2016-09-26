@@ -495,10 +495,6 @@ class FileList
                                     var addedText = \"Added&nbsp;&nbsp;<i class='fa fa-check'></i>\";
                                     var addText = '".__("Add to Cart","wpdmpro")."';
 
-                                    populateEpisodeFilter('episodicstills-tab-contents','id', '".self::$prefix_list['episodic_stills']."', 'episode_code');
-                                    populateEpisodeFilter('documents-tab-contents', 'id', '".self::$prefix_list['synopses']."', 'document_synopsis_code');
-                                    populateEpisodeFilter('synopses-tab-contents', 'id', '".self::$prefix_list['synopses']."', 'synopsis_code');
-                            
                                     jQuery('.table-files').submit(function(event) {
                                         event.preventDefault();
                                         var form = jQuery(this);
@@ -565,42 +561,6 @@ class FileList
                                         );
                                     });
 
-                                    // jQuery('.add-to-cart-btn').click(function(event){
-                                    //     event.preventDefault();
-                                    //     var button = jQuery(this);
-                                    //     var file_id = jQuery(this).attr('data-file-id');
-                                    //     jQuery('.add-to-cart-btn.'+file_id).addClass('disabled-links').text('Adding..');
-                                    //     jQuery.post(
-                                    //         ajaxurl, 
-                                    //         {   'action': 'add_to_cart',
-                                    //             'file-id'   : file_id,
-                                    //             'file-title': jQuery(this).attr('data-file-title'),
-                                    //             'file-path' : jQuery(this).attr('data-file-path'),
-                                    //             'download-url' : jQuery(this).attr('data-download-url'),
-                                    //             'post-id'   : jQuery(this).attr('data-post-id'),
-                                    //             'file-type' : jQuery(this).attr('data-file-type'),
-                                    //             'user-id'   : jQuery(this).attr('data-user-id'),
-                                    //             'thumb'     : jQuery(this).attr('data-thumb'),
-                                    //             'channel'     : jQuery(this).attr('data-channel'),
-                                    //             'cartnonce'     : cartnonce
-                                    //         },
-                                    //         function(response) {
-                                    //             console.log('add:');
-                                    //             console.log(response);
-
-                                    //             if(response == 'success'){
-                                    //                 jQuery('.show-items > .'+file_id+'').addClass('added-to-cart');
-                                    //                 jQuery('.add-to-cart-btn.'+file_id).html(addedText);
-                                    //                 updateCartCount();
-                                    //             }else if (response == 'failed') {
-                                    //                 jQuery('.add-to-cart-btn.'+file_id).removeClass('disabled-links').html(addText);
-                                    //                 console.log('add to cart failed');
-                                    //             }
-                                    //         }
-                                    //     );
-                                    // });
-
-                                    // jQuery('.close-btn').click(function(event){
                                     jQuery('.show-items-wrap').on('click', '.close-btn', function(event){
                                         var button = jQuery(this);
                                         var file_id = jQuery(this).attr('data-file-id');
@@ -643,96 +603,6 @@ class FileList
                                             }
                                         );
                                     }
-
-                                    function showAllShowItems(tab_class){
-                                        jQuery('.'+tab_class+' .show-items .item').show();
-                                    }
-
-                                    function populateEpisodeFilter(tab_class,attribute_type, prefix, filter_id) {
-                                        var attr_type = attribute_type == 'id' ? '#' : '.';
-                                        var episodes_list = new Array();
-                                        var file_title_epi;
-                                        var file_title_epi_no;
-                                        var text_nodes = jQuery('.'+tab_class+' .show-items .item .show-meta p:first-child')
-                                          .contents()
-                                          .filter(function() {
-                                            return this.nodeType === 3; //Node.TEXT_NODE
-                                          });
-                                    
-                                        jQuery.each(text_nodes, function( index, value ) {
-                                            file_title_epi = value.textContent.toLowerCase().split(prefix);  /* will return something like this : '0006' */
-                                            if(file_title_epi[1] != undefined){
-                                                file_title_epi = file_title_epi[1].split('-');
-                                                file_title_epi_no = parseInt(file_title_epi);
-                                                console.log(prefix+':'+file_title_epi_no);
-                                                if (!isNaN(file_title_epi_no)){
-                                                    episodes_list.push(file_title_epi_no);
-                                                }
-                                            }
-                                        });
-                                        if(episodes_list.length > 0) {
-                                            jQuery.unique(episodes_list);
-                                            episodes_list.sort(sortNumber);
-                                            jQuery.each(episodes_list, function( index, value ) {
-                                                jQuery(attr_type+filter_id)
-                                                     .append(jQuery('<option></option>')
-                                                                .attr('value',value)
-                                                                .text('Episode '+value)); 
-                                            })
-                                            console.log( 'Episodes - '+ episodes_list);   
-                                        } 
-                                        addSelectFilterListener(tab_class,attribute_type,filter_id,prefix);
-                                    }
-
-                                    function addSelectFilterListener(tab_class,attribute_type,select_filter_id,prefix){
-                                        var attr_type = attribute_type == 'id' ? '#' : '.';
-                                        /* Make contains search case insensitive */
-                                        jQuery.expr[':'].contains = jQuery.expr.createPseudo(function(arg) {
-                                            return function( elem ) {
-                                                return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
-                                            };
-                                        });
-                                        jQuery( attr_type+select_filter_id )
-                                          .change(function () {
-                                            var str = '';
-                                            jQuery( attr_type+select_filter_id+' option:selected' ).each(function() {
-                                              str += jQuery( this ).val();
-                                            });
-                                            if(str == 'all') {
-                                                showAllShowItems(tab_class);
-                                                console.log('show all');
-                                            }else {
-                                                showAllShowItems(tab_class);
-                                                console.log('prefix : '+prefix);
-                                                var search_results_not = '';
-                                                var search_results = '';
-                                                var search_result_countdown = 4;
-                                                while(search_results.length == 0 && search_result_countdown > 0){
-                                                    console.log('search result countdown:'+ search_result_countdown);
-                                                    var search_string = prefix+pad(str,search_result_countdown--);
-                                                    search_results = jQuery('.'+tab_class+' .show-items .item:contains(\"'+search_string+'\")');
-                                                    search_results_not = jQuery('.'+tab_class+' .show-items .item:not(:contains(\"'+search_string+'\"))');
-                                                    console.log('search length : '+search_results.length);
-                                                    if(search_results.length > 0){
-                                                        search_results_not.hide();
-                                                        console.log('Search String : '+search_string);
-                                                    }
-                                                    
-                                                }
-                                                
-                                            }
-                                        });
-                                    }
-
-                                    function pad (str, max) {
-                                      str = str.toString();
-                                      return str.length < max ? pad('0' + str, max) : str;
-                                    }
-
-                                    function sortNumber(a,b) {
-                                        return a - b;
-                                    }
-
 
                                 });
                             </script>";
