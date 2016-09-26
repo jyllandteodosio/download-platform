@@ -331,7 +331,7 @@ class Package {
         }
         
         // Shows - Custom Script
-        // if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = \WPDM\libs\FileList::getScriptFile();
+        if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = '';//\WPDM\libs\FileList::getScriptFile();
         // End of custom 
     endif;
 
