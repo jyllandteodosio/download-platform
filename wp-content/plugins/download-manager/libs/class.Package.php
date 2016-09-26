@@ -300,10 +300,27 @@ class Package {
                 foreach ($file_category as $file_category_key => $tab) {
                     foreach ($tab as $key => $tab_attr) {
                         if( array_key_exists($tab_attr['prefix'], $categorized_files)){
-                            if(strpos("_".$template,'['.$tab_attr['template_shortcode'].']')){} 
-                                $vars[$tab_attr['template_shortcode']] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[$tab_attr['prefix']] ,$tab_attr['prefix'] ,$file_category_key ,$file ,$specific_thumbnails ,$file_type ,$fileinfo);
+                            if(strpos("_".$template,'['.$tab_attr['template_shortcode'].']')){
+
+                                $file_list_data_prep = array (
+                                        'all_files' => $categorized_files[$tab_attr['prefix']],
+                                        'prefix' => $tab_attr['prefix'],
+                                        'category' => $file_category_key,
+                                        'file_object' => $file,
+                                        'specific_thumbnails' => $specific_thumbnails,
+                                        'file_type' => $file_type,
+                                        'file_info' => $fileinfo,
+                                        'post_id'   => get_the_id(),
+                                        'permalink' => get_permalink()
+                                    );
+
+                                $file_list_data_prep_serialized = serialize($file_list_data_prep);
+
+                                $vars[$tab_attr['template_shortcode']] = "<input name='serialized-data' class='serialized-data' type='hidden' value='".$file_list_data_prep_serialized."'>";
+                                // $vars[$tab_attr['template_shortcode']] = \WPDM\libs\FileList::CategorizedFileList($categorized_files[$tab_attr['prefix']] ,$tab_attr['prefix'] ,$file_category_key ,$file ,$specific_thumbnails ,$file_type ,$fileinfo);
+                            }
                         }else{
-                            $vars[$tab_attr['template_shortcode']] = "<p style='color:black'>No files available for download.</p>";
+                            $vars[$tab_attr['template_shortcode']] = "<p class='files-status-message' style='color:black'>No files available for download.</p>";
                         }
                     }
                 }

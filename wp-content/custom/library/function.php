@@ -1347,6 +1347,30 @@ if (!function_exists('custom_get_shows()')) {
     }
 }
 
+if(!function_exists('generate_show_files')){
+    /**
+     * Ajax function for adding specific files to cart
+     */
+    function generate_show_files(){
+        $security_nonce = $_POST['security_nonce'];
+        $return_value = 0;
+        if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ){ 
+            $serialized_data = $_POST['serialized-data'];
+            $unserialized_form = unserializeForm($serialized_data);
+            $serialized_show_files = $unserialized_form['serialized-data'];
+            $show_files = unserialize($serialized_show_files);
+            $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($show_files['all_files'],$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+            // print_r($categorizedFileList);
+            $return_value = 1;
+        }else{
+            $return_value = 0;
+        }
+        echo $return_value == 1 ? $categorizedFileList : false;
+        die();
+    }
+    add_action('wp_ajax_generate_show_files', 'generate_show_files');
+}
+
 /*
 Download Manager and ACF
 ====================================================================================================================================
