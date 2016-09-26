@@ -499,8 +499,10 @@ class FileList
                                         event.preventDefault();
                                         var form = jQuery(this);
                                         var form_submitted_id = form.attr('id');
+                                        var form_submit_button = jQuery('#'+form_submitted_id+' .filter-wrap .show-filter');
                                         jQuery('#'+form_submitted_id+' .add-to-cart-btn').addClass('disabled-links');
                                         console.log(form.attr('id'));
+                                        form_submit_button.val('Adding...').addClass('disabled-links');
                                         jQuery.post(
                                             ajaxurl, 
                                             {
@@ -520,6 +522,7 @@ class FileList
                                                     jQuery('#'+form_submitted_id+' .add-to-cart-btn').removeClass('disabled-links');
                                                     console.log('insert failed');
                                                 }
+                                                form_submit_button.val('Select All').removeClass('disabled-links');
                                             }
                                         );
                                     });
