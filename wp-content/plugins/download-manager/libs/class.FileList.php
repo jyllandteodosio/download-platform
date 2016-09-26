@@ -373,7 +373,7 @@ class FileList
      * @return string
      * @usage Generate file list with preview - key art images
      */
-    public static function CategorizedFileList($allfiles_sorted, $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null){
+    public static function CategorizedFileList($allfiles_sorted = array(), $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null, $post_id = null, $permalink = ""){
         $fhtml = '';
         if (is_array($allfiles_sorted)) {
             foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
@@ -394,10 +394,9 @@ class FileList
                 $file['ID'] = null;
                 $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                 $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
-                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file);              
+                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink);  
             }
         }
-
         return $fhtml;
     }
 
@@ -407,15 +406,17 @@ class FileList
      * @return html
      * @usage returns html format of displayed file panel
      */
-    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null) {
+    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null, $post_id = null, $permalink = "") {
         $fhtml = "";
-        $postID = get_the_id();
+        $postID = $post_id;
+        // $postID = get_the_id();
         $userID = get_current_user_id( );
         $channel = $_SESSION['channel'];
         $ind = \WPDM_Crypt::Encrypt($sfile);
         $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
         $absolute_file_path = getFileAbsolutePathByURL($sfile);
-        $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file).$postID."&ind=".$ind : $sfile;
+        $downloadUrl = $fileType != self::$prefix_list['promos'] ? $permalink."?wpdmdl=".$postID."&ind=".$ind : $sfile;
+        // $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file).$postID."&ind=".$ind : $sfile;
         $buttonText = !checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
         $isFileAdded = !checkFileInCart($fileID) ? "" : "disabled";
         $isFileClickable = !checkFileInCart($fileID) ? "" : "disabled-links";
@@ -484,16 +485,16 @@ class FileList
      */
     public static function getScriptFile(){
 
-        $siteurl = admin_url('/admin-ajax.php');
-        $cartnonce = wp_create_nonce('__rtl_cart_nonce__');
+        // $siteurl = admin_url('/admin-ajax.php');
+        // $cartnonce = wp_create_nonce('__rtl_cart_nonce__');
         $fhtml = '';
         $fhtml .= " <script type='text/javascript' language = 'JavaScript'>
                                 jQuery(document).ready(function(){
-                                    var ajaxurl = '{$siteurl}';
-                                    var cartnonce = '{$cartnonce}';
+                                    var ajaxurl = my_ajax_object.ajax_url;
+                                    var cartnonce = my_ajax_object.ajax_cart_nonce;
                                     var addedText = \"Added&nbsp;&nbsp;<i class='fa fa-check'></i>\";
                                     var addText = '".__("Add to Cart","wpdmpro")."';
-                                    
+
                                     populateEpisodeFilter('episodicstills-tab-contents','id', '".self::$prefix_list['episodic_stills']."', 'episode_code');
                                     populateEpisodeFilter('documents-tab-contents', 'id', '".self::$prefix_list['synopses']."', 'document_synopsis_code');
                                     populateEpisodeFilter('synopses-tab-contents', 'id', '".self::$prefix_list['synopses']."', 'synopsis_code');
@@ -526,9 +527,11 @@ class FileList
                                             }
                                         );
                                     });
-
-                                    jQuery('.add-to-cart-btn').click(function(event){
+                                    
+                                    jQuery('.show-items-wrap').on('click', '.add-to-cart-btn', function(event){
                                         event.preventDefault();
+                                        console.log('clicked!!!');
+
                                         var button = jQuery(this);
                                         var file_id = jQuery(this).attr('data-file-id');
                                         jQuery('.add-to-cart-btn.'+file_id).addClass('disabled-links').text('Adding..');
@@ -562,7 +565,43 @@ class FileList
                                         );
                                     });
 
-                                    jQuery('.close-btn').click(function(event){
+                                    // jQuery('.add-to-cart-btn').click(function(event){
+                                    //     event.preventDefault();
+                                    //     var button = jQuery(this);
+                                    //     var file_id = jQuery(this).attr('data-file-id');
+                                    //     jQuery('.add-to-cart-btn.'+file_id).addClass('disabled-links').text('Adding..');
+                                    //     jQuery.post(
+                                    //         ajaxurl, 
+                                    //         {   'action': 'add_to_cart',
+                                    //             'file-id'   : file_id,
+                                    //             'file-title': jQuery(this).attr('data-file-title'),
+                                    //             'file-path' : jQuery(this).attr('data-file-path'),
+                                    //             'download-url' : jQuery(this).attr('data-download-url'),
+                                    //             'post-id'   : jQuery(this).attr('data-post-id'),
+                                    //             'file-type' : jQuery(this).attr('data-file-type'),
+                                    //             'user-id'   : jQuery(this).attr('data-user-id'),
+                                    //             'thumb'     : jQuery(this).attr('data-thumb'),
+                                    //             'channel'     : jQuery(this).attr('data-channel'),
+                                    //             'cartnonce'     : cartnonce
+                                    //         },
+                                    //         function(response) {
+                                    //             console.log('add:');
+                                    //             console.log(response);
+
+                                    //             if(response == 'success'){
+                                    //                 jQuery('.show-items > .'+file_id+'').addClass('added-to-cart');
+                                    //                 jQuery('.add-to-cart-btn.'+file_id).html(addedText);
+                                    //                 updateCartCount();
+                                    //             }else if (response == 'failed') {
+                                    //                 jQuery('.add-to-cart-btn.'+file_id).removeClass('disabled-links').html(addText);
+                                    //                 console.log('add to cart failed');
+                                    //             }
+                                    //         }
+                                    //     );
+                                    // });
+
+                                    // jQuery('.close-btn').click(function(event){
+                                    jQuery('.show-items-wrap').on('click', '.close-btn', function(event){
                                         var button = jQuery(this);
                                         var file_id = jQuery(this).attr('data-file-id');
                                         jQuery('.show-items > .'+file_id+'').addClass('disabled-links');
