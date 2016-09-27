@@ -1354,18 +1354,41 @@ if(!function_exists('generate_show_files')){
     function generate_show_files(){
         $security_nonce = $_POST['security_nonce'];
         $return_value = 0;
+        $return_array = array();
+        $return_array['hidden_files_count'] = 0;
         if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ){ 
             $serialized_data = $_POST['serialized-data'];
+            $files_limit = $_POST['limit'];
             $unserialized_form = unserializeForm($serialized_data);
+
             $serialized_show_files = $unserialized_form['serialized-data'];
             $show_files = unserialize($serialized_show_files);
-            $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($show_files['all_files'],$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-            // print_r($categorizedFileList);
-            $return_value = 1;
-        }else{
-            $return_value = 0;
+            // print_r(count($show_files['all_files']).'-----');
+            $topreview_show_files = $show_files['all_files'];
+            if ( count($show_files['all_files']) >= $files_limit ){
+                // echo count($show_files['all_files'])." greater than ".$files_limit;
+                $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit);
+                // $hidden_show_files = array_slice($show_files['all_files'],$files_limit);
+                // print_r($topreview_show_files);
+                $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
+                // print_r(count($show_files['all_files']).'-----');
+                    // print_r(count($topreview_show_files).'-----');
+                $return_array['hidden_files_count'] = count($show_files['all_files']);
+            }
+
+            if ( $show_files !== false ){
+                $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+                // print_r($categorizedFileList);
+                $return_array['files'] = $categorizedFileList;
+                $return_array['updated_serialized_data'] = serialize($show_files);
+                
+                $return_value = 1;
+                // echo "all files:";
+                // print_r($show_files['all_files']);
+            }
         }
-        echo $return_value == 1 ? $categorizedFileList : false;
+
+        echo $return_value == 1 ? json_encode($return_array) : false;
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
