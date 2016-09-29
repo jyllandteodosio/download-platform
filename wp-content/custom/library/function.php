@@ -1363,35 +1363,24 @@ if(!function_exists('generate_show_files')){
 
             $serialized_show_files = $unserialized_form['serialized-data'];
             $show_files = unserialize($serialized_show_files);
-            // print_r(count($show_files['all_files']).'-----');
             $topreview_show_files = $show_files['all_files'];
             if ( count($show_files['all_files']) >= $files_limit ){
-                // echo count($show_files['all_files'])." greater than ".$files_limit;
                 $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
                 $return_array['topreview_show_files'] = $topreview_show_files;
-                // $hidden_show_files = array_slice($show_files['all_files'],$files_limit);
-                // print_r($topreview_show_files);
-
+            
                 $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
-                // foreach ($topreview_show_files as $key => $value) {
-                //     unset($show_files['all_files'][$key]);
-                // }
                 $return_array['show_all_files'] = $show_files['all_files'];
-
-                // print_r(count($show_files['all_files']).'-----');
-                    // print_r(count($topreview_show_files).'-----');
+                
                 $return_array['hidden_files_count'] = count($show_files['all_files']);
             }
 
             if ( $show_files !== false ){
                 $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-                // print_r($categorizedFileList);
+
                 $return_array['files'] = $categorizedFileList;
                 $return_array['updated_serialized_data'] = serialize($show_files);
                 
                 $return_value = 1;
-                // echo "all files:";
-                // print_r($show_files['all_files']);
             }
         }
 
