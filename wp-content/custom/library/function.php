@@ -1371,8 +1371,13 @@ if(!function_exists('generate_show_files')){
                 $return_array['topreview_show_files'] = $topreview_show_files;
                 // $hidden_show_files = array_slice($show_files['all_files'],$files_limit);
                 // print_r($topreview_show_files);
-                $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
+
+                // $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
+                foreach ($topreview_show_files as $key => $value) {
+                    unset($show_files['all_files'][$key]);
+                }
                 $return_array['show_all_files'] = $show_files['all_files'];
+
                 // print_r(count($show_files['all_files']).'-----');
                     // print_r(count($topreview_show_files).'-----');
                 $return_array['hidden_files_count'] = count($show_files['all_files']);
