@@ -1630,10 +1630,10 @@ if( !function_exists('getEPGThumbnail') ) {
      * @param  string $fileTitle           File title of epg file
      * @return string                      Associated EPG thumbnail for the given filename if available
      */
-    function getEPGThumbnail($fileTitle) {
+    function getEPGThumbnail($fileTitle, $postID) {
         $epg_thumbnails = array();
-        if( have_rows('epg_thumbnail') ):
-            while ( have_rows('epg_thumbnail') ) : the_row();
+        if( have_rows('epg_thumbnail', $postID) ):
+            while ( have_rows('epg_thumbnail', $postID) ) : the_row();
                 $epg_month = strtolower(get_sub_field('epg_month'));
                 $thumbnail_path = get_sub_field('epg_image_thumbnail');
                 if(($epg_month!="" && $epg_month != null) && ($thumbnail_path != "" && $thumbnail_path != null)){

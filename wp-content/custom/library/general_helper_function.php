@@ -62,7 +62,7 @@ if( !function_exists('getFileAbsolutePathByURL') ) {
     function getFileAbsolutePathByURL($url_path) {
         $current_absolute_path = dirname(__FILE__);
         $base_url = get_site_url();
-        if(contains($base_url,'192.168.')){
+        if(contains($base_url,'localhost')){
             $current_absolute_path_segments = explode('\wp-content', $current_absolute_path); /* For Local Only*/
         }else{
             $current_absolute_path_segments = explode('/wp-content', $current_absolute_path); /* For live server */
@@ -71,9 +71,9 @@ if( !function_exists('getFileAbsolutePathByURL') ) {
         // Replace url path to absolute path 
         $full_absolute_path = str_replace($base_url,$current_absolute_path_segments[0],$url_path);
         // Replace forwardslash with backslash - not working recently
-        // if(contains($base_url,'192.168.')){
-        //     $full_absolute_path = str_replace('/','\\',$full_raw_absolute_path); /* For Local Only */
-        // }
+        if(contains($base_url,'localhost')){
+            $full_absolute_path = str_replace('/','\\',$full_absolute_path); /* For Local Only */
+        }
         return $full_absolute_path;
     }
 }
