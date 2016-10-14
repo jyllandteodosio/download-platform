@@ -425,7 +425,7 @@ class FileList
         
         /* Check if EPG file - will assign a special thumbnail if ever */
         if(contains($sfile,self::$prefix_list['channel_epg'])){
-            $thumb_path = getEPGThumbnail($fileTitle);
+            $thumb_path = getEPGThumbnail($fileTitle,$postID);
         }
         else {
             $thumb_path = WPDM_CACHE_DIR.basename($thumb);
