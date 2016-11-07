@@ -27,7 +27,7 @@ get_template_part('channel-setter');
 				<?php 
 					if(function_exists('tribe_get_events')):
 						$daterange = getDateRange();
-						$time_list_rebased = getTribeEventsUniqueStartTime($daterange);
+						$time_list_rebased = getTribeEventsUniqueStartTime($daterange, $channel);
 						$events_counter = 0;
 						foreach($daterange as $date):
 							$events_counter++;
@@ -47,11 +47,9 @@ get_template_part('channel-setter');
 									
 								<?php
 								$show_counter = 0;
-								// echo "<pre>";
-								// print_r($events);
-								// echo "</pre>";
 								if(count($events) > 0):
 									foreach ($events as $event) :
+										if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
 										$show_info = getShowInfoByTitle($event->post_title);
 										
 											$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
@@ -76,6 +74,7 @@ get_template_part('channel-setter');
 										<?php   endif;
 												$show_counter++;
 											endwhile;
+										endif;
 									endforeach;
 								endif;?>
 							</div>
