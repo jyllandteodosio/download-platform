@@ -7,7 +7,7 @@ class pc_robotstxt_admin {
 	}
 
 	function admin_menu() {
-		add_options_page( 'Robots.txt Settings', 'Robots.txt', 'manage_options', __FILE__, array( &$this, 'settings_page' ) );
+		add_options_page( 'Virtual Robots.txt Settings', 'Virtual Robots.txt', 'manage_options', __FILE__, array( &$this, 'settings_page' ) );
 	}// end function
 
 	function settings_page() {
@@ -21,8 +21,9 @@ class pc_robotstxt_admin {
 		if ( isset($_POST['update']) ) {
 			
 			// check user is authorised
-			if ( function_exists( 'current_user_can' ) && !current_user_can( 'manage_options' ) )
+			if ( function_exists( 'current_user_can' ) && !current_user_can( 'manage_options' ) ) {
 				die( 'Sorry, not allowed...' );
+			}
 			check_admin_referer( 'pc_robotstxt_settings' );
 
 			$options['user_agents'] = trim( $_POST['user_agents'] );
@@ -36,7 +37,7 @@ class pc_robotstxt_admin {
 		}// end if
 
 		echo '<div class="wrap">'
-			.'<h2>Robots.txt Settings</h2>'
+			.'<h2>Virtual Robots.txt Settings</h2>'
 			.'<form method="post">';
 		if ( function_exists( 'wp_nonce_field' ) ) wp_nonce_field( 'pc_robotstxt_settings' );
 		echo '<h3>User Agents and Directives for this site</h3>'

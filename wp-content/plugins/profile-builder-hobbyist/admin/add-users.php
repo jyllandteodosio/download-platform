@@ -7,7 +7,7 @@
  * @return void
  */
 function wppb_add_new_user_submenu_page() {
-	add_submenu_page( 'users.php', __( 'Add Operator User', 'profile-builder' ), __( 'Add Operator User', 'profile-builder' ), 'manage_options', 'profile-builder-add-user', 'wppb_add_user_content' );
+	add_submenu_page( 'profile-builder', __( 'Add New Operator', 'profile-builder' ), __( 'Add Operator User', 'profile-builder' ), 'manage_options', 'profile-builder-add-user', 'wppb_add_user_content' );
 }
 add_action( 'admin_menu', 'wppb_add_new_user_submenu_page',  1);
 

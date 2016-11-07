@@ -11,19 +11,12 @@
 define('WPDMR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 
 function plugin_menu() {
-
-	add_menu_page( 'Reports', 'Reports Dashboard', 'manage_options', 'wpdm-reports', "reports_dashboard" );
-	add_submenu_page( 'wpdm-reports', 'Reports Data', 'Reports Data', 'manage_options', 'wpdm-reports-data', 'wpdm_reports_data_content' );
+    add_menu_page( 'Reports', 'Reports', 'manage_options', 'wpdm-reports-data', 'wpdm_reports_data_content' );
+    add_submenu_page( 'wpdm-reports-data', 'Send Reports', 'Send Reports', 'manage_options', 'wpdm-reports', 'reports_dashboard' );
 }
 add_action('admin_menu', "plugin_menu");
 
 function reports_dashboard(){
-	// die(WPDMR_PLUGIN_DIR);
-	// echo "<script>alert('omg!');</script>";
-	// wp_clear_scheduled_hook('my_task_hook');
-	// echo "<script>alert('omg!');</script>";
-	// echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
-	// echo "dashboard";
     ?>
     <input type="button" value=" Send Monthly Reports " id="auto_report" class="button" style="" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports','temp_report_window');">
     <iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
@@ -64,7 +57,7 @@ function register_plugin_styles() {
 }
 
 
-/* Cron job not working */
+/* Cron job not working =================================================================================================*/
 // function my_cron_schedules($schedules){
 //     $schedules['five_seconds'] = array(
 //         'interval' => 1,

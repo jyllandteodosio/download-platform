@@ -11,7 +11,7 @@ get_header( 'rtl' ); ?>
 	?>
 		<div class="swiper-wrapper">
 			<?php
-				$query_shows = getFeaturedBanners($channel,5);
+				$query_shows = getFeaturedShows($channel);
 				if($query_shows->have_posts()):
 	                while($query_shows->have_posts()) : $query_shows->the_post();
 	            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
@@ -40,7 +40,7 @@ get_header( 'rtl' ); ?>
 								<span class="timezone"><?php echo get_field('airing_time_jkt') ? "(".date('g:i a',get_field('airing_time_jkt'))." JKT/BKK)" : "";?></span>
 							</div>
 							<span class="title"><?php the_title(); ?></span>
-							<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,300,"...");?></p>
+							<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,320,"...");?></p>
 							<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>" class="view-more">View More</a>
 						</div>	
 					</div> 
@@ -61,7 +61,8 @@ get_header( 'rtl' ); ?>
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
 		<?php   if(function_exists('tribe_get_events')):
-					$events = getTribeEvents(current_time('Y-m-d').' 00:00',current_time('Y-m-d').' 23:59');
+					$events = getTribeEvents(date('2016-07-01').' 00:00',current_time('Y-m-d').' 23:59');
+					// $events = getTribeEvents(current_time('Y-m-d').' 00:00',current_time('Y-m-d').' 23:59');
                     
 					if(count($events) > 0):
 						while ($event = current($events) ):
@@ -106,13 +107,13 @@ get_header( 'rtl' ); ?>
 		<div class="row">
 			<?php
 				switch_to_blog( 1 );
-				$query_shows = getAllShows($channel, 4);
+				$query_shows = getFeaturedShows($channel,4);
 				if($query_shows->have_posts()):
 	                while($query_shows->have_posts()) : $query_shows->the_post();
 	            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
 	                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 	                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
-	                		<div class="spotlight-show-container col-xs-12 col-sm-6 col-md-3 col-lg-12">
+	                		<div class="spotlight-show-container col-xs-12 col-sm-4 col-md-3 col-lg-12">
 								<div class="spotlight-show">
 									<div class="spotlight-photo" style="background: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>') no-repeat top center; background-size:cover;">
 									   
@@ -131,7 +132,7 @@ get_header( 'rtl' ); ?>
 	</div>
 	<div id="widget-home-sidebar" class="col-xs-12 col-lg-6">
 		<h2 class="section-title">What's on RTL CBS Entertainment HD</h2>
-		<div id="home-video-player" class="video-player-container">
+		<div id="home-video-player" class="video-player-container col-lg-12 col-md-6 col-sm-6 col-xs-12">
 			<div class="video-player">
 				<?php
 					$query_show = getAllShows($channel,1,true);
@@ -172,7 +173,7 @@ get_header( 'rtl' ); ?>
 			</div>
 		</div>
 		<?php if ( is_active_sidebar( 'rtlcbs-home-sidebar' ) ) : ?>
-			<div id="home-sidebar" class="primary-sidebar widget-area" role="complementary">
+			<div id="home-sidebar" class="primary-sidebar widget-area col-lg-12 col-md-6 col-sm-6 col-xs-12" role="complementary">
 				<?php dynamic_sidebar( 'rtlcbs-home-sidebar' ); ?>
 			</div><!-- #primary-sidebar -->
 		<?php endif; ?>

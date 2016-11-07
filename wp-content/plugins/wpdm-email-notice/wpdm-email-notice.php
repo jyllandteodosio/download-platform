@@ -126,7 +126,18 @@ function send_email_notice($user, $files, $show_link){
 
 	$message = '';
 	$message .= "Hi {$user->user_login},<br><br>";
-	$message .= "<b>You have new files available for download today!</b><br>";
+	$message .= "New files are available for download on the RTL CBS Operator Site.<br>";
+	
+	if(!empty($files['promo']) || !empty($files['show']) ){
+		$message .= "<br><br>Updated assets include:<br>";
+	}
+	if(!empty($files['show'])){
+		$message .= "<ul>";
+		foreach ($files['show'] as $file) {
+			$message .= "<li><a href='".$show_link."'>".$file."</a></li>";
+		}
+		$message .= "</ul>";
+	}
 	if(!empty($files['promo'])){
 		$message .= "<br>Promo file/s:<br>";
 		$message .= "<ul>";
@@ -135,17 +146,9 @@ function send_email_notice($user, $files, $show_link){
 		}
 		$message .= "</ul>";
 	}
-	if(!empty($files['show'])){
-		$message .= "Show file/s:<br>";
-		$message .= "<ul>";
-		foreach ($files['show'] as $file) {
-			$message .= "<li><a href='".$show_link."'>".$file."</a></li>";
-		}
-		$message .= "</ul>";
-	}
-	$message .= "<br><br><b>To view and download the files,</b> <a href='".$show_link."'>log on to the Operator Website</a><br><br>
+	$message .= "<br>To view and download the files, log on to the <a href='".$show_link."'>Operator Site.</a><br><br>
 				Thanks,<br>
-				RTL CBS Asia Team";
+				RTL CBS";
 	// echo $message;
 	// Start output buffering to grab smtp debugging output
 	ob_start();
