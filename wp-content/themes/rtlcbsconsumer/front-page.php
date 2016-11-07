@@ -17,7 +17,7 @@ get_template_part('channel-setter');
 	<div id="featured-slideshow" class="swiper-container">
 	<?php
 	switch_to_blog( 1 );
-	$channel = 'entertainment';
+	// $channel = 'entertainment';
 	?>
 		<div class="swiper-wrapper">
 			<?php
