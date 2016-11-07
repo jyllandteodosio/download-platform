@@ -41,6 +41,7 @@ function process_operator_access(){
 	$cartnonce = $_POST['cartnonce'];
 	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_assign_operator_access__') ){ 
 		$data = unserializeForm($_POST['data']);
+		print_r($data);
 		if(!checkExistingCountryOperator($data)){
 			$return_value = insertToOperatorAccess($data);
 		}else {

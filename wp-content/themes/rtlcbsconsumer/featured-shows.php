@@ -10,7 +10,7 @@ get_header( 'rtl' ); ?>
 		switch_to_blog( 1 );
 
 		$channel = 'entertainment';
-		$query_shows = getFeaturedBanners($channel,5);
+		$query_shows = getFeaturedShows($channel);
 		?>
 			<div class="swiper-wrapper">
 				<?php
