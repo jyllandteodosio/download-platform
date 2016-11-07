@@ -18,7 +18,6 @@ get_template_part('channel-setter');
 		<div class="video-player">
 		<?php
 			switch_to_blog( 1 );
-			$channel = 'entertainment';
 
 			$query_show = getAllShows($channel,1,true);
 			if($query_show->have_posts()):

@@ -18,10 +18,7 @@ get_template_part('channel-setter');
 	<div id="featured-slideshow" class="swiper-container">
 		<?php
 		switch_to_blog( 1 );
-
-		$channel = 'entertainment';
-		$query_shows = getFeaturedShows($channel);
-		?>
+		$query_shows = getFeaturedShows($channel); ?>
 			<div class="swiper-wrapper">
 				<?php
 					if($query_shows->have_posts()):

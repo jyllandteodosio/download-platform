@@ -27,6 +27,3 @@
       }
     }
 
-  
-// }
-// echo "sess--".$_SESSION['channel'];
