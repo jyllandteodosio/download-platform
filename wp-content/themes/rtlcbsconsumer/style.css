@@ -70,7 +70,6 @@ a:hover {
 	background: #000 url('images/background-blue.png') no-repeat fixed center top;
 	background-size: cover;
 }
-
 /* BOOTSTRAP OVERRIDES
 ----------------------------------*/
 @media (min-width: 1200px) {

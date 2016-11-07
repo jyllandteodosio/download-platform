@@ -62,7 +62,7 @@ get_template_part('channel-setter');
 </div>
 <div id="showsToday" class="panel panel-default section">
 	<div class="panel-heading">
-		<h2 class="panel-title">Today on <span class="text-uppercase">RTL CBS Entertainment HD</span></h2>
+		<h2 class="panel-title">Today on <span class="text-capitalize">RTL CBS <?php echo $channel;?></span></h2>
 	</div>
 	<div class="panel-body">
 		<div id="today-slideshow" class="swiper-container">
@@ -138,7 +138,7 @@ get_template_part('channel-setter');
 		</div>
 	</div>
 	<div id="widget-home-sidebar" class="col-xs-12 col-lg-6">
-		<h2 class="section-title">What's on RTL CBS Entertainment HD</h2>
+		<h2 class="section-title">What's on <span class="text-capitalize">RTL CBS <?php echo $channel;?></span></h2>
 		<div id="home-video-player" class="video-player-container col-lg-12 col-md-6 col-sm-6 col-xs-12">
 			<div class="video-player">
 				<?php

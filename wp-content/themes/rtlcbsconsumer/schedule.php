@@ -19,7 +19,7 @@ get_template_part('channel-setter');
 <div class="content-area calendar-area">
 	<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 		<header class="entry-header" <?php echo $style; ?>>
-			<h1 class="entry-title"><?php the_title(); ?></h1> <?php edit_post_link(); ?>
+			<h1 class="entry-title"><span class="text-capitalize">RTL CBS <?php echo $channel;?></span> Schedule</h1> <?php edit_post_link(); ?>
 		</header>
 		<div class="entry-content">
 			<div id="schedule-slideshow" class="swiper-container">
