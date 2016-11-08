@@ -674,6 +674,9 @@ a:hover {
     background: rgba(0, 0, 0, 0.63);
     width: 100%;
 }
+#schedule-slideshow .no-preview .time {
+	background: #2c2c2e;
+}
 #today-slideshow .nowplaying {
 	display: block;
 }
@@ -991,12 +994,20 @@ a:hover {
 
 .page-template-schedule .entry-content {
 	background: #101010;
-	background: url('images/rtl-striped-bg.jpg') repeat top center;
 	background-attachment: fixed;
+}
+.page-template-schedule .rtl-red-tmpl .entry-content {
+	background: url('images/rtl-striped-bg.jpg') repeat top center;
+}
+.page-template-schedule .rtl-blue-tmpl .entry-content {
+	background: url('images/rtl-blue-striped-bg.jpg') repeat top center;
 }
 #schedule-slideshow .schedule-date-container {
 	background: #900b0e;
 	padding: 20px 10px;
+}
+.rtl-blue-tmpl #schedule-slideshow .schedule-date-container {
+	background: #4077af;
 }
 #schedule-slideshow .schedule-date-container h2 {
 	margin: 0;

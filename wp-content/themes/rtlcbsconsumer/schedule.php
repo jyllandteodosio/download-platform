@@ -27,48 +27,15 @@ get_template_part('channel-setter');
 					</header>
 
 					<div class="custom-slider-for">
-						<div class="schedule-date-container">
-							<h2>
-								<span class="schedule-day">Friday</span>
-								<span class="schedule-date">July 01, 2016</span>
-							</h2>
-						</div>
-						<div class="schedule-date-container">
-							<h2>
-								<span class="schedule-day">Friday</span>
-								<span class="schedule-date">July 02, 2016</span>
-							</h2>
-						</div>
-						<div class="schedule-date-container">
-							<h2>
-								<span class="schedule-day">Friday</span>
-								<span class="schedule-date">July 03, 2016</span>
-							</h2>
-						</div>
-						<div class="schedule-date-container">
-							<h2>
-								<span class="schedule-day">Friday</span>
-								<span class="schedule-date">July 04, 2016</span>
-							</h2>
-						</div>
-						<div class="schedule-date-container">
-							<h2>
-								<span class="schedule-day">Friday</span>
-								<span class="schedule-date">July 05, 2016</span>
-							</h2>
-						</div>
-						<div class="schedule-date-container">
-							<h2>
-								<span class="schedule-day">Friday</span>
-								<span class="schedule-date">July 06, 2016</span>
-							</h2>
-						</div>
-						<div class="schedule-date-container">
-							<h2>
-								<span class="schedule-day">Friday</span>
-								<span class="schedule-date">July 07, 2016</span>
-							</h2>
-						</div>
+						<?php $daterange = getDateRange();
+						foreach($daterange as $date):?>
+							<div class="schedule-date-container">
+								<h2>
+									<span class="schedule-day"><?php echo $date->format("l");?></span>
+									<span class="schedule-date"><?php echo $date->format("F d, Y");?></span>
+								</h2>
+							</div>
+						<?php endforeach;?>
 					</div>
 
 					<div class="highlight-container">
@@ -181,7 +148,53 @@ get_template_part('channel-setter');
 							</div>
 						</a>
 					</div>
-					<div>
+
+					<?php 
+					if(function_exists('tribe_get_events')):
+						$time_list_rebased = getTribeEventsUniqueStartTime($daterange, $channel);
+						$events_counter = 0;
+						foreach($daterange as $date):
+							$events_counter++;
+							$is_hidden = $events_counter > 1 ? "visibility-hidden" : "";
+							$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');?>
+							<div>
+								<?php
+								$show_counter = 0;
+								if(count($events) > 0):
+									foreach ($events as $event) :
+										if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
+										$show_info = getShowInfoByTitle($event->post_title);
+										
+											$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
+											$next_skip = true;
+											$show_info = getShowInfoByTitle($event->post_title);
+											while($next_skip == true):
+												if($time_list_rebased[$show_counter] == $show_start_time): 
+													$is_no_preview = $show_info['featured_show'] != 'featured' ? "no-preview" : "";
+													$next_skip = false;?>
+														<a href="<?php echo site_url($show_info['post_name']);?>">
+															<div class="schedule-shows no-preview" title="<?php echo $event->post_title;?>">
+																<p class="today-show-thumb-container" style=""></p>
+																<div class="time">
+																	<span class="timeslot"><?php echo date('H:i A',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
+																	<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
+																	<h3><?php echo mb_strimwidth($event->post_title,0,45,"...") ?></h3>
+																</div>
+															</div>
+														</a>
+										<?php   else: ?>
+													<div class="schedule-shows no-preview <?php echo $show_counter;?>"></div>
+										<?php   endif;
+												$show_counter++;
+											endwhile;
+										endif;
+									endforeach;
+								endif;?>
+							</div>
+						<?php endforeach;
+					endif;?>
+
+					<!-- <div>
 						<a href="">
 							<div class="schedule-shows no-preview 0" title="The Insider" style="height: 70px;">
 								<p class="today-show-thumb-container" style=""></p>
@@ -252,7 +265,7 @@ get_template_part('channel-setter');
 								</div>
 							</div>
 						</a>
-					</div>
+					</div> -->
 				</div>
 
 				
@@ -310,6 +323,7 @@ get_template_part('channel-setter');
 		  asNavFor: '.custom-slider-nav',
 		  adaptiveHeight: true,
 		  infinite: false,
+		  speed: 100,
 		  responsive: responsive_options
 		});
 		$('.custom-slider-nav').slick({
@@ -323,6 +337,7 @@ get_template_part('channel-setter');
 		  swipe: false,
 		  adaptiveHeight: true,
 		  infinite: false,
+		  speed: 100,
 		  responsive: responsive_options
 		});
 		$('.custom-slider-nav').slick({
@@ -336,6 +351,7 @@ get_template_part('channel-setter');
 		  swipe: false,
 		  adaptiveHeight: true,
 		  infinite: false,
+		  speed: 100,
 		  responsive: responsive_options
 		});
 
