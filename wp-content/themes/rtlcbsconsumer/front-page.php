@@ -2,13 +2,20 @@
 /**
  * Front page template
  */
-get_header( 'rtl' ); ?>
+get_template_part('channel-setter');
+
+  $channel = $_SESSION['channel'];
+  if ( $channel == 'entertainment'):
+    get_header('rtl');
+  elseif ( $channel == 'extreme'):
+    get_header('rtl-blue');
+  elseif($channel == 'none'):
+    get_header('rtl');
+  endif;
+?>
 <div class="section">
 	<div id="featured-slideshow" class="swiper-container">
-	<?php
-	switch_to_blog( 1 );
-	$channel = 'entertainment';
-	?>
+	<?php switch_to_blog( 1 ); ?>
 		<div class="swiper-wrapper">
 			<?php
 				$query_shows = getFeaturedShows($channel);
@@ -55,7 +62,7 @@ get_header( 'rtl' ); ?>
 </div>
 <div id="showsToday" class="panel panel-default section">
 	<div class="panel-heading">
-		<h2 class="panel-title">Today on <span class="text-uppercase">RTL CBS Entertainment HD</span></h2>
+		<h2 class="panel-title">Today on <span class="text-capitalize">RTL CBS <?php echo $channel;?></span></h2>
 	</div>
 	<div class="panel-body">
 		<div id="today-slideshow" class="swiper-container">
@@ -65,34 +72,43 @@ get_header( 'rtl' ); ?>
 					// $events = getTribeEvents(current_time('Y-m-d').' 00:00',current_time('Y-m-d').' 23:59');
                     
 					if(count($events) > 0):
+        				$events_counter = 0;
 						while ($event = current($events) ):
-						    $next_show = next($events);
-						    $show_info = getShowInfoByTitle($event->post_title);?>
-						   
-						    <div class="swiper-slide" title="<?php echo $event->post_title;?>">
-								<div class="time">
-									<?php
-									$current_time = time();
-									$current_show_time = strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT));
-									$next_show_time = strtotime(tribe_get_start_date($next_show->ID, false, Tribe__Date_Utils::DBTIMEFORMAT));
-									if( $current_time>=$current_show_time && $current_time<=$next_show_time):?>
-										<span class="nowplaying"><div class="arrow-right"></div> Now Playing...</span>
-									<?php endif;?>
-									<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
-									<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
+							$next_show = next($events);
+
+							if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
+								$events_counter++;
+							    $show_info = getShowInfoByTitle($event->post_title);?>
+							   
+							    <div class="swiper-slide" title="<?php echo $event->post_title;?>">
+									<div class="time">
+										<?php
+										$current_time = time();
+										$current_show_time = strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT));
+										$next_show_time = strtotime(tribe_get_start_date($next_show->ID, false, Tribe__Date_Utils::DBTIMEFORMAT));
+										if( $current_time>=$current_show_time && $current_time<=$next_show_time):?>
+											<span class="nowplaying"><div class="arrow-right"></div> Now Playing...</span>
+										<?php endif;?>
+										<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
+										<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
+									</div>
+									<a href="<?php echo site_url($show_info['post_name']);?>"><p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p></a>
+									<div class="swiper-description">
+										<span class="title"><?php echo mb_strimwidth($event->post_title,0,24,"...") ?></span>
+									</div>
+									
 								</div>
-								<a href="<?php echo site_url($show_info['post_name']);?>"><p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p></a>
-								<div class="swiper-description">
-									<span class="title"><?php echo mb_strimwidth($event->post_title,0,24,"...") ?></span>
-								</div>
-								
-							</div>
-							<?php
+								<?php
+							endif;
 						endwhile;
-			        else:?>
-			        	<span class="shows-message">No scheduled show today.</span>
-			<?php   endif; 
+			        	
+			   		endif; 
 				endif; ?>
+
+			<?php if ($events_counter == 0 || count($events) == 0): ?>
+				<span class="shows-message">No scheduled show today.</span>
+			<?php endif;?>
+			
 			</div>	
 		</div>	
 		<div class="today-nav swiper-button-prev"></div>
@@ -131,7 +147,7 @@ get_header( 'rtl' ); ?>
 		</div>
 	</div>
 	<div id="widget-home-sidebar" class="col-xs-12 col-lg-6">
-		<h2 class="section-title">What's on RTL CBS Entertainment HD</h2>
+		<h2 class="section-title">What's on <span class="text-capitalize">RTL CBS <?php echo $channel;?></span></h2>
 		<div id="home-video-player" class="video-player-container col-lg-12 col-md-6 col-sm-6 col-xs-12">
 			<div class="video-player">
 				<?php

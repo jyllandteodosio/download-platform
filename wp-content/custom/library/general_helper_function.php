@@ -176,6 +176,28 @@ if( !function_exists('getShowInfoByTitle')) {
     }
 }
 
+if ( !function_exists('checkEventCategoryByTitle') ){
+    function checkEventCategoryByTitle($channel = 'entertainment', $show_title = ''){
+        $current_blog_id = get_current_blog_id();
+        if ($current_blog_id != 1) switch_to_blog( 1 );
+        $args = array(
+                    'post_type' => 'wpdmpro', 
+                    's' => $show_title,
+                    'tax_query' => array(
+                        array(
+                          'taxonomy' => 'wpdmcategory',
+                          'field'    => 'slug',
+                          'terms'    => 'shows-'.$channel,
+                        ),
+                      )
+                  );
+        $query_shows = new WP_Query( $args );
+        if ($current_blog_id != 1) restore_current_blog();
+
+        return $query_shows->post_count;
+    }
+}
+
 if( !function_exists('getSlugByTitle')) {
     /**
      * Decription                Will return the show slug via title

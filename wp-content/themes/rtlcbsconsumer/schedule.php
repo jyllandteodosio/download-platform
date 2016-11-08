@@ -4,12 +4,22 @@
 $bannerUrl = get_field( 'banner_image' );
 $style = ( $bannerUrl ) ? 'style="background-image: url(\'' . $bannerUrl . '\');"' : '';
 
-get_header( 'rtl' ); ?>
+get_template_part('channel-setter');
+
+  $channel = $_SESSION['channel'];
+  if ( $channel == 'entertainment'):
+    get_header('rtl');
+  elseif ( $channel == 'extreme'):
+    get_header('rtl-blue');
+  elseif($channel == 'none'):
+    get_header('rtl');
+  endif;
+?>
 
 <div class="content-area calendar-area">
 	<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 		<header class="entry-header" <?php echo $style; ?>>
-			<h1 class="entry-title"><?php the_title(); ?></h1> <?php edit_post_link(); ?>
+			<h1 class="entry-title"><span class="text-capitalize">RTL CBS <?php echo $channel;?></span> Schedule</h1> <?php edit_post_link(); ?>
 		</header>
 		<div class="entry-content">
 			<div id="schedule-slideshow" class="swiper-container">
@@ -17,7 +27,7 @@ get_header( 'rtl' ); ?>
 				<?php 
 					if(function_exists('tribe_get_events')):
 						$daterange = getDateRange();
-						$time_list_rebased = getTribeEventsUniqueStartTime($daterange);
+						$time_list_rebased = getTribeEventsUniqueStartTime($daterange, $channel);
 						$events_counter = 0;
 						foreach($daterange as $date):
 							$events_counter++;
@@ -37,11 +47,9 @@ get_header( 'rtl' ); ?>
 									
 								<?php
 								$show_counter = 0;
-								// echo "<pre>";
-								// print_r($events);
-								// echo "</pre>";
 								if(count($events) > 0):
 									foreach ($events as $event) :
+										if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
 										$show_info = getShowInfoByTitle($event->post_title);
 										
 											$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
@@ -66,6 +74,7 @@ get_header( 'rtl' ); ?>
 										<?php   endif;
 												$show_counter++;
 											endwhile;
+										endif;
 									endforeach;
 								endif;?>
 							</div>
