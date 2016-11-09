@@ -69,7 +69,7 @@
 								'menu_class' => 'nav navbar-nav hide hidden-xs hidden-sm',
 								'menu_id' => 'featured-menu',
 								'container' => '',
-								'theme_location' => 'featured-shows',
+								'theme_location' => 'featured-shows-extreme',
 								'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>'
 							) ); ?>
 					</div>
