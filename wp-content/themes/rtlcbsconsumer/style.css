@@ -664,12 +664,18 @@ a:hover {
 	vertical-align: 2px;
 }
 
+#custom-slider-sticky {
+	z-index: 1;
+}
 #today-slideshow .time,
 #schedule-slideshow .time {
 	padding: 8px;
 	position: absolute;
     background: rgba(0, 0, 0, 0.63);
     width: 100%;
+}
+#schedule-slideshow .no-preview .time {
+	background: #2c2c2e;
 }
 #today-slideshow .nowplaying {
 	display: block;
@@ -736,18 +742,22 @@ a:hover {
 	right: -37px;
 }
 
+
 #showsToday .swiper-button-prev,
-.swiper-white .swiper-button-prev {
+.swiper-white .swiper-button-prev,
+.custom-slider-for .swiper-button-prev {
 	content: '';
 	width: 26px !important;
 	height: 30px !important;
 	background-position: -168px -43px;
 	background-image: url("images/flat-sprites.svg");
 	-pie-background: url("images/flat-sprites.svg");
+	background-size: auto;
 }
 
+
 #showsToday .swiper-button-next:after,
-.schedule-slideshow-button .swiper-button-next:after {
+.custom-slider-for .swiper-button-next:after {
 	content: '';
 	position: absolute;
 	width: 26px !important;
@@ -755,6 +765,7 @@ a:hover {
 	background-position: -194px -43px;
 	background-image: url("images/flat-sprites.svg");
 	-pie-background: url("images/flat-sprites.svg");
+	background-size: auto;
 }
 
 #showsToday .swiper-button-next.swiper-button-disabled, 
@@ -983,12 +994,20 @@ a:hover {
 
 .page-template-schedule .entry-content {
 	background: #101010;
-	background: url('images/rtl-striped-bg.jpg') repeat top center;
 	background-attachment: fixed;
+}
+.page-template-schedule .rtl-red-tmpl .entry-content {
+	background: url('images/rtl-striped-bg.jpg') repeat top center;
+}
+.page-template-schedule .rtl-blue-tmpl .entry-content {
+	background: url('images/rtl-blue-striped-bg.jpg') repeat top center;
 }
 #schedule-slideshow .schedule-date-container {
 	background: #900b0e;
 	padding: 20px 10px;
+}
+.rtl-blue-tmpl #schedule-slideshow .schedule-date-container {
+	background: #4077af;
 }
 #schedule-slideshow .schedule-date-container h2 {
 	margin: 0;
@@ -1004,7 +1023,7 @@ a:hover {
 }
 #schedule-slideshow .highlight-container {
 	background: #d2d3d5;
-    padding: 7.5px 10px;
+    padding: 13px 10px;
 }
 #schedule-slideshow .highlight-container .title {
 	font-weight: bold;
@@ -1046,42 +1065,29 @@ a:hover {
 	min-height: 500px;
 }
 
-.schedule-slideshow-button .swiper-button-next {
+.custom-slider-for .swiper-button-next {
+	position: absolute;
 	background: none;
-	right: 50px;
+	right: -50px;
 }
 
-.schedule-slideshow-button .swiper-button-prev {
-	/*background: none;*/
-	left: 50px;
+.custom-slider-for .swiper-button-prev {
+	position: absolute;
+	left: -50px;
 }
-
-.schedule-slideshow-button .swiper-button-next,
-.schedule-slideshow-button .swiper-button-prev {
-	top: 185px;
-}
-
-.schedule-slideshow-button .swiper-button-prev {
-	content: '';
-	width: 26px !important;
-	height: 30px !important;
-	background-position: -168px -43px;
-	background-image: url("images/flat-sprites.svg");
-	-pie-background: url("images/flat-sprites.svg");
-	background-size: auto;
-}
-
 
 @media (max-width: 991px) {
 	.page-template-schedule .content-area {
 		padding-left: 40px;
 		padding-right: 40px;
 	}
-	.schedule-slideshow-button .swiper-button-prev {
-		left: 6px;
+	.swiper-button-prev,
+	.custom-slider-for .swiper-button-prev {
+		left: -35px;
 	}
-	.schedule-slideshow-button .swiper-button-next {
-		right: 4px;
+	.swiper-button-next,
+	.custom-slider-for .swiper-button-next {
+		right: -35px;
 	}
 }
 
