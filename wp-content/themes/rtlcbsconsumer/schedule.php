@@ -44,7 +44,7 @@ get_template_part('channel-setter');
 					</div>
 
 					<div class="custom-slider-nav">
-						<div>
+						<!-- <div>
 							<a href="">
 								<div class="schedule-shows 0 show-highlights" title="The Insider" style="height: 70px;">
 									<p class="today-show-thumb-container" style="background-image: url('http://localhost/rtlcbsasia/operator/wp-content/uploads/2016/03/Chrisley_family-e1467276229174.jpg')"></p>
@@ -55,79 +55,43 @@ get_template_part('channel-setter');
 									</div>
 								</div>
 							</a>
-						</div>
-						<div>
-							<a href="">
-								<div class="schedule-shows 0 show-highlights" title="The Insider" style="height: 70px;">
-									<p class="today-show-thumb-container" style="background-image: url('http://localhost/rtlcbsasia/operator/wp-content/uploads/2016/03/Chrisley_family-e1467276229174.jpg')"></p>
-									<div class="time">
-										<span class="timeslot">00:45 AM</span>
-										<span class="timezone">(11:45 PM JKT/BKK)</span>
-										<h3>The Insider</h3>
-									</div>
+						</div> -->
+
+						<?php 
+						if(function_exists('tribe_get_events')):
+							foreach($daterange as $date):
+								$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');?>
+								<div>
+									<?php
+									if(count($events) > 0):
+										foreach ($events as $event) :
+
+											if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
+												$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
+												$next_skip = true;
+												$show_info = getShowInfoByTitle($event->post_title);
+												if ( $show_info['featured_show'] == 'featured' ):?>
+
+																<a href="<?php echo site_url($show_info['post_name']);?>">
+																	<div class="schedule-shows" title="<?php echo $event->post_title;?>">
+																		<p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p>
+																		<div class="time">
+																			<span class="timeslot"><?php echo date('H:i A',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
+																			<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
+																			<h3><?php echo mb_strimwidth($event->post_title,0,45,"...") ?></h3>
+																		</div>
+																	</div>
+																</a>
+												<?php  
+													break;
+												endif;
+											endif;
+
+										endforeach;
+									endif;?>
 								</div>
-							</a>
-						</div>
-						<div>
-							<a href="">
-								<div class="schedule-shows 0 show-highlights" title="The Insider" style="height: 70px;">
-									<p class="today-show-thumb-container" style="background-image: url('http://localhost/rtlcbsasia/operator/wp-content/uploads/2016/03/Chrisley_family-e1467276229174.jpg')"></p>
-									<div class="time">
-										<span class="timeslot">00:45 AM</span>
-										<span class="timezone">(11:45 PM JKT/BKK)</span>
-										<h3>The Insider</h3>
-									</div>
-								</div>
-							</a>
-						</div>
-						<div>
-							<a href="">
-								<div class="schedule-shows 0 show-highlights" title="The Insider" style="height: 70px;">
-									<p class="today-show-thumb-container" style="background-image: url('http://localhost/rtlcbsasia/operator/wp-content/uploads/2016/03/Chrisley_family-e1467276229174.jpg')"></p>
-									<div class="time">
-										<span class="timeslot">00:45 AM</span>
-										<span class="timezone">(11:45 PM JKT/BKK)</span>
-										<h3>The Insider</h3>
-									</div>
-								</div>
-							</a>
-						</div>
-						<div>
-							<a href="">
-								<div class="schedule-shows 0 show-highlights" title="The Insider" style="height: 70px;">
-									<p class="today-show-thumb-container" style="background-image: url('http://localhost/rtlcbsasia/operator/wp-content/uploads/2016/03/Chrisley_family-e1467276229174.jpg')"></p>
-									<div class="time">
-										<span class="timeslot">00:45 AM</span>
-										<span class="timezone">(11:45 PM JKT/BKK)</span>
-										<h3>The Insider</h3>
-									</div>
-								</div>
-							</a>
-						</div>
-						<div>
-							<a href="">
-								<div class="schedule-shows 0 show-highlights" title="The Insider" style="height: 70px;">
-									<p class="today-show-thumb-container" style="background-image: url('http://localhost/rtlcbsasia/operator/wp-content/uploads/2016/03/Chrisley_family-e1467276229174.jpg')"></p>
-									<div class="time">
-										<span class="timeslot">00:45 AM</span>
-										<span class="timezone">(11:45 PM JKT/BKK)</span>
-										<h3>The Insider</h3>
-									</div>
-								</div>
-							</a>
-						</div>
-						<div>
-							<a href="">
-								<div class="schedule-shows 0 show-highlights" title="The Insider" style="height: 70px;">
-									<p class="today-show-thumb-container" style="background-image: url('http://localhost/rtlcbsasia/operator/wp-content/uploads/2016/03/Chrisley_family-e1467276229174.jpg')"></p>
-									<div class="time">
-										<span class="timeslot">00:45 AM</span>
-										<span class="timezone">(11:45 PM JKT/BKK)</span>
-										<h3>The Insider</h3>
-									</div>
-								</div>
-							</a>
-						</div>
+							<?php endforeach;
+						endif;?>
 						
 					</div>
 					
@@ -136,19 +100,6 @@ get_template_part('channel-setter');
 				
 
 				<div class="custom-slider-nav">
-					<div>
-						<a href="">
-							<div class="schedule-shows no-preview 0" title="The Insider" style="height: 70px;">
-								<p class="today-show-thumb-container" style=""></p>
-								<div class="time">
-									<span class="timeslot">00:45 AM</span>
-									<span class="timezone">(11:45 PM JKT/BKK)</span>
-									<h3>The Insider</h3>
-								</div>
-							</div>
-						</a>
-					</div>
-
 					<?php 
 					if(function_exists('tribe_get_events')):
 						$time_list_rebased = getTribeEventsUniqueStartTime($daterange, $channel);
@@ -163,17 +114,15 @@ get_template_part('channel-setter');
 								if(count($events) > 0):
 									foreach ($events as $event) :
 										if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
-										$show_info = getShowInfoByTitle($event->post_title);
-										
 											$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
 											$next_skip = true;
 											$show_info = getShowInfoByTitle($event->post_title);
 											while($next_skip == true):
 												if($time_list_rebased[$show_counter] == $show_start_time): 
 													$is_no_preview = $show_info['featured_show'] != 'featured' ? "no-preview" : "";
-													$next_skip = false;?>
+													$next_skip = false;?>    
 														<a href="<?php echo site_url($show_info['post_name']);?>">
-															<div class="schedule-shows no-preview" title="<?php echo $event->post_title;?>">
+															<div class="schedule-shows no-preview " title="<?php echo $event->post_title;?>">
 																<p class="today-show-thumb-container" style=""></p>
 																<div class="time">
 																	<span class="timeslot"><?php echo date('H:i A',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
@@ -181,7 +130,7 @@ get_template_part('channel-setter');
 																	<h3><?php echo mb_strimwidth($event->post_title,0,45,"...") ?></h3>
 																</div>
 															</div>
-														</a>
+														</a> 
 										<?php   else: ?>
 													<div class="schedule-shows no-preview <?php echo $show_counter;?>"></div>
 										<?php   endif;
@@ -193,79 +142,6 @@ get_template_part('channel-setter');
 							</div>
 						<?php endforeach;
 					endif;?>
-
-					<!-- <div>
-						<a href="">
-							<div class="schedule-shows no-preview 0" title="The Insider" style="height: 70px;">
-								<p class="today-show-thumb-container" style=""></p>
-								<div class="time">
-									<span class="timeslot">00:45 AM</span>
-									<span class="timezone">(11:45 PM JKT/BKK)</span>
-									<h3>The Insider</h3>
-								</div>
-							</div>
-						</a>
-					</div>
-					<div>
-						<a href="">
-							<div class="schedule-shows no-preview 0" title="The Insider" style="height: 70px;">
-								<p class="today-show-thumb-container" style=""></p>
-								<div class="time">
-									<span class="timeslot">00:45 AM</span>
-									<span class="timezone">(11:45 PM JKT/BKK)</span>
-									<h3>The Insider</h3>
-								</div>
-							</div>
-						</a>
-					</div>
-					<div>
-						<a href="">
-							<div class="schedule-shows no-preview 0" title="The Insider" style="height: 70px;">
-								<p class="today-show-thumb-container" style=""></p>
-								<div class="time">
-									<span class="timeslot">00:45 AM</span>
-									<span class="timezone">(11:45 PM JKT/BKK)</span>
-									<h3>The Insider</h3>
-								</div>
-							</div>
-						</a>
-					</div>
-					<div>
-						<a href="">
-							<div class="schedule-shows no-preview 0" title="The Insider" style="height: 70px;">
-								<p class="today-show-thumb-container" style=""></p>
-								<div class="time">
-									<span class="timeslot">00:45 AM</span>
-									<span class="timezone">(11:45 PM JKT/BKK)</span>
-									<h3>The Insider</h3>
-								</div>
-							</div>
-						</a>
-					</div>
-					<div>
-						<a href="">
-							<div class="schedule-shows no-preview 0" title="The Insider" style="height: 70px;">
-								<p class="today-show-thumb-container" style=""></p>
-								<div class="time">
-									<span class="timeslot">00:45 AM</span>
-									<span class="timezone">(11:45 PM JKT/BKK)</span>
-									<h3>The Insider</h3>
-								</div>
-							</div>
-						</a>
-					</div>
-					<div>
-						<a href="">
-							<div class="schedule-shows no-preview 0" title="The Insider" style="height: 700px;">
-								<p class="today-show-thumb-container" style=""></p>
-								<div class="time">
-									<span class="timeslot">00:45 AM</span>
-									<span class="timezone">(11:45 PM JKT/BKK)</span>
-									<h3>The Insider</h3>
-								</div>
-							</div>
-						</a>
-					</div> -->
 				</div>
 
 				
@@ -312,7 +188,7 @@ get_template_part('channel-setter');
 		    }
 		  ];
 		$('.custom-slider-for').slick({
-		  slidesToShow: 3,
+		  slidesToShow: 4,
 		  slidesToScroll: 1,
 		  swipeToSlide: true,
 		  arrows: true,
@@ -327,8 +203,8 @@ get_template_part('channel-setter');
 		  responsive: responsive_options
 		});
 		$('.custom-slider-nav').slick({
-		  slidesToShow: 3,
-		  slidesToScroll: 3,
+		  slidesToShow: 4,
+		  slidesToScroll: 1,
 		  asNavFor: '.custom-slider-for',
 		  dots: false,
 		  arrows: false,
@@ -341,8 +217,8 @@ get_template_part('channel-setter');
 		  responsive: responsive_options
 		});
 		$('.custom-slider-nav').slick({
-		  slidesToShow: 3,
-		  slidesToScroll: 3,
+		  slidesToShow: 4,
+		  slidesToScroll: 1,
 		  asNavFor: '.custom-slider-for',
 		  dots: false,
 		  arrows: false,
