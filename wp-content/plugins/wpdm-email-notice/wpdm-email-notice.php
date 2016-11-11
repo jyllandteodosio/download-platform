@@ -5,7 +5,71 @@
     Dianne Katherine Delos Reyes
     Version: 1.0
     */
-   
+   	
+
+   	global $wea_db_version;
+	$wea_db_version = '1.1';
+	function wpdm_email_activation() {
+		global $wpdb;
+		global $wea_db_version;
+
+		require_once( ABSPATH . '/wp-admin/includes/upgrade.php' );
+
+		$db_table_name = $wpdb->prefix . 'wpdm_email';
+
+		/* Create a table if not existing */
+		if( $wpdb->get_var( "SHOW TABLES LIKE '$db_table_name'" ) != $db_table_name ) {
+			if ( ! empty( $wpdb->charset ) )
+				$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
+			if ( ! empty( $wpdb->collate ) )
+				$charset_collate .= " COLLATE $wpdb->collate";
+	 
+			$sql = "CREATE TABLE $db_table_name (
+				  id int(9) NOT NULL AUTO_INCREMENT,
+				  date_emailed datetime DEFAULT '0000-00-00 00:00:00',
+				  data_new longtext,
+				  data_old longtext,
+				  status varchar(55) DEFAULT 'pending',
+				  created_at datetime DEFAULT '0000-00-00 00:00:00',
+				  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+				  PRIMARY KEY  (id)
+				) $charset_collate;";
+			dbDelta( $sql );
+
+			add_option( 'wea_db_version', $wea_db_version );
+		}
+
+		/* Update table */
+		$installed_ver = get_option( "wea_db_version" );
+
+		if ( $installed_ver != $wea_db_version ) {
+
+			$sql = "CREATE TABLE $db_table_name (
+				  id int(10) NOT NULL AUTO_INCREMENT,
+				  date_emailed datetime DEFAULT '0000-00-00 00:00:00',
+				  data_new longtext,
+				  data_old longtext,
+				  status varchar(55) DEFAULT 'pending',
+				  created_at datetime DEFAULT '0000-00-00 00:00:00',
+				  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+				  PRIMARY KEY  (id)
+				) $charset_collate;";
+
+			dbDelta( $sql );
+
+			update_option( "wea_db_version", $wea_db_version );
+		}
+	}
+	register_activation_hook(__FILE__, 'wpdm_email_activation');
+
+	/* Update DB */
+	function wea_update_db_check() {
+	    global $wea_db_version;
+	    if ( get_site_option( 'wea_db_version' ) != $wea_db_version ) {
+	        wpdm_email_activation();
+	    }
+	}
+	add_action( 'plugins_loaded', 'wea_update_db_check' );
 
 /* Email Notice 
 PROMO ROW ID REFERENCE ============================================================
@@ -25,6 +89,9 @@ PROMO ROW ID REFERENCE =========================================================
             [field_56cc2f84bbefe] => Thumbnail file
             [field_56de395d8068d] => Operator Group Access (all, singtel etc)
 ================================================================================= */
+
+
+
 
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($id)
