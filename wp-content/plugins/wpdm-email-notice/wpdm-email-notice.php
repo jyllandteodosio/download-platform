@@ -6,9 +6,12 @@
     Version: 1.0
     */
    	
+    global $wea_db_version;
+	$wea_db_version = '1.0'; /* Increment this version number if there's an update in the database structure */
 
-   	global $wea_db_version;
-	$wea_db_version = '1.1';
+    /** 
+     * Function to create and update wpdm email notifier DB table upon plugin activation
+     */
 	function wpdm_email_activation() {
 		global $wpdb;
 		global $wea_db_version;
@@ -17,7 +20,7 @@
 
 		$db_table_name = $wpdb->prefix . 'wpdm_email';
 
-		/* Create a table if not existing */
+		/* Create a table if not yet existing */
 		if( $wpdb->get_var( "SHOW TABLES LIKE '$db_table_name'" ) != $db_table_name ) {
 			if ( ! empty( $wpdb->charset ) )
 				$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
@@ -25,11 +28,12 @@
 				$charset_collate .= " COLLATE $wpdb->collate";
 	 
 			$sql = "CREATE TABLE $db_table_name (
-				  id int(9) NOT NULL AUTO_INCREMENT,
+				  id bigint(20) NOT NULL AUTO_INCREMENT,
 				  date_emailed datetime DEFAULT '0000-00-00 00:00:00',
 				  data_new longtext,
 				  data_old longtext,
 				  status varchar(55) DEFAULT 'pending',
+				  post_id bigint(20),
 				  created_at datetime DEFAULT '0000-00-00 00:00:00',
 				  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 				  PRIMARY KEY  (id)
@@ -39,17 +43,17 @@
 			add_option( 'wea_db_version', $wea_db_version );
 		}
 
-		/* Update table */
+		/* Update table if there's a new plugin version */
 		$installed_ver = get_option( "wea_db_version" );
-
 		if ( $installed_ver != $wea_db_version ) {
 
 			$sql = "CREATE TABLE $db_table_name (
-				  id int(10) NOT NULL AUTO_INCREMENT,
+				  id bigint(20) NOT NULL AUTO_INCREMENT,
 				  date_emailed datetime DEFAULT '0000-00-00 00:00:00',
 				  data_new longtext,
 				  data_old longtext,
 				  status varchar(55) DEFAULT 'pending',
+				  post_id bigint(20),
 				  created_at datetime DEFAULT '0000-00-00 00:00:00',
 				  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 				  PRIMARY KEY  (id)
@@ -62,7 +66,9 @@
 	}
 	register_activation_hook(__FILE__, 'wpdm_email_activation');
 
-	/* Update DB */
+	/**
+	 * Update table if there's a new plugin version
+	 */
 	function wea_update_db_check() {
 	    global $wea_db_version;
 	    if ( get_site_option( 'wea_db_version' ) != $wea_db_version ) {
@@ -70,6 +76,7 @@
 	    }
 	}
 	add_action( 'plugins_loaded', 'wea_update_db_check' );
+
 
 /* Email Notice 
 PROMO ROW ID REFERENCE ============================================================
@@ -91,59 +98,419 @@ PROMO ROW ID REFERENCE =========================================================
 ================================================================================= */
 
 
-
+global $wpdb;
+if (!isset($wpdb->custom_cart)) {
+	$wpdb->wpdm_email = $wpdb->prefix . 'wpdm_email';
+}
 
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
-function wpdm_check_new_files($id)
+function wpdm_check_new_files($post_id)
 {
+	// trigger_email_notification_checker();
+
+    global $wpdb;
 	/* Get current POST data */
     $post = get_post($id, ARRAY_A);
 
-    /* Check for attached show files */
-    $wpdm_files_old = get_post_meta($id, '__wpdm_files', true) != "" ? maybe_unserialize(get_post_meta($id, '__wpdm_files', true)) : array(); /* Old values from database */
-    $wpdm_files_new = $_POST['file']['files'] != "" ? $_POST['file']['files'] : array(); /* New values from form */
-    $files_diff = array_diff($wpdm_files_new,$wpdm_files_old);	/* Remove extra array at the last index */
+    if($post_id != '' || $post_id != null){
+    	$serialized_data_old = '';
+    	$serialized_data_new = '';
 
-    /* Check for attached promo files */
-    $wpdm_promos_new_id = array();
-    $wpdm_promos_old_id = array();
-    $wpdm_promos_old = get_field( "add_promo_files" , $id) ? get_field( "add_promo_files" , $id) : array(); /* Old values from database */
-    $wpdm_promos_new = $_POST['fields']['field_56bda9692303d'];	/* New values from form */
-    if($wpdm_promos_new!= null) {
-    	array_pop($wpdm_promos_new); /* Remove extra array at the last index  */
-	    /* Restructure post data of promo files into key value pair */
-	    foreach ($wpdm_promos_new as $key => $value) {
-	        $wpdm_promos_new_id[$value['field_56bda9eb23040']] = $value['field_56bdaa2523043']; /* New values from form (key,value) */
+
+    	/* Check for attached show files */
+	    $wpdm_files_old = get_post_meta($post_id, '__wpdm_files', true) != "" ? maybe_unserialize(get_post_meta($post_id, '__wpdm_files', true)) : array(); /* Old values from database */
+	    $wpdm_files_new = $_POST['file']['files'] != "" ? $_POST['file']['files'] : array(); /* New values from form */
+	    $wpdm_fileinfo_new = $_POST['file']['fileinfo'] != "" ? $_POST['file']['fileinfo'] : array(); /* New values from form */
+	    /* Derived Values */
+	    $files_diff = array_diff($wpdm_files_new,$wpdm_files_old);	/* Remove extra array at the last index */
+	    $fileinfo_intersect = array_intersect_key($wpdm_fileinfo_new, $files_diff);
+	    /* END Check for attached show files */
+
+	    /* Check for attached promo files */
+	    $wpdm_promos_new_id = array();
+	    $wpdm_promos_old_id = array();
+	    $wpdm_promos_old = get_field( "add_promo_files" , $promo_id) ? get_field( "add_promo_files" , $post_id) : array(); /* Old values from database */
+	    $wpdm_promos_new = $_POST['fields']['field_56bda9692303d'];	/* New values from form */
+
+	    if($wpdm_promos_new!= null) {
+	    	array_pop($wpdm_promos_new); /* Remove extra array at the last index  */
+		    /* Restructure post data of promo files into key value pair */
+		    foreach ($wpdm_promos_new as $key => $value) {
+		        $wpdm_promos_new_id[$value['field_56bda9eb23040']] = array(
+		        	'file_name' => $value['field_56bdaa2523043'], /* New values from form (key,value) */
+	    			'operator_access' => $value['field_56de395d8068d']
+	    			);
+		    }
+		}
+	    /* Restructure DB data of promo files into key value pair */
+	    foreach ($wpdm_promos_old as $key => $value) {
+	        $wpdm_promos_old_id[$value['id']] = $value['file_name']; /* Old values from database (key,value) */
 	    }
-	}
-    /* Restructure DB data of promo files into key value pair */
-    foreach ($wpdm_promos_old as $key => $value) {
-        $wpdm_promos_old_id[$value['id']] = $value['file_name']; /* Old values from database (key,value) */
+	    $promos_diff=array_diff_key($wpdm_promos_new_id,$wpdm_promos_old_id); /* Check number New Promo files added */
+
+	    $structured_promos_diff = array();
+	    foreach($promos_diff as $promo_id => $promo_data){
+	    	$structured_promos_diff[$promo_id] = array(
+	    			'file_name' => $promo_data['file_name'],
+	    			'operator_access' => $promo_data['operator_access']
+	    		);
+	    }
+	    /* END Check for attached promo files */
+	    $email_entry = get_email_entries($post_id);
+	    if(count($files_diff) >= 1 || count($promos_diff) >= 1){
+	    	$structured_files_diff = categorized_files($files_diff,$wpdm_fileinfo_new);
+
+	    	if ( count($email_entry) == 0){
+	    		$raw_data_new['raw_files']['files'] = $files_diff;
+	    		$raw_data_new['raw_files']['file_info'] = $fileinfo_intersect;
+
+	    		$raw_data_new['files'] = $structured_files_diff;
+	    		$raw_data_old['files'] = $wpdm_files_old;
+
+	    		$raw_data_new['promos'] = $structured_promos_diff;
+	    		$raw_data_old['promos'] = $wpdm_promos_old_id;
+
+	    		$serialized_data_new = serialize($raw_data_new);
+	    		$serialized_data_old = serialize($raw_data_old);
+
+			    $return_value = $wpdb->insert(
+			                            $wpdb->wpdm_email,
+			                            array(
+			                                'data_old' => $serialized_data_old,
+			                                'data_new' => $serialized_data_new,
+			                                'post_id' => $post_id,
+			                                'created_at' => current_time('mysql', false)
+			                            )
+			                        );
+	    	}else{
+	    		$raw_email_entry_new = unserialize($email_entry->data_new);
+
+	    		$db_new_files_diff = array_diff($raw_email_entry_new['raw_files']['files'],$wpdm_files_new);
+	    		if( count($db_new_files_diff) > 0){
+	    			foreach ($db_new_files_diff as $key => $file_name) {
+	    				unset($raw_email_entry_new['raw_files']['files'][$key]);
+	    				unset($raw_email_entry_new['raw_files']['file_info'][$key]);
+	    			}
+	    		}
+	    		$db_new_promos_diff = array_diff_key($raw_email_entry_new['promos'],$wpdm_promos_new_id);
+	    		if( count($db_new_promos_diff) > 0){
+	    			foreach ($db_new_promos_diff as $key => $file_name) {
+	    				unset($raw_email_entry_new['promos'][$key]);
+	    			}
+	    		}
+
+	    		
+	    		$raw_data_new['raw_files']['files'] = $raw_email_entry_new['raw_files']['files'] + $files_diff;
+	    		$raw_data_new['raw_files']['file_info'] = $raw_email_entry_new['raw_files']['file_info'] + $fileinfo_intersect;
+
+	    		$merged_files_diff = categorized_files($files_diff, $wpdm_fileinfo_new, $raw_email_entry_new['raw_files']['files']);
+	    		$raw_data_new['files'] = $merged_files_diff;
+
+	    		$raw_data_new['promos'] = $raw_email_entry_new['promos'] + $structured_promos_diff;
+	    		$serialized_data_new = serialize($raw_data_new);
+
+	    		$return_value = $wpdb->update( 
+		                            $wpdb->wpdm_email, 
+		                            array('data_new' =>  $serialized_data_new),
+		                            array( 
+		                                'id' => $email_entry->id
+		                                )
+	                        );
+	    	}
+
+	    }else if ( count($wpdm_files_old) > count($wpdm_files_new) || count($wpdm_promos_old) > count($wpdm_promos_new) ){
+	    	if ( count($email_entry) > 0){
+		    	$raw_email_entry_new = unserialize($email_entry->data_new);
+
+		    	$files_diff = array_diff($wpdm_files_old,$wpdm_files_new);	/* Remove extra array at the last index */
+			    if( count($files_diff) > 0 ){
+			    	foreach ($files_diff as $key => $value) {
+			    		if( isset($raw_email_entry_new['raw_files']['files'][$key]) && ($raw_email_entry_new['raw_files']['files'][$key]!=null) ) 
+			    			unset($raw_email_entry_new['raw_files']['files'][$key]);
+
+			    		if( isset($raw_email_entry_new['raw_files']['file_info'][$key]) && ($raw_email_entry_new['raw_files']['file_info'][$key]!=null) ) 
+			    			unset($raw_email_entry_new['raw_files']['file_info'][$key]);
+			    	}
+
+			    	$structured_files_diff = categorized_files($raw_email_entry_new['raw_files']['files'],$raw_email_entry_new['raw_files']['file_info']);
+				    $raw_email_entry_new['files'] = $structured_files_diff;
+			    }
+
+			    $promos_diff=array_diff_key($wpdm_promos_old_id,$wpdm_promos_new_id); /* Check number New Promo files added */
+			    if( count($promos_diff) > 0 ){
+			    	foreach ($promos_diff as $key => $value) {
+			    		if( isset($raw_email_entry_new['promos'][$key]) && ($raw_email_entry_new['promos'][$key]!=null) ) 
+			    			unset($raw_email_entry_new['promos'][$key]);
+			    	}
+			    }
+
+			    $serialized_data_new = serialize($raw_email_entry_new);
+			    $return_value = $wpdb->update( 
+			                            $wpdb->wpdm_email, 
+			                            array('data_new' =>  $serialized_data_new),
+			                            array( 
+			                                'id' => $email_entry->id
+			                                )
+		                        );
+		    
+			}
+	    }
+
+
     }
-    $promos_diff=array_diff($wpdm_promos_new_id,$wpdm_promos_old_id); /* Check number New Promo files added */
-  	
-  	// echo "<pre>";
+
+  	echo "<pre>";
+	// print_r($result);
+	// print_r($email_entry);
+	// echo "<br><br>";
+	print_r($raw_email_entry_new);
+
+	// $raw_email_entry_new['raw_files']['files']
+
+	// 
+	// echo "<br><br>raw_data_new:<br>";
+	// print_r($raw_data_new);
+	// echo "<br><br>raw_email_entry_new:<br>";
+	// print_r($raw_email_entry_new);
+	// echo "<br><br>merged_files_diff:<br>";
+	// print_r($merged_files_diff);
+
+    // echo "<br><br>$_post:<br>";
+    // print_r($_POST);
+    // echo "<br><br>post:<br>";
+    // print_r($post);
+  //   print_r(count($email_entry));
+  //   echo "<br>return value:";
+  //   print_r($return_value );
+  
     // echo "<br><br>wpdm_files_old:<br>";
  	// print_r($wpdm_files_old);
  	// echo "<br><br>wpdm_files_new:<br>";
  	// print_r($wpdm_files_new);
+ 	// echo "<br><br>fileinfo_intersect:<br>";
+ 	// print_r($fileinfo_intersect);
+ 	// $wpdm_fileinfo_new, $files_diff
  	// echo "<br><br>files_diff:<br>";
  	// print_r($files_diff);
+ 	// echo "<br><br>wpdm_fileinfo_new:<br>";
+ 	// print_r($wpdm_fileinfo_new);
+ 	// echo "<br><br>structured_files_diff:<br>";
+ 	// print_r($structured_files_diff);
+ 	// echo "<br><br>merged_files_diff:<br>";
+ 	// print_r($merged_files_diff);
+
+ 	// echo "<br><br>db_new_files_diff:<br>";
+ 	// print_r($db_new_files_diff);
+
+  // 	print_r($raw_data_new);
+  // 	echo "<br><br>db_new_promos_diff:<br>";
+  // 	print_r($db_new_promos_diff);
+  // 	echo "<br><br>raw_email_entry_new['promos']:<br>";
+  // 	print_r($raw_email_entry_new['promos']);
+  // 	// print_r($raw_data_new['promos']);
  	// echo "<br><br>wpdm_promos_old:<br>";
- 	// print_r($wpdm_promos_old);
+ 	// // print_r($wpdm_promos_old);
  	// echo "<br><br>wpdm_promos_new:<br>";
  	// print_r($wpdm_promos_new);
- 	// echo "<br><br>POST:<br>";
- 	// print_r($_POST);
  	// echo "<br><br>wpdm_promos_old_id:<br>";
  	// print_r( $wpdm_promos_old_id);
  	// echo "<br><br>wpdm_promos_new_id:<br>";
  	// print_r( $wpdm_promos_new_id);
  	// echo "<br><br>promos_diff:<br>";
  	// print_r($promos_diff);
-    // echo "</pre>";
+ 	// echo "<br><br>structured_promos_diff :<br>";
+ 	// print_r($structured_promos_diff);
+ 	
 
-    if(count($files_diff) >= 1 || count($promos_diff) >= 1){
+ 	// // echo "<br><br>serialized_data_new:<br>";
+ 	// // print_r($raw_data_new);
+ 	// // echo "<br><br>serialized_data_old:<br>";
+ 	// // print_r($raw_data_old);
+    echo "</pre>";
+    // die('diane');
+  
+}
+
+function get_email_entries($post_id){
+	global $wpdb;
+	$email_entries = $wpdb->get_row( "SELECT id, data_new FROM $wpdb->wpdm_email WHERE post_id = {$post_id} AND status = 'pending' ORDER BY id DESC LIMIT 1 ");
+	return $email_entries;
+}
+
+/**
+ * Categorize a  list of files based on file title prefixes
+ * @param  Array $allfiles_sorted  Key/Value pair of files and their original file name
+ * @param  Array $fileinfo         Key/Value pair of files and their new file title
+ * @return Array                   Categorized array of files
+ */
+function categorized_files($allfiles_sorted, $fileinfo, $other_files = array()){
+	$allfiles_sorted = $allfiles_sorted + $other_files;
+	$categorized_files = array();
+	$file_attr_list = array(
+		                'image' =>  array (
+		                    'show'  => array (
+		                        'key_art'           => array('prefix' => 'key'          , 'template_shortcode' => 'file_category,key'), 
+		                        'episodic_stills'   => array('prefix' => 'epi'          , 'template_shortcode' => 'file_category,epi'), 
+		                        'gallery'           => array('prefix' => 'gallery'      , 'template_shortcode' => 'file_category,gal'), 
+		                        'logos'             => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,log'),
+		                        'others'            => array('prefix' => 'oth'          , 'template_shortcode' => 'file_category,oth')),
+		                    'channel'=> array (
+		                        'channel_logos'     => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,cm_log'), 
+		                        'channel_elements'  => array('prefix' => 'elements'     , 'template_shortcode' => 'file_category,cm_ele'), 
+		                        'channel_others'    => array('prefix' => 'cm_oth'       , 'template_shortcode' => 'file_category,cm_oth'))
+		                    ),
+		                'document' => array (
+		                    'show'  => array (
+		                        'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
+		                        'transcripts'       => array('prefix' => 'trans'        , 'template_shortcode' => 'file_category,epk' ),
+		                        'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
+		                        'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
+		                        'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
+		                    'channel' => array (
+		                        'channel_epg'       => array('prefix' => 'epg'          , 'template_shortcode' => 'file_category,cm_epg'),
+		                        'channel_highlights'=> array('prefix' => 'highlights'   , 'template_shortcode' => 'file_category,cm_hig'),
+		                        'channel_brand'     => array('prefix' => 'brand'        , 'template_shortcode' => 'file_category,cm_bra'),
+		                        'channel_boiler'    => array('prefix' => 'boiler'       , 'template_shortcode' => 'file_category,cm_boi'),
+		                        'channel_catchup'   => array('prefix' => 'catch'        , 'template_shortcode' => 'file_category,cm_cat'))
+		                    ),
+		                'promo' => array (
+		                    'show'  => array (
+		                        'promos'            => array('prefix' => 'promo'        , 'template_shortcode' => 'file_category,promo'))
+		                    )
+		                );
+
+	if (count($allfiles_sorted) > 0) {
+        foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
+        	$sfile = $sfileOriginal; /* this to make it general */
+        	$fileTitle = $fileinfo[$fileID]['title'];
+
+			if(checkIfImageFile($sfile, 'image')){
+
+		        foreach ($file_attr_list['image'] as $file_type => $file_category) {
+		            foreach ($file_category as $file_category_key => $tab) {
+		                $prefix = $tab['prefix'];
+		                /* SHOW IMAGES ========================================================================== */
+		                // KEY
+		                if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['key_art']['prefix']){
+		                    $categorized_files['image'][$file_attr_list['image']['show']['key_art']['prefix']][$fileID] = $fileTitle;
+		                }
+		                // EPI
+		                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['episodic_stills']['prefix']){
+		                    $categorized_files['image'][$file_attr_list['image']['show']['episodic_stills']['prefix']][$fileID] = $fileTitle;
+		                }
+		                // GAL
+		                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['gallery']['prefix']){
+		                    $categorized_files['image'][$file_attr_list['image']['show']['gallery']['prefix']][$fileID] = $fileTitle;
+		                }
+		                // LOG
+		                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['logos']['prefix']){
+		                    $categorized_files['image'][$file_attr_list['image']['show']['logos']['prefix']][$fileID] = $fileTitle;
+		                }
+		                // OTHERS
+		                else if( !contains($fileTitle, $file_attr_list['image']['show']['key_art']['prefix']) 
+		                    && !contains($fileTitle, $file_attr_list['image']['show']['episodic_stills']['prefix']) 
+		                    && !contains($fileTitle, $file_attr_list['image']['show']['gallery']['prefix']) 
+		                    && !contains($fileTitle, $file_attr_list['image']['show']['logos']['prefix']) 
+		                    && $prefix == $file_attr_list['image']['show']['others']['prefix']){
+		                    $categorized_files['image'][$file_attr_list['image']['show']['others']['prefix']][$fileID] = $fileTitle;
+		                }
+		                /* END SHOW IMAGES ======================================================================= */
+		                /* CHANNEL IMAGES ======================================================================= */
+		                // CM_ELE
+		                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['channel']['channel_elements']['prefix']){
+		                    $categorized_files['image'][$file_attr_list['image']['channel']['channel_elements']['prefix']][$fileID] = $fileTitle;
+		                }
+		            }   
+		        }
+		    } else{
+                foreach ($file_attr_list['document'] as $file_type => $file_category) {
+                    foreach ($file_category as $file_category_key => $tab) {
+                        $prefix = $tab['prefix'];
+
+                        // SYN
+                        if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['synopses']['prefix']){
+                            $categorized_files['document'][$file_attr_list['document']['show']['synopses']['prefix']][$fileID] = $fileTitle;
+                        }
+                        // EPK
+                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['transcripts']['prefix']){
+                            $categorized_files['document'][$file_attr_list['document']['show']['transcripts']['prefix']][$fileID] = $fileTitle;
+                        }
+                        // FAC
+                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['fact_sheet']['prefix']){
+                            $categorized_files['document'][$file_attr_list['document']['show']['fact_sheet']['prefix']][$fileID] = $fileTitle;
+                        }
+                        // FON
+                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['fonts']['prefix']){
+                            $categorized_files['document'][$file_attr_list['document']['show']['fonts']['prefix']][$fileID] = $fileTitle;
+                        }
+                        // DOTH
+                        else if( !contains($fileTitle, $file_attr_list['document']['show']['synopses']['prefix']) 
+                            && !contains($fileTitle, $file_attr_list['document']['show']['transcripts']['prefix']) 
+                            && !contains($fileTitle, $file_attr_list['document']['show']['fact_sheet']['prefix']) 
+                            && !contains($fileTitle, $file_attr_list['document']['show']['fonts']['prefix']) 
+                            && $prefix == $file_attr_list['document']['show']['document_others']['prefix']){
+                            $categorized_files['document'][$file_attr_list['document']['show']['document_others']['prefix']][$fileID] = $fileTitle;
+                        }
+                        // CM_EPG
+                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_epg']['prefix']){
+                        	$categorized_files['document'][$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $fileTitle;
+                            // $current_operator_group = get_current_user_operator_group();
+                            // $generate_epg_panel = false;
+
+                            // if ( get_current_user_role() == "administrator"){
+                            //     $generate_epg_panel = true;
+                            // }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
+                            //     $exclusive_epg_check = 0;
+                            //     foreach ($allfiles_sorted as $key => $value) {
+                            //         if(contains($fileinfo[$key]['title'], $current_operator_group)){
+                            //             $exclusive_epg_check = 1;
+                            //             break;
+                            //         }
+                            //     }
+                            //     if(!$exclusive_epg_check){
+                            //         $generate_epg_panel = true;
+                            //     }
+                            // }else if(contains($fileTitle, $current_operator_group)){
+                            //     $generate_epg_panel = true;
+                            // }
+                            // if($generate_epg_panel){
+                            //     $categorized_files[$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $fileTitle;
+                            // }
+                        }
+                        // CM_HIG
+                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_highlights']['prefix']){
+                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_highlights']['prefix']][$fileID] = $fileTitle;
+                        }
+                        // CM_BRA
+                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_brand']['prefix']){
+                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_brand']['prefix']][$fileID] = $fileTitle;
+                        }
+                        // CM_BOI
+                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_boiler']['prefix']){
+                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_boiler']['prefix']][$fileID] = $fileTitle;
+                        }
+                        // CM_CAT
+                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_catchup']['prefix']){
+                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $fileTitle;
+                        }
+                    }
+                }
+            }
+
+
+		}
+	}
+
+	return $categorized_files;
+
+}
+
+function trigger_email_notification_checker(){
+	global $wpdb;
+	$email_entries = $wpdb->get_row( "SELECT id, data_new, post_id FROM $wpdb->wpdm_email WHERE status = 'pending' ORDER BY id ");
+
+	if(count($email_entries) >= 1){
+
     	$categories = $_POST['tax_input']['wpdmcategory']; /* Get categories assigned */
 
 	    $entertainment_category_id = getCategoryIdBySlug('shows-entertainment');
@@ -177,12 +544,33 @@ function wpdm_check_new_files($id)
 				/* Check if there's a new promo file */
 				$files['promo'] = get_user_accessible_promos($user, $promos_diff, $wpdm_promos_new);
 				$files['show'] = get_user_accessible_files($user, $files_diff, $wpdm_files_new);
-				send_email_notice($user, $files, $permalink);
+				// send_email_notice($user, $files, $permalink);
 			}
 		}
-    	// die("asd");
     }
+    die("asd");
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function send_email_notice($user, $files, $show_link){
@@ -264,12 +652,13 @@ if (!function_exists('get_user_accessible_promos')){
 		if (count($new_promos_ids) >= 1) {
 			foreach ($new_promos_ids as $pd_key => $pd_value) {
 				foreach ($all_promos as $wpn_key => $wpn_value) {
-					/* Check if KEYs are the same */
+					/* Check if KEYs are the same. field_56bda9eb23040 = ID */
 					if($wpn_value['field_56bda9eb23040'] == $pd_key){
 						/* Check if Operator Group of promo is set to all or to a specific user operator group */
+						/* field_56de395d8068d - Operator Group */
 						if( strtolower($wpn_value['field_56de395d8068d']) == 'all' || 
 							strtolower($wpn_value['field_56de395d8068d']) == strtolower($user->operator_group)){
-							array_push($promo_files, $wpn_value['field_56bdaa2523043']);
+							array_push($promo_files, $wpn_value['field_56bdaa2523043']); /* field_56bdaa2523043 - File Name */
 						}
 					}
 				}
