@@ -106,7 +106,7 @@ if (!isset($wpdb->custom_cart)) {
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($post_id)
 {
-	// trigger_email_notification_checker();
+	trigger_email_notification_checker();
 
     global $wpdb;
 	/* Get current POST data */
@@ -331,229 +331,422 @@ function wpdm_check_new_files($post_id)
   
 }
 
-function get_email_entries($post_id){
-	global $wpdb;
-	$email_entries = $wpdb->get_row( "SELECT id, data_new FROM $wpdb->wpdm_email WHERE post_id = {$post_id} AND status = 'pending' ORDER BY id DESC LIMIT 1 ");
-	return $email_entries;
-}
+if( !function_exists('get_email_entries') ){
+	/**
+	 * Get Email Entries by post ID
+	 * @param  INT $post_id   Post ID
+	 * @return ARRAY          Email entries
+	 */
+	function get_email_entries($post_id = null){
+		global $wpdb;
 
-/**
- * Categorize a  list of files based on file title prefixes
- * @param  Array $allfiles_sorted  Key/Value pair of files and their original file name
- * @param  Array $fileinfo         Key/Value pair of files and their new file title
- * @return Array                   Categorized array of files
- */
-function categorized_files($allfiles_sorted, $fileinfo, $other_files = array()){
-	$allfiles_sorted = $allfiles_sorted + $other_files;
-	$categorized_files = array();
-	$file_attr_list = array(
-		                'image' =>  array (
-		                    'show'  => array (
-		                        'key_art'           => array('prefix' => 'key'          , 'template_shortcode' => 'file_category,key'), 
-		                        'episodic_stills'   => array('prefix' => 'epi'          , 'template_shortcode' => 'file_category,epi'), 
-		                        'gallery'           => array('prefix' => 'gallery'      , 'template_shortcode' => 'file_category,gal'), 
-		                        'logos'             => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,log'),
-		                        'others'            => array('prefix' => 'oth'          , 'template_shortcode' => 'file_category,oth')),
-		                    'channel'=> array (
-		                        'channel_logos'     => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,cm_log'), 
-		                        'channel_elements'  => array('prefix' => 'elements'     , 'template_shortcode' => 'file_category,cm_ele'), 
-		                        'channel_others'    => array('prefix' => 'cm_oth'       , 'template_shortcode' => 'file_category,cm_oth'))
-		                    ),
-		                'document' => array (
-		                    'show'  => array (
-		                        'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
-		                        'transcripts'       => array('prefix' => 'trans'        , 'template_shortcode' => 'file_category,epk' ),
-		                        'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
-		                        'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
-		                        'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
-		                    'channel' => array (
-		                        'channel_epg'       => array('prefix' => 'epg'          , 'template_shortcode' => 'file_category,cm_epg'),
-		                        'channel_highlights'=> array('prefix' => 'highlights'   , 'template_shortcode' => 'file_category,cm_hig'),
-		                        'channel_brand'     => array('prefix' => 'brand'        , 'template_shortcode' => 'file_category,cm_bra'),
-		                        'channel_boiler'    => array('prefix' => 'boiler'       , 'template_shortcode' => 'file_category,cm_boi'),
-		                        'channel_catchup'   => array('prefix' => 'catch'        , 'template_shortcode' => 'file_category,cm_cat'))
-		                    ),
-		                'promo' => array (
-		                    'show'  => array (
-		                        'promos'            => array('prefix' => 'promo'        , 'template_shortcode' => 'file_category,promo'))
-		                    )
-		                );
+		$where_post_id = $post_id != null ? " AND post_id = {$post_id} " : '';
+		$limit = $post_id != null ? " LIMIT 1 " : '';
 
-	if (count($allfiles_sorted) > 0) {
-        foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
-        	$sfile = $sfileOriginal; /* this to make it general */
-        	$fileTitle = $fileinfo[$fileID]['title'];
+		$sql_query = "SELECT id, data_new, post_id FROM $wpdb->wpdm_email WHERE status = 'pending' ".$where_post_id."ORDER BY id DESC ".$limit;
 
-			if(checkIfImageFile($sfile, 'image')){
+		$email_entries = $post_id != null ? $wpdb->get_results( $sql_query)[0] : $wpdb->get_results( $sql_query);
 
-		        foreach ($file_attr_list['image'] as $file_type => $file_category) {
-		            foreach ($file_category as $file_category_key => $tab) {
-		                $prefix = $tab['prefix'];
-		                /* SHOW IMAGES ========================================================================== */
-		                // KEY
-		                if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['key_art']['prefix']){
-		                    $categorized_files['image'][$file_attr_list['image']['show']['key_art']['prefix']][$fileID] = $fileTitle;
-		                }
-		                // EPI
-		                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['episodic_stills']['prefix']){
-		                    $categorized_files['image'][$file_attr_list['image']['show']['episodic_stills']['prefix']][$fileID] = $fileTitle;
-		                }
-		                // GAL
-		                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['gallery']['prefix']){
-		                    $categorized_files['image'][$file_attr_list['image']['show']['gallery']['prefix']][$fileID] = $fileTitle;
-		                }
-		                // LOG
-		                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['logos']['prefix']){
-		                    $categorized_files['image'][$file_attr_list['image']['show']['logos']['prefix']][$fileID] = $fileTitle;
-		                }
-		                // OTHERS
-		                else if( !contains($fileTitle, $file_attr_list['image']['show']['key_art']['prefix']) 
-		                    && !contains($fileTitle, $file_attr_list['image']['show']['episodic_stills']['prefix']) 
-		                    && !contains($fileTitle, $file_attr_list['image']['show']['gallery']['prefix']) 
-		                    && !contains($fileTitle, $file_attr_list['image']['show']['logos']['prefix']) 
-		                    && $prefix == $file_attr_list['image']['show']['others']['prefix']){
-		                    $categorized_files['image'][$file_attr_list['image']['show']['others']['prefix']][$fileID] = $fileTitle;
-		                }
-		                /* END SHOW IMAGES ======================================================================= */
-		                /* CHANNEL IMAGES ======================================================================= */
-		                // CM_ELE
-		                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['channel']['channel_elements']['prefix']){
-		                    $categorized_files['image'][$file_attr_list['image']['channel']['channel_elements']['prefix']][$fileID] = $fileTitle;
-		                }
-		            }   
-		        }
-		    } else{
-                foreach ($file_attr_list['document'] as $file_type => $file_category) {
-                    foreach ($file_category as $file_category_key => $tab) {
-                        $prefix = $tab['prefix'];
-
-                        // SYN
-                        if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['synopses']['prefix']){
-                            $categorized_files['document'][$file_attr_list['document']['show']['synopses']['prefix']][$fileID] = $fileTitle;
-                        }
-                        // EPK
-                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['transcripts']['prefix']){
-                            $categorized_files['document'][$file_attr_list['document']['show']['transcripts']['prefix']][$fileID] = $fileTitle;
-                        }
-                        // FAC
-                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['fact_sheet']['prefix']){
-                            $categorized_files['document'][$file_attr_list['document']['show']['fact_sheet']['prefix']][$fileID] = $fileTitle;
-                        }
-                        // FON
-                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['fonts']['prefix']){
-                            $categorized_files['document'][$file_attr_list['document']['show']['fonts']['prefix']][$fileID] = $fileTitle;
-                        }
-                        // DOTH
-                        else if( !contains($fileTitle, $file_attr_list['document']['show']['synopses']['prefix']) 
-                            && !contains($fileTitle, $file_attr_list['document']['show']['transcripts']['prefix']) 
-                            && !contains($fileTitle, $file_attr_list['document']['show']['fact_sheet']['prefix']) 
-                            && !contains($fileTitle, $file_attr_list['document']['show']['fonts']['prefix']) 
-                            && $prefix == $file_attr_list['document']['show']['document_others']['prefix']){
-                            $categorized_files['document'][$file_attr_list['document']['show']['document_others']['prefix']][$fileID] = $fileTitle;
-                        }
-                        // CM_EPG
-                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_epg']['prefix']){
-                        	$categorized_files['document'][$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $fileTitle;
-                            // $current_operator_group = get_current_user_operator_group();
-                            // $generate_epg_panel = false;
-
-                            // if ( get_current_user_role() == "administrator"){
-                            //     $generate_epg_panel = true;
-                            // }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
-                            //     $exclusive_epg_check = 0;
-                            //     foreach ($allfiles_sorted as $key => $value) {
-                            //         if(contains($fileinfo[$key]['title'], $current_operator_group)){
-                            //             $exclusive_epg_check = 1;
-                            //             break;
-                            //         }
-                            //     }
-                            //     if(!$exclusive_epg_check){
-                            //         $generate_epg_panel = true;
-                            //     }
-                            // }else if(contains($fileTitle, $current_operator_group)){
-                            //     $generate_epg_panel = true;
-                            // }
-                            // if($generate_epg_panel){
-                            //     $categorized_files[$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $fileTitle;
-                            // }
-                        }
-                        // CM_HIG
-                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_highlights']['prefix']){
-                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_highlights']['prefix']][$fileID] = $fileTitle;
-                        }
-                        // CM_BRA
-                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_brand']['prefix']){
-                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_brand']['prefix']][$fileID] = $fileTitle;
-                        }
-                        // CM_BOI
-                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_boiler']['prefix']){
-                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_boiler']['prefix']][$fileID] = $fileTitle;
-                        }
-                        // CM_CAT
-                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_catchup']['prefix']){
-                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $fileTitle;
-                        }
-                    }
-                }
-            }
-
-
-		}
+		// echo "query:".$sql_query;
+		return $email_entries;
 	}
-
-	return $categorized_files;
-
 }
+
+if(!function_exists('categorized_files')){
+	/**
+	 * Categorize a  list of files based on file title prefixes
+	 * @param  Array $allfiles_sorted  Key/Value pair of files and their original file name
+	 * @param  Array $fileinfo         Key/Value pair of files and their new file title
+	 * @return Array                   Categorized array of files
+	 */
+	function categorized_files($allfiles_sorted, $fileinfo, $other_files = array()){
+		$allfiles_sorted = $allfiles_sorted + $other_files;
+		$categorized_files = array();
+		$file_attr_list = array(
+			                'image' =>  array (
+			                    'show'  => array (
+			                        'key_art'           => array('prefix' => 'key'          , 'template_shortcode' => 'file_category,key'), 
+			                        'episodic_stills'   => array('prefix' => 'epi'          , 'template_shortcode' => 'file_category,epi'), 
+			                        'gallery'           => array('prefix' => 'gallery'      , 'template_shortcode' => 'file_category,gal'), 
+			                        'logos'             => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,log'),
+			                        'others'            => array('prefix' => 'oth'          , 'template_shortcode' => 'file_category,oth')),
+			                    'channel'=> array (
+			                        'channel_logos'     => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,cm_log'), 
+			                        'channel_elements'  => array('prefix' => 'elements'     , 'template_shortcode' => 'file_category,cm_ele'), 
+			                        'channel_others'    => array('prefix' => 'cm_oth'       , 'template_shortcode' => 'file_category,cm_oth'))
+			                    ),
+			                'document' => array (
+			                    'show'  => array (
+			                        'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
+			                        'transcripts'       => array('prefix' => 'trans'        , 'template_shortcode' => 'file_category,epk' ),
+			                        'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
+			                        'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
+			                        'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
+			                    'channel' => array (
+			                        'channel_epg'       => array('prefix' => 'epg'          , 'template_shortcode' => 'file_category,cm_epg'),
+			                        'channel_highlights'=> array('prefix' => 'highlights'   , 'template_shortcode' => 'file_category,cm_hig'),
+			                        'channel_brand'     => array('prefix' => 'brand'        , 'template_shortcode' => 'file_category,cm_bra'),
+			                        'channel_boiler'    => array('prefix' => 'boiler'       , 'template_shortcode' => 'file_category,cm_boi'),
+			                        'channel_catchup'   => array('prefix' => 'catch'        , 'template_shortcode' => 'file_category,cm_cat'))
+			                    ),
+			                'promo' => array (
+			                    'show'  => array (
+			                        'promos'            => array('prefix' => 'promo'        , 'template_shortcode' => 'file_category,promo'))
+			                    )
+			                );
+
+		if (count($allfiles_sorted) > 0) {
+	        foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
+	        	$sfile = $sfileOriginal; /* this to make it general */
+	        	$fileTitle = $fileinfo[$fileID]['title'];
+
+				if(checkIfImageFile($sfile, 'image')){
+
+			        foreach ($file_attr_list['image'] as $file_type => $file_category) {
+			            foreach ($file_category as $file_category_key => $tab) {
+			                $prefix = $tab['prefix'];
+			                /* SHOW IMAGES ========================================================================== */
+			                // KEY
+			                if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['key_art']['prefix']){
+			                    $categorized_files['image'][$file_attr_list['image']['show']['key_art']['prefix']][$fileID] = $fileTitle;
+			                }
+			                // EPI
+			                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['episodic_stills']['prefix']){
+			                    $categorized_files['image'][$file_attr_list['image']['show']['episodic_stills']['prefix']][$fileID] = $fileTitle;
+			                }
+			                // GAL
+			                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['gallery']['prefix']){
+			                    $categorized_files['image'][$file_attr_list['image']['show']['gallery']['prefix']][$fileID] = $fileTitle;
+			                }
+			                // LOG
+			                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['logos']['prefix']){
+			                    $categorized_files['image'][$file_attr_list['image']['show']['logos']['prefix']][$fileID] = $fileTitle;
+			                }
+			                // OTHERS
+			                else if( !contains($fileTitle, $file_attr_list['image']['show']['key_art']['prefix']) 
+			                    && !contains($fileTitle, $file_attr_list['image']['show']['episodic_stills']['prefix']) 
+			                    && !contains($fileTitle, $file_attr_list['image']['show']['gallery']['prefix']) 
+			                    && !contains($fileTitle, $file_attr_list['image']['show']['logos']['prefix']) 
+			                    && $prefix == $file_attr_list['image']['show']['others']['prefix']){
+			                    $categorized_files['image'][$file_attr_list['image']['show']['others']['prefix']][$fileID] = $fileTitle;
+			                }
+			                /* END SHOW IMAGES ======================================================================= */
+			                /* CHANNEL IMAGES ======================================================================= */
+			                // CM_ELE
+			                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['channel']['channel_elements']['prefix']){
+			                    $categorized_files['image'][$file_attr_list['image']['channel']['channel_elements']['prefix']][$fileID] = $fileTitle;
+			                }
+			            }   
+			        }
+			    } else{
+	                foreach ($file_attr_list['document'] as $file_type => $file_category) {
+	                    foreach ($file_category as $file_category_key => $tab) {
+	                        $prefix = $tab['prefix'];
+
+	                        // SYN
+	                        if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['synopses']['prefix']){
+	                            $categorized_files['document'][$file_attr_list['document']['show']['synopses']['prefix']][$fileID] = $fileTitle;
+	                        }
+	                        // EPK
+	                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['transcripts']['prefix']){
+	                            $categorized_files['document'][$file_attr_list['document']['show']['transcripts']['prefix']][$fileID] = $fileTitle;
+	                        }
+	                        // FAC
+	                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['fact_sheet']['prefix']){
+	                            $categorized_files['document'][$file_attr_list['document']['show']['fact_sheet']['prefix']][$fileID] = $fileTitle;
+	                        }
+	                        // FON
+	                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['show']['fonts']['prefix']){
+	                            $categorized_files['document'][$file_attr_list['document']['show']['fonts']['prefix']][$fileID] = $fileTitle;
+	                        }
+	                        // CM_EPG
+	                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_epg']['prefix']){
+	                        	$categorized_files['document'][$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $fileTitle;
+	                            // $current_operator_group = get_current_user_operator_group();
+	                            // $generate_epg_panel = false;
+
+	                            // if ( get_current_user_role() == "administrator"){
+	                            //     $generate_epg_panel = true;
+	                            // }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
+	                            //     $exclusive_epg_check = 0;
+	                            //     foreach ($allfiles_sorted as $key => $value) {
+	                            //         if(contains($fileinfo[$key]['title'], $current_operator_group)){
+	                            //             $exclusive_epg_check = 1;
+	                            //             break;
+	                            //         }
+	                            //     }
+	                            //     if(!$exclusive_epg_check){
+	                            //         $generate_epg_panel = true;
+	                            //     }
+	                            // }else if(contains($fileTitle, $current_operator_group)){
+	                            //     $generate_epg_panel = true;
+	                            // }
+	                            // if($generate_epg_panel){
+	                            //     $categorized_files[$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $fileTitle;
+	                            // }
+	                        }
+	                        // CM_HIG
+	                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_highlights']['prefix']){
+	                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_highlights']['prefix']][$fileID] = $fileTitle;
+	                        }
+	                        // CM_BRA
+	                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_brand']['prefix']){
+	                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_brand']['prefix']][$fileID] = $fileTitle;
+	                        }
+	                        // CM_BOI
+	                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_boiler']['prefix']){
+	                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_boiler']['prefix']][$fileID] = $fileTitle;
+	                        }
+	                        // CM_CAT
+	                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_catchup']['prefix']){
+	                            $categorized_files['document'][$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $fileTitle;
+	                        }
+	                        // DOTH
+	                        else if( !contains($fileTitle, $file_attr_list['document']['show']['synopses']['prefix']) 
+	                            && !contains($fileTitle, $file_attr_list['document']['show']['transcripts']['prefix']) 
+	                            && !contains($fileTitle, $file_attr_list['document']['show']['fact_sheet']['prefix']) 
+	                            && !contains($fileTitle, $file_attr_list['document']['show']['fonts']['prefix']) 
+	                            && $prefix == $file_attr_list['document']['show']['document_others']['prefix']){
+	                            $categorized_files['document'][$file_attr_list['document']['show']['document_others']['prefix']][$fileID] = $fileTitle;
+	                        }
+	                    }
+	                }
+	            }
+
+
+			}
+		}
+
+		return $categorized_files;
+
+	}
+}
+
 
 function trigger_email_notification_checker(){
 	global $wpdb;
-	$email_entries = $wpdb->get_row( "SELECT id, data_new, post_id FROM $wpdb->wpdm_email WHERE status = 'pending' ORDER BY id ");
 
-	if(count($email_entries) >= 1){
+	$email_entries = get_email_entries();
 
-    	$categories = $_POST['tax_input']['wpdmcategory']; /* Get categories assigned */
-
-	    $entertainment_category_id = getCategoryIdBySlug('shows-entertainment');
-	    $extreme_category_id = getCategoryIdBySlug('shows-extreme');
-
-		/* Check if show categories includes entertainment or extreme */
-		$is_exist_channel = array();
-	    $is_exist_channel['entertainment'] = array_search($entertainment_category_id, $categories);
-	    $is_exist_channel['extreme'] = array_search($extreme_category_id, $categories);
-
-	    $operator_access = array();
-	    $operator_access_channel = array();
-	    foreach ($is_exist_channel as $key => $value) {
-	    	if($value){
-		    	$operator_access_channel['entertainment'] = getOperatorCountryCombinationAccess($key);
-		    }
-	    }
-	    foreach ($operator_access_channel as $key => $value) {
-	    	if(isset($operator_access_channel['entertainment'])){
-			    foreach ($operator_access_channel['entertainment'] as $key => $value) {
-			    	$operator_access[$value['id']] = array('operator_group' => $value['operator_group'],'country_group' => $value['country_group']);
-			    }
-			}
-	    }
-
-		$users = getUsersByRole('Operator');
+	$users = getUsersByRole('Operator');
     
-		$permalink = get_permalink($id);
-		foreach ($users as $user) {
-			if(check_user_group_access($user, $operator_access)){
-				/* Check if there's a new promo file */
-				$files['promo'] = get_user_accessible_promos($user, $promos_diff, $wpdm_promos_new);
-				$files['show'] = get_user_accessible_files($user, $files_diff, $wpdm_files_new);
-				// send_email_notice($user, $files, $permalink);
+	$permalink = get_permalink($id);
+	foreach ($users as $user) {
+		echo "<br>user:".$user->id;
+		echo "<br>og:".$user->operator_group;
+		echo "<br>USERSTART<br>";
+		
+		if(count($email_entries) > 0){
+			foreach ($email_entries as $key => $email_entry) {
+				echo "<br>email_entry->post_id:".$email_entry->post_id;
+				$categories_data = array();
+				$categories = array();
+				$categories_data = get_the_terms($email_entry->post_id,'wpdmcategory');
+				foreach ($categories_data as $key => $value) {
+					$categories[$key] = $value->term_id;
+				}
+				
+			    $entertainment_category_id = getCategoryIdBySlug('shows-entertainment');
+			    $extreme_category_id = getCategoryIdBySlug('shows-extreme');
+
+				// /* Check if show categories includes entertainment or extreme */
+				$is_exist_channel = array();
+			    $is_exist_channel['entertainment'] = array_search($entertainment_category_id, $categories);
+			    $is_exist_channel['extreme'] = array_search($extreme_category_id, $categories);
+
+			    $operator_access = array();
+			    $operator_access_channel = array();
+			    foreach ($is_exist_channel as $key => $value) {
+			    	if($value){
+				    	$operator_access_channel[$key] = getOperatorCountryCombinationAccess($key);
+				    }
+			    }
+			    foreach ($operator_access_channel as $key => $value) {
+			    	if(isset($operator_access_channel[$key])){
+					    foreach ($operator_access_channel[$key] as $key => $value) {
+					    	$operator_access[$value['id']] = array('operator_group' => $value['operator_group'],'country_group' => $value['country_group']);
+					    }
+					}
+			    }
+
+				if(check_user_group_access($user, $operator_access)){
+					/* Check if there's a new promo file */
+					// echo "<br>promosss:";
+					$uns_email_entry = unserialize($email_entry->data_new);
+					print_r($uns_email_entry['promos']);
+
+					$files['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos']);
+					// echo "<br>files['promo']:";
+					// print_r($files['promo']);
+					$files['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files']);
+
+					echo "<pre>After:";
+					print_r($files['show']);
+					echo "</pre>";
+
+					/* TODO:  start emailing this shit */
+					// send_email_notice($user, $files, $permalink);
+				}
+
+				// echo "<pre>";
+				//     echo "<br>files['promo']:";
+				//     print_r($files['promo']);
+				//     // print_r($dianne);
+				//     // print_r($operator_access);
+				// 	// print_r($email_entries);
+				// 	// print_r($users);
+				// echo "</pre>";
+				
+				// echo "<pre>";
+				// echo "ID:".$value->post_id;
+				// echo "<br>entertainment_category_id: ". $entertainment_category_id;
+				// echo "<br>is_exist_channel:";
+				// print_r($is_exist_channel);
+				// echo "<br>";
+				// print_r($categories);
+				// echo "</pre>";
 			}
 		}
-    }
+		echo "<br>USEREND<br><br>";
+	}
+
+	// if(count($email_entries) > 0){
+	// 	foreach ($email_entries as $key => $value) {
+	// 		echo $value->post_id."<br>";
+	// 	}
+
+ //    	$categories = $_POST['tax_input']['wpdmcategory']; /* Get categories assigned */
+
+	//     $entertainment_category_id = getCategoryIdBySlug('shows-entertainment');
+	//     $extreme_category_id = getCategoryIdBySlug('shows-extreme');
+
+	// 	/* Check if show categories includes entertainment or extreme */
+	// 	$is_exist_channel = array();
+	//     $is_exist_channel['entertainment'] = array_search($entertainment_category_id, $categories);
+	//     $is_exist_channel['extreme'] = array_search($extreme_category_id, $categories);
+
+	//     $operator_access = array();
+	//     $operator_access_channel = array();
+	//     foreach ($is_exist_channel as $key => $value) {
+	//     	if($value){
+	// 	    	$operator_access_channel['entertainment'] = getOperatorCountryCombinationAccess($key);
+	// 	    }
+	//     }
+	//     foreach ($operator_access_channel as $key => $value) {
+	//     	if(isset($operator_access_channel['entertainment'])){
+	// 		    foreach ($operator_access_channel['entertainment'] as $key => $value) {
+	// 		    	$operator_access[$value['id']] = array('operator_group' => $value['operator_group'],'country_group' => $value['country_group']);
+	// 		    }
+	// 		}
+	//     }
+
+	// 	$users = getUsersByRole('Operator');
+    
+	// 	$permalink = get_permalink($id);
+	// 	foreach ($users as $user) {
+	// 		if(check_user_group_access($user, $operator_access)){
+	// 			/* Check if there's a new promo file */
+	// 			$files['promo'] = get_user_accessible_promos($user, $promos_diff, $wpdm_promos_new);
+	// 			$files['show'] = get_user_accessible_files($user, $files_diff, $wpdm_files_new);
+	// 			// send_email_notice($user, $files, $permalink);
+	// 		}
+	// 	}
+ //    }
+
+ //    echo "<pre>";
+ //    echo "<br>files['promo']:";
+ //    print_r($files['promo']);
+ //    // print_r($dianne);
+ //    // print_r($operator_access);
+	// // print_r($email_entries);
+	// // print_r($users);
+	// echo "</pre>";
+
     die("asd");
 
 }
 
+if (!function_exists('check_user_group_access')){
+	/**
+	 * Check if a particular user is included in array of allowed operator and country group combination
+	 * @param  Object $user            User
+	 * @param  Array $operator_access  Key value pair of allowed operator group and country group combination
+	 * @return bool                    Returns 1 if accessible, otherwise 0
+	 */
+	function check_user_group_access($user, $operator_access){
+		foreach ($operator_access as $key => $value) {
+			if ( (	strtolower($value['operator_group']) == strtolower($user->operator_group) || 'all' == strtolower($user->operator_group) ) && 
+				 (	strtolower($value['country_group']) == strtolower($user->country_group) || 'all' == strtolower($user->country_group) ) ) {
+				return 1;
+			}else{
+				continue;
+			}
+		}
+		return 0;
+	}
+}
 
+if (!function_exists('get_user_accessible_promos')){
+	/**
+	 * Get all oerator available newly uploaded promo files
+	 * @param  Object $user           	User
+	 * @param  Array  $new_promos_ids 	ID of newly uploaded promo file
+	 * @param  Array  $all_promos     	All current promos from the submitted form
+	 * @return Array                  	Array of promo file names
+	 */
+	function get_user_accessible_promos($user, $promo_files){
+		$accessible_promo_files = array();
+		if (count($promo_files) > 0) {
+			foreach ($promo_files as $key => $value) {
+				// echo "<br>value['operator_access']:".$value['operator_access'];
+				// echo "<br>user->operator_group:".$user->operator_group;
+				if ( strtolower($value['operator_access']) == strtolower($user->operator_group) || 'all' == strtolower($user->operator_group)  ) {
+					array_push($accessible_promo_files, $value);
+				}else{
+					continue;
+				}
+			}
+		}
+		return $accessible_promo_files;
+	}
+}
 
+if (!function_exists('get_user_accessible_files')){
+	/**
+	 * Get all oerator available newly uploaded promo files
+	 * @param  Object $user           	User
+	 * @param  Array  $new_promos_ids 	ID of newly uploaded promo file
+	 * @param  Array  $all_promos     	All current promos from the submitted form
+	 * @return Array                  	Array of promo file names
+	 */
+	function get_user_accessible_files($user, $all_files, $raw_files){
+		echo "<br>og:".$user->operator_group;
+		echo "<br>all_files:";
+		echo "<pre>";
+		print_r($raw_files);
+		print_r($all_files);
+		echo "</pre>";
+		$accessible_files = array();
+		if (count($raw_files) > 0) {
+			foreach ($raw_files as $key => $value) {
+				if( contains($value, 'epg')){
+					/* TODO: add support for pr group */
+					// if ( affiliate == "pr group"){
+	    //                 continue;
+	    //             }else 
+	                if(contains($value, 'affiliate')){
+	                    continue;
+	                }else if(contains($value, $user->operator_group)){
+	                    $generate_epg_panel = true;
+	                }else{
+	                	unset($all_files['document']['epg'][$key]);
+	                }
+				}
+			}
+		}
+		return $all_files;
+	}
+}
 
 
 
@@ -618,80 +811,8 @@ function send_email_notice($user, $files, $show_link){
 	// echo "res-".$result;
 }
 
-if (!function_exists('check_user_group_access')){
-	/**
-	 * Check if a particular user is included in array of allowed operator and country group combination
-	 * @param  Object $user            User
-	 * @param  Array $operator_access  Key value pair of allowed operator group and country group combination
-	 * @return bool                    Returns 1 if accessible, otherwise 0
-	 */
-	function check_user_group_access($user, $operator_access){
-		foreach ($operator_access as $key => $value) {
-			if (strtolower($value['operator_group']) == strtolower($user->operator_group) 
-				&& strtolower($value['country_group']) == strtolower($user->country_group)) {
-				return 1;
-			}else{
-				continue;
-			}
-		}
-		return 0;
-	}
-}
 
-if (!function_exists('get_user_accessible_promos')){
-	/**
-	 * Get all oerator available newly uploaded promo files
-	 * @param  Object $user           	User
-	 * @param  Array  $new_promos_ids 	ID of newly uploaded promo file
-	 * @param  Array  $all_promos     	All current promos from the submitted form
-	 * @return Array                  	Array of promo file names
-	 */
-	function get_user_accessible_promos($user, $new_promos_ids, $all_promos){
-		/* Check if there's a new promo uploaded */
-		$promo_files = array();
-		if (count($new_promos_ids) >= 1) {
-			foreach ($new_promos_ids as $pd_key => $pd_value) {
-				foreach ($all_promos as $wpn_key => $wpn_value) {
-					/* Check if KEYs are the same. field_56bda9eb23040 = ID */
-					if($wpn_value['field_56bda9eb23040'] == $pd_key){
-						/* Check if Operator Group of promo is set to all or to a specific user operator group */
-						/* field_56de395d8068d - Operator Group */
-						if( strtolower($wpn_value['field_56de395d8068d']) == 'all' || 
-							strtolower($wpn_value['field_56de395d8068d']) == strtolower($user->operator_group)){
-							array_push($promo_files, $wpn_value['field_56bdaa2523043']); /* field_56bdaa2523043 - File Name */
-						}
-					}
-				}
-			}
-		}
-		return $promo_files;
-	}
-}
 
-if (!function_exists('get_user_accessible_files')){
-	/**
-	 * Get all oerator available newly uploaded promo files
-	 * @param  Object $user           	User
-	 * @param  Array  $new_promos_ids 	ID of newly uploaded promo file
-	 * @param  Array  $all_promos     	All current promos from the submitted form
-	 * @return Array                  	Array of promo file names
-	 */
-	function get_user_accessible_files($user, $new_files_ids, $all_files){
-		/* Check if there's a new promo uploaded */
-		$files = array();
-		if (count($new_files_ids) >= 1) {
-			foreach ($new_files_ids as $pd_key => $pd_value) {
-				foreach ($all_files as $wpn_key => $wpn_value) {
-					/* Check if KEYs are the same */
-					if($wpn_key == $pd_key){
-						array_push($files, $wpn_value);
-					}
-				}
-			}
-		}
-		return $files;
-	}
-}
 
 /* Database Queries */
 if(!function_exists('getCategoryIdBySlug')){
