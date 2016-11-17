@@ -108,6 +108,8 @@ function wpdm_check_new_files($post_id)
 {
 	trigger_email_notification_checker();
 
+	// send_email_notice();
+
     global $wpdb;
 	/* Get current POST data */
     $post = get_post($id, ARRAY_A);
@@ -263,7 +265,7 @@ function wpdm_check_new_files($post_id)
 	// print_r($result);
 	// print_r($email_entry);
 	// echo "<br><br>";
-	print_r($raw_email_entry_new);
+	// print_r($raw_email_entry_new);
 
 	// $raw_email_entry_new['raw_files']['files']
 
@@ -427,6 +429,7 @@ if(!function_exists('categorized_files')){
 			                    && !contains($fileTitle, $file_attr_list['image']['show']['episodic_stills']['prefix']) 
 			                    && !contains($fileTitle, $file_attr_list['image']['show']['gallery']['prefix']) 
 			                    && !contains($fileTitle, $file_attr_list['image']['show']['logos']['prefix']) 
+			                    && !contains($fileTitle, $file_attr_list['image']['channel']['channel_elements']['prefix']) 
 			                    && $prefix == $file_attr_list['image']['show']['others']['prefix']){
 			                    $categorized_files['image'][$file_attr_list['image']['show']['others']['prefix']][$fileID] = $fileTitle;
 			                }
@@ -462,28 +465,6 @@ if(!function_exists('categorized_files')){
 	                        // CM_EPG
 	                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_epg']['prefix']){
 	                        	$categorized_files['document'][$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $fileTitle;
-	                            // $current_operator_group = get_current_user_operator_group();
-	                            // $generate_epg_panel = false;
-
-	                            // if ( get_current_user_role() == "administrator"){
-	                            //     $generate_epg_panel = true;
-	                            // }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
-	                            //     $exclusive_epg_check = 0;
-	                            //     foreach ($allfiles_sorted as $key => $value) {
-	                            //         if(contains($fileinfo[$key]['title'], $current_operator_group)){
-	                            //             $exclusive_epg_check = 1;
-	                            //             break;
-	                            //         }
-	                            //     }
-	                            //     if(!$exclusive_epg_check){
-	                            //         $generate_epg_panel = true;
-	                            //     }
-	                            // }else if(contains($fileTitle, $current_operator_group)){
-	                            //     $generate_epg_panel = true;
-	                            // }
-	                            // if($generate_epg_panel){
-	                            //     $categorized_files[$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $fileTitle;
-	                            // }
 	                        }
 	                        // CM_HIG
 	                        else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['document']['channel']['channel_highlights']['prefix']){
@@ -506,6 +487,11 @@ if(!function_exists('categorized_files')){
 	                            && !contains($fileTitle, $file_attr_list['document']['show']['transcripts']['prefix']) 
 	                            && !contains($fileTitle, $file_attr_list['document']['show']['fact_sheet']['prefix']) 
 	                            && !contains($fileTitle, $file_attr_list['document']['show']['fonts']['prefix']) 
+	                            && !contains($fileTitle, $file_attr_list['document']['channel']['channel_epg']['prefix']) 
+	                            && !contains($fileTitle, $file_attr_list['document']['channel']['channel_highlights']['prefix']) 
+	                            && !contains($fileTitle, $file_attr_list['document']['channel']['channel_brand']['prefix']) 
+	                            && !contains($fileTitle, $file_attr_list['document']['channel']['channel_boiler']['prefix']) 
+	                            && !contains($fileTitle, $file_attr_list['document']['channel']['channel_catchup']['prefix'])
 	                            && $prefix == $file_attr_list['document']['show']['document_others']['prefix']){
 	                            $categorized_files['document'][$file_attr_list['document']['show']['document_others']['prefix']][$fileID] = $fileTitle;
 	                        }
@@ -518,10 +504,8 @@ if(!function_exists('categorized_files')){
 		}
 
 		return $categorized_files;
-
 	}
 }
-
 
 function trigger_email_notification_checker(){
 	global $wpdb;
@@ -532,27 +516,40 @@ function trigger_email_notification_checker(){
     
 	$permalink = get_permalink($id);
 	foreach ($users as $user) {
-		echo "<br>user:".$user->id;
-		echo "<br>og:".$user->operator_group;
 		echo "<br>USERSTART<br>";
+		echo "<br>User ID:".$user->id;
+		// echo "<br>User email:".$user->user_email;
+		// echo "<br>Operator_Group:".$user->operator_group;
+		// echo "<br>Country_Group:".$user->country_group;
 		
 		if(count($email_entries) > 0){
 			foreach ($email_entries as $key => $email_entry) {
-				echo "<br>email_entry->post_id:".$email_entry->post_id;
+				echo "<br><br>Post_id:".$email_entry->post_id;
 				$categories_data = array();
 				$categories = array();
 				$categories_data = get_the_terms($email_entry->post_id,'wpdmcategory');
 				foreach ($categories_data as $key => $value) {
 					$categories[$key] = $value->term_id;
 				}
+
+				// echo "<br>categories_data:";
+				// echo "<pre>";
+				// print_r($categories);
+				// echo "</pre>";
 				
-			    $entertainment_category_id = getCategoryIdBySlug('shows-entertainment');
-			    $extreme_category_id = getCategoryIdBySlug('shows-extreme');
+			    $entertainment_category_id = getCategoryIdBySlug('entertainment');
+			    // echo "<br>entertainment_category_id:".$entertainment_category_id;
+			    $extreme_category_id = getCategoryIdBySlug('extreme');
+			    // echo "<br>extreme_category_id:".$extreme_category_id;
+
 
 				// /* Check if show categories includes entertainment or extreme */
 				$is_exist_channel = array();
 			    $is_exist_channel['entertainment'] = array_search($entertainment_category_id, $categories);
 			    $is_exist_channel['extreme'] = array_search($extreme_category_id, $categories);
+
+			    // echo "<br>is_exist_channel:";
+			    // print_r($is_exist_channel);
 
 			    $operator_access = array();
 			    $operator_access_channel = array();
@@ -561,6 +558,12 @@ function trigger_email_notification_checker(){
 				    	$operator_access_channel[$key] = getOperatorCountryCombinationAccess($key);
 				    }
 			    }
+
+			    // echo "<br>operator_access_channel:";
+			    // echo "<pre>";
+			    // print_r($operator_access_channel);
+			    // echo "</pre>";
+
 			    foreach ($operator_access_channel as $key => $value) {
 			    	if(isset($operator_access_channel[$key])){
 					    foreach ($operator_access_channel[$key] as $key => $value) {
@@ -568,98 +571,35 @@ function trigger_email_notification_checker(){
 					    }
 					}
 			    }
+			    // echo "<br>check_user_group_access:";
+			    // /* Eto yung mali */
+			    // print_r(check_user_group_access($user, $operator_access));
+
+			    // echo "<br>OPerator access:";
+			    // echo "<pre>";
+			    // print_r($operator_access);
+			    // echo "</pre>";
+
 
 				if(check_user_group_access($user, $operator_access)){
-					/* Check if there's a new promo file */
-					// echo "<br>promosss:";
 					$uns_email_entry = unserialize($email_entry->data_new);
 					print_r($uns_email_entry['promos']);
 
-					$files['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos']);
-					// echo "<br>files['promo']:";
-					// print_r($files['promo']);
-					$files['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files']);
-
-					echo "<pre>After:";
-					print_r($files['show']);
-					echo "</pre>";
-
-					/* TODO:  start emailing this shit */
-					// send_email_notice($user, $files, $permalink);
+					$files[$email_entry->post_id]['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos']);
+					$files[$email_entry->post_id]['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files']);	
 				}
-
-				// echo "<pre>";
-				//     echo "<br>files['promo']:";
-				//     print_r($files['promo']);
-				//     // print_r($dianne);
-				//     // print_r($operator_access);
-				// 	// print_r($email_entries);
-				// 	// print_r($users);
-				// echo "</pre>";
-				
-				// echo "<pre>";
-				// echo "ID:".$value->post_id;
-				// echo "<br>entertainment_category_id: ". $entertainment_category_id;
-				// echo "<br>is_exist_channel:";
-				// print_r($is_exist_channel);
-				// echo "<br>";
-				// print_r($categories);
-				// echo "</pre>";
 			}
 		}
+
+		echo "<pre>Files to email:";
+		print_r($files);
+		echo "</pre>";	
+		send_email_notice($user, $files);
+
 		echo "<br>USEREND<br><br>";
 	}
 
-	// if(count($email_entries) > 0){
-	// 	foreach ($email_entries as $key => $value) {
-	// 		echo $value->post_id."<br>";
-	// 	}
-
- //    	$categories = $_POST['tax_input']['wpdmcategory']; /* Get categories assigned */
-
-	//     $entertainment_category_id = getCategoryIdBySlug('shows-entertainment');
-	//     $extreme_category_id = getCategoryIdBySlug('shows-extreme');
-
-	// 	/* Check if show categories includes entertainment or extreme */
-	// 	$is_exist_channel = array();
-	//     $is_exist_channel['entertainment'] = array_search($entertainment_category_id, $categories);
-	//     $is_exist_channel['extreme'] = array_search($extreme_category_id, $categories);
-
-	//     $operator_access = array();
-	//     $operator_access_channel = array();
-	//     foreach ($is_exist_channel as $key => $value) {
-	//     	if($value){
-	// 	    	$operator_access_channel['entertainment'] = getOperatorCountryCombinationAccess($key);
-	// 	    }
-	//     }
-	//     foreach ($operator_access_channel as $key => $value) {
-	//     	if(isset($operator_access_channel['entertainment'])){
-	// 		    foreach ($operator_access_channel['entertainment'] as $key => $value) {
-	// 		    	$operator_access[$value['id']] = array('operator_group' => $value['operator_group'],'country_group' => $value['country_group']);
-	// 		    }
-	// 		}
-	//     }
-
-	// 	$users = getUsersByRole('Operator');
-    
-	// 	$permalink = get_permalink($id);
-	// 	foreach ($users as $user) {
-	// 		if(check_user_group_access($user, $operator_access)){
-	// 			/* Check if there's a new promo file */
-	// 			$files['promo'] = get_user_accessible_promos($user, $promos_diff, $wpdm_promos_new);
-	// 			$files['show'] = get_user_accessible_files($user, $files_diff, $wpdm_files_new);
-	// 			// send_email_notice($user, $files, $permalink);
-	// 		}
-	// 	}
- //    }
-
  //    echo "<pre>";
- //    echo "<br>files['promo']:";
- //    print_r($files['promo']);
- //    // print_r($dianne);
- //    // print_r($operator_access);
-	// // print_r($email_entries);
-	// // print_r($users);
 	// echo "</pre>";
 
     die("asd");
@@ -698,8 +638,6 @@ if (!function_exists('get_user_accessible_promos')){
 		$accessible_promo_files = array();
 		if (count($promo_files) > 0) {
 			foreach ($promo_files as $key => $value) {
-				// echo "<br>value['operator_access']:".$value['operator_access'];
-				// echo "<br>user->operator_group:".$user->operator_group;
 				if ( strtolower($value['operator_access']) == strtolower($user->operator_group) || 'all' == strtolower($user->operator_group)  ) {
 					array_push($accessible_promo_files, $value);
 				}else{
@@ -720,12 +658,12 @@ if (!function_exists('get_user_accessible_files')){
 	 * @return Array                  	Array of promo file names
 	 */
 	function get_user_accessible_files($user, $all_files, $raw_files){
-		echo "<br>og:".$user->operator_group;
-		echo "<br>all_files:";
-		echo "<pre>";
-		print_r($raw_files);
-		print_r($all_files);
-		echo "</pre>";
+		// echo "<br>og:".$user->operator_group;
+		// echo "<br>all_files:";
+		// echo "<pre>";
+		// print_r($raw_files);
+		// print_r($all_files);
+		// echo "</pre>";
 		$accessible_files = array();
 		if (count($raw_files) > 0) {
 			foreach ($raw_files as $key => $value) {
@@ -737,9 +675,10 @@ if (!function_exists('get_user_accessible_files')){
 	                if(contains($value, 'affiliate')){
 	                    continue;
 	                }else if(contains($value, $user->operator_group)){
-	                    $generate_epg_panel = true;
+	                    continue;
 	                }else{
-	                	unset($all_files['document']['epg'][$key]);
+	                	if(isset($all_files['document']['epg'][$key])) unset($all_files['document']['epg'][$key]);
+	                	if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]);
 	                }
 				}
 			}
@@ -766,53 +705,223 @@ if (!function_exists('get_user_accessible_files')){
 
 
 
-function send_email_notice($user, $files, $show_link){
+function send_email_notice($user = null, $files = null){
 	$to = $user->user_email;
 	// $to = "diannekatherinedelosreyes@gmail.com";
 	$subject = 'RTL CBS Asia Notification - New files are available for you today!';
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
-	$message = '';
-	$message .= "Hi {$user->user_login},<br><br>";
-	$message .= "New files are available for download on the RTL CBS Operator Site.<br>";
+	$message = '
+
+	<table style="font-family: Arial, Helvetica, sans-serif; height: 617px; background-image: url(\'http://i66.tinypic.com/10dxted.jpg\'); background-repeat: no-repeat; background-position: center top; background-color: #a6a6a5; margin-left: auto; margin-right: auto;" width="599" cellpadding="0">
+<tbody>
+<tr>
+<td valign="top"><br />
+<table style="height: 194px; background-color: #ffffff; margin-top: 80px; margin-left: auto; margin-right: auto;" width="522">
+<tbody>
+<tr>
+<td>&nbsp;&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>
+<p>Hi '.$user->user_email.',</p>
+<p>&nbsp;</p>
+<p>There are new files available for download in the RTL CBS Operator Site!</p>
+<p>You can find the updated assets below:</p>
+<p>&nbsp;</p>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>
+
+<table style="height: 105px; border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+<tbody>
+';
+
+$message_temp .= '
+<p><strong>Shows Assets</strong></p>
+';
+$operator_site_link = get_home_url();
+$message_shows = '';
+$message_channel = '';
+$message_promos = '';
+
+if( count($files) > 0 ):
+	foreach ($files as $post_id => $type) :
+		if( count($type['show']) > 0 ) :
+			$show_title = get_the_title($post_id);
+			$permalink = get_permalink($post_id);
+			
+$message_temp .= '
+
+	<tr style="background-color: #3b3838; color: #fff;">
+		<td style="text-align: left;">'.$show_title.'</td>
+	</tr>';
+			foreach ($type['show'] as $category => $prefixes) :
+				if(count($prefixes) > 0):
+					foreach ($prefixes as $prefix => $file_list) :
+						if( count($file_list) > 0 ) :
+						$message_temp .= '
+							<tr style="background-color: #d0cece;">
+								<td style="text-align: left;">'.getCategoryNameByPrefix($prefix).'</td>
+							</tr>';
+							$file_counter = 1;
+							foreach ($file_list as $file_id => $file_name) :
+								if( $file_counter <= 10 ) :
+									$message_temp .='
+										<tr>
+											<td style="text-align: left;"><a title="'.$file_name.'" href="'.$permalink.'" target="_blank">'.$file_name.'</a></td>
+										</tr>
+									';
+								else :
+									$message_temp .='
+										<tr>
+											<td style="text-align: left;"><a title="'.$show_title.'" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
+										</tr>
+									';
+								endif;
+								$file_counter++;
+							endforeach;
+						endif;
+					endforeach;
+				endif;
+
+				if( contains($show_title,'channel') ){
+					$message_channel .= $message_temp;
+				}else{
+					$message_shows .= $message_temp;
+				}
+				$message_temp = '';
+			endforeach;
+		endif;
+		
+
+	endforeach;
 	
-	if(!empty($files['promo']) || !empty($files['show']) ){
-		$message .= "<br><br>Updated assets include:<br>";
-	}
-	if(!empty($files['show'])){
-		$message .= "<ul>";
-		foreach ($files['show'] as $file) {
-			$message .= "<li><a href='".$show_link."'>".$file."</a></li>";
-		}
-		$message .= "</ul>";
-	}
-	if(!empty($files['promo'])){
-		$message .= "<br>Promo file/s:<br>";
-		$message .= "<ul>";
-		foreach ($files['promo'] as $file) {
-			$message .= "<li><a href='".$show_link."'>".$file."</a></li>";
-		}
-		$message .= "</ul>";
-	}
-	$message .= "<br>To view and download the files, log on to the <a href='".$show_link."'>Operator Site.</a><br><br>
-				Thanks,<br>
-				RTL CBS";
+endif;
+
+// $message_channel .= $message_temp;
+
+$message .= $message_channel;
+$message .= '
+</tbody>
+</table>
+
+<p>&nbsp;</p>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>
+<p>To view and download the files, log on to the&nbsp;<a title="Operator Site" href="'.$operator_site_link.'" target="_blank">Operator Site</a>.</p>
+<p>&nbsp;</p>
+<p>Thanks,</p>
+<p><strong>RTL CBS</strong></p>
+<p>&nbsp;</p>
+</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<table style="margin-left: auto; margin-right: auto; height: 65px;" width="397">
+<tbody>
+<tr>
+<td style="text-align: center; vertical-align: top;"><img src="http://i64.tinypic.com/15fhw6c.png" alt="RTL CBS Logo" width="171" height="39" /></td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+
+	';
+
+echo $message;
+
+// die();
+
+	// $message = '';
+	// $message .= "Hi {$user->user_login},<br><br>";
+	// $message .= "New files are available for download on the RTL CBS Operator Site.<br>";
+	
+	// if(!empty($files['promo']) || !empty($files['show']) ){
+	// 	$message .= "<br><br>Updated assets include:<br>";
+	// }
+	// if(!empty($files['show'])){
+	// 	$message .= "<ul>";
+	// 	foreach ($files['show'] as $file) {
+	// 		$message .= "<li><a href='".$show_link."'>".$file."</a></li>";
+	// 	}
+	// 	$message .= "</ul>";
+	// }
+	// if(!empty($files['promo'])){
+	// 	$message .= "<br>Promo file/s:<br>";
+	// 	$message .= "<ul>";
+	// 	foreach ($files['promo'] as $file) {
+	// 		$message .= "<li><a href='".$show_link."'>".$file."</a></li>";
+	// 	}
+	// 	$message .= "</ul>";
+	// }
+	// $message .= "<br>To view and download the files, log on to the <a href='".$show_link."'>Operator Site.</a><br><br>
+	// 			Thanks,<br>
+	// 			RTL CBS";
 	// echo $message;
 	// Start output buffering to grab smtp debugging output
-	ob_start();
+	// ob_start();
 
-	// Send the test mail
-	$result = wp_mail($to,$subject,$message,$headers);
+	// // Send the test mail
+	// $result = wp_mail($to,$subject,$message,$headers);
 		
-	// Grab the smtp debugging output
-	$smtp_debug = ob_get_clean();
-		
-	// Output the response
+	// // Grab the smtp debugging output
+	// $smtp_debug = ob_get_clean();
+	
+	// // Output the response
 	// echo "res-".$result;
 }
 
 
+function getCategoryNameByPrefix($prefix = null){
+	$categories = array(
+			'key' => 'Key Art',
+			'epi' => 'Episodic Stills',
+			'gallery' => 'Gallery',
+			'logo' => 'Logos',
+			'oth' => 'Others',
+			'elements' => 'Elements',
+			'synopsis' => 'Synopses',
+			'trans' => 'Transcripts/EPK',
+			'fact' => 'Fact Sheet/Press Pack',
+			'font' => 'Fonts',
+			'doth' => 'Others',
+			'epg' => 'EPG',
+			'highlights' => 'Highlights',
+			'brand' => 'Brand Guide',
+			'boiler' => 'Boiler Plates',
+			'catch' => 'Catch Up',
+			'promo' => 'Promos'
+		);
 
+	if( isset($categories[$prefix]) ) 
+		return $categories[$prefix];
+	else 
+		return '';
+}
 
 /* Database Queries */
 if(!function_exists('getCategoryIdBySlug')){
