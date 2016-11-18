@@ -53,6 +53,8 @@ favico.ico
 /wp-content/cache/blogs
 /wp-content/wflogs
 /wp-content/wp-cache-config.php
+/wp-content/updraft/
+/wp-content/wfcache/
 
 
 #ignore wordpress wp-config.php
