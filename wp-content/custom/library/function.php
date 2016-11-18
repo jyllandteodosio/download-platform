@@ -164,7 +164,7 @@ function insertToCustomCart($serialized_cart){
                             array(
                                 'user_id' => $user_id,
                                 'meta_file' => $serialized_cart,
-                                'created_at' => date('Y-m-d H:i:s')
+                                'created_at' =>  current_time('mysql', false)
                             )
                         );
     return $return_value;
@@ -539,7 +539,7 @@ if(!function_exists('insertToCustomReports')){
                                             'file_path' => $value['file_path'],
                                             'file_type' => $value['file_type'],
                                             'download_url' => $value['download_url'],
-                                            'created_at' => date('Y-m-d H:i:s')
+                                            'created_at' => current_time('mysql', false)
                                         )
                                     );
             }
