@@ -106,7 +106,7 @@ if (!isset($wpdb->custom_cart)) {
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($post_id)
 {
-	trigger_email_notification_checker();
+	// trigger_email_notification_checker();
 
 	// send_email_notice();
 
@@ -436,6 +436,23 @@ if(!function_exists('categorized_files')){
 		return $categorized_files;
 	}
 }
+
+// wp_schedule_event( time(), 'daily', 'trigger_email_notification_checker' );
+
+register_activation_hook(__FILE__, 'email_notice_activation');
+function email_notice_activation() {
+    if (! wp_next_scheduled ( 'email_notice_event' )) {
+		wp_schedule_event( time(), 'daily', 'email_notice_event' );
+    }
+}
+
+register_deactivation_hook(__FILE__, 'email_notice_deactivation');
+function email_notice_deactivation() {
+	wp_clear_scheduled_hook('email_notice_event');
+}
+
+add_action('email_notice_event', 'trigger_email_notification_checker');
+
 
 function trigger_email_notification_checker(){
 	global $wpdb;
