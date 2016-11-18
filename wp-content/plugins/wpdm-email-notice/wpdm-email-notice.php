@@ -99,8 +99,11 @@ PROMO ROW ID REFERENCE =========================================================
 
 
 global $wpdb;
-if (!isset($wpdb->custom_cart)) {
+if (!isset($wpdb->wpdm_email)) {
 	$wpdb->wpdm_email = $wpdb->prefix . 'wpdm_email';
+}
+if (!isset($wpdb->wpdm_email_logs)) {
+	$wpdb->wpdm_email_logs = $wpdb->prefix . 'wpdm_email_logs';
 }
 
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
@@ -510,7 +513,12 @@ function trigger_email_notification_checker(){
 		}
 	}
 
-	setEmailEntryStatus('sent');
+	$return_value_email = setEmailEntryStatus('sent');
+	if( $return_value_email === FALSE )
+		addEmailLogs('failed');
+	else
+		addEmailLogs('success');
+
 }
 
 if (!function_exists('check_user_group_access')){
@@ -877,6 +885,18 @@ function setEmailEntryStatus($status = 'pending'){
 			                            )
 			                        );
 	}
+	return $return_value;
+}
+
+function addEmailLogs($status = ''){
+	global $wpdb;
+	$return_value = $wpdb->insert(
+			                            $wpdb->wpdm_email_logs,
+			                            array(
+			                            	'status' => $status
+			                            )
+			                        );
+	
 	return $return_value;
 }
 
