@@ -437,7 +437,7 @@ if(!function_exists('categorized_files')){
 	}
 }
 
-// wp_schedule_event( time(), 'daily', 'trigger_email_notification_checker' );
+
 
 register_activation_hook(__FILE__, 'email_notice_activation');
 function email_notice_activation() {
@@ -452,7 +452,6 @@ function email_notice_deactivation() {
 }
 
 add_action('email_notice_event', 'trigger_email_notification_checker');
-
 
 function trigger_email_notification_checker(){
 	global $wpdb;
@@ -802,37 +801,6 @@ $message .= '
 
 
 	';
-
-// echo $message;
-
-// die();
-
-	// $message = '';
-	// $message .= "Hi {$user->user_login},<br><br>";
-	// $message .= "New files are available for download on the RTL CBS Operator Site.<br>";
-	
-	// if(!empty($files['promo']) || !empty($files['show']) ){
-	// 	$message .= "<br><br>Updated assets include:<br>";
-	// }
-	// if(!empty($files['show'])){
-	// 	$message .= "<ul>";
-	// 	foreach ($files['show'] as $file) {
-	// 		$message .= "<li><a href='".$show_link."'>".$file."</a></li>";
-	// 	}
-	// 	$message .= "</ul>";
-	// }
-	// if(!empty($files['promo'])){
-	// 	$message .= "<br>Promo file/s:<br>";
-	// 	$message .= "<ul>";
-	// 	foreach ($files['promo'] as $file) {
-	// 		$message .= "<li><a href='".$show_link."'>".$file."</a></li>";
-	// 	}
-	// 	$message .= "</ul>";
-	// }
-	// $message .= "<br>To view and download the files, log on to the <a href='".$show_link."'>Operator Site.</a><br><br>
-	// 			Thanks,<br>
-	// 			RTL CBS";
-	// echo $message;
 	
 	// Start output buffering to grab smtp debugging output
 	ob_start();
