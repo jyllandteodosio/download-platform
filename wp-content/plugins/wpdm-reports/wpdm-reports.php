@@ -95,32 +95,33 @@ function register_plugin_styles() {
 // }
 
 
-add_filter( 'cron_schedules', 'myprefix_add_weekly_cron_schedule' );
-function myprefix_add_weekly_cron_schedule( $schedules ) {
-    $schedules['minute'] = array(
-        'interval' => 60, // 1 week in seconds
-        'display'  => __( 'Per Minute' ),
-    );
+
+// add_filter( 'cron_schedules', 'myprefix_add_weekly_cron_schedule' );
+// function myprefix_add_weekly_cron_schedule( $schedules ) {
+//     $schedules['minute'] = array(
+//         'interval' => 60, // 1 week in seconds
+//         'display'  => __( 'Per Minute' ),
+//     );
  
-    return $schedules;
-}
+//     return $schedules;
+// }
 
-add_action( 'my_hourly_event',  'update_db_hourly' );
+// add_action( 'my_hourly_event',  'update_db_hourly' );
 
-if ( ! wp_next_scheduled( 'my_hourly_event' ) ) {
-    wp_schedule_event( time(), 'minute', 'my_hourly_event' );
-}
-function update_db_hourly() {
-    global $wpdb;
-    $wpdb->insert( 
-        'rtl21016_cron', 
-        array( 
-            'test' => 'value1'
-        ) 
-    );
-    testing();
+// if ( ! wp_next_scheduled( 'my_hourly_event' ) ) {
+//     wp_schedule_event( time(), 'minute', 'my_hourly_event' );
+// }
+// function update_db_hourly() {
+//     global $wpdb;
+//     $wpdb->insert( 
+//         'rtl21016_cron', 
+//         array( 
+//             'test' => 'value1'
+//         ) 
+//     );
+//     testing();
 
-} // end update_csv_hourly
+// } // end update_csv_hourly
 
 function testing(){
 	global $wpdb;
