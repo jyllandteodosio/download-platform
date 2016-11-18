@@ -164,7 +164,7 @@ function insertToCustomCart($serialized_cart){
                             array(
                                 'user_id' => $user_id,
                                 'meta_file' => $serialized_cart,
-                                'created_at' => date('Y-m-d H:i:s')
+                                'created_at' =>  current_time('mysql', false)
                             )
                         );
     return $return_value;
@@ -539,7 +539,7 @@ if(!function_exists('insertToCustomReports')){
                                             'file_path' => $value['file_path'],
                                             'file_type' => $value['file_type'],
                                             'download_url' => $value['download_url'],
-                                            'created_at' => date('Y-m-d H:i:s')
+                                            'created_at' => current_time('mysql', false)
                                         )
                                     );
             }
@@ -1678,7 +1678,7 @@ if( !function_exists('getTribeEventsUniqueStartTime')) {
      * @param  Array $daterange  Range of dates to query
      * @return Array             Array of unique timeslots
      */
-    function getTribeEventsUniqueStartTime($daterange = array()){
+    function getTribeEventsUniqueStartTime($daterange = array(), $channel = 'entertainment'){
         $time_list_rebased = array();
         if(!empty($daterange)):
             $time_list = array();
@@ -1686,10 +1686,12 @@ if( !function_exists('getTribeEventsUniqueStartTime')) {
                 $events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');
                 if(count($events) > 0):
                     foreach ($events as $event) :
-                        $show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
-                        if(!in_array($show_start_time, $time_list)){
-                            array_push($time_list, $show_start_time);
-                        }
+                        if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
+                            $show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
+                            if(!in_array($show_start_time, $time_list)){
+                                array_push($time_list, $show_start_time);
+                            }
+                        endif;
                     endforeach;
                 endif;
             endforeach;

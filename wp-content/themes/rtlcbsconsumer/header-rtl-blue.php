@@ -21,7 +21,7 @@
 		
 	</head>
 	<body <?php body_class(); ?> >
-	<div class="rtl-red-tmpl">
+	<div class="rtl-blue-tmpl">
 		<div id="header" class="">
 			<div class="container">
 				<div id="masthead">
@@ -30,8 +30,8 @@
 						</div>
 					</div> -->
 					<!-- bloginfo( 'url' ) -->
-					<a href="<?php bloginfo( 'url' ) ?>?channel=entertainment"><img src="<?php echo get_template_directory_uri().'/images/header-nohd.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo logo-entertainment hidden-xs" /></a>
-					<a href="<?php bloginfo( 'url' ) ?>?channel=extreme"><img src="<?php echo get_template_directory_uri().'/images/logo-extreme-nohd.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo logo-extreme hidden-xs img-disabled" /></a>
+					<a href="<?php bloginfo( 'url' ) ?>?channel=entertainment"><img src="<?php echo get_template_directory_uri().'/images/header-nohd.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo logo-entertainment hidden-xs img-disabled" /></a>
+					<a href="<?php bloginfo( 'url' ) ?>?channel=extreme"><img src="<?php echo get_template_directory_uri().'/images/logo-extreme-nohd.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo logo-extreme hidden-xs" /></a>
 				</div>
 				<nav class="navbar navbar-inverse">
 					<div class="container">					
@@ -69,7 +69,7 @@
 								'menu_class' => 'nav navbar-nav hide hidden-xs hidden-sm',
 								'menu_id' => 'featured-menu',
 								'container' => '',
-								'theme_location' => 'featured-shows',
+								'theme_location' => 'featured-shows-extreme',
 								'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>'
 							) ); ?>
 					</div>

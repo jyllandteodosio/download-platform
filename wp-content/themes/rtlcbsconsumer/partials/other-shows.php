@@ -5,7 +5,7 @@
 			<div class="swiper-wrapper">
 				<?php
 					switch_to_blog( 1 );
-					$channel = 'entertainment';
+					$channel = $_SESSION['channel'];
 					$query_shows = getAllShows($channel);
 					if($query_shows->have_posts()):
 			            while($query_shows->have_posts()) : $query_shows->the_post();

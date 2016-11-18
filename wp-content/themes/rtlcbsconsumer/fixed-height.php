@@ -1,7 +1,17 @@
 <?php
 // Template Name: Fixed Height
 
-get_header( 'rtl' ); ?>
+get_template_part('channel-setter');
+
+  $channel = $_SESSION['channel'];
+  if ( $channel == 'entertainment'):
+    get_header('rtl');
+  elseif ( $channel == 'extreme'):
+    get_header('rtl-blue');
+  elseif($channel == 'none'):
+    get_header('rtl');
+  endif;
+ ?>
 
 <div class="content-area">
 	<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>

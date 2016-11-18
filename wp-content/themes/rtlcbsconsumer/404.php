@@ -1,4 +1,15 @@
-<?php get_header( 'rtl' );
+<?php 
+get_template_part('channel-setter');
+
+  $channel = $_SESSION['channel'];
+  if ( $channel == 'entertainment'):
+    get_header('rtl');
+  elseif ( $channel == 'extreme'):
+    get_header('rtl-blue');
+  elseif($channel == 'none'):
+    get_header('rtl');
+  endif;
+  
 switch_to_blog( 1);
 $pagename = get_query_var('pagename'); 
 // echo "string-".$pagename;
