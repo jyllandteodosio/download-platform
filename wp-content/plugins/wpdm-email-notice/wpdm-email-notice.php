@@ -512,7 +512,7 @@ function trigger_email_notification_checker(){
 			$email_sent = send_email_notice($user, $files);
 		}
 	}
-
+	// die('asd');
 	$return_value_email = setEmailEntryStatus('sent');
 	if( $return_value_email === FALSE )
 		addEmailLogs('failed');
@@ -553,8 +553,8 @@ if (!function_exists('get_user_accessible_promos')){
 		$accessible_promo_files = array();
 		if (count($promo_files) > 0) {
 			foreach ($promo_files as $key => $value) {
-				if ( strtolower($value['operator_access']) == strtolower($user->operator_group) || 'all' == strtolower($user->operator_group)  ) {
-					echo "<br>promo compare:".strtolower($value['operator_access']).' = '.strtolower($user->operator_group);
+				echo "<br>promo compare:".strtolower($value['operator_access']).' = '.strtolower($user->operator_group);
+				if ( strtolower($value['operator_access']) == strtolower($user->operator_group) || 'all' == strtolower($value['operator_access'])  ) {
 					array_push($accessible_promo_files, $value);
 				}else{
 					continue;
@@ -716,6 +716,7 @@ if( count($files) > 0 ):
 
 		if( count($type['promo']) > 0 ) :
 			foreach ($type['promo'] as $key => $promo_info) :
+				$permalink = $operator_site_link.'/promos';
 				$message_promos .= '
 					<tr>
 						<td style="text-align: left;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
@@ -804,21 +805,19 @@ $message .= '
 </tr>
 </tbody>
 </table>
-
-
-
 	';
 	
+	// echo $message;
 	// Start output buffering to grab smtp debugging output
 	ob_start();
 
-	// // Send the test mail
+	// Send the test mail
 	$result = wp_mail($to,$subject,$message,$headers);
 		
-	// // Grab the smtp debugging output
+	// Grab the smtp debugging output
 	$smtp_debug = ob_get_clean();
 	
-	// // Output the response
+	// Output the response
 	return $result;
 }
 
