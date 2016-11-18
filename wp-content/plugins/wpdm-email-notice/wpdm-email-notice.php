@@ -553,8 +553,10 @@ if (!function_exists('get_user_accessible_promos')){
 		$accessible_promo_files = array();
 		if (count($promo_files) > 0) {
 			foreach ($promo_files as $key => $value) {
-				echo "<br>promo compare:".strtolower($value['operator_access']).' = '.strtolower($user->operator_group);
-				if ( strtolower($value['operator_access']) == strtolower($user->operator_group) || 'all' == strtolower($value['operator_access'])  ) {
+				// echo "<br>promo compare:".strtolower($value['operator_access']).' = '.strtolower($user->operator_group);
+				if ( strtolower($value['operator_access']) == strtolower($user->operator_group) 
+					|| 'all' == strtolower($value['operator_access'])
+					|| 'all' == strtolower($user->operator_group)  ) {
 					array_push($accessible_promo_files, $value);
 				}else{
 					continue;
