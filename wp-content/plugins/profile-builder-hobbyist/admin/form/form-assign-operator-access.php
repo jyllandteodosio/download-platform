@@ -183,7 +183,7 @@
 							'cartnonce' 		: cartnonce
 						},
 						function( response ) {
-							// console.log('response', response);
+							console.log('response', response);
 
 							var parsedData = JSON.parse(response);
 							console.log('parsedData', parsedData);
