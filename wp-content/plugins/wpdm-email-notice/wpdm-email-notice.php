@@ -618,14 +618,15 @@ if (!function_exists('get_user_accessible_files')){
 
 
 function send_email_notice($user = null, $files = null){
-	// $to = $user->user_email;
-	$to = "diannekatherinedelosreyes@gmail.com";
+	$plugin_img_dir = plugins_url().'/wpdm-email-notice/images/';
+	$to = $user->user_email;
+	// $to = "diannekatherinedelosreyes@gmail.com";
 	$subject = 'RTL CBS Asia Notification - New files are available for you today!';
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
 	$message = '
 
-	<table style="font-family: Arial, Helvetica, sans-serif; height: 617px; background-image: url(\'http://i66.tinypic.com/10dxted.jpg\'); background-repeat: no-repeat; background-position: center top; background-color: #a6a6a5; margin-left: auto; margin-right: auto;" width="599" cellpadding="0">
+	<table style="font-family: Arial, Helvetica, sans-serif; height: 617px; background-image: url(\''.$plugin_img_dir.'email-banner.jpg\'); background-repeat: no-repeat; background-position: center top; background-color: #a6a6a5; margin-left: auto; margin-right: auto;" width="599" cellpadding="0">
 <tbody>
 <tr>
 <td valign="top"><br />
@@ -798,7 +799,7 @@ $message .= '
 <table style="margin-left: auto; margin-right: auto; height: 65px;" width="397">
 <tbody>
 <tr>
-<td style="text-align: center; vertical-align: top;"><img src="http://i64.tinypic.com/15fhw6c.png" alt="RTL CBS Logo" width="171" height="39" /></td>
+<td style="text-align: center; vertical-align: top;"><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" width="171" height="39" /></td>
 </tr>
 </tbody>
 </table>
