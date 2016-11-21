@@ -44,6 +44,12 @@
 						<?php endforeach;?>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row">Capabilities</th>
+					<td>
+						<input type="checkbox" id="pr-group" name="pr-group" value="yes">No operator group restriction (e.g. PR Agencies)<br>
+					</td>
+				</tr>
 			</tbody>
 		</table>
 		<p class="submit">
@@ -59,6 +65,7 @@
 			<th>Country Group</th>
 			<th>Operator Group</th>
 			<th>RTL CBS Channel</th>
+			<th>No operator group restriction</th>
 		</tr>
 		</thead>
 
@@ -67,9 +74,7 @@
 		
 		<?php
 		$operator_access = get_all_operator_access();
-		// echo "<pre>";
-		// print_r($operator_access);
-		// echo "</pre>";
+
 		if(isset($operator_access) && !empty($operator_access)):
 			foreach ($operator_access as $key => $value):
 		?>
@@ -77,6 +82,7 @@
 			<td><?php echo $value['country_group'] != '' ? get_country_name($value['country_group']) : 'Admin' ;?></td>
 			<td><?php echo $value['operator_group'];?></td>
 			<td><?php echo $value['meta_access_unserialized'];?></td>
+			<td><?php echo $value['is_pr_group'];?></td>
 		</tr>
 		<?php 
 			endforeach;
@@ -91,6 +97,7 @@
 				<th>Country Group</th>
 				<th>Operator Group</th>
 				<th>RTL CBS Channel</th>
+				<th>No operator group restriction</th>
 			</tr>
 		</tfoot>
 
@@ -149,6 +156,7 @@
             jQuery("#message p").text("Checking channels...");
 			jQuery("#channel-access-0").prop("disabled",true);
 			jQuery("#channel-access-1").prop("disabled",true);
+			jQuery("#pr-group").prop("disabled",true);
 		}
 
 		/**
@@ -158,6 +166,7 @@
 			jQuery("#message").addClass("hidden");
 			jQuery("#channel-access-0").prop("disabled",false);
 			jQuery("#channel-access-1").prop("disabled",false);
+			jQuery("#pr-group").prop("disabled",false);
 		}
 
 		/**
@@ -174,11 +183,15 @@
 							'cartnonce' 		: cartnonce
 						},
 						function( response ) {
+							console.log('response', response);
+
 							var parsedData = JSON.parse(response);
+							console.log('parsedData', parsedData);
 							var entertainment = '',extreme= '';
 							if(parsedData) {
-								var entertainment = parsedData["channel-access[0]"];
-								var extreme= parsedData["channel-access[1]"];
+								var entertainment = parsedData["meta_access"]["channel-access[0]"];
+								var extreme= parsedData["meta_access"]["channel-access[1]"];
+								var pr_group= parsedData["is_pr_group"];
 							}
 							
 							if(entertainment != undefined && entertainment != ''){
@@ -191,6 +204,12 @@
 								jQuery('#channel-access-1').attr('checked', true);
 							}else{
 								jQuery('#channel-access-1').attr('checked', false);
+							}
+
+							if(pr_group != undefined && pr_group != ''){
+								jQuery('#pr-group').attr('checked', true);
+							}else{
+								jQuery('#pr-group').attr('checked', false);
 							}
 							enableChannelCheckbox();
 						}
