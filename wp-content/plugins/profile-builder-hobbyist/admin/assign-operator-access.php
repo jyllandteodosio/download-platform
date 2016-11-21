@@ -51,7 +51,6 @@ function process_operator_access(){
 	}else {
 		$return_value = 0;
 	}
-	// echo $return_value;
 	echo $return_value ? "Saved Successfully." : "No changes found.";
 	die();
 }
@@ -79,25 +78,19 @@ function insertToOperatorAccess($data){
 
 	$operator_data['country'] = $data['country']; 
 	$operator_data['operator_group'] = $data['operator_group']; 
-	$operator_data['pr_group'] = $data['pr_group']; 
+	$operator_data['pr_group'] = $data['pr-group']; 
 
 	$serialized_operator_access = serializeChannelAccess($data);
-	// if($serialized_operator_access != 0){
-		$return_value = $wpdb->insert(
-		        				$wpdb->operator_access,
-						        array(
-						            'operator_group' 	=> $operator_data['operator_group'],
-						            'country_group' 	=> $operator_data['country'],
-						            'is_pr_group'		=> $operator_data['pr_group'],
-						            'meta_access' 		=> $serialized_operator_access,
-						            'created_at' 		=> date('Y-m-d H:i:s')
-						        )
-		    				);
-	// } 
-	// else {
-	// 	$return_value = "Please choose a channel";
-	// }
-	// echo $return_value;die();
+	$return_value = $wpdb->insert(
+				$wpdb->operator_access,
+		        array(
+		            'operator_group' 	=> $operator_data['operator_group'],
+		            'country_group' 	=> $operator_data['country'],
+		            'is_pr_group'		=> $operator_data['pr_group'],
+		            'meta_access' 		=> $serialized_operator_access,
+		            'created_at' 		=> date('Y-m-d H:i:s')
+		        )
+			);
 	return $return_value;
 }
 
@@ -130,13 +123,11 @@ function serializeChannelAccess($data){
 	unset($data['country']);
 	unset($data['operator_group']);
 	unset($data['pr-group']);
-	// $count = count($data);
 	for ($i=0; $i < 2 ; $i++) { 
 		if(isset($data["channel-access[{$i}]"]) && $data["channel-access[{$i}]"] != "" && $data["channel-access[{$i}]"] != null)
 			$operator_data["channel-access[{$i}]"] = $data["channel-access[{$i}]"];
 	}
 	return serialize($operator_data);
-	// return $count > 0 ? serialize($operator_data) : 0;
 }
 
 /**
@@ -154,11 +145,6 @@ function get_matching_operator_access(){
 			$channel_access->meta_access = unserialize($channel_access->meta_access);
 		}
 	}
-	// else {
-		// $return_value = 0;
-	// }
-	// echo $return_value;
-	// print_r($serialized_meta_access);
 	echo json_encode($channel_access);
 	die();
 }
