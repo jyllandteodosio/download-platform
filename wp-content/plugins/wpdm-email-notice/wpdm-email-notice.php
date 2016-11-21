@@ -19,6 +19,7 @@
 		require_once( ABSPATH . '/wp-admin/includes/upgrade.php' );
 
 		$db_table_name = $wpdb->prefix . 'wpdm_email';
+		$db_table_name_logs = $wpdb->prefix . 'wpdm_email_logs';
 
 		/* Create a table if not yet existing */
 		if( $wpdb->get_var( "SHOW TABLES LIKE '$db_table_name'" ) != $db_table_name ) {
@@ -37,7 +38,17 @@
 				  created_at datetime DEFAULT '0000-00-00 00:00:00',
 				  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 				  PRIMARY KEY  (id)
-				) $charset_collate;";
+				) $charset_collate;
+
+				CREATE TABLE $db_table_name_logs (
+				  id int(11) NOT NULL AUTO_INCREMENT,
+				  status varchar(100),
+				  recipient longtext,
+				  created_at datetime DEFAULT '0000-00-00 00:00:00',
+				  PRIMARY KEY  (id)
+				) $charset_collate;
+
+				";
 			dbDelta( $sql );
 
 			add_option( 'wea_db_version', $wea_db_version );
@@ -57,7 +68,16 @@
 				  created_at datetime DEFAULT '0000-00-00 00:00:00',
 				  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 				  PRIMARY KEY  (id)
-				) $charset_collate;";
+				) $charset_collate;
+
+				CREATE TABLE $db_table_name_logs (
+				  id int(11) NOT NULL AUTO_INCREMENT,
+				  status varchar(100),
+				  recipient longtext,
+				  created_at datetime DEFAULT '0000-00-00 00:00:00',
+				  PRIMARY KEY  (id)
+				) $charset_collate;
+				";
 
 			dbDelta( $sql );
 
