@@ -150,7 +150,9 @@ function get_matching_operator_access(){
 		global $wpdb;
 
 		$channel_access = $wpdb->get_row( "SELECT meta_access,is_pr_group FROM $wpdb->operator_access WHERE operator_group='{$data['operator_group']}' AND country_group='{$data['country']}' " );
-		$channel_access->meta_access = unserialize($channel_access->meta_access);
+		if($channel_access != null){
+			$channel_access->meta_access = unserialize($channel_access->meta_access);
+		}
 	}
 	// else {
 		// $return_value = 0;
