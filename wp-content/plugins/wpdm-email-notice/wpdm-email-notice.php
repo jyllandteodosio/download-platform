@@ -463,6 +463,7 @@ function trigger_email_notification_checker(){
 	$users = getUsersByRole('Operator');
     
 	$permalink = get_permalink($id);
+	$email_recipient = array();
 	foreach ($users as $user) {
 		$files = array();
 		if(count($email_entries) > 0){
@@ -505,19 +506,19 @@ function trigger_email_notification_checker(){
 			}
 		}
 
-		// echo "<pre>Files to email all: ";
-		// print_r($files);
-		// echo "</pre>";	
 		if( count($files) > 0 ){
 			$email_sent = send_email_notice($user, $files);
+			if($email_sent)
+				array_push($email_recipient,$user->user_email);
 		}
 	}
 	// die('asd');
+	$email_recipient_serialized = serialize($email_recipient);
 	$return_value_email = setEmailEntryStatus('sent');
 	if( $return_value_email === FALSE )
-		addEmailLogs('failed');
+		addEmailLogs('failed', $email_recipient_serialized);
 	else
-		addEmailLogs('success');
+		addEmailLogs('success', $email_recipient_serialized);
 
 }
 
@@ -890,12 +891,13 @@ function setEmailEntryStatus($status = 'pending'){
 	return $return_value;
 }
 
-function addEmailLogs($status = ''){
+function addEmailLogs($status = '', $recipient = ''){
 	global $wpdb;
 	$return_value = $wpdb->insert(
 			                            $wpdb->wpdm_email_logs,
 			                            array(
-			                            	'status' => $status
+			                            	'status' => $status,
+			                            	'recipient' => $recipient
 			                            )
 			                        );
 	
