@@ -618,8 +618,8 @@ if (!function_exists('get_user_accessible_files')){
 
 
 function send_email_notice($user = null, $files = null){
-	$to = $user->user_email;
-	// $to = "diannekatherinedelosreyes@gmail.com";
+	// $to = $user->user_email;
+	$to = "diannekatherinedelosreyes@gmail.com";
 	$subject = 'RTL CBS Asia Notification - New files are available for you today!';
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
