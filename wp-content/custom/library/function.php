@@ -830,7 +830,7 @@ if( !function_exists('get_all_operator_access') ){
      */
     function get_all_operator_access(){
         global $wpdb;
-        $operator_access = $wpdb->get_results( "SELECT id, operator_group, country_group, meta_access FROM $wpdb->operator_access ORDER BY country_group, operator_group", ARRAY_A );
+        $operator_access = $wpdb->get_results( "SELECT id, operator_group, country_group, meta_access, is_pr_group FROM $wpdb->operator_access ORDER BY country_group, operator_group", ARRAY_A );
         $operator_access_prep = array();
 
         foreach ($operator_access as $key => $value) {
@@ -840,6 +840,7 @@ if( !function_exists('get_all_operator_access') ){
             $operator_access_prep[$value['id']] = array(
                                 'operator_group' => $value['operator_group'],
                                 'country_group' => $value['country_group'],
+                                'is_pr_group' => $value['is_pr_group'],
                                 'meta_access_unserialized' => $meta_access_simplified);
         }
         
