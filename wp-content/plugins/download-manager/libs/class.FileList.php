@@ -340,7 +340,7 @@ class FileList
                                     'channel_others'    => 'cm_oth', 
                                     /* PREFIX FOR SHOW DOCUMENTS */
                                     'synopses'          => 'synopsis',
-                                    'transcripts'       => 'trans',
+                                    'transcripts'       => 'transcript',
                                     'fact_sheet'        => 'fact',
                                     'fonts'             => 'font',
                                     'document_others'   => 'doth',
