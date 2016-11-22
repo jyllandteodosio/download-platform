@@ -129,7 +129,7 @@ if (!isset($wpdb->wpdm_email_logs)) {
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($post_id)
 {
-	// trigger_email_notification_checker();
+	trigger_email_notification_checker();
 
 	// send_email_notice();
 
@@ -333,7 +333,7 @@ if(!function_exists('categorized_files')){
 			                'document' => array (
 			                    'show'  => array (
 			                        'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
-			                        'transcripts'       => array('prefix' => 'trans'        , 'template_shortcode' => 'file_category,epk' ),
+			                        'transcripts'       => array('prefix' => 'transcript'        , 'template_shortcode' => 'file_category,epk' ),
 			                        'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
 			                        'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
 			                        'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
@@ -528,6 +528,7 @@ function trigger_email_notification_checker(){
 			    // echo "</pre>";
 			    $matched_operator_access = check_user_group_access($user, $operator_access);
 				if($matched_operator_access){
+					echo "<br>matched_operator_access['is_pr_group']:".$matched_operator_access['is_pr_group'];
 					$uns_email_entry = unserialize($email_entry->data_new);
 					$files[$email_entry->post_id]['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$operator_access);
 					$files[$email_entry->post_id]['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],$operator_access);	
@@ -594,7 +595,8 @@ if (!function_exists('get_user_accessible_promos')){
 		$accessible_promo_files = array();
 		if (count($promo_files) > 0) {
 			foreach ($promo_files as $key => $value) {
-				if ( strtolower($value['operator_access']) == strtolower($user->operator_group) ) {
+				if ( strtolower($value['operator_access']) == strtolower($user->operator_group) ||
+					strtolower($value['operator_access']) == 'all' ) {
 					array_push($accessible_promo_files, $value);
 				}else if ( $is_pr_group == 'yes' ){
 					if( strtolower($user->country_group) == 'all' ){
@@ -629,7 +631,7 @@ if (!function_exists('get_user_accessible_files')){
 		$accessible_files = array();
 		if (count($raw_files) > 0) {
 			foreach ($raw_files as $key => $value) {
-				echo "<br><br>New file:".$value;
+				// echo "<br><br>New file:".$value;
 				if( contains($value, 'epg')){
 					if ( ($is_pr_group == 'yes' && strtolower($user->country_group) == 'all') ||
 						 contains($value, 'affiliate') ||
@@ -725,23 +727,21 @@ function send_email_notice($user = null, $files = null){
 
 
 $operator_site_link = get_home_url();
-$message_shows = '';
-$message_channel = '';
-$message_promos = '';
 
 if( count($files) > 0 ):
 	foreach ($files as $post_id => $type) :
 		if( count($type['show']) > 0 ) :
 			$show_title = get_the_title($post_id);
-			$permalink = get_permalink($post_id);
 
 			$is_channel_material = checkIfChannelMaterials($post_id);
-			$show_title = $is_channel_material != false ? $is_channel_material : $show_title;
-			echo "<br>is_channel_material : ".$is_channel_material;
+			$show_title = $is_channel_material['is_channel_material'] != false ? $is_channel_material['channel'] : $show_title;
+			$permalink = get_permalink($post_id).$is_channel_material['channel_switcher'];
+			echo "<br>is_channel_material : ";
+			print_r($is_channel_material);
 			
 			$message_temp = '
 			<tr style="background-color: #3b3838; color: #fff;">
-				<td style="text-align: left;">'.$show_title.'</td>
+				<td style="text-align: left;padding:7px 2px;">'.ucwords($show_title).'</td>
 			</tr>';
 			foreach ($type['show'] as $category => $prefixes) :
 				if(count($prefixes) > 0):
@@ -749,20 +749,20 @@ if( count($files) > 0 ):
 						if( count($file_list) > 0 ) :
 						$message_temp .= '
 							<tr style="background-color: #d0cece;">
-								<td style="text-align: left;">'.getCategoryNameByPrefix($prefix).'</td>
+								<td style="text-align: left;padding:7px 2px;">'.getCategoryNameByPrefix($prefix).'</td>
 							</tr>';
 							$file_counter = 1;
 							foreach ($file_list as $file_id => $file_name) :
 								if( $file_counter <= 10 ) :
 									$message_temp .='
 										<tr>
-											<td style="text-align: left;"><a title="'.$file_name.'" href="'.$permalink.'" target="_blank">'.$file_name.'</a></td>
+											<td style="text-align: left;padding:7px 2px;"><a title="'.$file_name.'" href="'.$permalink.'" target="_blank">'.$file_name.'</a></td>
 										</tr>
 									';
 								else :
 									$message_temp .='
 										<tr>
-											<td style="text-align: left;"><a title="'.$show_title.'" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
+											<td style="text-align: left;padding:7px 2px;"><a title="'.$show_title.'" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
 										</tr>
 									';
 								endif;
@@ -772,10 +772,18 @@ if( count($files) > 0 ):
 					endforeach;
 				endif;
 
-				if( $is_channel_material ){
-					$message_channel .= $message_temp;
-				}else{
-					$message_shows .= $message_temp;
+				if( $is_channel_material['channel'] == 'entertainment' ){
+					if( $is_channel_material['is_channel_material'] ){
+						$message_entertainment['channel'] .= $message_temp;
+					}else{
+						$message_entertainment['shows'] .= $message_temp;
+					}
+				}else if( $is_channel_material['channel'] == 'extreme' ){
+					if( $is_channel_material['is_channel_material'] ){
+						$message_extreme['channel'] .= $message_temp;
+					}else{
+						$message_extreme['shows'] .= $message_temp;
+					}
 				}
 				$message_temp = '';
 			endforeach;
@@ -783,12 +791,19 @@ if( count($files) > 0 ):
 
 		if( count($type['promo']) > 0 ) :
 			foreach ($type['promo'] as $key => $promo_info) :
-				$permalink = $operator_site_link.'/promos';
-				$message_promos .= '
+				$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
+				$message_temp = '
 					<tr>
-						<td style="text-align: left;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
+						<td style="text-align: left;padding:7px 2px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
 					</tr>
 					';
+
+				if( $is_channel_material['channel'] == 'entertainment' ){
+					$message_entertainment['promos'] .= $message_temp;
+				}else if( $is_channel_material['channel'] == 'extreme' ){
+					$message_extreme['promos'] .= $message_temp;
+				}
+				$message_temp = '';
 			endforeach;
 		endif;
 		
@@ -797,47 +812,92 @@ if( count($files) > 0 ):
 	
 endif;
 
-// $message_channel .= $message_temp;
+if( isset($message_entertainment) ):
+	$message .= '<p style="color:#db302f" ><b>ENTERTAINMENT</b></p>';
+	/* SHOWS SECTION */
+	if( isset($message_entertainment['shows']) ):
+	$message .= '
+	<p><strong>Show Assets</strong></p>
+	<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+	<tbody>';
+	$message .= $message_entertainment['shows'];
+	$message .= '
+	</tbody>
+	</table>';
+	endif;
+	/* END OF SHOWS SECTION */
 
-/* SHOWS SECTION */
-if($message_shows!=''):
-$message .= '
-<p><strong>Show Assets</strong></p>
-<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
-<tbody>';
-$message .= $message_shows;
-$message .= '
-</tbody>
-</table>';
-endif;
-/* END OF SHOWS SECTION */
+	/* CHANNEL SECTION */
+	if( isset($message_entertainment['channel']) ):
+	$message .= '
+	<p><strong>Channel Materials</strong></p>
+	<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+	<tbody>';
+	$message .= $message_entertainment['channel'];
+	$message .= '
+	</tbody>
+	</table>';
+	endif;
+	/* END OF CHANNEL SECTION */
 
-/* CHANNEL SECTION */
-if($message_channel != ''):
-$message .= '
-<p><strong>Channel Materials</strong></p>
-<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
-<tbody>';
-$message .= $message_channel;
-$message .= '
-</tbody>
-</table>';
+	/* PROMOS SECTION */
+	if( isset($message_entertainment['promos']) ):
+	$message .= '
+	<p><strong>Promos</strong></p>
+	<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+	<tbody>
+	<tr style="background-color: #d0cece;"> <td style="text-align: left;">On-Air/Social</td> </tr>';
+	$message .= $message_entertainment['promos'];
+	$message .= '
+	</tbody>
+	</table>';
+	endif;
+	/* END OF PROMOS SECTION */
 endif;
-/* END OF CHANNEL SECTION */
 
-/* PROMOS SECTION */
-if($message_promos != ''):
-$message .= '
-<p><strong>Promos</strong></p>
-<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
-<tbody>
-<tr style="background-color: #d0cece;"> <td style="text-align: left;">On-Air/Social</td> </tr>';
-$message .= $message_promos;
-$message .= '
-</tbody>
-</table>';
+if( isset($message_extreme)):
+	$message .= '<p style="color:#db302f;margin-top: 30px;" ><b>EXTREME</b></p>';
+	/* SHOWS SECTION */
+	if( isset($message_extreme['shows'])) :
+	$message .= '
+	<p><strong>Show Assets</strong></p>
+	<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+	<tbody>';
+	$message .= $message_extreme['shows'];
+	$message .= '
+	</tbody>
+	</table>';
+	endif;
+	/* END OF SHOWS SECTION */
+
+	/* CHANNEL SECTION */
+	if( isset($message_extreme['channel']) ):
+	$message .= '
+	<p><strong>Channel Materials</strong></p>
+	<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+	<tbody>';
+	$message .= $message_extreme['channel'];
+	$message .= '
+	</tbody>
+	</table>';
+	endif;
+	/* END OF CHANNEL SECTION */
+
+	/* PROMOS SECTION */
+	if( isset($message_extreme['promos']) ):
+	$message .= '
+	<p><strong>Promos</strong></p>
+	<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+	<tbody>
+	<tr style="background-color: #d0cece;"> <td style="text-align: left;">On-Air/Social</td> </tr>';
+	$message .= $message_extreme['promos'];
+	$message .= '
+	</tbody>
+	</table>';
+	endif;
+	/* END OF PROMOS SECTION */
 endif;
-/* END OF PROMOS SECTION */
+
 
 
 $message .= '
@@ -874,7 +934,8 @@ $message .= '
 </table>
 	';
 	
-	// echo $message;
+	echo $message;
+	
 	// Start output buffering to grab smtp debugging output
 	ob_start();
 
@@ -899,7 +960,7 @@ function getCategoryNameByPrefix($prefix = null){
 			'elements' => 'Elements',
 
 			'synopsis' => 'Synopses',
-			'trans' => 'Transcripts/EPK',
+			'transcript' => 'Transcripts/EPK',
 			'fact' => 'Fact Sheet/Press Pack',
 			'font' => 'Fonts',
 			'doth' => 'Others',
@@ -922,14 +983,19 @@ function getCategoryNameByPrefix($prefix = null){
 function checkIfChannelMaterials($post_id = null){
 	if( $post_id != null ){
 		$categories_data = get_the_terms($post_id,'wpdmcategory');
+		$channel = array();
 		foreach ($categories_data as $key => $value) {
-			if(contains($value->slug,'channel')){
+			if(contains($value->slug, 'channel')){
 				$channel = explode("-",$value->slug);
 				if( in_array('extreme', $channel) ){
-					return 'Extreme';
+					return array( 'is_channel_material' => true, 'channel' => 'extreme', 'channel_switcher' => '?channel=extreme');
 				}else{
-					return 'Entertainment';
+					return array( 'is_channel_material' => true, 'channel' => 'entertainment', 'channel_switcher' => '?channel=entertainment');
 				}
+			}else if(contains($value->slug, 'extreme')){
+				return array( 'is_channel_material' => false, 'channel' => 'extreme', 'channel_switcher' => '?channel=extreme');
+			}else{
+				return array( 'is_channel_material' => false, 'channel' => 'entertainment', 'channel_switcher' => '?channel=entertainment');
 			}
 		}
 	}
