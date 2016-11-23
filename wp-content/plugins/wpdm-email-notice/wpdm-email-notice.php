@@ -1019,7 +1019,8 @@ function setEmailEntryStatus($status = 'pending'){
 			                            $wpdb->wpdm_email,
 			                            array(
 			                                'status' => 'sent',
-			                                'date_emailed' => current_time('mysql', false)
+			                                'date_emailed' => current_time('mysql', false),
+			                                'created_at' => current_time('mysql', false)
 			                            ),
 			                            array(
 			                            	'status' => 'pending'
@@ -1035,7 +1036,8 @@ function addEmailLogs($status = '', $recipient = ''){
 			                            $wpdb->wpdm_email_logs,
 			                            array(
 			                            	'status' => $status,
-			                            	'recipient' => $recipient
+			                            	'recipient' => $recipient,
+			                                'created_at' => current_time('mysql', false)
 			                            )
 			                        );
 	
