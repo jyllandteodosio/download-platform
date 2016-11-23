@@ -41,6 +41,7 @@ function process_operator_access(){
 	$cartnonce = $_POST['cartnonce'];
 	if (!empty($_POST) && wp_verify_nonce($cartnonce, '__rtl_assign_operator_access__') ){ 
 		$data = unserializeForm($_POST['data']);
+		// print_r($data);
 		if(!checkExistingCountryOperator($data)){
 			$return_value = insertToOperatorAccess($data);
 		}else {
@@ -50,7 +51,6 @@ function process_operator_access(){
 	}else {
 		$return_value = 0;
 	}
-	// echo $return_value;
 	echo $return_value ? "Saved Successfully." : "No changes found.";
 	die();
 }
@@ -78,23 +78,19 @@ function insertToOperatorAccess($data){
 
 	$operator_data['country'] = $data['country']; 
 	$operator_data['operator_group'] = $data['operator_group']; 
+	$operator_data['pr_group'] = $data['pr-group']; 
 
 	$serialized_operator_access = serializeChannelAccess($data);
-	// if($serialized_operator_access != 0){
-		$return_value = $wpdb->insert(
-		        				$wpdb->operator_access,
-						        array(
-						            'operator_group' 	=> $operator_data['operator_group'],
-						            'country_group' 	=> $operator_data['country'],
-						            'meta_access' 		=> $serialized_operator_access,
-						            'created_at' 		=> date('Y-m-d H:i:s')
-						        )
-		    				);
-	// } 
-	// else {
-	// 	$return_value = "Please choose a channel";
-	// }
-	// echo $return_value;die();
+	$return_value = $wpdb->insert(
+				$wpdb->operator_access,
+		        array(
+		            'operator_group' 	=> $operator_data['operator_group'],
+		            'country_group' 	=> $operator_data['country'],
+		            'is_pr_group'		=> $operator_data['pr_group'],
+		            'meta_access' 		=> $serialized_operator_access,
+		            'created_at' 		=> date('Y-m-d H:i:s')
+		        )
+			);
 	return $return_value;
 }
 
@@ -109,11 +105,11 @@ function updateToOperatorAccess($data){
 	$serialized_operator_access = serializeChannelAccess($data);
 	$return_value = $wpdb->update( 
 							$wpdb->operator_access, 
-							array('meta_access' => $serialized_operator_access), 
+							array('meta_access' => $serialized_operator_access,
+								'is_pr_group' => $data['pr-group']), 
 							array( 
 								'operator_group' => $data['operator_group'],
-								'country_group' => $data['country'],
-								)
+								'country_group' => $data['country'])
 						);
 	return $return_value;
 }
@@ -126,13 +122,12 @@ function updateToOperatorAccess($data){
 function serializeChannelAccess($data){
 	unset($data['country']);
 	unset($data['operator_group']);
-	// $count = count($data);
+	unset($data['pr-group']);
 	for ($i=0; $i < 2 ; $i++) { 
 		if(isset($data["channel-access[{$i}]"]) && $data["channel-access[{$i}]"] != "" && $data["channel-access[{$i}]"] != null)
 			$operator_data["channel-access[{$i}]"] = $data["channel-access[{$i}]"];
 	}
 	return serialize($operator_data);
-	// return $count > 0 ? serialize($operator_data) : 0;
 }
 
 /**
@@ -145,14 +140,12 @@ function get_matching_operator_access(){
 		$data = unserializeForm($_POST['data']);
 		global $wpdb;
 
-		$serialized_meta_access = $wpdb->get_var( "SELECT meta_access FROM $wpdb->operator_access WHERE operator_group='{$data['operator_group']}' AND country_group='{$data['country']}' " );
-		$unserialized_meta_access = unserialize($serialized_meta_access);
+		$channel_access = $wpdb->get_row( "SELECT meta_access,is_pr_group FROM $wpdb->operator_access WHERE operator_group='{$data['operator_group']}' AND country_group='{$data['country']}' " );
+		if($channel_access != null){
+			$channel_access->meta_access = unserialize($channel_access->meta_access);
+		}
 	}
-	// else {
-		// $return_value = 0;
-	// }
-	// echo $return_value;
-	echo json_encode($unserialized_meta_access);
+	echo json_encode($channel_access);
 	die();
 }
 add_action('wp_ajax_get_matching_operator_access', 'get_matching_operator_access');

@@ -340,7 +340,7 @@ class FileList
                                     'channel_others'    => 'cm_oth', 
                                     /* PREFIX FOR SHOW DOCUMENTS */
                                     'synopses'          => 'synopsis',
-                                    'transcripts'       => 'trans',
+                                    'transcripts'       => 'transcript',
                                     'fact_sheet'        => 'fact',
                                     'fonts'             => 'font',
                                     'document_others'   => 'doth',
@@ -373,9 +373,8 @@ class FileList
      * @return string
      * @usage Generate file list with preview - key art images
      */
-    public static function CategorizedFileList($allfiles_sorted, $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null){
-
-        $files_counter = count($allfiles_sorted);
+    public static function CategorizedFileList($allfiles_sorted = array(), $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null, $post_id = null, $permalink = ""){
+        $fhtml = '';
         if (is_array($allfiles_sorted)) {
             foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
                 $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
@@ -392,17 +391,13 @@ class FileList
                 $thumb = "";
                 $ind = \WPDM_Crypt::Encrypt($sfile);
                 $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
+                $file['ID'] = null;
                 $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                 $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
-                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file);              
+                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink);  
             }
         }
-
-        if ($files_counter > 0){
-            return $fhtml;
-        }else {
-            return "<p style='color:black'>No files available for download.</p>";
-        }
+        return $fhtml;
     }
 
     /**
@@ -411,15 +406,17 @@ class FileList
      * @return html
      * @usage returns html format of displayed file panel
      */
-    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null) {
+    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null, $post_id = null, $permalink = "") {
         $fhtml = "";
-        $postID = get_the_id();
+        $postID = $post_id;
+        // $postID = get_the_id();
         $userID = get_current_user_id( );
         $channel = $_SESSION['channel'];
         $ind = \WPDM_Crypt::Encrypt($sfile);
         $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
         $absolute_file_path = getFileAbsolutePathByURL($sfile);
-        $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file).$postID."&ind=".$ind : $sfile;
+        $downloadUrl = $fileType != self::$prefix_list['promos'] ? $permalink."?wpdmdl=".$postID."&ind=".$ind : $sfile;
+        // $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file).$postID."&ind=".$ind : $sfile;
         $buttonText = !checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
         $isFileAdded = !checkFileInCart($fileID) ? "" : "disabled";
         $isFileClickable = !checkFileInCart($fileID) ? "" : "disabled-links";
@@ -428,7 +425,7 @@ class FileList
         
         /* Check if EPG file - will assign a special thumbnail if ever */
         if(contains($sfile,self::$prefix_list['channel_epg'])){
-            $thumb_path = getEPGThumbnail($fileTitle);
+            $thumb_path = getEPGThumbnail($fileTitle,$postID);
         }
         else {
             $thumb_path = WPDM_CACHE_DIR.basename($thumb);
@@ -477,230 +474,6 @@ class FileList
         $fhtml .= "     </div>";
         $fhtml .= "     ";
        
-        return $fhtml;
-    }
-
-    /**
-     * @usage function to generate show custom script
-     * @param none
-     * @return html script
-     * @usage returns html script format
-     */
-    public static function getScriptFile(){
-
-        $siteurl = admin_url('/admin-ajax.php');
-        $cartnonce = wp_create_nonce('__rtl_cart_nonce__');
-        $fhtml = '';
-        $fhtml .= " <script type='text/javascript' language = 'JavaScript'>
-                                jQuery(document).ready(function(){
-                                    var ajaxurl = '{$siteurl}';
-                                    var cartnonce = '{$cartnonce}';
-                                    var addedText = \"Added&nbsp;&nbsp;<i class='fa fa-check'></i>\";
-                                    var addText = '".__("Add to Cart","wpdmpro")."';
-                                    
-                                    populateEpisodeFilter('episodicstills-tab-contents','id', '".self::$prefix_list['episodic_stills']."', 'episode_code');
-                                    populateEpisodeFilter('documents-tab-contents', 'id', '".self::$prefix_list['synopses']."', 'document_synopsis_code');
-                                    populateEpisodeFilter('synopses-tab-contents', 'id', '".self::$prefix_list['synopses']."', 'synopsis_code');
-                            
-                                    jQuery('.table-files').submit(function(event) {
-                                        event.preventDefault();
-                                        var form = jQuery(this);
-                                        var form_submitted_id = form.attr('id');
-                                        jQuery('#'+form_submitted_id+' .add-to-cart-btn').addClass('disabled-links');
-                                        console.log(form.attr('id'));
-                                        jQuery.post(
-                                            ajaxurl, 
-                                            {
-                                                'action'    : 'bulk_add_to_cart',
-                                                'data'      : form.serialize(),
-                                                'cartnonce' : cartnonce
-                                            },function(response) {
-                                                console.log('the response:');
-                                                console.log(response);
-
-                                                if(response == 'success'){
-                                                    /* TODO: .prop in span not working */
-                                                    jQuery('#'+form_submitted_id+' .show-items > .item ').addClass('added-to-cart');
-                                                    jQuery('#'+form_submitted_id+' .add-to-cart-btn').html(addedText);
-                                                    updateCartCount();
-                                                }else if (response == 'failed') {
-                                                    jQuery('#'+form_submitted_id+' .add-to-cart-btn').removeClass('disabled-links');
-                                                    console.log('insert failed');
-                                                }
-                                            }
-                                        );
-                                    });
-
-                                    jQuery('.add-to-cart-btn').click(function(event){
-                                        event.preventDefault();
-                                        var button = jQuery(this);
-                                        var file_id = jQuery(this).attr('data-file-id');
-                                        jQuery('.add-to-cart-btn.'+file_id).addClass('disabled-links').text('Adding..');
-                                        jQuery.post(
-                                            ajaxurl, 
-                                            {   'action': 'add_to_cart',
-                                                'file-id'   : file_id,
-                                                'file-title': jQuery(this).attr('data-file-title'),
-                                                'file-path' : jQuery(this).attr('data-file-path'),
-                                                'download-url' : jQuery(this).attr('data-download-url'),
-                                                'post-id'   : jQuery(this).attr('data-post-id'),
-                                                'file-type' : jQuery(this).attr('data-file-type'),
-                                                'user-id'   : jQuery(this).attr('data-user-id'),
-                                                'thumb'     : jQuery(this).attr('data-thumb'),
-                                                'channel'     : jQuery(this).attr('data-channel'),
-                                                'cartnonce'     : cartnonce
-                                            },
-                                            function(response) {
-                                                console.log('add:');
-                                                console.log(response);
-
-                                                if(response == 'success'){
-                                                    jQuery('.show-items > .'+file_id+'').addClass('added-to-cart');
-                                                    jQuery('.add-to-cart-btn.'+file_id).html(addedText);
-                                                    updateCartCount();
-                                                }else if (response == 'failed') {
-                                                    jQuery('.add-to-cart-btn.'+file_id).removeClass('disabled-links').html(addText);
-                                                    console.log('add to cart failed');
-                                                }
-                                            }
-                                        );
-                                    });
-
-                                    jQuery('.close-btn').click(function(event){
-                                        var button = jQuery(this);
-                                        var file_id = jQuery(this).attr('data-file-id');
-                                        jQuery('.show-items > .'+file_id+'').addClass('disabled-links');
-                                        jQuery('.add-to-cart-btn.'+file_id).text('Removing...');
-                                        jQuery.post(
-                                            ajaxurl, 
-                                            {   'action': 'remove_to_cart',
-                                                'file-id'   : jQuery(this).attr('data-file-id'),
-                                                'user-id'   : jQuery(this).attr('data-user-id'),
-                                                'cartnonce'     : cartnonce
-                                            },
-                                            function(response) {
-                                                console.log('remove:');
-                                                console.log(response);
-                                                if(response == 'success'){
-                                                    jQuery('.show-items > .'+file_id+'').removeClass('added-to-cart').removeClass('disabled-links');
-                                                    /* Show add button */
-                                                    jQuery('.add-to-cart-btn.'+file_id).text('".__("Add to Cart","wpdmpro")."').removeClass('disabled-links');
-                                                    updateCartCount();
-                                                }else if (response == 'failed') {
-                                                    jQuery('.add-to-cart-btn.'+file_id).removeClass('disabled-links').html(addedText);
-                                                    jQuery('.show-items > .'+file_id+'').removeClass('disabled-links');
-                                                    console.log('delete failed');
-                                                }
-                                            }
-                                        );
-                                    });
-                                    
-                                    function updateCartCount(){
-                                       
-                                        jQuery.get(
-                                            ajaxurl, 
-                                            {   'action': 'get_custom_cart_items_count'
-                                            },
-                                            function(response) {
-                                                console.log('count:');
-                                                console.log(response);
-                                                jQuery('.show-cart span.counter').text(response);
-                                            }
-                                        );
-                                    }
-
-                                    function showAllShowItems(tab_class){
-                                        jQuery('.'+tab_class+' .show-items .item').show();
-                                    }
-
-                                    function populateEpisodeFilter(tab_class,attribute_type, prefix, filter_id) {
-                                        var attr_type = attribute_type == 'id' ? '#' : '.';
-                                        var episodes_list = new Array();
-                                        var file_title_epi;
-                                        var file_title_epi_no;
-                                        var text_nodes = jQuery('.'+tab_class+' .show-items .item .show-meta p:first-child')
-                                          .contents()
-                                          .filter(function() {
-                                            return this.nodeType === 3; //Node.TEXT_NODE
-                                          });
-                                    
-                                        jQuery.each(text_nodes, function( index, value ) {
-                                            file_title_epi = value.textContent.toLowerCase().split(prefix);  /* will return something like this : '0006' */
-                                            if(file_title_epi[1] != undefined){
-                                                file_title_epi = file_title_epi[1].split('-');
-                                                file_title_epi_no = parseInt(file_title_epi);
-                                                console.log(prefix+':'+file_title_epi_no);
-                                                if (!isNaN(file_title_epi_no)){
-                                                    episodes_list.push(file_title_epi_no);
-                                                }
-                                            }
-                                        });
-                                        if(episodes_list.length > 0) {
-                                            jQuery.unique(episodes_list);
-                                            episodes_list.sort(sortNumber);
-                                            jQuery.each(episodes_list, function( index, value ) {
-                                                jQuery(attr_type+filter_id)
-                                                     .append(jQuery('<option></option>')
-                                                                .attr('value',value)
-                                                                .text('Episode '+value)); 
-                                            })
-                                            console.log( 'Episodes - '+ episodes_list);   
-                                        } 
-                                        addSelectFilterListener(tab_class,attribute_type,filter_id,prefix);
-                                    }
-
-                                    function addSelectFilterListener(tab_class,attribute_type,select_filter_id,prefix){
-                                        var attr_type = attribute_type == 'id' ? '#' : '.';
-                                        /* Make contains search case insensitive */
-                                        jQuery.expr[':'].contains = jQuery.expr.createPseudo(function(arg) {
-                                            return function( elem ) {
-                                                return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
-                                            };
-                                        });
-                                        jQuery( attr_type+select_filter_id )
-                                          .change(function () {
-                                            var str = '';
-                                            jQuery( attr_type+select_filter_id+' option:selected' ).each(function() {
-                                              str += jQuery( this ).val();
-                                            });
-                                            if(str == 'all') {
-                                                showAllShowItems(tab_class);
-                                                console.log('show all');
-                                            }else {
-                                                showAllShowItems(tab_class);
-                                                console.log('prefix : '+prefix);
-                                                var search_results_not = '';
-                                                var search_results = '';
-                                                var search_result_countdown = 4;
-                                                while(search_results.length == 0 && search_result_countdown > 0){
-                                                    console.log('search result countdown:'+ search_result_countdown);
-                                                    var search_string = prefix+pad(str,search_result_countdown--);
-                                                    search_results = jQuery('.'+tab_class+' .show-items .item:contains(\"'+search_string+'\")');
-                                                    search_results_not = jQuery('.'+tab_class+' .show-items .item:not(:contains(\"'+search_string+'\"))');
-                                                    console.log('search length : '+search_results.length);
-                                                    if(search_results.length > 0){
-                                                        search_results_not.hide();
-                                                        console.log('Search String : '+search_string);
-                                                    }
-                                                    
-                                                }
-                                                
-                                            }
-                                        });
-                                    }
-
-                                    function pad (str, max) {
-                                      str = str.toString();
-                                      return str.length < max ? pad('0' + str, max) : str;
-                                    }
-
-                                    function sortNumber(a,b) {
-                                        return a - b;
-                                    }
-
-
-                                });
-                            </script>";
         return $fhtml;
     }
 

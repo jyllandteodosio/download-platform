@@ -7,7 +7,7 @@ if ( class_exists( 'Bbpp_Animated_Gif' ) ) {
 		public function save( $filename = null, $mime_type = null ) {
 			global $ewww_defer;
 			if ( ! defined( 'EWWW_IMAGE_OPTIMIZER_CLOUD' ) )
-				ewww_image_optimizer_init();
+				ewww_image_optimizer_cloud_init();
 			$saved = parent::save( $filename, $mimetype );
 			if ( ! is_wp_error( $saved ) ) {
 				if ( ! $filename ) {
@@ -22,6 +22,12 @@ if ( class_exists( 'Bbpp_Animated_Gif' ) ) {
 					} else {
 						add_filter( 'http_headers_useragent', 'ewww_image_optimizer_cloud_useragent', PHP_INT_MAX );
 						global $ewwwio_image_background;
+						if ( ! class_exists( 'WP_Background_Process' ) ) {
+							require_once( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'background.php' );
+						}
+						if ( ! is_object( $ewwwio_image_background ) ) {
+							$ewwwio_image_background = new EWWWIO_Image_Background_Process();
+						}
 						$ewwwio_image_background->push_to_queue( $filename );
 						$ewwwio_image_background->save()->dispatch();
 						ewwwio_debug_message( "image editor (AGR gd) queued: $filename" );
@@ -35,7 +41,7 @@ if ( class_exists( 'Bbpp_Animated_Gif' ) ) {
 		public function multi_resize( $sizes ) {
 			global $ewww_defer;
 			if ( ! defined( 'EWWW_IMAGE_OPTIMIZER_CLOUD' ) )
-				ewww_image_optimizer_init();
+				ewww_image_optimizer_cloud_init();
 			$metadata = parent::multi_resize( $sizes );
 			ewwwio_debug_message( 'image editor (AGR gd) multi resize' );
 			ewwwio_debug_message( print_r( $metadata, true ) );
@@ -53,6 +59,12 @@ if ( class_exists( 'Bbpp_Animated_Gif' ) ) {
 					} else {
 						add_filter( 'http_headers_useragent', 'ewww_image_optimizer_cloud_useragent', PHP_INT_MAX );
 						global $ewwwio_image_background;
+						if ( ! class_exists( 'WP_Background_Process' ) ) {
+							require_once( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'background.php' );
+						}
+						if ( ! is_object( $ewwwio_image_background ) ) {
+							$ewwwio_image_background = new EWWWIO_Image_Background_Process();
+						}
 						$ewwwio_image_background->push_to_queue( $filename );
 						$ewwwio_image_background->save()->dispatch();
 						ewwwio_debug_message( "image editor (AGR gd) queued: $filename" );
@@ -69,7 +81,7 @@ if ( class_exists( 'Bbpp_Animated_Gif' ) ) {
 		protected function _save( $image, $filename = null, $mime_type = null ) {
 			global $ewww_defer;
 			if ( ! defined( 'EWWW_IMAGE_OPTIMIZER_CLOUD' ) )
-				ewww_image_optimizer_init();
+				ewww_image_optimizer_cloud_init();
 			$saved = parent::_save( $image, $filename, $mime_type );
 			if ( ! is_wp_error( $saved ) ) {
 				if ( ! $filename ) {
@@ -84,6 +96,12 @@ if ( class_exists( 'Bbpp_Animated_Gif' ) ) {
 					} else {
 						add_filter( 'http_headers_useragent', 'ewww_image_optimizer_cloud_useragent', PHP_INT_MAX );
 						global $ewwwio_image_background;
+						if ( ! class_exists( 'WP_Background_Process' ) ) {
+							require_once( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'background.php' );
+						}
+						if ( ! is_object( $ewwwio_image_background ) ) {
+							$ewwwio_image_background = new EWWWIO_Image_Background_Process();
+						}
 						$ewwwio_image_background->push_to_queue( $filename );
 						$ewwwio_image_background->save()->dispatch();
 						ewwwio_debug_message( "image editor (wpthumb GD) queued: $filename" );
@@ -100,7 +118,7 @@ if ( class_exists( 'Bbpp_Animated_Gif' ) ) {
 		protected function _save( $image, $filename = null, $mime_type = null ) {
 			global $ewww_defer;
 			if ( ! defined( 'EWWW_IMAGE_OPTIMIZER_CLOUD' ) ) {
-				ewww_image_optimizer_init();
+				ewww_image_optimizer_cloud_init();
 			}
 			$saved = parent::_save( $image, $filename, $mime_type );
 			if ( ! is_wp_error( $saved ) ) {
@@ -116,6 +134,12 @@ if ( class_exists( 'Bbpp_Animated_Gif' ) ) {
 					} else {
 						add_filter( 'http_headers_useragent', 'ewww_image_optimizer_cloud_useragent', PHP_INT_MAX );
 						global $ewwwio_image_background;
+						if ( ! class_exists( 'WP_Background_Process' ) ) {
+							require_once( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'background.php' );
+						}
+						if ( ! is_object( $ewwwio_image_background ) ) {
+							$ewwwio_image_background = new EWWWIO_Image_Background_Process();
+						}
 						$ewwwio_image_background->push_to_queue( $filename );
 						$ewwwio_image_background->save()->dispatch();
 						ewwwio_debug_message( "image editor (BFI GD) queued: $filename" );
@@ -132,7 +156,7 @@ if ( class_exists( 'Bbpp_Animated_Gif' ) ) {
 		protected function _save( $image, $filename = null, $mime_type = null ) {
 			global $ewww_defer;
 			if ( ! defined( 'EWWW_IMAGE_OPTIMIZER_CLOUD' ) ) {
-				ewww_image_optimizer_init();
+				ewww_image_optimizer_cloud_init();
 			}
 			$saved = parent::_save( $image, $filename, $mime_type );
 			if ( ! is_wp_error( $saved ) ) {
@@ -148,6 +172,12 @@ if ( class_exists( 'Bbpp_Animated_Gif' ) ) {
 					} else {
 						add_filter( 'http_headers_useragent', 'ewww_image_optimizer_cloud_useragent', PHP_INT_MAX );
 						global $ewwwio_image_background;
+						if ( ! class_exists( 'WP_Background_Process' ) ) {
+							require_once( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'background.php' );
+						}
+						if ( ! is_object( $ewwwio_image_background ) ) {
+							$ewwwio_image_background = new EWWWIO_Image_Background_Process();
+						}
 						$ewwwio_image_background->push_to_queue( $filename );
 						$ewwwio_image_background->save()->dispatch();
 						ewwwio_debug_message( "image editor (gd) queued: $filename" );
@@ -165,7 +195,7 @@ if ( class_exists( 'WP_Thumb_Image_Editor_Imagick' ) ) {
 		protected function _save( $image, $filename = null, $mime_type = null ) {
 			global $ewww_defer;
 			if (!defined('EWWW_IMAGE_OPTIMIZER_CLOUD'))
-				ewww_image_optimizer_init();
+				ewww_image_optimizer_cloud_init();
 			$saved = parent::_save($image, $filename, $mime_type);
 			if ( ! is_wp_error( $saved ) ) {
 				if ( ! $filename ) {
@@ -180,6 +210,12 @@ if ( class_exists( 'WP_Thumb_Image_Editor_Imagick' ) ) {
 					} else {
 						add_filter( 'http_headers_useragent', 'ewww_image_optimizer_cloud_useragent', PHP_INT_MAX );
 						global $ewwwio_image_background;
+						if ( ! class_exists( 'WP_Background_Process' ) ) {
+							require_once( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'background.php' );
+						}
+						if ( ! is_object( $ewwwio_image_background ) ) {
+							$ewwwio_image_background = new EWWWIO_Image_Background_Process();
+						}
 						$ewwwio_image_background->push_to_queue( $filename );
 		 				$ewwwio_image_background->save()->dispatch();
 			 			ewwwio_debug_message( "image editor (wpthumb imagick) queued: $filename" );
@@ -196,7 +232,7 @@ if ( class_exists( 'WP_Thumb_Image_Editor_Imagick' ) ) {
 		protected function _save( $image, $filename = null, $mime_type = null ) {
 			global $ewww_defer;
 			if ( ! defined( 'EWWW_IMAGE_OPTIMIZER_CLOUD' ) )
-				ewww_image_optimizer_init();
+				ewww_image_optimizer_cloud_init();
 			$saved = parent::_save( $image, $filename, $mime_type );
 			if ( ! is_wp_error( $saved ) ) {
 				if ( ! $filename ) {
@@ -211,6 +247,12 @@ if ( class_exists( 'WP_Thumb_Image_Editor_Imagick' ) ) {
 					} else {
 						add_filter( 'http_headers_useragent', 'ewww_image_optimizer_cloud_useragent', PHP_INT_MAX );
 						global $ewwwio_image_background;
+						if ( ! class_exists( 'WP_Background_Process' ) ) {
+							require_once( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'background.php' );
+						}
+						if ( ! is_object( $ewwwio_image_background ) ) {
+							$ewwwio_image_background = new EWWWIO_Image_Background_Process();
+						}
 						$ewwwio_image_background->push_to_queue( $filename );
 						$ewwwio_image_background->save()->dispatch();
 						ewwwio_debug_message( "image editor (BFI imagick) queued: $filename" );
@@ -227,7 +269,7 @@ if ( class_exists( 'WP_Thumb_Image_Editor_Imagick' ) ) {
 		protected function _save( $image, $filename = null, $mime_type = null ) {
 			global $ewww_defer;
 			if (!defined('EWWW_IMAGE_OPTIMIZER_CLOUD'))
-				ewww_image_optimizer_init();
+				ewww_image_optimizer_cloud_init();
 			$saved = parent::_save($image, $filename, $mime_type);
 			if ( ! is_wp_error( $saved ) ) {
 				if ( ! $filename ) {
@@ -242,6 +284,12 @@ if ( class_exists( 'WP_Thumb_Image_Editor_Imagick' ) ) {
 					} else {
 						add_filter( 'http_headers_useragent', 'ewww_image_optimizer_cloud_useragent', PHP_INT_MAX );
 						global $ewwwio_image_background;
+						if ( ! class_exists( 'WP_Background_Process' ) ) {
+							require_once( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'background.php' );
+						}
+						if ( ! is_object( $ewwwio_image_background ) ) {
+							$ewwwio_image_background = new EWWWIO_Image_Background_Process();
+						}
 						$ewwwio_image_background->push_to_queue( $filename );
 						$ewwwio_image_background->save()->dispatch();
 						ewwwio_debug_message( "image editor (imagick) queued: $filename" );
@@ -259,7 +307,7 @@ if ( class_exists( 'WP_Image_Editor_Gmagick' ) ) {
 		protected function _save( $image, $filename = null, $mime_type = null ) {
 			global $ewww_defer;
 			if (!defined('EWWW_IMAGE_OPTIMIZER_CLOUD'))
-				ewww_image_optimizer_init();
+				ewww_image_optimizer_cloud_init();
 			$saved = parent::_save($image, $filename, $mime_type);
 			if ( ! is_wp_error( $saved ) ) {
 				if ( ! $filename ) {
@@ -274,6 +322,12 @@ if ( class_exists( 'WP_Image_Editor_Gmagick' ) ) {
 					} else {
 						add_filter( 'http_headers_useragent', 'ewww_image_optimizer_cloud_useragent', PHP_INT_MAX );
 						global $ewwwio_image_background;
+						if ( ! class_exists( 'WP_Background_Process' ) ) {
+							require_once( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'background.php' );
+						}
+						if ( ! is_object( $ewwwio_image_background ) ) {
+							$ewwwio_image_background = new EWWWIO_Image_Background_Process();
+						}
 						$ewwwio_image_background->push_to_queue( $filename );
 						$ewwwio_image_background->save()->dispatch();
 						ewwwio_debug_message( "image editor (gmagick) queued: $filename" );

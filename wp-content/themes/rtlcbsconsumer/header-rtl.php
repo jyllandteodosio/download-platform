@@ -20,7 +20,8 @@
 		<?php wp_head(); ?>
 		
 	</head>
-	<body <?php body_class(); ?>>
+	<body <?php body_class(); ?> >
+	<div class="rtl-red-tmpl">
 		<div id="header" class="">
 			<div class="container">
 				<div id="masthead">
@@ -28,7 +29,9 @@
 						<div class="ad">
 						</div>
 					</div> -->
-					<a href="<?php bloginfo( 'url' ) ?>"><img src="<?php header_image(); ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo hidden-xs" /></a>
+					<!-- bloginfo( 'url' ) -->
+					<a href="<?php bloginfo( 'url' ) ?>?channel=entertainment"><img src="<?php echo get_template_directory_uri().'/images/header-nohd.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo logo-entertainment hidden-xs" /></a>
+					<a href="<?php bloginfo( 'url' ) ?>?channel=extreme"><img src="<?php echo get_template_directory_uri().'/images/logo-extreme-nohd.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo logo-extreme hidden-xs img-disabled" /></a>
 				</div>
 				<nav class="navbar navbar-inverse">
 					<div class="container">					

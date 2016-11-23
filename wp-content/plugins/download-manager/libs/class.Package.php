@@ -8,31 +8,37 @@ class Package {
     public $PackageData = array();
 
     // Added by Dianne D.R. - custom vars
-    private static $prefix_list = array(
-                                    /* PREFIX FOR SHOW IMAGES*/
-                                    'key_art'           => 'key', 
-                                    'episodic_stills'   => 'epi', 
-                                    'gallery'           => 'gallery', 
-                                    'logos'             => 'logo',
-                                    'others'            => 'oth',
-                                    /* PREFIX FOR CHANNEL MATERIALS IMAGE*/
-                                    'channel_logos'     => 'logo', 
-                                    'channel_elements'  => 'elements', 
-                                    'channel_others'    => 'cm_oth', 
-                                    /* PREFIX FOR SHOW DOCUMENTS */
-                                    'synopses'          => 'synopsis',
-                                    'transcripts'       => 'trans',
-                                    'fact_sheet'        => 'fact',
-                                    'fonts'             => 'font',
-                                    'document_others'   => 'doth',
-                                    /* PROMO */
-                                    'promos'            => 'promo',
-                                    /* PREFIX FOR CHANNEL MATERIALS DOCUMENT */
-                                    'channel_epg'       => 'epg',
-                                    'channel_highlights'=> 'highlights',
-                                    'channel_brand'     => 'brand',
-                                    'channel_boiler'    => 'boiler',
-                                    'channel_catchup'   => 'catch'
+    private static $file_attr_list = array(
+                                    'image' =>  array (
+                                        'show'  => array (
+                                            'key_art'           => array('prefix' => 'key'          , 'template_shortcode' => 'file_category,key'), 
+                                            'episodic_stills'   => array('prefix' => 'epi'          , 'template_shortcode' => 'file_category,epi'), 
+                                            'gallery'           => array('prefix' => 'gallery'      , 'template_shortcode' => 'file_category,gal'), 
+                                            'logos'             => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,log'),
+                                            'others'            => array('prefix' => 'oth'          , 'template_shortcode' => 'file_category,oth')),
+                                        'channel'=> array (
+                                            'channel_logos'     => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,cm_log'), 
+                                            'channel_elements'  => array('prefix' => 'elements'     , 'template_shortcode' => 'file_category,cm_ele'), 
+                                            'channel_others'    => array('prefix' => 'cm_oth'       , 'template_shortcode' => 'file_category,cm_oth'))
+                                        ),
+                                    'document' => array (
+                                        'show'  => array (
+                                            'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
+                                            'transcripts'       => array('prefix' => 'trans'        , 'template_shortcode' => 'file_category,epk' ),
+                                            'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
+                                            'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
+                                            'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
+                                        'channel' => array (
+                                            'channel_epg'       => array('prefix' => 'epg'          , 'template_shortcode' => 'file_category,cm_epg'),
+                                            'channel_highlights'=> array('prefix' => 'highlights'   , 'template_shortcode' => 'file_category,cm_hig'),
+                                            'channel_brand'     => array('prefix' => 'brand'        , 'template_shortcode' => 'file_category,cm_bra'),
+                                            'channel_boiler'    => array('prefix' => 'boiler'       , 'template_shortcode' => 'file_category,cm_boi'),
+                                            'channel_catchup'   => array('prefix' => 'catch'        , 'template_shortcode' => 'file_category,cm_cat'))
+                                        ),
+                                    'promo' => array (
+                                        'show'  => array (
+                                            'promos'            => array('prefix' => 'promo'        , 'template_shortcode' => 'file_category,promo'))
+                                        )
                                     );
     private static $operator_prefix_list = array(
                                     'affiliate'         => 'Affiliate'
@@ -57,7 +63,6 @@ class Package {
 
     function Prepare($ID = null, $template = null)
     {
-
         //if (isset($this->PackageData['formatted'])) return $this;
 
         if($ID == null) $ID = $this->ID;
@@ -69,14 +74,6 @@ class Package {
         $vars['description'] = wpautop(stripslashes($vars['description']));
         $vars['description'] = do_shortcode(stripslashes($vars['description']));
         $vars['excerpt'] = stripcslashes(strip_tags($vars['post_excerpt']));
-        // Added by Dianne D.R. - custom shortcodes
-        $vars['acf_show_reference_name'] = get_field( "show_reference_name" );
-        $vars['acf_banner_image'] = get_field( "banner_image" );
-        $vars['acf_cast'] = get_field( "cast" );
-        $vars['acf_legal_notice'] = get_field( "legal_notice" );
-        $vars['acf_category_note'] = global_custom_field('show_category_note');
-        $vars['acf_promo_files'] = serialize(get_field( "add_promo_files" ));
-        // End of custom shortcodes
 
         //Featured Image
         $src = wp_get_attachment_image_src(get_post_thumbnail_id($vars['ID']), 'full', false, '');
@@ -108,38 +105,29 @@ class Package {
         $vars['page_link'] = "<a href='" . get_permalink($vars['ID']) . "'>{$vars['title']}</a>";
         $vars['page_url'] = get_permalink($vars['ID']);
 
+    // Execute only for a specific show
+    if( contains($_SERVER['REQUEST_URI'],'download') ) :
         // Added by Dianne D.R. - custom shortcodes for file segregations
+        // Added by Dianne D.R. - custom shortcodes from acf
+        $vars['acf_show_reference_name'] = get_field( "show_reference_name" );
+        $vars['acf_banner_image'] = get_field( "banner_image" );
+        $vars['acf_cast'] = get_field( "cast" );
+        $vars['acf_legal_notice'] = get_field( "legal_notice" );
+        $vars['acf_category_note'] = global_custom_field('show_category_note');
+        $vars['acf_promo_files'] = serialize(get_field( "add_promo_files" ));
+        $vars['searchform'] = \WPDM\libs\FileList::getSearchForm();
+        // End of custom shortcodes from acf
+        
         // @todo:: minify code
         if(function_exists('set_last_visited_show')) set_last_visited_show();
-
+        // $file['ID'] = $this->ID;
         $file['files'] = maybe_unserialize($vars['files']);
         $fhtml = '';
         $files_counter = 0;
 
-        $prefix_list_image = array(
-                                    'key_art'           => 'key', 
-                                    'episodic_stills'   => 'epi', 
-                                    'gallery'           => 'gallery', 
-                                    'logos'             => 'logo',
-                                    'others'            => 'oth',
-                                    'channel_logos'     => 'logo', 
-                                    'channel_elements'  => 'elements', 
-                                    'channel_others'    => 'cm_oth');
-        $prefix_list_document = array(
-                                    'synopses'          => 'synopsis',
-                                    'transcripts'       => 'trans',
-                                    'fact_sheet'        => 'fact',
-                                    'fonts'             => 'font',
-                                    'document_others'   => 'doth',
-                                    /* PREFIX FOR CHANNEL MATERIALS DOCUMENT */
-                                    'channel_epg'       => 'epg',
-                                    'channel_highlights'=> 'highlights',
-                                    'channel_brand'     => 'brand',
-                                    'channel_boiler'    => 'boiler',
-                                    'channel_catchup'   => 'catch');
         $categorized_files = array();
         if(checkPackageDownloadAvailabilityDate($vars['publish_date'], $vars['expire_date'])){
-             if (count($file['files']) > 0) {
+            if (count($file['files']) > 0) {
                 $fileinfo = isset($vars['fileinfo']) ? $vars['fileinfo'] : array();
                 $allfiles = is_array($file['files']) ? $file['files'] : array();
                 $allpromofiles = have_rows( "add_promo_files" ) ? get_field( "add_promo_files" ) : array();
@@ -170,7 +158,7 @@ class Package {
                         $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
                         if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($sfileOriginal['promo_start'],$sfileOriginal['promo_end'], 'current') ) {
                             $thumb = $sfileOriginal['thumbnail'];
-                            $categorized_files[self::$prefix_list['promos']][$fileID] = $sfileOriginal;
+                            $categorized_files[self::$file_attr_list['promo']['show']['promos']['prefix']][$fileID] = $sfileOriginal;
                         }
                     }
                 }
@@ -178,111 +166,127 @@ class Package {
                /* For all WPDM Files */
                 if (is_array($allfiles_sorted)) {
                     foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
-                        $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
-                        $fileTitle = $prefix != self::$prefix_list['promos'] ? isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? $fileinfo[$sfile]['title']:(isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? $fileinfo[$fileID]['title']:preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  :  $sfileOriginal['file_name'];
+                        $sfile = $sfileOriginal;
+                        $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
+                                        $fileinfo[$sfile]['title']:
+                                        (isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? 
+                                            $fileinfo[$fileID]['title']:
+                                            preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile))
+                                        );
+                        
                         $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
-
                         if(checkIfImageFile($sfile, 'image')){
                             /* SHOW IMAGES ========================================================================== */
-                            foreach ($prefix_list_image as $prefix_name => $prefix) {
-                                // KEY
-                                if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['key_art']){
-                                    $categorized_files[self::$prefix_list['key_art']][$fileID] = $sfileOriginal;
-                                }
-                                // EPI
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['episodic_stills']){
-                                    $categorized_files[self::$prefix_list['episodic_stills']][$fileID] = $sfileOriginal;
-                                }
-                                // GAL
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['gallery']){
-                                    $categorized_files[self::$prefix_list['gallery']][$fileID] = $sfileOriginal;
-                                }
-                                // LOG
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['logos']){
-                                    $categorized_files[self::$prefix_list['logos']][$fileID] = $sfileOriginal;
-                                }
-                                // OTHERS
-                                else if( !contains($fileTitle, self::$prefix_list['key_art']) 
-                                    && !contains($fileTitle, self::$prefix_list['episodic_stills']) 
-                                    && !contains($fileTitle, self::$prefix_list['gallery']) 
-                                    && !contains($fileTitle, self::$prefix_list['logos']) 
-                                    && $prefix == self::$prefix_list['others']){
-                                    $categorized_files[self::$prefix_list['others']][$fileID] = $sfileOriginal;
-                                }
-                                 /* END SHOW IMAGES ======================================================================= */
-                                // CM_ELE
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_elements']){
-                                    $categorized_files[self::$prefix_list['channel_elements']][$fileID] = $sfileOriginal;
-                                }
-                                // CM_OTH
-                                else if( !contains($fileTitle, self::$prefix_list['channel_logos']) && !contains($fileTitle, self::$prefix_list['channel_elements']) && $prefix == self::$prefix_list['channel_others']){
-                                    $categorized_files[self::$prefix_list['channel_others']][$fileID] = $sfileOriginal;
-                                }     
+                            foreach (self::$file_attr_list['image'] as $file_type => $file_category) {
+                                foreach ($file_category as $file_category_key => $tab) {
+                                    $prefix = $tab['prefix'];
+                                    // KEY
+                                    if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['key_art']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['show']['key_art']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // EPI
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['episodic_stills']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['show']['episodic_stills']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // GAL
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['gallery']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['show']['gallery']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // LOG
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['logos']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['show']['logos']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // OTHERS
+                                    else if( !contains($fileTitle, self::$file_attr_list['image']['show']['key_art']['prefix']) 
+                                        && !contains($fileTitle, self::$file_attr_list['image']['show']['episodic_stills']['prefix']) 
+                                        && !contains($fileTitle, self::$file_attr_list['image']['show']['gallery']['prefix']) 
+                                        && !contains($fileTitle, self::$file_attr_list['image']['show']['logos']['prefix']) 
+                                        && $prefix == self::$file_attr_list['image']['show']['others']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['show']['others']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    /* END SHOW IMAGES ======================================================================= */
+                                    // CM_ELE
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['channel']['channel_elements']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['channel']['channel_elements']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // CM_OTH
+                                    else if( !contains($fileTitle, self::$file_attr_list['image']['channel']['channel_logos']['prefix']) 
+                                        && !contains($fileTitle, self::$file_attr_list['image']['channel']['channel_elements']['prefix']) 
+                                        && $prefix == self::$file_attr_list['image']['channel']['channel_others']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['channel']['channel_others']['prefix']][$fileID] = $sfileOriginal;
+                                    } 
+                                }   
                             }
-                            
                         } else{
-                            foreach ($prefix_list_document as $prefix_name => $prefix) {
-                                // SYN
-                                if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['synopses']){
-                                    $categorized_files[self::$prefix_list['synopses']][$fileID] = $sfileOriginal;
-                                }
-                                // EPK
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['transcripts']){
-                                    $categorized_files[self::$prefix_list['transcripts']][$fileID] = $sfileOriginal;
-                                }
-                                // FAC
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fact_sheet']){
-                                    $categorized_files[self::$prefix_list['fact_sheet']][$fileID] = $sfileOriginal;
-                                }
-                                // FON
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['fonts']){
-                                    $categorized_files[self::$prefix_list['fonts']][$fileID] = $sfileOriginal;
-                                }
-                                // DOTH
-                                else if( !contains($fileTitle, self::$prefix_list['synopses']) && !contains($fileTitle, self::$prefix_list['transcripts']) && !contains($fileTitle, self::$prefix_list['fact_sheet']) && !contains($fileTitle, self::$prefix_list['fonts']) && $prefix == self::$prefix_list['document_others']){
-                                    $categorized_files[self::$prefix_list['document_others']][$fileID] = $sfileOriginal;
-                                }
-                                // CM_EPG
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_epg']){
-                                    $current_operator_group = get_current_user_operator_group();
-                                    $generate_epg_panel = false;
+                            foreach (self::$file_attr_list['document'] as $file_type => $file_category) {
+                                foreach ($file_category as $file_category_key => $tab) {
+                                    $prefix = $tab['prefix'];
 
-                                    if ( get_current_user_role() == "administrator"){
-                                        $generate_epg_panel = true;
-                                    }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
-                                        $exclusive_epg_check = 0;
-                                        foreach ($allfiles_sorted as $key => $value) {
-                                            if(contains($fileinfo[$key]['title'], $current_operator_group)){
-                                                $exclusive_epg_check = 1;
-                                                break;
+                                    // SYN
+                                    if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['synopses']['prefix']){
+                                        $categorized_files[self::$file_attr_list['document']['show']['synopses']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // EPK
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['transcripts']['prefix']){
+                                        $categorized_files[self::$file_attr_list['document']['show']['transcripts']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // FAC
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['fact_sheet']['prefix']){
+                                        $categorized_files[self::$file_attr_list['document']['show']['fact_sheet']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // FON
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['fonts']['prefix']){
+                                        $categorized_files[self::$file_attr_list['document']['show']['fonts']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // DOTH
+                                    else if( !contains($fileTitle, self::$file_attr_list['document']['show']['synopses']['prefix']) 
+                                        && !contains($fileTitle, self::$file_attr_list['document']['show']['transcripts']['prefix']) 
+                                        && !contains($fileTitle, self::$file_attr_list['document']['show']['fact_sheet']['prefix']) 
+                                        && !contains($fileTitle, self::$file_attr_list['document']['show']['fonts']['prefix']) 
+                                        && $prefix == self::$file_attr_list['document']['show']['document_others']['prefix']){
+                                        $categorized_files[self::$file_attr_list['document']['show']['document_others']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // CM_EPG
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_epg']['prefix']){
+                                        $current_operator_group = get_current_user_operator_group();
+                                        $generate_epg_panel = false;
+
+                                        if ( get_current_user_role() == "administrator"){
+                                            $generate_epg_panel = true;
+                                        }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
+                                            $exclusive_epg_check = 0;
+                                            foreach ($allfiles_sorted as $key => $value) {
+                                                if(contains($fileinfo[$key]['title'], $current_operator_group)){
+                                                    $exclusive_epg_check = 1;
+                                                    break;
+                                                }
                                             }
-                                        }
-                                        if(!$exclusive_epg_check){
+                                            if(!$exclusive_epg_check){
+                                                $generate_epg_panel = true;
+                                            }
+                                        }else if(contains($fileTitle, $current_operator_group)){
                                             $generate_epg_panel = true;
                                         }
-                                    }else if(contains($fileTitle, $current_operator_group)){
-                                        $generate_epg_panel = true;
+                                        if($generate_epg_panel){
+                                            $categorized_files[self::$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $sfileOriginal;
+                                        }
                                     }
-                                    // $sfileOriginal['thumbnail'] = $thumb;
-                                    if($generate_epg_panel){
-                                        $categorized_files[self::$prefix_list['channel_epg']][$fileID] = $sfileOriginal;
+                                    // CM_HIG
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_highlights']['prefix']){
+                                        $categorized_files[self::$file_attr_list['document']['channel']['channel_highlights']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                }
-                                // CM_HIG
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_highlights']){
-                                    $categorized_files[self::$prefix_list['channel_highlights']][$fileID] = $sfileOriginal;
-                                }
-                                // CM_BRA
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_brand']){
-                                    $categorized_files[self::$prefix_list['channel_brand']][$fileID] = $sfileOriginal;
-                                }
-                                // CM_BOI
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_boiler']){
-                                    $categorized_files[self::$prefix_list['channel_boiler']][$fileID] = $sfileOriginal;
-                                }
-                                // CM_CAT
-                                else if( contains($fileTitle, $prefix) && $prefix == self::$prefix_list['channel_catchup']){
-                                    $categorized_files[self::$prefix_list['channel_catchup']][$fileID] = $sfileOriginal;
+                                    // CM_BRA
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_brand']['prefix']){
+                                        $categorized_files[self::$file_attr_list['document']['channel']['channel_brand']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // CM_BOI
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_boiler']['prefix']){
+                                        $categorized_files[self::$file_attr_list['document']['channel']['channel_boiler']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // CM_CAT
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_catchup']['prefix']){
+                                        $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
+                                    }
                                 }
                             }
                         }
@@ -290,46 +294,46 @@ class Package {
 
                     }
                 }
+            }
 
-             }
+            foreach (self::$file_attr_list as $file_type => $file_category) {
+                foreach ($file_category as $file_category_key => $tab) {
+                    foreach ($tab as $key => $tab_attr) {
+                        if( array_key_exists($tab_attr['prefix'], $categorized_files)){
+                            if(strpos("_".$template,'['.$tab_attr['template_shortcode'].']')){
 
-            // Shows - Images
-            if(strpos("_".$template,'[file_category,key]')) $vars['file_category,key'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['key_art']], "key","show",$file,$specific_thumbnails,'image', $fileinfo);
-            if(strpos("_".$template,'[file_category,epi]')) $vars['file_category,epi'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['episodic_stills']], "epi","show",$file,$specific_thumbnails,'image', $fileinfo);
+                                $file_list_data_prep = array (
+                                        'all_files' => $categorized_files[$tab_attr['prefix']],
+                                        'prefix' => $tab_attr['prefix'],
+                                        'category' => $file_category_key,
+                                        'file_object' => $file,
+                                        'specific_thumbnails' => $specific_thumbnails,
+                                        'file_type' => $file_type,
+                                        'file_info' => $fileinfo,
+                                        'post_id'   => get_the_id(),
+                                        'permalink' => get_permalink()
+                                    );
 
-            if(strpos("_".$template,'[file_category,gal]')) $vars['file_category,gal'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['gallery']], "gallery","show",$file,$specific_thumbnails,'image', $fileinfo);
-            if(strpos("_".$template,'[file_category,log]')) $vars['file_category,log'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['logos']], "logo","show",$file,$specific_thumbnails,'image', $fileinfo);
-            if(strpos("_".$template,'[file_category,oth]')) $vars['file_category,oth'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['others']], "oth","show",$file,$specific_thumbnails,'image', $fileinfo);
-            // Shows - Documents
-            if(strpos("_".$template,'[file_category,syn]')) $vars['file_category,syn'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['synopses']], "synopsis","show",$file,$specific_thumbnails,'document', $fileinfo);
-            if(strpos("_".$template,'[file_category,epk]')) $vars['file_category,epk'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['transcripts']], "trans","show",$file,$specific_thumbnails,'document', $fileinfo);
-            if(strpos("_".$template,'[file_category,fac]')) $vars['file_category,fac'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['fact_sheet']], "fact","show",$file,$specific_thumbnails,'document', $fileinfo);
-            if(strpos("_".$template,'[file_category,fon]')) $vars['file_category,fon'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['fonts']], "font","show",$file,$specific_thumbnails,'document', $fileinfo);
-            if(strpos("_".$template,'[file_category,doth]')) $vars['file_category,doth'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['document_others']], "doth","show",$file,$specific_thumbnails,'document', $fileinfo);
-            // Shows - Promos
-            if(strpos("_".$template,'[file_category,promo]')) $vars['file_category,promo'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['promos']], "promo","show",$file,$specific_thumbnails,self::$prefix_list['promos'], $fileinfo);
+                                $file_list_data_prep_serialized = serialize($file_list_data_prep);
 
-            // Channel Materials - Documents
-            if(strpos("_".$template,'[file_category,cm_epg]')) $vars['file_category,cm_epg'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_epg']], "epg","channel",$file,$specific_thumbnails,'document', $fileinfo);
-            if(strpos("_".$template,'[file_category,cm_hig]')) $vars['file_category,cm_hig'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_highlights']], "highlights","channel",$file,$specific_thumbnails,'document', $fileinfo);
-            if(strpos("_".$template,'[file_category,cm_bra]')) $vars['file_category,cm_bra'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_brand']], "brand","channel",$file,$specific_thumbnails,'document', $fileinfo);
-            if(strpos("_".$template,'[file_category,cm_boi]')) $vars['file_category,cm_boi'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_boiler']], "boiler","channel",$file,$specific_thumbnails,'document', $fileinfo);
-            if(strpos("_".$template,'[file_category,cm_cat]')) $vars['file_category,cm_cat'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_catchup']], "catch","channel",$file,$specific_thumbnails,'document', $fileinfo);
-            // Channel Materials - Images
-            if(strpos("_".$template,'[file_category,cm_log]')) $vars['file_category,cm_log'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['logos']], "logo","channel",$file,$specific_thumbnails,'image', $fileinfo);
-            if(strpos("_".$template,'[file_category,cm_ele]')) $vars['file_category,cm_ele'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_elements']], "elements","channel",$file,$specific_thumbnails,'image', $fileinfo);
-            if(strpos("_".$template,'[file_category,cm_oth]')) $vars['file_category,cm_oth'] = \WPDM\libs\FileList::CategorizedFileList( $categorized_files[self::$prefix_list['channel_others']], "cm_oth","channel",$file,$specific_thumbnails,'image', $fileinfo);
-            
+                                $vars[$tab_attr['template_shortcode']] = "<input name='serialized-data' class='serialized-data' type='hidden' value='".$file_list_data_prep_serialized."'>";
+                                // $vars[$tab_attr['template_shortcode']] = \WPDM\libs\FileList::CategorizedFileList($categorized_files[$tab_attr['prefix']] ,$tab_attr['prefix'] ,$file_category_key ,$file ,$specific_thumbnails ,$file_type ,$fileinfo);
+                            }
+                        }else{
+                            $vars[$tab_attr['template_shortcode']] = "<p class='files-status-message' style='color:black'>No files available for download.</p>";
+                        }
+                    }
+                }
+            }
+
         }else{
-            $vars['file_category,key'] = "<p style='color:black'>This package is not available for download</p>";
+            $vars[self::$file_attr_list['image']['show']['key_art']['template_shortcode']] = "<p style='color:black'>This package is not available for download</p>";
         }
         
-        $vars['searchform'] = \WPDM\libs\FileList::getSearchForm();
-        
         // Shows - Custom Script
-        if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = \WPDM\libs\FileList::getScriptFile();
-
+        if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = '';//\WPDM\libs\FileList::getScriptFile();
         // End of custom 
+    endif;
 
         if(!isset($vars['btnclass']))
             $vars['btnclass'] = '[btnclass]';

@@ -1,7 +1,17 @@
 <?php
 // Template Name: Show
 
-get_header( 'rtl' );
+get_template_part('channel-setter');
+
+  $channel = $_SESSION['channel'];
+  if ( $channel == 'entertainment'):
+    get_header('rtl');
+  elseif ( $channel == 'extreme'):
+    get_header('rtl-blue');
+  elseif($channel == 'none'):
+    get_header('rtl');
+  endif;
+  
 switch_to_blog( 1 );?>
 
 <div class="section">
@@ -28,19 +38,19 @@ switch_to_blog( 1 );?>
 		</div>
 	</div>
 </div>
+<?php 
+$post_slug = $post->post_name;
+$episode = pods( 'episode' );
+
+$params = array(
+    'where' => 'show.post_name = "'.$post_slug.'"',
+    'orderby' => 'episode_number.meta_value DESC'
+);
+$episode->find( $params );
+
+if($episode->total() != null && $episode->total() > 0): ?>
 <div class="section">
 	<h2 class="section-title">Latest Episodes</h2>
-	<?php
-	$post_slug = $post->post_name;
-	$episode = pods( 'episode' );
-
-	$params = array(
-	    'where' => 'show.post_name = "'.$post_slug.'"',
-	    'orderby' => 'episode_number.meta_value DESC'
-	);
-
-	$episode->find( $params );
-	?>
 	<div class="other-slideshow-container">
 		<div id="latest-episodes-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
@@ -63,6 +73,7 @@ switch_to_blog( 1 );?>
 	<div class="latest-episodes-nav swiper-button-prev swiper-button-default-white"></div>
 	<div class="latest-episodes-nav swiper-button-next swiper-button-default-white "></div>
 </div>
+<?php endif; ?>
 <?php restore_current_blog();?>
 <?php get_template_part( 'partials/other-shows' ); ?>
 <?php get_footer( 'rtl' ); ?>
