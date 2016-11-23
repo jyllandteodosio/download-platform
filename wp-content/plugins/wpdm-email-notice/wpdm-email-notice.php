@@ -691,12 +691,21 @@ function send_email_notice($user = null, $files = null){
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
 	$message = '
+	
+<html>
+<style type="text/css">body, table, td {font-family: Arial, Helvetica, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}<body>    
+</style>
+<table style="height: 617px; background-color: #a6a6a5;" width="599" cellspacing="0" cellpadding="0">
 
-	<table style="font-family: Arial, Helvetica, sans-serif; height: 617px; background-image: url(\''.$plugin_img_dir.'email-banner.jpg\'); background-repeat: no-repeat; background-position: center top; background-color: #a6a6a5; margin-left: auto; margin-right: auto;" width="599" cellpadding="0">
 <tbody>
+
 <tr>
-<td valign="top"><br />
-<table style="height: 194px; background-color: #ffffff; margin-top: 80px; margin-left: auto; margin-right: auto;" width="522">
+<td valign="center"><img src="'.$plugin_img_dir.'email-banner.jpg" alt="RTL CBS Banner" width="599" height="130" /></td>
+</tr>
+
+<tr>
+<td valign="top"><center>
+<table style="height: 194px; background-color: #ffffff;margin-left: auto; margin-right: auto;" width="522">
 <tbody>
 <tr>
 <td>&nbsp;&nbsp;</td>
@@ -741,7 +750,7 @@ if( count($files) > 0 ):
 			
 			$message_temp = '
 			<tr style="background-color: #3b3838; color: #fff;">
-				<td style="text-align: left;padding:7px 2px;">'.ucwords($show_title).'</td>
+				<td>'.ucwords($show_title).'</td>
 			</tr>';
 			foreach ($type['show'] as $category => $prefixes) :
 				if(count($prefixes) > 0):
@@ -749,20 +758,20 @@ if( count($files) > 0 ):
 						if( count($file_list) > 0 ) :
 						$message_temp .= '
 							<tr style="background-color: #d0cece;">
-								<td style="text-align: left;padding:7px 2px;">'.getCategoryNameByPrefix($prefix).'</td>
+								<td >'.getCategoryNameByPrefix($prefix).'</td>
 							</tr>';
 							$file_counter = 1;
 							foreach ($file_list as $file_id => $file_name) :
 								if( $file_counter <= 10 ) :
 									$message_temp .='
 										<tr>
-											<td style="text-align: left;padding:7px 2px;"><a title="'.$file_name.'" href="'.$permalink.'" target="_blank">'.$file_name.'</a></td>
+											<td style="line-height: 25px;"><a title="'.$file_name.'" href="'.$permalink.'" target="_blank">'.$file_name.'</a></td>
 										</tr>
 									';
 								else :
 									$message_temp .='
 										<tr>
-											<td style="text-align: left;padding:7px 2px;"><a title="'.$show_title.'" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
+											<td style="line-height: 25px;"><a title="'.$show_title.'" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
 										</tr>
 									';
 								endif;
@@ -794,7 +803,7 @@ if( count($files) > 0 ):
 				$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
 				$message_temp = '
 					<tr>
-						<td style="text-align: left;padding:7px 2px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
+						<td style="line-height: 25px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
 					</tr>
 					';
 
@@ -920,18 +929,18 @@ $message .= '
 </tbody>
 </table>
 <p>&nbsp;</p>
-<table style="margin-left: auto; margin-right: auto; height: 65px;" width="397">
-<tbody>
-<tr>
-<td style="text-align: center; vertical-align: top;"><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" width="171" height="39" /></td>
+
+</center></td>
 </tr>
-</tbody>
-</table>
+<tr>
+<td><center><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" /></center>
+
 <p>&nbsp;</p>
 </td>
 </tr>
 </tbody>
 </table>
+ </body></html>
 	';
 	
 	echo $message;
