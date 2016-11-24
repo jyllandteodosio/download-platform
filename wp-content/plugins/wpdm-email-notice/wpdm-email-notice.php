@@ -129,7 +129,7 @@ if (!isset($wpdb->wpdm_email_logs)) {
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($post_id)
 {
-	trigger_email_notification_checker();
+	// trigger_email_notification_checker();
 
 	// send_email_notice();
 
@@ -536,23 +536,23 @@ function trigger_email_notification_checker(){
 			}
 		}
 
-		// echo "<pre>";
-		// 	    print_r($files);
-		// 	    echo "</pre>";
+		echo "<pre>";
+			    print_r($files);
+			    echo "</pre>";
 
 		if( count($files) > 0 ){
 			$email_sent = send_email_notice($user, $files);
-			if($email_sent)
-				array_push($email_recipient,$user->user_email);
+			// if($email_sent)
+			// 	array_push($email_recipient,$user->user_email);
 		}
 	}
-	// die('asd');
-	$email_recipient_serialized = serialize($email_recipient);
-	$return_value_email = setEmailEntryStatus('sent');
-	if( $return_value_email === FALSE )
-		addEmailLogs('failed', $email_recipient_serialized);
-	else
-		addEmailLogs('success', $email_recipient_serialized);
+	die('asd');
+	// $email_recipient_serialized = serialize($email_recipient);
+	// $return_value_email = setEmailEntryStatus('sent');
+	// if( $return_value_email === FALSE )
+	// 	addEmailLogs('failed', $email_recipient_serialized);
+	// else
+	// 	addEmailLogs('success', $email_recipient_serialized);
 
 }
 
@@ -736,13 +736,17 @@ function send_email_notice($user = null, $files = null){
 
 
 $operator_site_link = get_home_url();
-
+// echo "<br>Send email:";
+// echo "<pre>";
+// print_r($files);
+// echo "</pre>";
 if( count($files) > 0 ):
 	foreach ($files as $post_id => $type) :
+		$is_channel_material = checkIfChannelMaterials($post_id);
+		// echo "<br>is_channel_material:".$is_channel_material;
 		if( count($type['show']) > 0 ) :
 			$show_title = get_the_title($post_id);
 
-			$is_channel_material = checkIfChannelMaterials($post_id);
 			$show_title = $is_channel_material['is_channel_material'] != false ? $is_channel_material['channel'] : $show_title;
 			$permalink = get_permalink($post_id).$is_channel_material['channel_switcher'];
 			echo "<br>is_channel_material : ";
@@ -797,9 +801,10 @@ if( count($files) > 0 ):
 				$message_temp = '';
 			endforeach;
 		endif;
-
+			// echo "<br>is_channel_material['channel']:".$is_channel_material['channel'];
 		if( count($type['promo']) > 0 ) :
 			foreach ($type['promo'] as $key => $promo_info) :
+				// echo "<br>Promo info:";print_r($promo_info);
 				$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
 				$message_temp = '
 					<tr>
@@ -815,6 +820,11 @@ if( count($files) > 0 ):
 				$message_temp = '';
 			endforeach;
 		endif;
+		// echo "<br>message_entertainment:";
+		// print_r($message_entertainment);
+
+		// echo "<br>message_extreme:";
+		// print_r($message_extreme);
 		
 
 	endforeach;
@@ -943,7 +953,7 @@ $message .= '
  </body></html>
 	';
 	
-	echo $message;
+	// echo $message;
 	
 	// Start output buffering to grab smtp debugging output
 	ob_start();
