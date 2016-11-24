@@ -542,17 +542,17 @@ function trigger_email_notification_checker(){
 
 		if( count($files) > 0 ){
 			$email_sent = send_email_notice($user, $files);
-			// if($email_sent)
-			// 	array_push($email_recipient,$user->user_email);
+			if($email_sent)
+				array_push($email_recipient,$user->user_email);
 		}
 	}
-	die('asd');
-	// $email_recipient_serialized = serialize($email_recipient);
-	// $return_value_email = setEmailEntryStatus('sent');
-	// if( $return_value_email === FALSE )
-	// 	addEmailLogs('failed', $email_recipient_serialized);
-	// else
-	// 	addEmailLogs('success', $email_recipient_serialized);
+	// die('asd');
+	$email_recipient_serialized = serialize($email_recipient);
+	$return_value_email = setEmailEntryStatus('sent');
+	if( $return_value_email === FALSE )
+		addEmailLogs('failed', $email_recipient_serialized);
+	else
+		addEmailLogs('success', $email_recipient_serialized);
 
 }
 
