@@ -546,13 +546,17 @@ function trigger_email_notification_checker(){
 				array_push($email_recipient,$user->user_email);
 		}
 	}
+	// echo "<br>count-email_recipient:".count($email_recipient);
 	// die('asd');
-	$email_recipient_serialized = serialize($email_recipient);
-	$return_value_email = setEmailEntryStatus('sent');
-	if( $return_value_email === FALSE )
-		addEmailLogs('failed', $email_recipient_serialized);
-	else
-		addEmailLogs('success', $email_recipient_serialized);
+	if( count($email_recipient) > 0 ){
+		$email_recipient_serialized = serialize($email_recipient);
+		$return_value_email = setEmailEntryStatus('sent');
+		if( $return_value_email === FALSE ){
+			addEmailLogs('failed', $email_recipient_serialized);
+		}else{
+			addEmailLogs('success', $email_recipient_serialized);
+		}
+	}
 
 }
 
