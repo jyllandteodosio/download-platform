@@ -221,6 +221,7 @@ function wppb_front_end_password_recovery(){
 
                 //we add this filter to enable html encoding
                 add_filter('wp_mail_content_type',create_function('', 'return "text/html"; '));
+                $recoveruserMailMessage1 = templated_email($recoveruserMailMessage1); /* Custom code by Dianne D.R. - adds email template */
                 //send mail to the user notifying him of the reset request
                 if (trim($recoveruserMailMessageTitle1) != ''){
                     $sent = wp_mail($requestedUserEmail, $recoveruserMailMessageTitle1, $recoveruserMailMessage1);

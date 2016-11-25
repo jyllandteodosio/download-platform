@@ -56,7 +56,6 @@ favico.ico
 /wp-content/updraft/
 /wp-content/wfcache/
 
-
 #ignore wordpress wp-config.php
 wp-config.php
 
@@ -71,3 +70,4 @@ db-connect-test.php
 
 #Live server phpmyadmin link node
 phpmyadmin
+
