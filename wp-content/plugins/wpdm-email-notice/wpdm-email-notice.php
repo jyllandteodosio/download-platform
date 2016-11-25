@@ -697,8 +697,10 @@ function send_email_notice($user = null, $files = null){
 	$message = '
 	
 <html>
-<style type="text/css">body, table, td {font-family: Arial, Helvetica, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}<body>    
+<style type="text/css">
+body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
 </style>
+<body >
 <table style="height: 617px; background-color: #a6a6a5;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
@@ -709,7 +711,7 @@ function send_email_notice($user = null, $files = null){
 
 <tr>
 <td valign="top"><center>
-<table style="height: 194px; background-color: #ffffff;margin-left: auto; margin-right: auto;" width="522">
+<table style="height: 194px; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="522">
 <tbody>
 <tr>
 <td>&nbsp;&nbsp;</td>
