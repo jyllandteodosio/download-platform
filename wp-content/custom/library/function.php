@@ -1372,7 +1372,7 @@ if(!function_exists('generate_show_files')){
             $topreview_show_files = $show_files['all_files'];
 
             $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
-            if ( count($show_files['all_files']) >= $files_limit ){
+            if ( count($show_files['all_files']) > 0 ){
 
                 if( $files_filtered == 'true' ){
                     $pattern = "/".$files_prefix.".*".$files_search_filter."/";
