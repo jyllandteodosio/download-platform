@@ -345,13 +345,14 @@ function multi_array_filter($pattern = '/.*/', $haysack = array(), $limit = null
         $filtered_results = array();
 
         foreach ($haysack as $key => $value) {
+            echo "value: ".$value;
             /* TODO: clean this if part, null limit to show all files */
             if( ($limit != null && $limit < 1) || ($limit == 0)) {
             // if( ($limit != null && $limit < 1) || ($limit != null && $limit == 0)) {
                 break;
             }
             if( preg_match($pattern, $value ) ){
-                // echo "   val:".$value;
+                echo "   val:".$value;
                 $filtered_results[$key] = $value;
                 $limit--;
             }
