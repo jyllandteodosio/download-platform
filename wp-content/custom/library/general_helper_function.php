@@ -350,8 +350,7 @@ function multi_array_filter($pattern = '/.*/', $haysack = array(), $limit = null
             // if( ($limit != null && $limit < 1) || ($limit != null && $limit == 0)) {
                 break;
             }
-            $value = strtolower($value);
-            if( preg_match($pattern, $value ) ){
+            if( preg_match($pattern, strtolower($value) ) ){
                 $filtered_results[$key] = $value;
                 $limit--;
             }
