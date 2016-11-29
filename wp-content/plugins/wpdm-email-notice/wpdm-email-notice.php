@@ -129,7 +129,7 @@ if (!isset($wpdb->wpdm_email_logs)) {
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($post_id)
 {
-	trigger_email_notification_checker();
+	// trigger_email_notification_checker();
 
 	// send_email_notice();
 
@@ -536,9 +536,9 @@ function trigger_email_notification_checker(){
 			}
 		}
 
-		// echo "<pre>";
-		// 	    print_r($files);
-		// 	    echo "</pre>";
+		echo "<pre>";
+			    print_r($files);
+			    echo "</pre>";
 
 		if( count($files) > 0 ){
 			$email_sent = send_email_notice($user, $files);
@@ -546,13 +546,17 @@ function trigger_email_notification_checker(){
 				array_push($email_recipient,$user->user_email);
 		}
 	}
+	// echo "<br>count-email_recipient:".count($email_recipient);
 	// die('asd');
-	$email_recipient_serialized = serialize($email_recipient);
-	$return_value_email = setEmailEntryStatus('sent');
-	if( $return_value_email === FALSE )
-		addEmailLogs('failed', $email_recipient_serialized);
-	else
-		addEmailLogs('success', $email_recipient_serialized);
+	if( count($email_recipient) > 0 ){
+		$email_recipient_serialized = serialize($email_recipient);
+		$return_value_email = setEmailEntryStatus('sent');
+		if( $return_value_email === FALSE ){
+			addEmailLogs('failed', $email_recipient_serialized);
+		}else{
+			addEmailLogs('success', $email_recipient_serialized);
+		}
+	}
 
 }
 
@@ -691,12 +695,27 @@ function send_email_notice($user = null, $files = null){
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
 	$message = '
+	
+<html>
+<style type="text/css">
+body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
+</style>
+<body >
+<table style="height: 617px; background-color: #a6a6a5;" width="599" cellspacing="0" cellpadding="0">
 
-	<table style="font-family: Arial, Helvetica, sans-serif; height: 617px; background-image: url(\''.$plugin_img_dir.'email-banner.jpg\'); background-repeat: no-repeat; background-position: center top; background-color: #a6a6a5; margin-left: auto; margin-right: auto;" width="599" cellpadding="0">
 <tbody>
+
 <tr>
-<td valign="top"><br />
-<table style="height: 194px; background-color: #ffffff; margin-top: 80px; margin-left: auto; margin-right: auto;" width="522">
+<td valign="center">
+<p>&nbsp;</p><p>&nbsp;</p>
+<!--<img src="'.$plugin_img_dir.'email-banner.jpg" alt="RTL CBS Banner" width="599" height="130" />-->
+
+</td>
+</tr>
+
+<tr>
+<td valign="top"><center>
+<table style="height: 194px; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="522">
 <tbody>
 <tr>
 <td>&nbsp;&nbsp;</td>
@@ -727,13 +746,17 @@ function send_email_notice($user = null, $files = null){
 
 
 $operator_site_link = get_home_url();
-
+// echo "<br>Send email:";
+// echo "<pre>";
+// print_r($files);
+// echo "</pre>";
 if( count($files) > 0 ):
 	foreach ($files as $post_id => $type) :
+		$is_channel_material = checkIfChannelMaterials($post_id);
+		// echo "<br>is_channel_material:".$is_channel_material;
 		if( count($type['show']) > 0 ) :
 			$show_title = get_the_title($post_id);
 
-			$is_channel_material = checkIfChannelMaterials($post_id);
 			$show_title = $is_channel_material['is_channel_material'] != false ? $is_channel_material['channel'] : $show_title;
 			$permalink = get_permalink($post_id).$is_channel_material['channel_switcher'];
 			echo "<br>is_channel_material : ";
@@ -741,7 +764,7 @@ if( count($files) > 0 ):
 			
 			$message_temp = '
 			<tr style="background-color: #3b3838; color: #fff;">
-				<td style="text-align: left;padding:7px 2px;">'.ucwords($show_title).'</td>
+				<td>'.ucwords($show_title).'</td>
 			</tr>';
 			foreach ($type['show'] as $category => $prefixes) :
 				if(count($prefixes) > 0):
@@ -749,20 +772,20 @@ if( count($files) > 0 ):
 						if( count($file_list) > 0 ) :
 						$message_temp .= '
 							<tr style="background-color: #d0cece;">
-								<td style="text-align: left;padding:7px 2px;">'.getCategoryNameByPrefix($prefix).'</td>
+								<td >'.getCategoryNameByPrefix($prefix).'</td>
 							</tr>';
 							$file_counter = 1;
 							foreach ($file_list as $file_id => $file_name) :
 								if( $file_counter <= 10 ) :
 									$message_temp .='
 										<tr>
-											<td style="text-align: left;padding:7px 2px;"><a title="'.$file_name.'" href="'.$permalink.'" target="_blank">'.$file_name.'</a></td>
+											<td style="line-height: 25px;"><a title="'.$file_name.'" href="'.$permalink.'" target="_blank">'.$file_name.'</a></td>
 										</tr>
 									';
 								else :
 									$message_temp .='
 										<tr>
-											<td style="text-align: left;padding:7px 2px;"><a title="'.$show_title.'" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
+											<td style="line-height: 25px;"><a title="'.$show_title.'" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
 										</tr>
 									';
 								endif;
@@ -788,13 +811,14 @@ if( count($files) > 0 ):
 				$message_temp = '';
 			endforeach;
 		endif;
-
+			// echo "<br>is_channel_material['channel']:".$is_channel_material['channel'];
 		if( count($type['promo']) > 0 ) :
 			foreach ($type['promo'] as $key => $promo_info) :
+				// echo "<br>Promo info:";print_r($promo_info);
 				$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
 				$message_temp = '
 					<tr>
-						<td style="text-align: left;padding:7px 2px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
+						<td style="line-height: 25px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
 					</tr>
 					';
 
@@ -806,6 +830,11 @@ if( count($files) > 0 ):
 				$message_temp = '';
 			endforeach;
 		endif;
+		// echo "<br>message_entertainment:";
+		// print_r($message_entertainment);
+
+		// echo "<br>message_extreme:";
+		// print_r($message_extreme);
 		
 
 	endforeach;
@@ -920,21 +949,21 @@ $message .= '
 </tbody>
 </table>
 <p>&nbsp;</p>
-<table style="margin-left: auto; margin-right: auto; height: 65px;" width="397">
-<tbody>
-<tr>
-<td style="text-align: center; vertical-align: top;"><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" width="171" height="39" /></td>
+
+</center></td>
 </tr>
-</tbody>
-</table>
+<tr>
+<td><center><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" /></center>
+
 <p>&nbsp;</p>
 </td>
 </tr>
 </tbody>
 </table>
+ </body></html>
 	';
 	
-	echo $message;
+	// echo $message;
 	
 	// Start output buffering to grab smtp debugging output
 	ob_start();
@@ -1010,7 +1039,8 @@ function setEmailEntryStatus($status = 'pending'){
 			                            $wpdb->wpdm_email,
 			                            array(
 			                                'status' => 'sent',
-			                                'date_emailed' => current_time('mysql', false)
+			                                'date_emailed' => current_time('mysql', false),
+			                                'created_at' => current_time('mysql', false)
 			                            ),
 			                            array(
 			                            	'status' => 'pending'
@@ -1026,7 +1056,8 @@ function addEmailLogs($status = '', $recipient = ''){
 			                            $wpdb->wpdm_email_logs,
 			                            array(
 			                            	'status' => $status,
-			                            	'recipient' => $recipient
+			                            	'recipient' => $recipient,
+			                                'created_at' => current_time('mysql', false)
 			                            )
 			                        );
 	

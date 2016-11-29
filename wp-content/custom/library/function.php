@@ -1360,13 +1360,26 @@ if(!function_exists('generate_show_files')){
         if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ){ 
             $serialized_data = $_POST['serialized-data'];
             $files_limit = $_POST['limit'];
+
+            $files_filtered = $_POST['filtered'];
+            $files_prefix = $_POST['prefix'];
+            $files_search_filter = $_POST['search_filter'];
+
             $unserialized_form = unserializeForm($serialized_data);
 
             $serialized_show_files = $unserialized_form['serialized-data'];
             $show_files = unserialize($serialized_show_files);
             $topreview_show_files = $show_files['all_files'];
-            if ( count($show_files['all_files']) >= $files_limit ){
-                $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+
+            $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            if ( count($show_files['all_files']) > 0 ){
+
+                if( $files_filtered == 'true' ){
+                    $pattern = "/".$files_prefix.".*".$files_search_filter."/";
+                    $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
+                }else{
+                    $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+                }
                 $return_array['topreview_show_files'] = $topreview_show_files;
             
                 $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
@@ -1384,11 +1397,45 @@ if(!function_exists('generate_show_files')){
                 $return_value = 1;
             }
         }
-
+        
         echo $return_value == 1 ? json_encode($return_array) : false;
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
+}
+
+if(!function_exists('unserialize_php_array')){
+    /**
+     * Ajax function for adding specific files to cart
+     */
+    function unserialize_php_array(){
+        $security_nonce = $_POST['security_nonce'];
+        $return_value = 0;
+        $return_array = array();
+        if (!empty($_POST) && wp_verify_nonce($security_nonce, '__unserialize_php_array_nonce__') ){ 
+            $serialized_data = $_POST['serialized-data'];
+            $unserialized_form = unserializeForm($serialized_data);
+            $serialized_show_files = $unserialized_form['serialized-data'];
+            $show_files = unserialize($serialized_show_files);
+
+            $return_value = 1;
+            // echo "it enters!";
+        }
+        // echo $return_array;
+        // echo '$_POST["serialized-data"] : ';
+        // print_r( $_POST["serialized-data"] );
+        
+
+        // echo '$_POST["serialized-data"] : ';
+        // print_r( $show_files );
+        // print_r($show_files['all_files']);
+        // print_r($topreview_show_files);
+
+        // print_r($topreview_show_files);
+        echo $return_value == 1 ? json_encode($show_files) : false;
+        die();
+    }
+    add_action('wp_ajax_unserialize_php_array', 'unserialize_php_array');
 }
 
 /*
@@ -1701,6 +1748,62 @@ if( !function_exists('getTribeEventsUniqueStartTime')) {
         endif;
         return $time_list_rebased;
     }
+}
+
+function templated_email($content){
+    $plugin_img_dir = plugins_url().'/wpdm-email-notice/images/';
+    $template = '
+
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html>
+          <head>
+            <meta http-equiv="Content-Type" content="text/html;UTF-8" />
+          </head>
+          <body style="margin: 0px; background-color: #FFF; font-family: Helvetica, Arial, sans-serif; font-size:12px;" text="#444444" bgcolor="#F4F3F4" link="#21759B" alink="#21759B" vlink="#21759B" marginheight="0" topmargin="0" marginwidth="0" leftmargin="0">
+            <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#a6a6a5">
+              <tbody>
+                <tr>
+                  <td valign="baseline"><span> <a style="text-decoration: none;" href="'.get_site_url().'" target="_blank"> <img class="" src="'.$plugin_img_dir.'email-banner.jpg" alt="RTL CBS Banner" width="645" height="140" /> </a> </span></td>
+                </tr>
+                <tr>
+                  <td style="padding: 0 15px 15px;"><center>
+                    <table style="height: 106px;" width="604" cellspacing="0" cellpadding="0" align="center" bgcolor="#ffffff">
+                      <tbody>
+                        <tr>
+                          <td align="left">
+                            <div style="border: solid 1px #d9d9d9;">
+                              <table id="content" style="margin-right: 30px; margin-left: 30px; color: #444444; line-height: 1.6; font-size: 12px; font-family: Arial, sans-serif; height: 64px;" border="0" width="540" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+                                <tbody>
+                                  <tr>
+                                    <td colspan="2">
+                                      <div style="padding: 15px 0;">
+                                        '.$content.'
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    </center></td>
+                </tr>
+                <tr>
+                  <td><center><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" /></center>
+                    <p>&nbsp;</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </body>
+        </html>
+
+
+    ';
+
+    return $template;
 }
 
 /**
