@@ -1372,13 +1372,10 @@ if(!function_exists('generate_show_files')){
             $topreview_show_files = $show_files['all_files'];
 
             $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
-            echo " show_files['all_files'] : ";
-            print_r( $show_files['all_files']);
             if ( count($show_files['all_files']) > 0 ){
 
                 if( $files_filtered == 'true' ){
                     $pattern = "/".$files_prefix.".*".$files_search_filter."/";
-                    echo "pattern : ".$pattern;
                     $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
                 }else{
                     $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
@@ -1391,30 +1388,16 @@ if(!function_exists('generate_show_files')){
                 $return_array['hidden_files_count'] = count($show_files['all_files']);
             }
 
-            echo "<br>topreview_show_files : ";
-            print_r($topreview_show_files);
-
             if ( $show_files !== false ){
-                echo "PHP: show files generator";
                 $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
 
                 $return_array['files'] = $categorizedFileList;
                 $return_array['updated_serialized_data'] = serialize($show_files);
                 
                 $return_value = 1;
-
-                print_r($return_array['files']);
-                echo "<br>";
-                echo "<br>";
-                echo "<br>";
-                echo "<br>";
             }
         }
-
-        // print_r($show_files['all_files']);
-        // print_r($topreview_show_files);
-
-        // print_r($topreview_show_files);
+        
         echo $return_value == 1 ? json_encode($return_array) : false;
         die();
     }
