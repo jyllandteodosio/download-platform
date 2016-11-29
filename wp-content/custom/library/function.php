@@ -1360,13 +1360,26 @@ if(!function_exists('generate_show_files')){
         if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ){ 
             $serialized_data = $_POST['serialized-data'];
             $files_limit = $_POST['limit'];
+
+            $files_filtered = $_POST['filtered'];
+            $files_prefix = $_POST['prefix'];
+            $files_search_filter = $_POST['search_filter'];
+
             $unserialized_form = unserializeForm($serialized_data);
 
             $serialized_show_files = $unserialized_form['serialized-data'];
             $show_files = unserialize($serialized_show_files);
             $topreview_show_files = $show_files['all_files'];
-            if ( count($show_files['all_files']) >= $files_limit ){
-                $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+
+            $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            if ( count($show_files['all_files']) > 0 ){
+
+                if( $files_filtered == 'true' ){
+                    $pattern = "/".$files_prefix.".*".$files_search_filter."/";
+                    $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
+                }else{
+                    $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+                }
                 $return_array['topreview_show_files'] = $topreview_show_files;
             
                 $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
@@ -1384,11 +1397,45 @@ if(!function_exists('generate_show_files')){
                 $return_value = 1;
             }
         }
-
+        
         echo $return_value == 1 ? json_encode($return_array) : false;
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
+}
+
+if(!function_exists('unserialize_php_array')){
+    /**
+     * Ajax function for adding specific files to cart
+     */
+    function unserialize_php_array(){
+        $security_nonce = $_POST['security_nonce'];
+        $return_value = 0;
+        $return_array = array();
+        if (!empty($_POST) && wp_verify_nonce($security_nonce, '__unserialize_php_array_nonce__') ){ 
+            $serialized_data = $_POST['serialized-data'];
+            $unserialized_form = unserializeForm($serialized_data);
+            $serialized_show_files = $unserialized_form['serialized-data'];
+            $show_files = unserialize($serialized_show_files);
+
+            $return_value = 1;
+            // echo "it enters!";
+        }
+        // echo $return_array;
+        // echo '$_POST["serialized-data"] : ';
+        // print_r( $_POST["serialized-data"] );
+        
+
+        // echo '$_POST["serialized-data"] : ';
+        // print_r( $show_files );
+        // print_r($show_files['all_files']);
+        // print_r($topreview_show_files);
+
+        // print_r($topreview_show_files);
+        echo $return_value == 1 ? json_encode($show_files) : false;
+        die();
+    }
+    add_action('wp_ajax_unserialize_php_array', 'unserialize_php_array');
 }
 
 /*
