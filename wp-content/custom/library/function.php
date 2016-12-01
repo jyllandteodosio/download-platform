@@ -1763,7 +1763,7 @@ function templated_email($content){
             <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#a6a6a5">
               <tbody>
                 <tr>
-                  <td valign="baseline"><span> <a style="text-decoration: none;" href="'.get_site_url().'" target="_blank"> <img class="" src="'.$plugin_img_dir.'email-banner.jpg" alt="RTL CBS Banner" width="645" height="140" /> </a> </span></td>
+                  <td valign="baseline"><span> <a style="text-decoration: none;" href="'.get_site_url().'" target="_blank"> <img class="" src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="645" height="140" /> </a> </span></td>
                 </tr>
                 <tr>
                   <td style="padding: 0 15px 15px;"><center>
@@ -1791,7 +1791,7 @@ function templated_email($content){
                     </center></td>
                 </tr>
                 <tr>
-                  <td><center><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" /></center>
+                  <td><center><img src="'.$plugin_img_dir.'rtl-logo-plain.png" alt="RTL CBS Logo" /></center>
                     <p>&nbsp;</p>
                   </td>
                 </tr>
