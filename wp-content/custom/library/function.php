@@ -1371,7 +1371,7 @@ if(!function_exists('generate_show_files')){
             $show_files = unserialize($serialized_show_files);
             $topreview_show_files = $show_files['all_files'];
 
-            $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            // $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
             if ( count($show_files['all_files']) > 0 ){
 
                 if( $files_filtered == 'true' ){
