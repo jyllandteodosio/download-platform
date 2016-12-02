@@ -492,6 +492,7 @@ function trigger_email_notification_checker(){
 		if(count($email_entries) > 0){
 			foreach ($email_entries as $key => $email_entry) {
 				echo "<br><br>Post_id:".$email_entry->post_id;
+
 				$categories_data = array();
 				$categories = array();
 				$categories_data = get_the_terms($email_entry->post_id,'wpdmcategory');
@@ -535,10 +536,10 @@ function trigger_email_notification_checker(){
 				}
 			}
 		}
-
-		echo "<pre>";
-			    print_r($files);
-			    echo "</pre>";
+		// echo "<br>files : ";
+		// echo "<pre>";
+		// 	    print_r($files);
+		// 	    echo "</pre>";
 
 		if( count($files) > 0 ){
 			$email_sent = send_email_notice($user, $files);
@@ -695,20 +696,23 @@ function send_email_notice($user = null, $files = null){
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
 	$message = '
-	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;UTF-8" />
 <style type="text/css">
 body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
 </style>
+ </head>
 <body >
-<table style="height: 617px; background-color: #a6a6a5;" width="599" cellspacing="0" cellpadding="0">
+<table style="height: 617px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
 
 <tr>
 <td valign="center">
-<p>&nbsp;</p><p>&nbsp;</p>
-<!--<img src="'.$plugin_img_dir.'email-banner.jpg" alt="RTL CBS Banner" width="599" height="130" />-->
+<!--<p>&nbsp;</p><p>&nbsp;</p>-->
+<img src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="599"/>
 
 </td>
 </tr>
@@ -741,16 +745,14 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <tr>
 <td>&nbsp;</td>
 <td>
-
 ';
 
 
 $operator_site_link = get_home_url();
-// echo "<br>Send email:";
-// echo "<pre>";
-// print_r($files);
-// echo "</pre>";
 if( count($files) > 0 ):
+	$promo_files_control['entertainment'] = 10;
+	$promo_files_control['extreme'] = 10;
+
 	foreach ($files as $post_id => $type) :
 		$is_channel_material = checkIfChannelMaterials($post_id);
 		// echo "<br>is_channel_material:".$is_channel_material;
@@ -812,24 +814,45 @@ if( count($files) > 0 ):
 			endforeach;
 		endif;
 			// echo "<br>is_channel_material['channel']:".$is_channel_material['channel'];
-		if( count($type['promo']) > 0 ) :
-			foreach ($type['promo'] as $key => $promo_info) :
-				// echo "<br>Promo info:";print_r($promo_info);
-				$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
-				$message_temp = '
-					<tr>
-						<td style="line-height: 25px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
-					</tr>
-					';
+		
+		if( $promo_files_control[ $is_channel_material['channel'] ] > 0 ){
+			if( count($type['promo']) > 0 ) :
+				$promo_counter = $promo_files_control[ $is_channel_material['channel'] ];
+				$is_break = false;
+				foreach ($type['promo'] as $key => $promo_info) :
+					// echo "<br>Promo info:";print_r($promo_info);
+					$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
+					if( $promo_counter > 0 ) :
+						$message_temp = '
+							<tr>
+								<td style="line-height: 25px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
+							</tr>
+							';
+					else :
+						$message_temp = '
+							<tr>
+								<td style="line-height: 25px;"><a title="'.$is_channel_material['channel_switcher'].' Promos" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
+							</tr>
+						';
+						$is_break = true;
+					endif;
+					$promo_counter--;
 
-				if( $is_channel_material['channel'] == 'entertainment' ){
-					$message_entertainment['promos'] .= $message_temp;
-				}else if( $is_channel_material['channel'] == 'extreme' ){
-					$message_extreme['promos'] .= $message_temp;
-				}
-				$message_temp = '';
-			endforeach;
-		endif;
+					if( $is_channel_material['channel'] == 'entertainment' ){
+						$message_entertainment['promos'] .= $message_temp;
+					}else if( $is_channel_material['channel'] == 'extreme' ){
+						$message_extreme['promos'] .= $message_temp;
+					}
+					$message_temp = '';
+					if( $is_break ){
+						break;
+					}
+				endforeach;
+				$promo_files_control[ $is_channel_material['channel'] ] = $promo_counter;
+
+			endif;
+
+		}
 		// echo "<br>message_entertainment:";
 		// print_r($message_entertainment);
 
@@ -953,7 +976,7 @@ $message .= '
 </center></td>
 </tr>
 <tr>
-<td><center><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" /></center>
+<td><center><img src="'.$plugin_img_dir.'rtl-logo-plain.png" alt="RTL CBS Logo" /></center>
 
 <p>&nbsp;</p>
 </td>

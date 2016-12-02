@@ -1371,7 +1371,7 @@ if(!function_exists('generate_show_files')){
             $show_files = unserialize($serialized_show_files);
             $topreview_show_files = $show_files['all_files'];
 
-            $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            // $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
             if ( count($show_files['all_files']) > 0 ){
 
                 if( $files_filtered == 'true' ){
@@ -1760,14 +1760,11 @@ function templated_email($content){
             <meta http-equiv="Content-Type" content="text/html;UTF-8" />
           </head>
           <body style="margin: 0px; background-color: #FFF; font-family: Helvetica, Arial, sans-serif; font-size:12px;" text="#444444" bgcolor="#F4F3F4" link="#21759B" alink="#21759B" vlink="#21759B" marginheight="0" topmargin="0" marginwidth="0" leftmargin="0">
-            <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#a6a6a5">
+            <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#000">
               <tbody>
                 <tr>
-                  <td valign="baseline"><span> <a style="text-decoration: none;" href="'.get_site_url().'" target="_blank"> 
-                    <p>&nbsp;</p><p>&nbsp;</p>
-                    <!--<img src="'.$plugin_img_dir.'email-banner.jpg" alt="RTL CBS Banner" width="599" height="130" />-->
 
-                  </a> </span></td>
+                  <td valign="baseline"><span> <a style="text-decoration: none;" href="'.get_site_url().'" target="_blank"> <img class="" src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="645" height="140" /> </a> </span></td>
                 </tr>
                 <tr>
                   <td style="padding: 0 15px 15px;"><center>
@@ -1795,7 +1792,7 @@ function templated_email($content){
                     </center></td>
                 </tr>
                 <tr>
-                  <td><center><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" /></center>
+                  <td><center><img src="'.$plugin_img_dir.'rtl-logo-plain.png" alt="RTL CBS Logo" /></center>
                     <p>&nbsp;</p>
                   </td>
                 </tr>
