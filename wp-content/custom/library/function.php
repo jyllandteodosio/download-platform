@@ -1371,7 +1371,7 @@ if(!function_exists('generate_show_files')){
             $show_files = unserialize($serialized_show_files);
             $topreview_show_files = $show_files['all_files'];
 
-            $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            // $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
             if ( count($show_files['all_files']) > 0 ){
 
                 if( $files_filtered == 'true' ){
@@ -1763,6 +1763,7 @@ function templated_email($content){
             <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#a6a6a5">
               <tbody>
                 <tr>
+
                   <td valign="baseline"><span> <a style="text-decoration: none;" href="'.get_site_url().'" target="_blank"> <img class="" src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="645" height="140" /> </a> </span></td>
                 </tr>
                 <tr>
