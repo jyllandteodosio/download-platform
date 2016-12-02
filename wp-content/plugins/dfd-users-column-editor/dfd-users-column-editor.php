@@ -53,6 +53,7 @@ if(!function_exists('new_modify_user_table_row')){
      */
     function new_modify_user_table_row( $val, $column_name, $user_id ) {
         $user = get_userdata( $user_id );
+        echo '<br>user-meta : '.$user_id.' - '.get_user_meta($user_id, $column_name, true) .' - '.$column_name ;
         return get_user_meta($user_id, $column_name, true) != "" ? get_user_meta($user_id, $column_name, true) : "None";
     }
     add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
