@@ -695,13 +695,16 @@ function send_email_notice($user = null, $files = null){
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
 	$message = '
-	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;UTF-8" />
 <style type="text/css">
 body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
 </style>
+ </head>
 <body >
-<table style="height: 617px; background-color: #a6a6a5;" width="599" cellspacing="0" cellpadding="0">
+<table style="height: 617px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
 
