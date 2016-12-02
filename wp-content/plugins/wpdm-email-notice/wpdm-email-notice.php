@@ -707,8 +707,8 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 
 <tr>
 <td valign="center">
-<p>&nbsp;</p><p>&nbsp;</p>
-<!--<img src="'.$plugin_img_dir.'email-banner.jpg" alt="RTL CBS Banner" width="599" height="130" />-->
+<!--<p>&nbsp;</p><p>&nbsp;</p>-->
+<img src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="599"/>
 
 </td>
 </tr>
@@ -953,7 +953,7 @@ $message .= '
 </center></td>
 </tr>
 <tr>
-<td><center><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" /></center>
+<td><center><img src="'.$plugin_img_dir.'rtl-logo-plain.png" alt="RTL CBS Logo" /></center>
 
 <p>&nbsp;</p>
 </td>
