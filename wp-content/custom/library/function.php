@@ -1760,7 +1760,7 @@ function templated_email($content){
             <meta http-equiv="Content-Type" content="text/html;UTF-8" />
           </head>
           <body style="margin: 0px; background-color: #FFF; font-family: Helvetica, Arial, sans-serif; font-size:12px;" text="#444444" bgcolor="#F4F3F4" link="#21759B" alink="#21759B" vlink="#21759B" marginheight="0" topmargin="0" marginwidth="0" leftmargin="0">
-            <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#a6a6a5">
+            <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#000">
               <tbody>
                 <tr>
 
