@@ -783,15 +783,15 @@ if (!function_exists('get_country_name')) {
     }
 }
 
-if(!function_exists('modify_user_table_row')){
-    /**
-     * Override Country Group column in Users table
-     */
-    function modify_user_table_row( $val, $column_name, $user_id ) {
-        $user = get_userdata( $user_id );
-        return $column_name == 'country_group' ? get_country_name(get_user_meta($user_id, 'country_group', true)) : $val;
+if( !function_exists('is_pr_group') ){
+    function is_pr_group( $operator_group = null, $country_group = null ){
+        global $wpdb;
+        $access = $wpdb->get_col( "SELECT is_pr_group FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" );
+        if( $access[0] == 'yes' ){
+            return true;
+        }
+        return false;
     }
-    add_filter( 'manage_users_custom_column', 'modify_user_table_row', 10, 3 );
 }
 
 /*
