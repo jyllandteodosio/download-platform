@@ -784,6 +784,12 @@ if (!function_exists('get_country_name')) {
 }
 
 if( !function_exists('is_pr_group') ){
+    /**
+     * Description:                    Check if operator and country group combination is PR Group
+     * @param  String  $operator_group Operator group (e.g. Singtel, Starhub)
+     * @param  String  $country_group  Country group (e.g. SG, PH)
+     * @return boolean                 Return true if combination is PR group, otherwise false
+     */
     function is_pr_group( $operator_group = null, $country_group = null ){
         global $wpdb;
         $access = $wpdb->get_col( "SELECT is_pr_group FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" );

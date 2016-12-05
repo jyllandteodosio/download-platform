@@ -317,6 +317,8 @@ class Package {
                                 $file_list_data_prep_serialized = serialize($file_list_data_prep);
 
                                 $vars[$tab_attr['template_shortcode']] = "<input name='serialized-data' class='serialized-data' type='hidden' value='".$file_list_data_prep_serialized."'>";
+                                
+                                /* Commented out to use lazy loading feature */
                                 // $vars[$tab_attr['template_shortcode']] = \WPDM\libs\FileList::CategorizedFileList($categorized_files[$tab_attr['prefix']] ,$tab_attr['prefix'] ,$file_category_key ,$file ,$specific_thumbnails ,$file_type ,$fileinfo);
                             }
                         }else{
