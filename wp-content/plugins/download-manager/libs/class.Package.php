@@ -246,31 +246,6 @@ class Package {
                                         && $prefix == self::$file_attr_list['document']['show']['document_others']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['document_others']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // CM_EPG
-                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_epg']['prefix']){
-                                        $current_operator_group = get_current_user_operator_group();
-                                        $generate_epg_panel = false;
-
-                                        if ( get_current_user_role() == "administrator"){
-                                            $generate_epg_panel = true;
-                                        }else if(contains($fileTitle, self::$operator_prefix_list['affiliate'])){
-                                            $exclusive_epg_check = 0;
-                                            foreach ($allfiles_sorted as $key => $value) {
-                                                if(contains($fileinfo[$key]['title'], $current_operator_group)){
-                                                    $exclusive_epg_check = 1;
-                                                    break;
-                                                }
-                                            }
-                                            if(!$exclusive_epg_check){
-                                                $generate_epg_panel = true;
-                                            }
-                                        }else if(contains($fileTitle, $current_operator_group)){
-                                            $generate_epg_panel = true;
-                                        }
-                                        if($generate_epg_panel){
-                                            $categorized_files[self::$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $sfileOriginal;
-                                        }
-                                    }
                                     // CM_HIG
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_highlights']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['channel']['channel_highlights']['prefix']][$fileID] = $sfileOriginal;
@@ -283,9 +258,18 @@ class Package {
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_boiler']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['channel']['channel_boiler']['prefix']][$fileID] = $sfileOriginal;
                                     }
+                                     // CM_EPG
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_epg']['prefix']){
+                                        if ( is_generate_file_panel( self::$operator_prefix_list['affiliate'], $fileTitle, $allfiles_sorted, $fileinfo) ){
+                                            $categorized_files[self::$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $sfileOriginal;
+                                        }
+                                    }
                                     // CM_CAT
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_catchup']['prefix']){
-                                        $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
+                                        if ( is_generate_file_panel( self::$operator_prefix_list['affiliate'], $fileTitle, $allfiles_sorted, $fileinfo) ){
+                                            $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
+                                        }
+
                                     }
                                 }
                             }
@@ -317,7 +301,7 @@ class Package {
                                 $file_list_data_prep_serialized = serialize($file_list_data_prep);
 
                                 $vars[$tab_attr['template_shortcode']] = "<input name='serialized-data' class='serialized-data' type='hidden' value='".$file_list_data_prep_serialized."'>";
-                                
+
                                 /* Commented out to use lazy loading feature */
                                 // $vars[$tab_attr['template_shortcode']] = \WPDM\libs\FileList::CategorizedFileList($categorized_files[$tab_attr['prefix']] ,$tab_attr['prefix'] ,$file_category_key ,$file ,$specific_thumbnails ,$file_type ,$fileinfo);
                             }
