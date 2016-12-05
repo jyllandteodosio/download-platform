@@ -269,7 +269,6 @@ class Package {
                                         if ( is_generate_file_panel( self::$operator_prefix_list['affiliate'], $fileTitle, $allfiles_sorted, $fileinfo) ){
                                             $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
                                         }
-
                                     }
                                 }
                             }
