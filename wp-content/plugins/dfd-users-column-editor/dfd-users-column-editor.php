@@ -52,10 +52,43 @@ if(!function_exists('new_modify_user_table_row')){
      * Populate custom column in Users table
      */
     function new_modify_user_table_row( $val, $column_name, $user_id ) {
-        $user = get_userdata( $user_id );
-        return get_user_meta($user_id, $column_name, true) != "" ? get_user_meta($user_id, $column_name, true) : "None";
+        $column_value = "";
+        if ( $column_name == 'ja_user_disabled' ) {
+            if ( get_the_author_meta( 'ja_disable_user', $user_id ) == 1 ) {
+                $column_value =  __( 'Disabled', 'ja_disable_users' );
+            }
+
+        }else if($column_name == 'custom_role'){
+            $user_meta=get_userdata($user_id);
+            $user_roles=$user_meta->roles;
+            $column_value = $user_roles[0];
+
+            if( $column_value == 'operator' ){
+                $country_group = get_user_meta($user_id, 'country_group', true);
+                $operator_group = get_user_meta($user_id, 'operator_group', true);
+                if( function_exists('is_pr_group') ){
+                    if( is_pr_group( $operator_group, $country_group ) ){
+                        $column_value = "PR Group";
+                    }
+                }
+            }
+
+        }else if ( get_user_meta($user_id, $column_name, true) != "" ){
+            if($column_name == 'country_group'){
+                if( function_exists('get_country_name') ){
+                    $column_value = get_country_name(get_user_meta($user_id, $column_name, true));
+                }else{
+                    $column_value = get_user_meta($user_id, $column_name, true);
+                }
+
+            }else if($column_name == 'operator_group'){
+                $column_value = get_user_meta($user_id, $column_name, true);
+            }
+        }
+
+        return ucwords($column_value);
     }
-    add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
+    add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 11, 3 );
 }
 
 
