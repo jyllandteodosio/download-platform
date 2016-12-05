@@ -784,6 +784,12 @@ if (!function_exists('get_country_name')) {
 }
 
 if( !function_exists('is_pr_group') ){
+    /**
+     * Description:                    Check if operator and country group combination is PR Group
+     * @param  String  $operator_group Operator group (e.g. Singtel, Starhub)
+     * @param  String  $country_group  Country group (e.g. SG, PH)
+     * @return boolean                 Return true if combination is PR group, otherwise false
+     */
     function is_pr_group( $operator_group = null, $country_group = null ){
         global $wpdb;
         $access = $wpdb->get_col( "SELECT is_pr_group FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" );
@@ -1695,6 +1701,43 @@ if( !function_exists('getEPGThumbnail') ) {
             }
         }
         return $thumb;
+    }
+}
+
+if( !function_exists('is_generate_file_panel') ){
+    /**
+     * Description:                     Check if a specific file should be visible to the user based on operator group
+     * @param  string  $prefix_general  The general prefix indicator ( e.g. Affiliate )
+     * @param  string  $fileTitle       Title of file
+     * @param  array   $allfiles_sorted Key value pair of all files sorted
+     * @param  array   $fileinfo        Key value pair of all files file title
+     * @return boolean                  Return true if file should be visible to the user, else false
+     */
+    function is_generate_file_panel( $prefix_general = '', $fileTitle = '', $allfiles_sorted = array(), $fileinfo = array() ){
+        $current_operator_group = get_current_user_operator_group();
+        $generate_file_panel = false;
+
+        if ( get_current_user_role() == "administrator"){
+            $generate_file_panel = true;
+
+        }else if(contains($fileTitle, $prefix_general)){
+            /* Commented out some confusing codes below */
+            // $exclusive_file_check = 0;
+            // foreach ($allfiles_sorted as $key => $value) {
+            //     if(contains($fileinfo[$key]['title'], $current_operator_group)){
+            //         $exclusive_file_check = 1;
+            //         break;
+            //     }
+            // }
+            // if(!$exclusive_file_check){
+                $generate_file_panel = true;
+            // }
+
+        }else if(contains($fileTitle, $current_operator_group)){
+            $generate_file_panel = true;
+        }
+
+        return $generate_file_panel;
     }
 }
 
