@@ -129,7 +129,7 @@ if (!isset($wpdb->wpdm_email_logs)) {
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($post_id)
 {
-	trigger_email_notification_checker();
+	// trigger_email_notification_checker();
 
 	// send_email_notice();
 
@@ -492,6 +492,7 @@ function trigger_email_notification_checker(){
 		if(count($email_entries) > 0){
 			foreach ($email_entries as $key => $email_entry) {
 				echo "<br><br>Post_id:".$email_entry->post_id;
+
 				$categories_data = array();
 				$categories = array();
 				$categories_data = get_the_terms($email_entry->post_id,'wpdmcategory');
@@ -535,7 +536,7 @@ function trigger_email_notification_checker(){
 				}
 			}
 		}
-
+		// echo "<br>files : ";
 		// echo "<pre>";
 		// 	    print_r($files);
 		// 	    echo "</pre>";
@@ -546,13 +547,17 @@ function trigger_email_notification_checker(){
 				array_push($email_recipient,$user->user_email);
 		}
 	}
+	// echo "<br>count-email_recipient:".count($email_recipient);
 	// die('asd');
-	$email_recipient_serialized = serialize($email_recipient);
-	$return_value_email = setEmailEntryStatus('sent');
-	if( $return_value_email === FALSE )
-		addEmailLogs('failed', $email_recipient_serialized);
-	else
-		addEmailLogs('success', $email_recipient_serialized);
+	if( count($email_recipient) > 0 ){
+		$email_recipient_serialized = serialize($email_recipient);
+		$return_value_email = setEmailEntryStatus('sent');
+		if( $return_value_email === FALSE ){
+			addEmailLogs('failed', $email_recipient_serialized);
+		}else{
+			addEmailLogs('success', $email_recipient_serialized);
+		}
+	}
 
 }
 
@@ -691,21 +696,30 @@ function send_email_notice($user = null, $files = null){
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
 	$message = '
-	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-<style type="text/css">body, table, td {font-family: Arial, Helvetica, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}<body>    
+<head>
+<meta http-equiv="Content-Type" content="text/html;UTF-8" />
+<style type="text/css">
+body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
 </style>
-<table style="height: 617px; background-color: #a6a6a5;" width="599" cellspacing="0" cellpadding="0">
+ </head>
+<body >
+<table style="height: 617px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
 
 <tr>
-<td valign="center"><img src="'.$plugin_img_dir.'email-banner.jpg" alt="RTL CBS Banner" width="599" height="130" /></td>
+<td valign="center">
+<!--<p>&nbsp;</p><p>&nbsp;</p>-->
+<img src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="599"/>
+
+</td>
 </tr>
 
 <tr>
 <td valign="top"><center>
-<table style="height: 194px; background-color: #ffffff;margin-left: auto; margin-right: auto;" width="522">
+<table style="height: 194px; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="522">
 <tbody>
 <tr>
 <td>&nbsp;&nbsp;</td>
@@ -731,18 +745,20 @@ function send_email_notice($user = null, $files = null){
 <tr>
 <td>&nbsp;</td>
 <td>
-
 ';
 
 
 $operator_site_link = get_home_url();
-
 if( count($files) > 0 ):
+	$promo_files_control['entertainment'] = 10;
+	$promo_files_control['extreme'] = 10;
+
 	foreach ($files as $post_id => $type) :
+		$is_channel_material = checkIfChannelMaterials($post_id);
+		// echo "<br>is_channel_material:".$is_channel_material;
 		if( count($type['show']) > 0 ) :
 			$show_title = get_the_title($post_id);
 
-			$is_channel_material = checkIfChannelMaterials($post_id);
 			$show_title = $is_channel_material['is_channel_material'] != false ? $is_channel_material['channel'] : $show_title;
 			$permalink = get_permalink($post_id).$is_channel_material['channel_switcher'];
 			echo "<br>is_channel_material : ";
@@ -797,24 +813,51 @@ if( count($files) > 0 ):
 				$message_temp = '';
 			endforeach;
 		endif;
+			// echo "<br>is_channel_material['channel']:".$is_channel_material['channel'];
+		
+		if( $promo_files_control[ $is_channel_material['channel'] ] > 0 ){
+			if( count($type['promo']) > 0 ) :
+				$promo_counter = $promo_files_control[ $is_channel_material['channel'] ];
+				$is_break = false;
+				foreach ($type['promo'] as $key => $promo_info) :
+					// echo "<br>Promo info:";print_r($promo_info);
+					$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
+					if( $promo_counter > 0 ) :
+						$message_temp = '
+							<tr>
+								<td style="line-height: 25px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
+							</tr>
+							';
+					else :
+						$message_temp = '
+							<tr>
+								<td style="line-height: 25px;"><a title="'.$is_channel_material['channel_switcher'].' Promos" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
+							</tr>
+						';
+						$is_break = true;
+					endif;
+					$promo_counter--;
 
-		if( count($type['promo']) > 0 ) :
-			foreach ($type['promo'] as $key => $promo_info) :
-				$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
-				$message_temp = '
-					<tr>
-						<td style="line-height: 25px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
-					</tr>
-					';
+					if( $is_channel_material['channel'] == 'entertainment' ){
+						$message_entertainment['promos'] .= $message_temp;
+					}else if( $is_channel_material['channel'] == 'extreme' ){
+						$message_extreme['promos'] .= $message_temp;
+					}
+					$message_temp = '';
+					if( $is_break ){
+						break;
+					}
+				endforeach;
+				$promo_files_control[ $is_channel_material['channel'] ] = $promo_counter;
 
-				if( $is_channel_material['channel'] == 'entertainment' ){
-					$message_entertainment['promos'] .= $message_temp;
-				}else if( $is_channel_material['channel'] == 'extreme' ){
-					$message_extreme['promos'] .= $message_temp;
-				}
-				$message_temp = '';
-			endforeach;
-		endif;
+			endif;
+
+		}
+		// echo "<br>message_entertainment:";
+		// print_r($message_entertainment);
+
+		// echo "<br>message_extreme:";
+		// print_r($message_extreme);
 		
 
 	endforeach;
@@ -933,7 +976,7 @@ $message .= '
 </center></td>
 </tr>
 <tr>
-<td><center><img src="'.$plugin_img_dir.'rtl-logo.png" alt="RTL CBS Logo" /></center>
+<td><center><img src="'.$plugin_img_dir.'rtl-logo-plain.png" alt="RTL CBS Logo" /></center>
 
 <p>&nbsp;</p>
 </td>
@@ -943,7 +986,7 @@ $message .= '
  </body></html>
 	';
 	
-	echo $message;
+	// echo $message;
 	
 	// Start output buffering to grab smtp debugging output
 	ob_start();
@@ -1019,7 +1062,8 @@ function setEmailEntryStatus($status = 'pending'){
 			                            $wpdb->wpdm_email,
 			                            array(
 			                                'status' => 'sent',
-			                                'date_emailed' => current_time('mysql', false)
+			                                'date_emailed' => current_time('mysql', false),
+			                                'created_at' => current_time('mysql', false)
 			                            ),
 			                            array(
 			                            	'status' => 'pending'
@@ -1035,7 +1079,8 @@ function addEmailLogs($status = '', $recipient = ''){
 			                            $wpdb->wpdm_email_logs,
 			                            array(
 			                            	'status' => $status,
-			                            	'recipient' => $recipient
+			                            	'recipient' => $recipient,
+			                                'created_at' => current_time('mysql', false)
 			                            )
 			                        );
 	
