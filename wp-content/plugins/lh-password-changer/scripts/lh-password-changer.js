@@ -27,6 +27,8 @@ return true;
 
     }
 
+function lh_password_changer_run_js() {
+
 
 if (document.getElementById("lh_password_changer-form")){
 
@@ -35,3 +37,7 @@ document.getElementById("lh_password_changer-password2").addEventListener("keyup
 document.getElementById("lh_password_changer-form").onsubmit= function(){return lh_password_changer_validate_form();};
 
 }
+
+}
+
+lh_password_changer_run_js();
