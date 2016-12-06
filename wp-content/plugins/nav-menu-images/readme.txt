@@ -3,8 +3,8 @@ Contributors: dimadin
 Donate link: http://blog.milandinic.com/donate/
 Tags: nav menu, menu, media, image
 Requires at least: 3.1
-Tested up to: 4.5
-Stable tag: 3.3
+Tested up to: 4.6.1
+Stable tag: 3.4
 
 Display image as a menu item content.
 
@@ -40,6 +40,11 @@ There are no configuration options in this plugin.
 4. Setting image used on hover from media modal screen
 
 == Changelog ==
+
+= 3.4 =
+* Released on 11th September 2016
+* Removed 'srcset' and 'sizes' attributes.
+* Fixed PHP notice that could happen in some cases.
 
 = 3.3 =
 * Released on 15th April 2016
