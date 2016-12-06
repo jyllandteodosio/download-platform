@@ -68,8 +68,8 @@ get_template_part('channel-setter');
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
 		<?php   if(function_exists('tribe_get_events')):
-					$events = getTribeEvents(date('2016-07-01').' 00:00',current_time('Y-m-d').' 23:59');
-					// $events = getTribeEvents(current_time('Y-m-d').' 00:00',current_time('Y-m-d').' 23:59');
+					// $events = getTribeEvents(date('2016-07-01').' 00:00',current_time('Y-m-d').' 23:59');
+					$events = getTribeEvents(current_time('Y-m-d').' 00:00',current_time('Y-m-d').' 23:59');
                     
 					if(count($events) > 0):
         				$events_counter = 0;
