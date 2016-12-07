@@ -55,7 +55,8 @@ function run_wpdm_email_notice() {
 	$wen_plugin->run();
 
 }
-// run_wpdm_email_notice();
+// if( is_admin() )
+	// run_wpdm_email_notice();
 
 
 
@@ -102,6 +103,15 @@ PROMO ROW ID REFERENCE =========================================================
 
 
 
+
+
+global $wpdb;
+if (!isset($wpdb->wpdm_email)) {
+	$wpdb->wpdm_email = $wpdb->prefix . 'wpdm_email';
+}
+if (!isset($wpdb->wpdm_email_logs)) {
+	$wpdb->wpdm_email_logs = $wpdb->prefix . 'wpdm_email_logs';
+}
 
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($post_id)
@@ -469,6 +479,7 @@ function trigger_email_notification_checker(){
 		if(count($email_entries) > 0){
 			foreach ($email_entries as $key => $email_entry) {
 				echo "<br><br>Post_id:".$email_entry->post_id;
+
 				$categories_data = array();
 				$categories = array();
 				$categories_data = get_the_terms($email_entry->post_id,'wpdmcategory');
@@ -504,18 +515,30 @@ function trigger_email_notification_checker(){
 			    // print_r($operator_access);
 			    // echo "</pre>";
 			    $matched_operator_access = check_user_group_access($user, $operator_access);
+			    // echo "<br>matched_operator_access : ".$matched_operator_access;
 				if($matched_operator_access){
 					echo "<br>matched_operator_access['is_pr_group']:".$matched_operator_access['is_pr_group'];
 					$uns_email_entry = unserialize($email_entry->data_new);
+					// echo "<br>uns_email_entry : ";
+					// echo "<pre>";
+					// echo "<br>".$email_entry->data_new;
+
+					// var_dump($email_entry->data_new);
+					// var_dump($uns_email_entry);
+					// echo "</pre>";	
+
+					print_r(unserialize($email_entry->data_new));
 					$files[$email_entry->post_id]['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$operator_access);
-					$files[$email_entry->post_id]['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],$operator_access);	
+					$files[$email_entry->post_id]['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],$operator_access);
+
+					
 				}
 			}
 		}
-
-		echo "<pre>";
-			    print_r($files);
-			    echo "</pre>";
+		// echo "<br>files : ";
+		// echo "<pre>";
+		// print_r($files);
+		// echo "</pre>";
 
 		if( count($files) > 0 ){
 			$email_sent = send_email_notice($user, $files);
@@ -672,13 +695,16 @@ function send_email_notice($user = null, $files = null){
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
 	$message = '
-	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;UTF-8" />
 <style type="text/css">
 body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
 </style>
+ </head>
 <body >
-<table style="height: 617px; background-color: #a6a6a5;" width="599" cellspacing="0" cellpadding="0">
+<table style="height: 617px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
 
@@ -718,16 +744,15 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <tr>
 <td>&nbsp;</td>
 <td>
-
 ';
 
 
 $operator_site_link = get_home_url();
-// echo "<br>Send email:";
-// echo "<pre>";
-// print_r($files);
-// echo "</pre>";
+$email_files_counter = 0;
 if( count($files) > 0 ):
+	$promo_files_control['entertainment'] = 10;
+	$promo_files_control['extreme'] = 10;
+
 	foreach ($files as $post_id => $type) :
 		$is_channel_material = checkIfChannelMaterials($post_id);
 		// echo "<br>is_channel_material:".$is_channel_material;
@@ -753,6 +778,7 @@ if( count($files) > 0 ):
 							</tr>';
 							$file_counter = 1;
 							foreach ($file_list as $file_id => $file_name) :
+								$email_files_counter++;
 								if( $file_counter <= 10 ) :
 									$message_temp .='
 										<tr>
@@ -789,24 +815,46 @@ if( count($files) > 0 ):
 			endforeach;
 		endif;
 			// echo "<br>is_channel_material['channel']:".$is_channel_material['channel'];
-		if( count($type['promo']) > 0 ) :
-			foreach ($type['promo'] as $key => $promo_info) :
-				// echo "<br>Promo info:";print_r($promo_info);
-				$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
-				$message_temp = '
-					<tr>
-						<td style="line-height: 25px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
-					</tr>
-					';
+		
+		if( $promo_files_control[ $is_channel_material['channel'] ] > 0 ){
+			if( count($type['promo']) > 0 ) :
+				$promo_counter = $promo_files_control[ $is_channel_material['channel'] ];
+				$is_break = false;
+				foreach ($type['promo'] as $key => $promo_info) :
+					$email_files_counter++;
+					// echo "<br>Promo info:";print_r($promo_info);
+					$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
+					if( $promo_counter > 0 ) :
+						$message_temp = '
+							<tr>
+								<td style="line-height: 25px;"><a title="'.$promo_info['file_name'].'" href="'.$permalink.'" target="_blank">'.$promo_info['file_name'].'</a></td>
+							</tr>
+							';
+					else :
+						$message_temp = '
+							<tr>
+								<td style="line-height: 25px;"><a title="'.$is_channel_material['channel_switcher'].' Promos" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
+							</tr>
+						';
+						$is_break = true;
+					endif;
+					$promo_counter--;
 
-				if( $is_channel_material['channel'] == 'entertainment' ){
-					$message_entertainment['promos'] .= $message_temp;
-				}else if( $is_channel_material['channel'] == 'extreme' ){
-					$message_extreme['promos'] .= $message_temp;
-				}
-				$message_temp = '';
-			endforeach;
-		endif;
+					if( $is_channel_material['channel'] == 'entertainment' ){
+						$message_entertainment['promos'] .= $message_temp;
+					}else if( $is_channel_material['channel'] == 'extreme' ){
+						$message_extreme['promos'] .= $message_temp;
+					}
+					$message_temp = '';
+					if( $is_break ){
+						break;
+					}
+				endforeach;
+				$promo_files_control[ $is_channel_material['channel'] ] = $promo_counter;
+
+			endif;
+
+		}
 		// echo "<br>message_entertainment:";
 		// print_r($message_entertainment);
 
@@ -940,19 +988,22 @@ $message .= '
  </body></html>
 	';
 	
-	// echo $message;
-	
-	// Start output buffering to grab smtp debugging output
-	ob_start();
-
-	// Send the test mail
-	$result = wp_mail($to,$subject,$message,$headers);
+	if( $email_files_counter > 0 ){
+		// echo $message;
 		
-	// Grab the smtp debugging output
-	$smtp_debug = ob_get_clean();
-	
-	// Output the response
-	return $result;
+		// Start output buffering to grab smtp debugging output
+		ob_start();
+
+		// Send the test mail
+		$result = wp_mail($to,$subject,$message,$headers);
+			
+		// Grab the smtp debugging output
+		$smtp_debug = ob_get_clean();
+		
+		// Output the response
+		return $result;
+	}
+	return false;
 }
 
 

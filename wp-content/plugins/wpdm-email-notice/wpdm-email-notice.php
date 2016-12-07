@@ -649,7 +649,7 @@ if (!function_exists('get_user_accessible_files')){
 		if (count($raw_files) > 0) {
 			foreach ($raw_files as $key => $value) {
 				// echo "<br><br>New file:".$value;
-				if( contains($value, 'epg')){
+				if( contains($value, 'epg') || contains($value, 'catch')){
 					if ( ($is_pr_group == 'yes' && strtolower($user->country_group) == 'all') ||
 						 contains($value, 'affiliate') ||
 						 contains($value, $user->operator_group) ||
@@ -657,6 +657,7 @@ if (!function_exists('get_user_accessible_files')){
 							continue;
 	                }else{
 						if(isset($all_files['document']['epg'][$key])) unset($all_files['document']['epg'][$key]);
+						if(isset($all_files['document']['catch'][$key])) unset($all_files['document']['catch'][$key]);
 			            if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]);
 	                }
 				}
