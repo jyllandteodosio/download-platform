@@ -37,7 +37,7 @@ class WPDM_Email_Notice {
 	 * @access   protected
 	 * @var      Plugin_Name_Loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
-	protected $loader;
+	// protected $loader;
 
 	/**
 	 * The unique identifier of this plugin.
@@ -71,7 +71,7 @@ class WPDM_Email_Notice {
 		$this->plugin_name = 'wpdm-email-notice';
 		$this->version = '1.0.0';
 
-		$this->load_dependencies();
+		// $this->load_dependencies();
 		// $this->set_locale();
 		// $this->define_admin_hooks();
 		// $this->define_public_hooks();
