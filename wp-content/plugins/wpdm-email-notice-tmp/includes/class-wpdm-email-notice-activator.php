@@ -34,6 +34,7 @@ class WPDM_Email_Notice_Activator {
 
 		require_once( ABSPATH . '/wp-admin/includes/upgrade.php' );
 
+		/* TODO:  remove code decalration below, already declared in main php file */
 		$db_table_name = $wpdb->prefix . 'wpdm_email';
 		$db_table_name_logs = $wpdb->prefix . 'wpdm_email_logs';
 
