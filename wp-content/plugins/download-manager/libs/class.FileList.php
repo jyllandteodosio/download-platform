@@ -424,10 +424,12 @@ class FileList
         $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 48, "...");
         
         /* Check if EPG file - will assign a special thumbnail if ever */
-        if(contains($sfile,self::$prefix_list['channel_epg'])){
-            $thumb_path = getEPGThumbnail($fileTitle,$postID);
-        }
-        else {
+        if( contains($sfile,self::$prefix_list['channel_epg']) ){
+            $thumb_path = getEPGThumbnail($fileTitle, $postID, 'epg');
+
+        }else if( contains($sfile,self::$prefix_list['channel_catchup']) ){
+            $thumb_path = getEPGThumbnail($fileTitle, $postID, 'catchup');
+        }else {
             $thumb_path = WPDM_CACHE_DIR.basename($thumb);
         }
 
@@ -436,7 +438,8 @@ class FileList
             $file_thumb = '<img src="'.$thumb.'" alt="'.$fileTitle.'" title="'.$fileTitle.'" />';
         }
         /* Will assign a thumbnail preview For EPG Files */
-        else if(contains($sfile,self::$prefix_list['channel_epg']) && file_exists(getFileAbsolutePathByURL($thumb_path))){
+        else if(    ( contains($sfile,self::$prefix_list['channel_epg']) || contains($sfile,self::$prefix_list['channel_catchup']) )  
+                    && file_exists(getFileAbsolutePathByURL($thumb_path)) ){
             $file_thumb = '<img src="'.$thumb_path.'" alt="'.$fileTitle.'" title="'.$fileTitle.'" />';
         }
         /* Will assign a thumbnail preview for non image files */

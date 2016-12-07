@@ -783,15 +783,21 @@ if (!function_exists('get_country_name')) {
     }
 }
 
-if(!function_exists('modify_user_table_row')){
+if( !function_exists('is_pr_group') ){
     /**
-     * Override Country Group column in Users table
+     * Description:                    Check if operator and country group combination is PR Group
+     * @param  String  $operator_group Operator group (e.g. Singtel, Starhub)
+     * @param  String  $country_group  Country group (e.g. SG, PH)
+     * @return boolean                 Return true if combination is PR group, otherwise false
      */
-    function modify_user_table_row( $val, $column_name, $user_id ) {
-        $user = get_userdata( $user_id );
-        return $column_name == 'country_group' ? get_country_name(get_user_meta($user_id, 'country_group', true)) : $val;
+    function is_pr_group( $operator_group = null, $country_group = null ){
+        global $wpdb;
+        $access = $wpdb->get_col( "SELECT is_pr_group FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'" );
+        if( $access[0] == 'yes' ){
+            return true;
+        }
+        return false;
     }
-    add_filter( 'manage_users_custom_column', 'modify_user_table_row', 10, 3 );
 }
 
 /*
@@ -1371,7 +1377,7 @@ if(!function_exists('generate_show_files')){
             $show_files = unserialize($serialized_show_files);
             $topreview_show_files = $show_files['all_files'];
 
-            $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            // $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
             if ( count($show_files['all_files']) > 0 ){
 
                 if( $files_filtered == 'true' ){
@@ -1678,12 +1684,12 @@ if( !function_exists('getEPGThumbnail') ) {
      * @param  string $fileTitle           File title of epg file
      * @return string                      Associated EPG thumbnail for the given filename if available
      */
-    function getEPGThumbnail($fileTitle, $postID) {
+    function getEPGThumbnail($fileTitle, $postID, $prefix = 'epg') {
         $epg_thumbnails = array();
-        if( have_rows('epg_thumbnail', $postID) ):
-            while ( have_rows('epg_thumbnail', $postID) ) : the_row();
-                $epg_month = strtolower(get_sub_field('epg_month'));
-                $thumbnail_path = get_sub_field('epg_image_thumbnail');
+        if( have_rows('special_thumb', $postID) ):
+            while ( have_rows('special_thumb', $postID) ) : the_row();
+                $epg_month = strtolower(get_sub_field('month'));
+                $thumbnail_path = $prefix == 'epg' ? get_sub_field('epg_thumb') : get_sub_field('catch_up_thumb') ;
                 if(($epg_month!="" && $epg_month != null) && ($thumbnail_path != "" && $thumbnail_path != null)){
                     $epg_thumbnails[$epg_month] = $thumbnail_path;
                 }
@@ -1695,6 +1701,43 @@ if( !function_exists('getEPGThumbnail') ) {
             }
         }
         return $thumb;
+    }
+}
+
+if( !function_exists('is_generate_file_panel') ){
+    /**
+     * Description:                     Check if a specific file should be visible to the user based on operator group
+     * @param  string  $prefix_general  The general prefix indicator ( e.g. Affiliate )
+     * @param  string  $fileTitle       Title of file
+     * @param  array   $allfiles_sorted Key value pair of all files sorted
+     * @param  array   $fileinfo        Key value pair of all files file title
+     * @return boolean                  Return true if file should be visible to the user, else false
+     */
+    function is_generate_file_panel( $prefix_general = '', $fileTitle = '', $allfiles_sorted = array(), $fileinfo = array() ){
+        $current_operator_group = get_current_user_operator_group();
+        $generate_file_panel = false;
+
+        if ( get_current_user_role() == "administrator"){
+            $generate_file_panel = true;
+
+        }else if(contains($fileTitle, $prefix_general)){
+            /* Commented out some confusing codes below */
+            // $exclusive_file_check = 0;
+            // foreach ($allfiles_sorted as $key => $value) {
+            //     if(contains($fileinfo[$key]['title'], $current_operator_group)){
+            //         $exclusive_file_check = 1;
+            //         break;
+            //     }
+            // }
+            // if(!$exclusive_file_check){
+                $generate_file_panel = true;
+            // }
+
+        }else if(contains($fileTitle, $current_operator_group)){
+            $generate_file_panel = true;
+        }
+
+        return $generate_file_panel;
     }
 }
 
@@ -1760,9 +1803,10 @@ function templated_email($content){
             <meta http-equiv="Content-Type" content="text/html;UTF-8" />
           </head>
           <body style="margin: 0px; background-color: #FFF; font-family: Helvetica, Arial, sans-serif; font-size:12px;" text="#444444" bgcolor="#F4F3F4" link="#21759B" alink="#21759B" vlink="#21759B" marginheight="0" topmargin="0" marginwidth="0" leftmargin="0">
-            <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#a6a6a5">
+            <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#000">
               <tbody>
                 <tr>
+
                   <td valign="baseline"><span> <a style="text-decoration: none;" href="'.get_site_url().'" target="_blank"> <img class="" src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="645" height="140" /> </a> </span></td>
                 </tr>
                 <tr>
