@@ -557,7 +557,7 @@ a:hover {
 	position: absolute;
 	width: 100%;
 	background-color: #141415;
-	z-index: 9;
+	z-index: 20;
     margin-top:-1px;
 }
 
