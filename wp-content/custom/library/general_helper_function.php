@@ -212,11 +212,13 @@ if( !function_exists('getSlugByTitle')) {
     }
 }
 
-function getPostIdBySlug($slug){
-    global $wpdb;
-    $post_id = $wpdb->get_var( "SELECT ID FROM $wpdb->posts WHERE post_name = '".$slug."'" );
+if( !function_exists('getPostIdBySlug') ){
+    function getPostIdBySlug($slug){
+        global $wpdb;
+        $post_id = $wpdb->get_var( "SELECT ID FROM $wpdb->posts WHERE post_name = '".$slug."'" );
 
-    return $post_id;
+        return $post_id;
+    }
 }
 
 if (!function_exists('getUsersByRole')){
