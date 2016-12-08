@@ -149,19 +149,17 @@ get_template_part('channel-setter');
 	<div id="widget-home-sidebar" class="col-xs-12 col-lg-6">
 		<h2 class="section-title">What's on <span class="text-capitalize">RTL CBS <?php echo $channel;?></span></h2>
 		<div id="home-video-player" class="video-player-container col-lg-12 col-md-6 col-sm-6 col-xs-12">
+			<?php $query_show = getAllShows($channel,1,true); ?>
 			<div class="video-player">
-				<?php
-					$query_show = getAllShows($channel,1,true);
-					if($query_show->have_posts()):
-				        while($query_show->have_posts()) : $query_show->the_post();
-				            $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
-				            $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
-				            if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
-								<iframe id="vimeoplayer" width="700" height="300" src="http://player.vimeo.com/video/<?php echo get_field('vimeo_id')?>?api=1&player_id=vimeoplayer" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
-				        <?php endif;endwhile;
-				    endif;
-				?>
+				<?php if($query_show->have_posts()):
+			        while($query_show->have_posts()) : $query_show->the_post();
+			            $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+			            $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+			            if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
+							<iframe id="vimeoplayer" width="700" height="300" src="http://player.vimeo.com/video/<?php echo get_field('vimeo_id')?>?api=1&player_id=vimeoplayer" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+			        <?php endif;endwhile; ?>
 			</div>
+			<?php endif; ?>
 			<div class="video-playlist-container">
 				<div id="video-playlist" class="video-playlist swiper-container">
 					<div class="video-show-container swiper-wrapper">
