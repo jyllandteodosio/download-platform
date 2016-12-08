@@ -56,7 +56,7 @@ function email_notice_deactivation() {
 /**
  * Begins execution of the plugin.
  */
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-wpdm-email-notice.php';
+// require_once plugin_dir_path( __FILE__ ) . 'includes/class-wpdm-email-notice.php';
 // if( is_admin() )
-	$wen_plugin = new WPDM_Email_Notice();
+	// $wen_plugin = new WPDM_Email_Notice();
 

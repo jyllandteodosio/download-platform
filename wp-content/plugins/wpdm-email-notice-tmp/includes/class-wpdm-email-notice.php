@@ -14,7 +14,7 @@ if ( ! class_exists( 'WPDM_Email_Notice' ) ) {
 			global $wpdb;
 			$this->wpdb = $wpdb;
 
-			$this->trigger_email_notification_checker();
+			// $this->trigger_email_notification_checker();
 		
 			add_action('admin_menu', array( $this, "wpdm_file_sweeper_plugin_menu"));
 			add_action( 'pre_post_update', array( $this, 'wpdm_check_new_files') );

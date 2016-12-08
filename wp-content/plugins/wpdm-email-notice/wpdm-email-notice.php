@@ -762,7 +762,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 
 
 $operator_site_link = get_home_url();
-$email_files_counter = 0;
+$email_files_counter = array();
 if( count($files) > 0 ):
 	$promo_files_control['entertainment'] = 10;
 	$promo_files_control['extreme'] = 10;
@@ -775,8 +775,8 @@ if( count($files) > 0 ):
 
 			$show_title = $is_channel_material['is_channel_material'] != false ? $is_channel_material['channel'] : $show_title;
 			$permalink = get_permalink($post_id).$is_channel_material['channel_switcher'];
-			echo "<br>is_channel_material : ";
-			print_r($is_channel_material);
+			// echo "<br>is_channel_material : ";
+			// print_r($is_channel_material);
 			
 			$message_temp = '
 			<tr style="background-color: #3b3838; color: #fff;">
@@ -792,7 +792,7 @@ if( count($files) > 0 ):
 							</tr>';
 							$file_counter = 1;
 							foreach ($file_list as $file_id => $file_name) :
-								$email_files_counter++;
+								$email_files_counter[$is_channel_material['channel']]++;
 								if( $file_counter <= 10 ) :
 									$message_temp .='
 										<tr>
@@ -821,6 +821,7 @@ if( count($files) > 0 ):
 				}else if( $is_channel_material['channel'] == 'extreme' ){
 					if( $is_channel_material['is_channel_material'] ){
 						$message_extreme['channel'] .= $message_temp;
+
 					}else{
 						$message_extreme['shows'] .= $message_temp;
 					}
@@ -828,14 +829,15 @@ if( count($files) > 0 ):
 				$message_temp = '';
 			endforeach;
 		endif;
-			// echo "<br>is_channel_material['channel']:".$is_channel_material['channel'];
+
+
 		
 		if( $promo_files_control[ $is_channel_material['channel'] ] > 0 ){
 			if( count($type['promo']) > 0 ) :
 				$promo_counter = $promo_files_control[ $is_channel_material['channel'] ];
 				$is_break = false;
 				foreach ($type['promo'] as $key => $promo_info) :
-					$email_files_counter++;
+					$email_files_counter[$is_channel_material['channel']]++;
 					// echo "<br>Promo info:";print_r($promo_info);
 					$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
 					if( $promo_counter > 0 ) :
@@ -869,18 +871,12 @@ if( count($files) > 0 ):
 			endif;
 
 		}
-		// echo "<br>message_entertainment:";
-		// print_r($message_entertainment);
-
-		// echo "<br>message_extreme:";
-		// print_r($message_extreme);
-		
 
 	endforeach;
 	
 endif;
 
-if( isset($message_entertainment) ):
+if( isset($message_entertainment) && $email_files_counter['entertainment'] > 0  ):
 	$message .= '<p style="color:#db302f" ><b>ENTERTAINMENT</b></p>';
 	/* SHOWS SECTION */
 	if( isset($message_entertainment['shows']) ):
@@ -923,7 +919,13 @@ if( isset($message_entertainment) ):
 	/* END OF PROMOS SECTION */
 endif;
 
-if( isset($message_extreme)):
+// $message .= $message_extreme['channel'];//count($message_extreme['channel']);
+// echo "<pre>";
+// echo "message_extreme['channel']";
+// print_r($message_extreme['channel']);
+// echo "</pre>";
+if( isset($message_extreme) && $email_files_counter['extreme'] > 0 ):
+	// echo "counter:".($email_files_counter['extreme'] > 0);
 	$message .= '<p style="color:#db302f;margin-top: 30px;" ><b>EXTREME</b></p>';
 	/* SHOWS SECTION */
 	if( isset($message_extreme['shows'])) :
@@ -1002,7 +1004,7 @@ $message .= '
  </body></html>
 	';
 	
-	if( $email_files_counter > 0 ){
+	if( $email_files_counter['entertainment'] > 0 ||  $email_files_counter['extreme'] > 0 ){
 		// echo $message;
 		
 		// Start output buffering to grab smtp debugging output
