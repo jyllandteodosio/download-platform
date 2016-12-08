@@ -1359,6 +1359,12 @@ a:hover {
 }
 .show-synopsis img {
 	margin: 0 auto;
+	max-height: 150px;
+}
+@media (max-width: 479px) { 
+	.show-synopsis img {
+		max-height: 80px;
+	}
 }
 
 .show-banner-video {
