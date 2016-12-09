@@ -764,7 +764,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 $operator_site_link = get_home_url();
 $email_files_counter = array();
 if( count($files) > 0 ):
-	$promo_files_control['entertainment'] = 10;
+	$promo_files_control['entertainment'] = 5;
 	$promo_files_control['extreme'] = 10;
 
 	foreach ($files as $post_id => $type) :
@@ -793,7 +793,7 @@ if( count($files) > 0 ):
 							$file_counter = 1;
 							foreach ($file_list as $file_id => $file_name) :
 								$email_files_counter[$is_channel_material['channel']]++;
-								if( $file_counter <= 10 ) :
+								if( $file_counter <= 5 ) :
 									$message_temp .='
 										<tr>
 											<td style="line-height: 25px;"><a title="'.$file_name.'" href="'.$permalink.'" target="_blank">'.$file_name.'</a></td>
@@ -805,6 +805,7 @@ if( count($files) > 0 ):
 											<td style="line-height: 25px;"><a title="'.$show_title.'" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
 										</tr>
 									';
+									break;
 								endif;
 								$file_counter++;
 							endforeach;
