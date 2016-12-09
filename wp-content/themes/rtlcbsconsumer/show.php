@@ -33,7 +33,7 @@ switch_to_blog( 1 );?>
 			<div class="col-sm-4"><img src="<?php the_field('image_title'); ?>" class="img-responsive"></div>
 			<div class="col-sm-8">
 				<p><?php echo the_content();?></p>
-				<p><strong>Starring</strong> <?php echo get_field('cast',175); ?></p>
+				<p><strong>Starring</strong> <?php echo get_field('cast',get_the_ID()); ?></p>
 			</div>
 		</div>
 	</div>
