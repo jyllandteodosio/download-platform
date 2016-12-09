@@ -13,8 +13,6 @@ if ( ! class_exists( 'WPDM_Email_Notice' ) ) {
 		public function __construct() {
 			global $wpdb;
 			$this->wpdb = $wpdb;
-
-			// $this->trigger_email_notification_checker();
 		
 			add_action('admin_menu', array( $this, "wpdm_file_sweeper_plugin_menu"));
 			add_action( 'pre_post_update', array( $this, 'wpdm_check_new_files') );
@@ -47,7 +45,7 @@ if ( ! class_exists( 'WPDM_Email_Notice' ) ) {
 		}
 
 		function wpdm_check_new_files($post_id){
-			// trigger_email_notification_checker();
+			$this->trigger_email_notification_checker();
 			// send_email_notice();
 		    // global $wpdb;
 			/* Get current POST data */
@@ -389,7 +387,7 @@ if ( ! class_exists( 'WPDM_Email_Notice' ) ) {
 
 
 
-public function trigger_email_notification_checker(){
+function trigger_email_notification_checker(){
 	global $wpdb;
 
 	$email_entries = $this->get_email_entries();
@@ -413,8 +411,8 @@ public function trigger_email_notification_checker(){
 				foreach ($categories_data as $key => $value) {
 					$categories[$key] = $value->term_id;
 				}
-			    $entertainment_category_id =  $this->getCategoryIdBySlug('entertainment');
-			    $extreme_category_id =  $this->getCategoryIdBySlug('extreme');
+			    $entertainment_category_id = $this->getCategoryIdBySlug('entertainment');
+			    $extreme_category_id = $this->getCategoryIdBySlug('extreme');
 
 				/* Check if show categories includes entertainment or extreme */
 				$is_exist_channel = array();
@@ -425,7 +423,7 @@ public function trigger_email_notification_checker(){
 			    $operator_access_channel = array();
 			    foreach ($is_exist_channel as $key => $value) {
 			    	if($value){
-				    	$operator_access_channel[$key] = getOperatorCountryCombinationAccess($key);
+				    	$operator_access_channel[$key] = $this->getOperatorCountryCombinationAccess($key);
 				    }
 			    }
 
@@ -441,7 +439,7 @@ public function trigger_email_notification_checker(){
 			    // echo "<pre>";
 			    // print_r($operator_access);
 			    // echo "</pre>";
-			    $matched_operator_access =  $this->check_user_group_access($user, $operator_access);
+			    $matched_operator_access = $this->check_user_group_access($user, $operator_access);
 			    // echo "<br>matched_operator_access : ".$matched_operator_access;
 				if($matched_operator_access){
 					echo "<br>matched_operator_access['is_pr_group']:".$matched_operator_access['is_pr_group'];
@@ -455,8 +453,8 @@ public function trigger_email_notification_checker(){
 					// echo "</pre>";	
 
 					print_r(unserialize($email_entry->data_new));
-					$files[$email_entry->post_id]['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$operator_access);
-					$files[$email_entry->post_id]['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],$operator_access);
+					$files[$email_entry->post_id]['promo'] = $this->get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$operator_access);
+					$files[$email_entry->post_id]['show'] = $this->get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],$operator_access);
 
 					
 				}
@@ -468,7 +466,7 @@ public function trigger_email_notification_checker(){
 		// echo "</pre>";
 
 		if( count($files) > 0 ){
-			$email_sent = send_email_notice($user, $files);
+			$email_sent = $this->send_email_notice($user, $files);
 			if($email_sent)
 				array_push($email_recipient,$user->user_email);
 		}
@@ -676,21 +674,21 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 
 
 $operator_site_link = get_home_url();
-$email_files_counter = 0;
+$email_files_counter = array();
 if( count($files) > 0 ):
 	$promo_files_control['entertainment'] = 10;
 	$promo_files_control['extreme'] = 10;
 
 	foreach ($files as $post_id => $type) :
-		$is_channel_material = checkIfChannelMaterials($post_id);
+		$is_channel_material = $this->checkIfChannelMaterials($post_id);
 		// echo "<br>is_channel_material:".$is_channel_material;
 		if( count($type['show']) > 0 ) :
 			$show_title = get_the_title($post_id);
 
 			$show_title = $is_channel_material['is_channel_material'] != false ? $is_channel_material['channel'] : $show_title;
 			$permalink = get_permalink($post_id).$is_channel_material['channel_switcher'];
-			echo "<br>is_channel_material : ";
-			print_r($is_channel_material);
+			// echo "<br>is_channel_material : ";
+			// print_r($is_channel_material);
 			
 			$message_temp = '
 			<tr style="background-color: #3b3838; color: #fff;">
@@ -702,11 +700,11 @@ if( count($files) > 0 ):
 						if( count($file_list) > 0 ) :
 						$message_temp .= '
 							<tr style="background-color: #d0cece;">
-								<td >'.getCategoryNameByPrefix($prefix).'</td>
+								<td >'.$this->getCategoryNameByPrefix($prefix).'</td>
 							</tr>';
 							$file_counter = 1;
 							foreach ($file_list as $file_id => $file_name) :
-								$email_files_counter++;
+								$email_files_counter[$is_channel_material['channel']]++;
 								if( $file_counter <= 10 ) :
 									$message_temp .='
 										<tr>
@@ -719,6 +717,7 @@ if( count($files) > 0 ):
 											<td style="line-height: 25px;"><a title="'.$show_title.'" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
 										</tr>
 									';
+									break;
 								endif;
 								$file_counter++;
 							endforeach;
@@ -735,6 +734,7 @@ if( count($files) > 0 ):
 				}else if( $is_channel_material['channel'] == 'extreme' ){
 					if( $is_channel_material['is_channel_material'] ){
 						$message_extreme['channel'] .= $message_temp;
+
 					}else{
 						$message_extreme['shows'] .= $message_temp;
 					}
@@ -742,14 +742,15 @@ if( count($files) > 0 ):
 				$message_temp = '';
 			endforeach;
 		endif;
-			// echo "<br>is_channel_material['channel']:".$is_channel_material['channel'];
+
+
 		
 		if( $promo_files_control[ $is_channel_material['channel'] ] > 0 ){
 			if( count($type['promo']) > 0 ) :
 				$promo_counter = $promo_files_control[ $is_channel_material['channel'] ];
 				$is_break = false;
 				foreach ($type['promo'] as $key => $promo_info) :
-					$email_files_counter++;
+					$email_files_counter[$is_channel_material['channel']]++;
 					// echo "<br>Promo info:";print_r($promo_info);
 					$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
 					if( $promo_counter > 0 ) :
@@ -783,18 +784,12 @@ if( count($files) > 0 ):
 			endif;
 
 		}
-		// echo "<br>message_entertainment:";
-		// print_r($message_entertainment);
-
-		// echo "<br>message_extreme:";
-		// print_r($message_extreme);
-		
 
 	endforeach;
 	
 endif;
 
-if( isset($message_entertainment) ):
+if( isset($message_entertainment) && $email_files_counter['entertainment'] > 0  ):
 	$message .= '<p style="color:#db302f" ><b>ENTERTAINMENT</b></p>';
 	/* SHOWS SECTION */
 	if( isset($message_entertainment['shows']) ):
@@ -837,7 +832,13 @@ if( isset($message_entertainment) ):
 	/* END OF PROMOS SECTION */
 endif;
 
-if( isset($message_extreme)):
+// $message .= $message_extreme['channel'];//count($message_extreme['channel']);
+// echo "<pre>";
+// echo "message_extreme['channel']";
+// print_r($message_extreme['channel']);
+// echo "</pre>";
+if( isset($message_extreme) && $email_files_counter['extreme'] > 0 ):
+	// echo "counter:".($email_files_counter['extreme'] > 0);
 	$message .= '<p style="color:#db302f;margin-top: 30px;" ><b>EXTREME</b></p>';
 	/* SHOWS SECTION */
 	if( isset($message_extreme['shows'])) :
@@ -916,7 +917,7 @@ $message .= '
  </body></html>
 	';
 	
-	if( $email_files_counter > 0 ){
+	if( $email_files_counter['entertainment'] > 0 ||  $email_files_counter['extreme'] > 0 ){
 		echo $message;
 		
 		// // Start output buffering to grab smtp debugging output
