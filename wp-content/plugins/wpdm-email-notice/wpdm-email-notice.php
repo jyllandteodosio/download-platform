@@ -805,6 +805,7 @@ if( count($files) > 0 ):
 											<td style="line-height: 25px;"><a title="'.$show_title.'" href="'.$permalink.'" target="_blank">Click here to view more</a></td>
 										</tr>
 									';
+									break;
 								endif;
 								$file_counter++;
 							endforeach;
