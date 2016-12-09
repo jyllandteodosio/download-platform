@@ -14,8 +14,7 @@
 			                if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
 			                	<div class="swiper-slide">
 									<div class="show">
-										<div class="show-thumbnail-container">
-											<img src="<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>" class="show-thumbnail" />
+										<div class="show-thumbnail-container" style="background: url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];?>')">
 										</div>
 										<div class="show-details">
 											<span class="show-title"><?php the_title(); ?></span>
