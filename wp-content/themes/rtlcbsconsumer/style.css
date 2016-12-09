@@ -436,11 +436,6 @@ a:hover {
 		display: block;
 	}
 
-	#masthead > .ad-container, 
-	#masthead > a {
-		float: none;
-	}
-
 	#masthead > .ad-container {
 		display: block;
 		margin-bottom: 10px;
@@ -449,7 +444,30 @@ a:hover {
 }
 
 @media (max-width: 767px) {
-	
+	.logo-extreme {
+		padding-left: 0;
+	}
+}
+
+@media (max-width: 480px) {
+	.navbar-brand {
+	    height: auto;
+	}
+	.navbar-brand > img {
+	    width: 100%;
+	}
+	.logo-entertainment {
+		width: 130px;
+	    padding: 10px;
+	    padding-right: 0;
+	}
+	.logo-extreme {
+		width: 90px;
+    	padding: 10px;
+	}
+	.navbar-inverse .navbar-toggle {
+		margin: 10px;
+	}
 }
 
 .content-area {
@@ -1264,8 +1282,9 @@ a:hover {
 }
 
 .other-slideshow-container .show .show-thumbnail-container{
-	height: 230px;
+	height: 200px;
     overflow: hidden;
+    background-size: cover !important;
 }
 .other-slideshow-container .show.show-wide .show-thumbnail-container{
 	height: auto;
@@ -1273,9 +1292,6 @@ a:hover {
 @media (max-width:425px){
 	.other-slideshow-container {
 		width: calc(100% - 50px);
-	}
-	.other-slideshow-container .show .show-thumbnail-container {
-	    height: 180px;
 	}
 	.swiper-button-prev {
 	    left: -5px;
@@ -1307,11 +1323,6 @@ a:hover {
 	}
 	.show.show-wide .show-thumbnail-container {
 	    width: 100%;
-	}
-}
-@media (max-width: 767px){
-	.other-slideshow-container .show .show-thumbnail-container {
-	    height: 180px;
 	}
 }
 
@@ -1860,6 +1871,18 @@ a:hover {
 	color: #000;
 }
 
+.swiper-container-fade .swiper-slide {
+	max-height: 350px;
+    overflow: hidden;
+}
+
+@media (max-width: 1119px) {
+	.swiper-container-fade .swiper-slide {
+		max-height: 320px;
+	    overflow: hidden;
+	}
+}
+
 @media (max-width: 991px) {
 	#featured-slideshow .day {
 		font-size: 24px;
@@ -1882,6 +1905,10 @@ a:hover {
 
 	#featured-slideshow .swiper-photo {
 		float: right;
+	}
+	.swiper-container-fade .swiper-slide {
+		max-height: 245px;
+	    overflow: hidden;
 	}
 }
 
@@ -1948,6 +1975,10 @@ a:hover {
 		height: auto;
 		margin-bottom: 20px;
 	}
+	.swiper-container-fade .swiper-slide {
+	    max-height: 203px;
+	    overflow: hidden;
+	}
 
 }
 
@@ -1969,6 +2000,18 @@ a:hover {
 
 	#featured-slideshow .view-more {
 		font-size: 12px;
+	}
+
+	.swiper-container-fade .swiper-slide {
+	    max-height: 155px;
+	    overflow: hidden;
+	}
+}
+
+@media (max-width: 480px) {
+	.swiper-container-fade .swiper-slide {
+	    max-height: 95px;
+	    overflow: hidden;
 	}
 }
 
