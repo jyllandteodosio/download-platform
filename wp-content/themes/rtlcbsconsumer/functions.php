@@ -95,9 +95,19 @@ add_action( 'wp_enqueue_scripts', 'rtlcbsconsumer_scripts' );
  */
 function twentyfifteen_widgets_init() {
 	register_sidebar( array(
-		'name'          => __( 'What\'s on RTL CBS Entertainment HD', 'rtlcbsconsumer' ),
-		'id'            => 'rtlcbs-home-sidebar',
-		'description'   => __( 'Add widgets here to appear in your homesidebar.', 'rtlcbsconsumer' ),
+		'name'          => __( 'What\'s on RTL CBS Entertainment', 'rtlcbsconsumer_entertainment' ),
+		'id'            => 'rtlcbs-home-sidebar-entertainment',
+		'description'   => __( 'Add widgets here to appear in your homesidebar.', 'rtlcbsconsumer_entertainment' ),
+		'before_widget' => '',
+		'after_widget'  => '',
+		'before_title'  => '',
+		'after_title'   => '',
+	) );
+
+	register_sidebar( array(
+		'name'          => __( 'What\'s on RTL CBS Extreme', 'rtlcbsconsumer_extreme' ),
+		'id'            => 'rtlcbs-home-sidebar-extreme',
+		'description'   => __( 'Add widgets here to appear in your homesidebar.', 'rtlcbsconsumer_extreme' ),
 		'before_widget' => '',
 		'after_widget'  => '',
 		'before_title'  => '',

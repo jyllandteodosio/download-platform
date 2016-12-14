@@ -186,11 +186,13 @@ get_template_part('channel-setter');
 	    		<div class="video-player-nav swiper-button-next gradient-red"></div>
 			</div>
 		</div>
-		<?php if ( is_active_sidebar( 'rtlcbs-home-sidebar' ) ) : ?>
-			<div id="home-sidebar" class="primary-sidebar widget-area col-lg-12 col-md-6 col-sm-6 col-xs-12" role="complementary">
-				<?php dynamic_sidebar( 'rtlcbs-home-sidebar' ); ?>
-			</div><!-- #primary-sidebar -->
-		<?php endif; ?>
+		<div id="home-sidebar" class="primary-sidebar widget-area col-lg-12 col-md-6 col-sm-6 col-xs-12" role="complementary">
+		<?php if ( $channel == 'entertainment' && is_active_sidebar( 'rtlcbs-home-sidebar-entertainment' ) ) :
+				dynamic_sidebar( 'rtlcbs-home-sidebar-entertainment' ); 
+			elseif ( $channel == 'extreme' && is_active_sidebar( 'rtlcbs-home-sidebar-extreme' ) ) :
+				dynamic_sidebar( 'rtlcbs-home-sidebar-extreme' ); 
+		endif; ?>
+		</div><!-- #primary-sidebar -->
 	</div>
 </div>
 <?php get_footer( 'rtl' ); ?>
