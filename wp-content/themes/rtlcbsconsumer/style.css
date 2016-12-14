@@ -1871,13 +1871,15 @@ a:hover {
 	color: #000;
 }
 
-.swiper-container-fade .swiper-slide {
+.swiper-container-fade .swiper-slide,
+.show-banner {
 	max-height: 350px;
     overflow: hidden;
 }
 
 @media (max-width: 1119px) {
-	.swiper-container-fade .swiper-slide {
+	.swiper-container-fade .swiper-slide,
+	.show-banner {
 		max-height: 320px;
 	    overflow: hidden;
 	}
@@ -1906,7 +1908,8 @@ a:hover {
 	#featured-slideshow .swiper-photo {
 		float: right;
 	}
-	.swiper-container-fade .swiper-slide {
+	.swiper-container-fade .swiper-slide,
+	.show-banner {
 		max-height: 245px;
 	    overflow: hidden;
 	}
@@ -1975,7 +1978,8 @@ a:hover {
 		height: auto;
 		margin-bottom: 20px;
 	}
-	.swiper-container-fade .swiper-slide {
+	.swiper-container-fade .swiper-slide,
+	.show-banner {
 	    max-height: 203px;
 	    overflow: hidden;
 	}
@@ -2002,14 +2006,16 @@ a:hover {
 		font-size: 12px;
 	}
 
-	.swiper-container-fade .swiper-slide {
+	.swiper-container-fade .swiper-slide,
+	.show-banner {
 	    max-height: 155px;
 	    overflow: hidden;
 	}
 }
 
 @media (max-width: 480px) {
-	.swiper-container-fade .swiper-slide {
+	.swiper-container-fade .swiper-slide,
+	.show-banner {
 	    max-height: 95px;
 	    overflow: hidden;
 	}
