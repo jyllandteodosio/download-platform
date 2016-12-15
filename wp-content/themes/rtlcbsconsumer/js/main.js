@@ -226,6 +226,10 @@
       $( '.show-banner-video-container' ).addClass( 'hide' );
    });
 
+
+   /* Match Height 
+   ----------------------------------*/
    $('.swiper-description').matchHeight();
+   $('.spotlight-title').matchHeight();
 
 })( jQuery );
