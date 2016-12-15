@@ -1,0 +1,18 @@
+// Breakpoints
+$xlarge-device	: 	1920px;
+$laptop-large	: 	1440px;
+$large-device 	: 	1200px;
+$laptop			: 	1024px;
+$tablet			: 	768px;
+$mobile-large	: 	425px;
+$mobile-medium	: 	375px;
+$mobile-small	: 	320px;
+
+@mixin MQ($breakpoint, $type) {
+	@if $type == min {
+        @media only screen and (min-width: $breakpoint) { @content; } 
+    }
+    @else if $type == max {
+    	@media only screen and (max-width: $breakpoint) { @content; }
+    }
+}
