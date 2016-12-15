@@ -226,4 +226,6 @@
       $( '.show-banner-video-container' ).addClass( 'hide' );
    });
 
+   $('.swiper-description').matchHeight();
+
 })( jQuery );
