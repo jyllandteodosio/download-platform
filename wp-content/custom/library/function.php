@@ -1756,7 +1756,7 @@ if( !function_exists('getTribeEvents')) {
         $start_date = $start_date != '' || $start_date != null ? $start_date : date("Y-m-d H:i");
         $end_date   = $end_date != '' || $end_date != null ? $end_date : date("Y-m-d H:i");
         $events = tribe_get_events( array(
-                    'posts_per_page' => 5,
+                    'posts_per_page' => 20,
                     'start_date'   => $start_date,
                     'end_date'     => $end_date
                 ) );
