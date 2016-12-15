@@ -24,8 +24,8 @@ get_template_part('channel-setter');
 	            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
 	                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 	                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
-					 <div class="swiper-slide">
-						<img src="<?php the_field('featured_banner_image'); ?>" class="swiper-photo" title="<?php the_title();?>" />
+					 <div class="swiper-slide" style="background-image:url('<?php the_field('featured_banner_image'); ?>');" title="<?php //the_title();?>">
+						<!-- <img src="<?php //the_field('featured_banner_image'); ?>" class="swiper-photo" title="<?php //the_title();?>" /> -->
 						<?php $banner_text_alignment = get_field('banner_text_alignment') == 'right' ? "right-info" : "left-info";?>
 						<div class="swiper-description <?php echo $banner_text_alignment; ?>">
 							<span class="day">
