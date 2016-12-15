@@ -8,7 +8,7 @@ $mobile-large	: 	425px;
 $mobile-medium	: 	375px;
 $mobile-small	: 	320px;
 
-@mixin MQ($breakpoint, $type) {
+@mixin MQ($type, $breakpoint) {
 	@if $type == min {
         @media only screen and (min-width: $breakpoint) { @content; } 
     }

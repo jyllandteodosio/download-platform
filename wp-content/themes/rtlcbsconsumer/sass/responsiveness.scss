@@ -5,3 +5,12 @@
 	    height: 64px;
 	}
 }
+
+@include MQ(max, 860px) {
+	.swiper-button-prev {
+		left: 0;
+	}
+	.swiper-button-next {
+		right: 0;
+	}
+}
