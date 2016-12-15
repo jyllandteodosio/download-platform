@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAEA,iEAAkE;EACjE,oCAAqC;IACjC,MAAM,EAAE,IAAI;ACWZ,yCAAgD;EDNpD,mBAAoB;IACnB,IAAI,EAAE,CAAC;;EAER,mBAAoB;IACnB,KAAK,EAAE,CAAC",
+"sources": ["../sass/responsiveness.scss","../sass/partials/_layout.scss"],
+"names": [],
+"file": "responsiveness.css"
+}
