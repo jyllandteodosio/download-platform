@@ -1740,11 +1740,15 @@ a:hover {
 	overflow: hidden;
 	margin-top: 15px;
 }
-
 #home-video-player .video-thumbnail {
+	height: 85px;
+	background-size: cover;
+	background-position: center;
+}
+/*#home-video-player .video-thumbnail {
 	font-size: 10px;
 	height: auto;
-}
+}*/
 
 @media (max-width: 639px) {
 	#home-video-player .thumbnail-container,
@@ -1969,7 +1973,7 @@ a:hover {
 		max-width: 105px;
 	}
 
-	#home-video-player .thumbnail-container {
+	/*#home-video-player .thumbnail-container {
 		height: 115px;
 	    overflow: hidden;
 	}
@@ -1977,7 +1981,8 @@ a:hover {
 		font-size: 10px;
 		height: auto;
 		margin-bottom: 20px;
-	}
+	}*/
+	
 	.swiper-container-fade .swiper-slide,
 	.show-banner {
 	    max-height: 203px;
