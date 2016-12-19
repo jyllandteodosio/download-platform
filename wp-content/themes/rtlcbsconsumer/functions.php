@@ -76,6 +76,7 @@ function rtlcbsconsumer_scripts() {
 	wp_enqueue_style( 'mCustomScrollBar-style', get_template_directory_uri() . '/css/jquery.mCustomScrollbar.min.css', false, '3.1.3', 'all' );
 	wp_enqueue_style( 'simplebar-style', get_template_directory_uri() . '/css/simplebar.css', false, '1.1.9', 'all' );
 	wp_enqueue_style( 'rtlcbsconsumer-style', get_stylesheet_uri(), false, '1.0', 'all' );
+	wp_enqueue_style( 'rtlcbs-responsiveness', get_template_directory_uri() . '/css/responsiveness.css', false, '1.0.0', 'all' );
 
 	//wp_enqueue_script( 'jQuery', get_template_directory_uri() . '/js/vendor/jquery.min.js', false, 1.12, true);
 	wp_enqueue_script( 'bootstrap-script', get_template_directory_uri() . '/js/vendor/bootstrap.min.js', array ( 'jquery' ), 3.3, true);
@@ -95,9 +96,19 @@ add_action( 'wp_enqueue_scripts', 'rtlcbsconsumer_scripts' );
  */
 function twentyfifteen_widgets_init() {
 	register_sidebar( array(
-		'name'          => __( 'What\'s on RTL CBS Entertainment HD', 'rtlcbsconsumer' ),
-		'id'            => 'rtlcbs-home-sidebar',
-		'description'   => __( 'Add widgets here to appear in your homesidebar.', 'rtlcbsconsumer' ),
+		'name'          => __( 'What\'s on RTL CBS Entertainment', 'rtlcbsconsumer_entertainment' ),
+		'id'            => 'rtlcbs-home-sidebar-entertainment',
+		'description'   => __( 'Add widgets here to appear in your homesidebar.', 'rtlcbsconsumer_entertainment' ),
+		'before_widget' => '',
+		'after_widget'  => '',
+		'before_title'  => '',
+		'after_title'   => '',
+	) );
+
+	register_sidebar( array(
+		'name'          => __( 'What\'s on RTL CBS Extreme', 'rtlcbsconsumer_extreme' ),
+		'id'            => 'rtlcbs-home-sidebar-extreme',
+		'description'   => __( 'Add widgets here to appear in your homesidebar.', 'rtlcbsconsumer_extreme' ),
 		'before_widget' => '',
 		'after_widget'  => '',
 		'before_title'  => '',
