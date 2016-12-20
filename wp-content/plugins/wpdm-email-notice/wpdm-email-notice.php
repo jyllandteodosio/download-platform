@@ -129,7 +129,7 @@ if (!isset($wpdb->wpdm_email_logs)) {
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($post_id)
 {
-	// trigger_email_notification_checker();
+	trigger_email_notification_checker();
 
 	// send_email_notice();
 
@@ -540,7 +540,7 @@ function trigger_email_notification_checker(){
 					// var_dump($uns_email_entry);
 					// echo "</pre>";	
 
-					print_r(unserialize($email_entry->data_new));
+					// print_r(unserialize($email_entry->data_new));
 					$files[$email_entry->post_id]['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$operator_access);
 					$files[$email_entry->post_id]['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],$operator_access);
 
@@ -560,16 +560,16 @@ function trigger_email_notification_checker(){
 		}
 	}
 	// echo "<br>count-email_recipient:".count($email_recipient);
-	// die('asd');
-	if( count($email_recipient) > 0 ){
-		$email_recipient_serialized = serialize($email_recipient);
-		$return_value_email = setEmailEntryStatus('sent');
-		if( $return_value_email === FALSE ){
-			addEmailLogs('failed', $email_recipient_serialized);
-		}else{
-			addEmailLogs('success', $email_recipient_serialized);
-		}
-	}
+	die('asd');
+	// if( count($email_recipient) > 0 ){
+	// 	$email_recipient_serialized = serialize($email_recipient);
+	// 	$return_value_email = setEmailEntryStatus('sent');
+	// 	if( $return_value_email === FALSE ){
+	// 		addEmailLogs('failed', $email_recipient_serialized);
+	// 	}else{
+	// 		addEmailLogs('success', $email_recipient_serialized);
+	// 	}
+	// }
 
 }
 
@@ -645,23 +645,94 @@ if (!function_exists('get_user_accessible_files')){
 	 * @return Array                  	Array of promo file names
 	 */
 	function get_user_accessible_files($user, $all_files, $raw_files, $is_pr_group = '', $operator_access = array()){
-		$accessible_files = array();
+		// $accessible_files = array();
+		$affiliate_files = array();
+		$filtered_files = array();
+		$filtered_categories = [ 'epg', 'catch' ];
+
 		if (count($raw_files) > 0) {
 			foreach ($raw_files as $key => $value) {
-				// echo "<br><br>New file:".$value;
-				if( contains($value, 'epg') || contains($value, 'catch')){
-					if ( ($is_pr_group == 'yes' && strtolower($user->country_group) == 'all') ||
-						 contains($value, 'affiliate') ||
-						 contains($value, $user->operator_group) ||
-						 (checkEPGAccessibilityViaFilename($user, $operator_access, $value ) && $is_pr_group == 'yes' ) ){
-							continue;
-	                }else{
-						if(isset($all_files['document']['epg'][$key])) unset($all_files['document']['epg'][$key]);
-						if(isset($all_files['document']['catch'][$key])) unset($all_files['document']['catch'][$key]);
-			            if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]);
-	                }
+				// echo "<br><br>New file:".checkEPGAccessibilityViaFilename($user, $operator_access, $value );
+				
+				// echo "<br>";
+				// print_r($operator_access);
+				// echo "<br>";
+				
+				// if( contains($value, 'epg') || contains($value, 'catch')){
+				// 	if ( ($is_pr_group == 'yes' && strtolower($user->country_group) == 'all') ||
+				// 		 contains($value, 'affiliate') ||
+				// 		 contains($value, $user->operator_group) ||
+				// 		 (checkEPGAccessibilityViaFilename($user, $operator_access, $value ) && $is_pr_group == 'yes' ) ){
+				// 			continue;
+	   //              }else{
+				// 		if(isset($all_files['document']['epg'][$key])) unset($all_files['document']['epg'][$key]);
+				// 		if(isset($all_files['document']['catch'][$key])) unset($all_files['document']['catch'][$key]);
+			 //            if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]);
+	   //              }
+				// }
+				// 
+				foreach ($filtered_categories as $fc_key => $prefix) {
+					// if( contains($value, 'epg') ){
+					if( contains($value, $prefix) ){
+						// echo "<br>prefix : ".$prefix;
+		                if( $is_pr_group == 'yes' ){
+		                	/* TODO not working code for PR */
+		                	echo "<br>PR Group : ".$value ;
+	                        $sub_operators = get_operators_by_country( $user->country_group );
+	                        // print_r($sub_operators );
+	                        // 
+	                        foreach ($sub_operators as $key => $sub_op) {
+
+	                            if ( contains($value, $sub_op->operator_group ) ){
+	                                $filtered_files['document'][$prefix][$key] = $value;
+	                                echo "    -o $sub_op->operator_group";
+	                                break;
+
+	                            }else if ( contains($value, 'affiliate' ) ) {
+	                                $affiliate_files['document'][$prefix][$key] = $value;
+	                    			unset( $all_files['document'][$prefix][$key] );
+	                    			echo "    -a";
+	                    			break;
+	                            }
+	        //                     else{
+	        //                     	echo "    -un";
+									// if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
+									// // if(isset($all_files['document']['catch'][$key])) unset($all_files['document']['catch'][$key]);
+						   //          // if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]);
+						   //          // break;
+				     //            }
+	                        }
+	                        // if( count( $filtered_files['document'][$prefix][$key] ) > 0 && count( $affiliate_files['document'][$prefix][$key] ) > 0 ){
+	                        // 	if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
+	                        // }
+
+	                    }else if ( contains($value, $user->operator_group) ){
+	                    	$filtered_files['document'][$prefix][$key] = $value;
+
+	                    }else if ( contains($value, 'affiliate' ) ) {
+	                        $affiliate_files['document'][$prefix][$key] = $value;
+	                    	unset( $all_files['document'][$prefix][$key] );
+	                        // continue;
+
+	                    }
+	                    else{
+							if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
+							// if(isset($all_files['document']['catch'][$key])) unset($all_files['document']['catch'][$key]);
+				            // if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]);
+		                }
+					}
+				}
+				
+			}
+
+			// echo "<br>epg count : ".count($filtered_files['document'][$prefix][$key]);
+			/* FOR EPG and CATCH UP ONLY */  
+			if( count($filtered_files['document']['epg']) == 0 && count($affiliate_files['document']['epg']) > 0 ){
+				foreach ( $affiliate_files['document']['epg'] as $key => $value) {
+					$all_files['document']['epg'][$key] = $value;
 				}
 			}
+
 		}
 		return $all_files;
 	}
@@ -676,6 +747,7 @@ function getOperatorGroupInEPGFile($file_name = ''){
 
 function checkEPGAccessibilityViaFilename($user, $operator_access, $filename = '' ){
 	foreach ($operator_access as $operator_access_key => $operator_access_item) {
+		// echo "<br>getOperatorGroupInEPGFile($filename) : ".getOperatorGroupInEPGFile($filename);
 		if( strtolower($operator_access_item['operator_group']) == strtolower(getOperatorGroupInEPGFile($filename)) &&
 			strtolower($operator_access_item['country_group']) == strtolower($user->country_group) ){
 			return 1;
@@ -1006,19 +1078,20 @@ $message .= '
 	';
 	
 	if( $email_files_counter['entertainment'] > 0 ||  $email_files_counter['extreme'] > 0 ){
-		// echo $message;
+		echo $message;
 		
-		// Start output buffering to grab smtp debugging output
-		ob_start();
+		// // Start output buffering to grab smtp debugging output
+		// ob_start();
 
-		// Send the test mail
-		$result = wp_mail($to,$subject,$message,$headers);
+		// // Send the test mail
+		// $result = wp_mail($to,$subject,$message,$headers);
 			
-		// Grab the smtp debugging output
-		$smtp_debug = ob_get_clean();
+		// // Grab the smtp debugging output
+		// $smtp_debug = ob_get_clean();
 		
-		// Output the response
-		return $result;
+		// // Output the response
+		// return $result;
+		return true;
 	}
 	return false;
 }
