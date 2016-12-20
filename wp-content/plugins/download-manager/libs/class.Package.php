@@ -323,7 +323,7 @@ class Package {
 
                     }
 
-                    /* Check if specific user already have some epg/catchup files and if affilate epg/catchup temporary container is not empty. Will assign the buffered affiliate files if epg/catchup files is empty */
+                    /* FOR EPG SND CATCHUP ONLY -  Check if specific user already have some epg/catchup files and if affilate epg/catchup temporary container is not empty. Will assign the buffered affiliate files if epg/catchup files is empty */
                     $affiliate_categories = [ 'channel_epg', 'channel_catchup' ];
                     foreach ($affiliate_categories as $key => $prefix) {
                         if( count( $categorized_files[self::$file_attr_list['document']['channel'][$prefix]['prefix']] ) == 0 && 
