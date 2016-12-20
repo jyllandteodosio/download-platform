@@ -24,8 +24,8 @@ get_template_part('channel-setter');
 	            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
 	                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 	                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
-					 <div class="swiper-slide">
-						<img src="<?php the_field('featured_banner_image'); ?>" class="swiper-photo" title="<?php the_title();?>" />
+					 <div class="swiper-slide" style="background-image:url('<?php the_field('featured_banner_image'); ?>');" title="<?php //the_title();?>">
+						<!-- <img src="<?php //the_field('featured_banner_image'); ?>" class="swiper-photo" title="<?php //the_title();?>" /> -->
 						<?php $banner_text_alignment = get_field('banner_text_alignment') == 'right' ? "right-info" : "left-info";?>
 						<div class="swiper-description <?php echo $banner_text_alignment; ?>">
 							<span class="day">
@@ -171,8 +171,7 @@ get_template_part('channel-setter');
 				                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 				                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
 				                    	<div class="video-show swiper-slide active" data-vimeo-id="<?php the_field('vimeo_id'); ?>">
-				                    		<div class="thumbnail-container">
-												<img src="<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>" class="video-thumbnail">
+				                    		<div class="video-thumbnail" style="background-image:url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>');">
 											</div>
 											<span class="video-title"><?php the_title(); ?></span>
 										</div>
@@ -186,11 +185,13 @@ get_template_part('channel-setter');
 	    		<div class="video-player-nav swiper-button-next gradient-red"></div>
 			</div>
 		</div>
-		<?php if ( is_active_sidebar( 'rtlcbs-home-sidebar' ) ) : ?>
-			<div id="home-sidebar" class="primary-sidebar widget-area col-lg-12 col-md-6 col-sm-6 col-xs-12" role="complementary">
-				<?php dynamic_sidebar( 'rtlcbs-home-sidebar' ); ?>
-			</div><!-- #primary-sidebar -->
-		<?php endif; ?>
+		<div id="home-sidebar" class="primary-sidebar widget-area col-lg-12 col-md-6 col-sm-6 col-xs-12" role="complementary">
+		<?php if ( $channel == 'entertainment' && is_active_sidebar( 'rtlcbs-home-sidebar-entertainment' ) ) :
+				dynamic_sidebar( 'rtlcbs-home-sidebar-entertainment' ); 
+			elseif ( $channel == 'extreme' && is_active_sidebar( 'rtlcbs-home-sidebar-extreme' ) ) :
+				dynamic_sidebar( 'rtlcbs-home-sidebar-extreme' ); 
+		endif; ?>
+		</div><!-- #primary-sidebar -->
 	</div>
 </div>
 <?php get_footer( 'rtl' ); ?>
