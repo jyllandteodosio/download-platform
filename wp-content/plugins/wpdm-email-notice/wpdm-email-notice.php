@@ -129,7 +129,7 @@ if (!isset($wpdb->wpdm_email_logs)) {
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
 function wpdm_check_new_files($post_id)
 {
-	trigger_email_notification_checker();
+	// trigger_email_notification_checker();
 
 	// send_email_notice();
 
@@ -560,16 +560,16 @@ function trigger_email_notification_checker(){
 		}
 	}
 	// echo "<br>count-email_recipient:".count($email_recipient);
-	die('asd');
-	// if( count($email_recipient) > 0 ){
-	// 	$email_recipient_serialized = serialize($email_recipient);
-	// 	$return_value_email = setEmailEntryStatus('sent');
-	// 	if( $return_value_email === FALSE ){
-	// 		addEmailLogs('failed', $email_recipient_serialized);
-	// 	}else{
-	// 		addEmailLogs('success', $email_recipient_serialized);
-	// 	}
-	// }
+	// die('asd');
+	if( count($email_recipient) > 0 ){
+		$email_recipient_serialized = serialize($email_recipient);
+		$return_value_email = setEmailEntryStatus('sent');
+		if( $return_value_email === FALSE ){
+			addEmailLogs('failed', $email_recipient_serialized);
+		}else{
+			addEmailLogs('success', $email_recipient_serialized);
+		}
+	}
 
 }
 
@@ -1048,20 +1048,20 @@ $message .= '
 	';
 	
 	if( $email_files_counter['entertainment'] > 0 ||  $email_files_counter['extreme'] > 0 ){
-		echo $message;
+		// echo $message;
+		// return true;
 		
-		// // Start output buffering to grab smtp debugging output
-		// ob_start();
+		// Start output buffering to grab smtp debugging output
+		ob_start();
 
-		// // Send the test mail
-		// $result = wp_mail($to,$subject,$message,$headers);
+		// Send the test mail
+		$result = wp_mail($to,$subject,$message,$headers);
 			
-		// // Grab the smtp debugging output
-		// $smtp_debug = ob_get_clean();
+		// Grab the smtp debugging output
+		$smtp_debug = ob_get_clean();
 		
-		// // Output the response
-		// return $result;
-		return true;
+		// Output the response
+		return $result;
 	}
 	return false;
 }
