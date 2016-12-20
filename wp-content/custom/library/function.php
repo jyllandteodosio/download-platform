@@ -722,6 +722,18 @@ if( !function_exists('get_current_user_country_group') ){
     }
 }
 
+/* NOT WORKING */
+// if( !function_exists('check_user_is_pr_group') ){
+//     /**
+//      * Get current operator group of logged user.
+//      * @return String|bool Returns user role if logged in, else return false;
+//      */
+//     function check_user_is_pr_group($user_id = NULL){
+//         $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
+//         return get_user_meta( $userid, 'is_pr_group', true);
+//     }
+// }
+
 if (!function_exists('custom_get_country_groups')){
     /**
      * Get Country groups declared in profile builder plugin
@@ -1713,6 +1725,7 @@ if( !function_exists('is_generate_file_panel') ){
      * @param  array   $fileinfo        Key value pair of all files file title
      * @return boolean                  Return true if file should be visible to the user, else false
      */
+    /* TODO : remove, no longer needed */
     function is_generate_file_panel( $prefix_general = '', $fileTitle = '', $allfiles_sorted = array(), $fileinfo = array() ){
         $current_operator_group = get_current_user_operator_group();
         $generate_file_panel = false;
@@ -1722,16 +1735,7 @@ if( !function_exists('is_generate_file_panel') ){
 
         }else if(contains($fileTitle, $prefix_general)){
             /* Commented out some confusing codes below */
-            // $exclusive_file_check = 0;
-            // foreach ($allfiles_sorted as $key => $value) {
-            //     if(contains($fileinfo[$key]['title'], $current_operator_group)){
-            //         $exclusive_file_check = 1;
-            //         break;
-            //     }
-            // }
-            // if(!$exclusive_file_check){
-                $generate_file_panel = true;
-            // }
+            $generate_file_panel = true;
 
         }else if(contains($fileTitle, $current_operator_group)){
             $generate_file_panel = true;

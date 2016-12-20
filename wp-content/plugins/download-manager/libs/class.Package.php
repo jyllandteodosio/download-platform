@@ -165,6 +165,11 @@ class Package {
 
                /* For all WPDM Files */
                 if (is_array($allfiles_sorted)) {
+                    $affiliate_files = array();
+                    $current_operator_group = get_current_user_operator_group();
+                    // $is_pr_group = check_user_is_pr_group(); /* is pr group  */  
+
+
                     foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
                         $sfile = $sfileOriginal;
                         $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
@@ -260,8 +265,14 @@ class Package {
                                     }
                                      // CM_EPG
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_epg']['prefix']){
-                                        if ( is_generate_file_panel( self::$operator_prefix_list['affiliate'], $fileTitle, $allfiles_sorted, $fileinfo) ){
+                                        if( get_current_user_role() == "administrator" ) {
+                                            $affiliate_files['channel_epg'][$fileID] = $sfileOriginal;
+
+                                        }else if ( contains($fileTitle, $current_operator_group) ){
                                             $categorized_files[self::$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $sfileOriginal;
+
+                                        }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                            $affiliate_files['channel_epg'][$fileID] = $sfileOriginal;
                                         }
                                     }
                                     // CM_CAT
@@ -269,6 +280,7 @@ class Package {
                                         if ( is_generate_file_panel( self::$operator_prefix_list['affiliate'], $fileTitle, $allfiles_sorted, $fileinfo) ){
                                             $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
                                         }
+                                        /* TODO : implement above codes here in catch up */
                                     }
                                 }
                             }
@@ -276,8 +288,19 @@ class Package {
 
 
                     }
-                }
-            }
+
+                    /* Check if specific user already have some epg/catchup files and if affilate epg/catchup temporary container is not empty. Will assign the buffered affiliate files if epg/catchup files is empty */
+                    $affiliate_categories = [ 'channel_epg', 'channel_catchup' ];
+                    foreach ($affiliate_categories as $key => $prefix) {
+                        if( count( $categorized_files[self::$file_attr_list['document']['channel'][$prefix]['prefix']] ) == 0 && 
+                            isset( $affiliate_files[$prefix] ) > 0 ){
+                            foreach ($affiliate_files[$prefix] as $fileID => $sfileOriginal) {
+                                $categorized_files[self::$file_attr_list['document']['channel'][$prefix]['prefix']][$fileID] = $sfileOriginal;
+                            }
+                        }
+                    }
+                } 
+            } /* END of is_array( allfiles_sorted ) */
 
             foreach (self::$file_attr_list as $file_type => $file_category) {
                 foreach ($file_category as $file_category_key => $tab) {
