@@ -722,17 +722,30 @@ if( !function_exists('get_current_user_country_group') ){
     }
 }
 
-/* NOT WORKING */
-// if( !function_exists('check_user_is_pr_group') ){
-//     /**
-//      * Get current operator group of logged user.
-//      * @return String|bool Returns user role if logged in, else return false;
-//      */
-//     function check_user_is_pr_group($user_id = NULL){
-//         $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
-//         return get_user_meta( $userid, 'is_pr_group', true);
-//     }
-// }
+if( !function_exists('check_user_is_pr_group') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function get_operators_by_country( $country_group = NULL ){
+        global $wpdb;
+        $return_value = $wpdb->get_results("SELECT operator_group FROM $wpdb->operator_access WHERE country_group = '{$country_group}'");
+        return $return_value;
+    }
+}
+
+if( !function_exists('check_user_is_pr_group') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function check_user_is_pr_group( $user_id = NULL, $operator_group = NULL, $country_group = NULL ){
+        global $wpdb;
+        $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
+        $return_value = $wpdb->get_var("SELECT is_pr_group FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'");
+        return $return_value;
+    }
+}
 
 if (!function_exists('custom_get_country_groups')){
     /**
