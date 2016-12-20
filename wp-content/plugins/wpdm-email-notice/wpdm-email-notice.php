@@ -645,66 +645,36 @@ if (!function_exists('get_user_accessible_files')){
 	 * @return Array                  	Array of promo file names
 	 */
 	function get_user_accessible_files($user, $all_files, $raw_files, $is_pr_group = '', $operator_access = array()){
-		// $accessible_files = array();
+		/* TODO : check if $operator_access is safe to remove */
 		$affiliate_files = array();
 		$filtered_files = array();
 		$filtered_categories = [ 'epg', 'catch' ];
 
 		if (count($raw_files) > 0) {
 			foreach ($raw_files as $key => $value) {
-				// echo "<br><br>New file:".checkEPGAccessibilityViaFilename($user, $operator_access, $value );
-				
-				// echo "<br>";
-				// print_r($operator_access);
-				// echo "<br>";
-				
-				// if( contains($value, 'epg') || contains($value, 'catch')){
-				// 	if ( ($is_pr_group == 'yes' && strtolower($user->country_group) == 'all') ||
-				// 		 contains($value, 'affiliate') ||
-				// 		 contains($value, $user->operator_group) ||
-				// 		 (checkEPGAccessibilityViaFilename($user, $operator_access, $value ) && $is_pr_group == 'yes' ) ){
-				// 			continue;
-	   //              }else{
-				// 		if(isset($all_files['document']['epg'][$key])) unset($all_files['document']['epg'][$key]);
-				// 		if(isset($all_files['document']['catch'][$key])) unset($all_files['document']['catch'][$key]);
-			 //            if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]);
-	   //              }
-				// }
-				// 
-				foreach ($filtered_categories as $fc_key => $prefix) {
-					// if( contains($value, 'epg') ){
-					if( contains($value, $prefix) ){
-						// echo "<br>prefix : ".$prefix;
-		                if( $is_pr_group == 'yes' ){
-		                	/* TODO not working code for PR */
-		                	echo "<br>PR Group : ".$value ;
-	                        $sub_operators = get_operators_by_country( $user->country_group );
-	                        // print_r($sub_operators );
-	                        // 
-	                        foreach ($sub_operators as $key => $sub_op) {
 
+				foreach ($filtered_categories as $fc_key => $prefix) {
+					if( contains($value, $prefix) ){
+		                if(  $user->country_group == 'all' && $is_pr_group == 'yes' ){
+		                	continue;
+		                }else if( $is_pr_group == 'yes'){
+
+	                        $sub_operators = get_operators_by_country( $user->country_group );
+
+	                        foreach ($sub_operators as $so_key => $sub_op) {
 	                            if ( contains($value, $sub_op->operator_group ) ){
 	                                $filtered_files['document'][$prefix][$key] = $value;
-	                                echo "    -o $sub_op->operator_group";
 	                                break;
 
 	                            }else if ( contains($value, 'affiliate' ) ) {
 	                                $affiliate_files['document'][$prefix][$key] = $value;
 	                    			unset( $all_files['document'][$prefix][$key] );
-	                    			echo "    -a";
 	                    			break;
 	                            }
-	        //                     else{
-	        //                     	echo "    -un";
-									// if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
-									// // if(isset($all_files['document']['catch'][$key])) unset($all_files['document']['catch'][$key]);
-						   //          // if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]);
-						   //          // break;
-				     //            }
 	                        }
-	                        // if( count( $filtered_files['document'][$prefix][$key] ) > 0 && count( $affiliate_files['document'][$prefix][$key] ) > 0 ){
-	                        // 	if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
-	                        // }
+	                        if( count( $filtered_files['document'][$prefix][$key] ) == 0 && count( $affiliate_files['document'][$prefix][$key] ) == 0 ){
+	                        	if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
+	                        }
 
 	                    }else if ( contains($value, $user->operator_group) ){
 	                    	$filtered_files['document'][$prefix][$key] = $value;
@@ -712,13 +682,11 @@ if (!function_exists('get_user_accessible_files')){
 	                    }else if ( contains($value, 'affiliate' ) ) {
 	                        $affiliate_files['document'][$prefix][$key] = $value;
 	                    	unset( $all_files['document'][$prefix][$key] );
-	                        // continue;
-
+	          
 	                    }
 	                    else{
 							if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
-							// if(isset($all_files['document']['catch'][$key])) unset($all_files['document']['catch'][$key]);
-				            // if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]);
+				            // if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]); /* TODO :  check if in use */
 		                }
 					}
 				}
@@ -727,9 +695,11 @@ if (!function_exists('get_user_accessible_files')){
 
 			// echo "<br>epg count : ".count($filtered_files['document'][$prefix][$key]);
 			/* FOR EPG and CATCH UP ONLY */  
-			if( count($filtered_files['document']['epg']) == 0 && count($affiliate_files['document']['epg']) > 0 ){
-				foreach ( $affiliate_files['document']['epg'] as $key => $value) {
-					$all_files['document']['epg'][$key] = $value;
+			foreach ($filtered_categories as $fc_key => $prefix) {
+				if( count($filtered_files['document'][$prefix]) == 0 && count($affiliate_files['document'][$prefix]) > 0 ){
+					foreach ( $affiliate_files['document'][$prefix] as $key => $value) {
+						$all_files['document'][$prefix][$key] = $value;
+					}
 				}
 			}
 
