@@ -1729,35 +1729,6 @@ if( !function_exists('getEPGThumbnail') ) {
     }
 }
 
-if( !function_exists('is_generate_file_panel') ){
-    /**
-     * Description:                     Check if a specific file should be visible to the user based on operator group
-     * @param  string  $prefix_general  The general prefix indicator ( e.g. Affiliate )
-     * @param  string  $fileTitle       Title of file
-     * @param  array   $allfiles_sorted Key value pair of all files sorted
-     * @param  array   $fileinfo        Key value pair of all files file title
-     * @return boolean                  Return true if file should be visible to the user, else false
-     */
-    /* TODO : remove, no longer needed */
-    function is_generate_file_panel( $prefix_general = '', $fileTitle = '', $allfiles_sorted = array(), $fileinfo = array() ){
-        $current_operator_group = get_current_user_operator_group();
-        $generate_file_panel = false;
-
-        if ( get_current_user_role() == "administrator"){
-            $generate_file_panel = true;
-
-        }else if(contains($fileTitle, $prefix_general)){
-            /* Commented out some confusing codes below */
-            $generate_file_panel = true;
-
-        }else if(contains($fileTitle, $current_operator_group)){
-            $generate_file_panel = true;
-        }
-
-        return $generate_file_panel;
-    }
-}
-
 /*
 The Events Manager reliant
 ====================================================================================================================================
