@@ -722,7 +722,7 @@ if( !function_exists('get_current_user_country_group') ){
     }
 }
 
-if( !function_exists('check_user_is_pr_group') ){
+if( !function_exists('get_operators_by_country') ){
     /**
      * Get current operator group of logged user.
      * @return String|bool Returns user role if logged in, else return false;
@@ -1296,19 +1296,30 @@ if (!function_exists('checkIfPromoIsAccessible')) {
      * @return Bool                                      Return 1 if accessibl, else 0
      */
     function checkIfPromoIsAccessible($promo_assigned_operator_group = "all"){
-        $current_user_role = strtolower(get_current_user_role());
-        $current_user_operator_group = get_current_user_operator_group();
-        if( ($current_user_role == 'administrator') || 
-                (   $current_user_role == 'operator' && 
-                    (   $promo_assigned_operator_group == $current_user_operator_group || 
-                        $promo_assigned_operator_group == 'all'
-                    )
-                )
-            ){
-                $return_value = 1;
-        }else {
-            $return_value = 0;
+        $user_id = get_current_user_id();
+        $user_role = strtolower(get_current_user_role());
+        $user_operator_group = get_current_user_operator_group();
+        $user_country_group = get_current_user_country_group();
+        $is_pr_group = check_user_is_pr_group( $user_id, $user_operator_group, $user_country_group );
+        $return_value = 0;
+
+        if( ( $user_role == 'administrator' ) ||
+            ( $user_country_group == 'all' && $is_pr_group == 'yes' ) ||
+            ( $promo_assigned_operator_group == $user_operator_group ) ||
+            ( $promo_assigned_operator_group == 'all' )
+        ){
+            $return_value = 1;
+
+        }else if ( $is_pr_group == 'yes' ){
+            $sub_operators = get_operators_by_country( $user_country_group );
+            foreach ($sub_operators as $so_key => $sub_op) {
+                if ( contains($promo_assigned_operator_group, $sub_op->operator_group ) ){
+                    $return_value = 1;
+                    break;
+                }
+            }
         }
+
         return $return_value;
     }
 }
