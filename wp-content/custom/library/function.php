@@ -722,6 +722,31 @@ if( !function_exists('get_current_user_country_group') ){
     }
 }
 
+if( !function_exists('check_user_is_pr_group') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function get_operators_by_country( $country_group = NULL ){
+        global $wpdb;
+        $return_value = $wpdb->get_results("SELECT operator_group FROM $wpdb->operator_access WHERE country_group = '{$country_group}'");
+        return $return_value;
+    }
+}
+
+if( !function_exists('check_user_is_pr_group') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function check_user_is_pr_group( $user_id = NULL, $operator_group = NULL, $country_group = NULL ){
+        global $wpdb;
+        $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
+        $return_value = $wpdb->get_var("SELECT is_pr_group FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'");
+        return $return_value;
+    }
+}
+
 if (!function_exists('custom_get_country_groups')){
     /**
      * Get Country groups declared in profile builder plugin
@@ -1701,43 +1726,6 @@ if( !function_exists('getEPGThumbnail') ) {
             }
         }
         return $thumb;
-    }
-}
-
-if( !function_exists('is_generate_file_panel') ){
-    /**
-     * Description:                     Check if a specific file should be visible to the user based on operator group
-     * @param  string  $prefix_general  The general prefix indicator ( e.g. Affiliate )
-     * @param  string  $fileTitle       Title of file
-     * @param  array   $allfiles_sorted Key value pair of all files sorted
-     * @param  array   $fileinfo        Key value pair of all files file title
-     * @return boolean                  Return true if file should be visible to the user, else false
-     */
-    function is_generate_file_panel( $prefix_general = '', $fileTitle = '', $allfiles_sorted = array(), $fileinfo = array() ){
-        $current_operator_group = get_current_user_operator_group();
-        $generate_file_panel = false;
-
-        if ( get_current_user_role() == "administrator"){
-            $generate_file_panel = true;
-
-        }else if(contains($fileTitle, $prefix_general)){
-            /* Commented out some confusing codes below */
-            // $exclusive_file_check = 0;
-            // foreach ($allfiles_sorted as $key => $value) {
-            //     if(contains($fileinfo[$key]['title'], $current_operator_group)){
-            //         $exclusive_file_check = 1;
-            //         break;
-            //     }
-            // }
-            // if(!$exclusive_file_check){
-                $generate_file_panel = true;
-            // }
-
-        }else if(contains($fileTitle, $current_operator_group)){
-            $generate_file_panel = true;
-        }
-
-        return $generate_file_panel;
     }
 }
 
