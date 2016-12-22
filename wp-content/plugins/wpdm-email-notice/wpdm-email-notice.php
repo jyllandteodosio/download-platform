@@ -541,8 +541,8 @@ function trigger_email_notification_checker(){
 					// echo "</pre>";	
 
 					// print_r(unserialize($email_entry->data_new));
-					$files[$email_entry->post_id]['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$operator_access);
-					$files[$email_entry->post_id]['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],$operator_access);
+					$files[$email_entry->post_id]['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group']);
+					$files[$email_entry->post_id]['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group']);
 
 					
 				}
@@ -608,28 +608,30 @@ if (!function_exists('get_user_accessible_promos')){
 	 * @param  Array  $all_promos     	All current promos from the submitted form
 	 * @return Array                  	Array of promo file names
 	 */
-	function get_user_accessible_promos($user, $promo_files, $is_pr_group = '', $operator_access = array()){
+	function get_user_accessible_promos($user, $promo_files, $is_pr_group = ''){
 		$accessible_promo_files = array();
+
 		if (count($promo_files) > 0) {
 			foreach ($promo_files as $key => $value) {
-				if ( strtolower($value['operator_access']) == strtolower($user->operator_group) ||
-					strtolower($value['operator_access']) == 'all' ) {
-					array_push($accessible_promo_files, $value);
-				}else if ( $is_pr_group == 'yes' ){
-					if( strtolower($user->country_group) == 'all' ){
-						array_push($accessible_promo_files, $value);
-					}else{
-						foreach ($operator_access as $key => $operator_access_item) {
-							if( strtolower($operator_access_item['operator_group']) == strtolower($value['operator_access']) &&
-								strtolower($operator_access_item['country_group']) == strtolower($user->country_group) ){
-								array_push($accessible_promo_files, $value);
-							}
-						}
-					}
-				}
-				else{
-					continue;
-				}
+
+				if(  $user->country_group == 'all' && $is_pr_group == 'yes' ||
+					 contains($value['operator_access'], $user->operator_group) ||
+					 contains($value['operator_access'], 'all' )
+					){
+                	array_push($accessible_promo_files, $value);
+
+                }else if( $is_pr_group == 'yes'){
+
+                    $sub_operators = get_operators_by_country( $user->country_group );
+
+                    foreach ($sub_operators as $so_key => $sub_op) {
+                        if ( contains($value['operator_access'], $sub_op->operator_group ) ){
+                        	array_push($accessible_promo_files, $value);
+                            break;
+
+                        }
+                    }
+                }
 			}
 		}
 		return $accessible_promo_files;
@@ -644,8 +646,7 @@ if (!function_exists('get_user_accessible_files')){
 	 * @param  Array  $all_promos     	All current promos from the submitted form
 	 * @return Array                  	Array of promo file names
 	 */
-	function get_user_accessible_files($user, $all_files, $raw_files, $is_pr_group = '', $operator_access = array()){
-		/* TODO : check if $operator_access is safe to remove */
+	function get_user_accessible_files($user, $all_files, $raw_files, $is_pr_group = ''){
 		$affiliate_files = array();
 		$filtered_files = array();
 		$filtered_categories = [ 'epg', 'catch' ];
@@ -686,14 +687,11 @@ if (!function_exists('get_user_accessible_files')){
 	                    }
 	                    else{
 							if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
-				            // if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]); /* TODO :  check if in use */
 		                }
 					}
 				}
 				
 			}
-
-			// echo "<br>epg count : ".count($filtered_files['document'][$prefix][$key]);
 			/* FOR EPG and CATCH UP ONLY */  
 			foreach ($filtered_categories as $fc_key => $prefix) {
 				if( count($filtered_files['document'][$prefix]) == 0 && count($affiliate_files['document'][$prefix]) > 0 ){
@@ -717,7 +715,6 @@ function getOperatorGroupInEPGFile($file_name = ''){
 
 function checkEPGAccessibilityViaFilename($user, $operator_access, $filename = '' ){
 	foreach ($operator_access as $operator_access_key => $operator_access_item) {
-		// echo "<br>getOperatorGroupInEPGFile($filename) : ".getOperatorGroupInEPGFile($filename);
 		if( strtolower($operator_access_item['operator_group']) == strtolower(getOperatorGroupInEPGFile($filename)) &&
 			strtolower($operator_access_item['country_group']) == strtolower($user->country_group) ){
 			return 1;
