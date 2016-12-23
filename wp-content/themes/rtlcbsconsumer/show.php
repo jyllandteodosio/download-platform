@@ -11,7 +11,39 @@ get_template_part('channel-setter');
   elseif($channel == 'none'):
     get_header('rtl');
   endif;
-  
+
+// Get next airing schedule of show
+global $post;
+$tmp = $post;
+
+$args = tribe_get_events( array(
+	'eventDisplay'	 => 'upcoming',
+	'posts_per_page' => 1,
+	'title'		 	 => get_the_title()
+));
+if(!$args) {
+	$args = tribe_get_events( array(
+		'eventDisplay'	 => 'past',
+		'posts_per_page' => 1,
+		'title'		 	 => get_the_title(),
+		'order'			 => 'DESC'
+	));
+}
+
+foreach($args as $post) {
+	setup_postdata($post);
+	// Get the airing date of the show (set to false to remove time)
+	$airing_date = tribe_get_start_date($post,false,'F d, Y');
+	// Get the time only
+	$airing_time = tribe_get_start_date($post,false,'g:i a');
+	// Get JKT/BKK time
+	$airing_time_jkt = strtotime('-1 hour', strtotime($airing_time));
+	$airing_time_jkt = date('g:i a', $airing_time_jkt);
+}
+wp_reset_postdata();
+
+$post = null;
+$post = $tmp; 
 switch_to_blog( 1 );?>
 
 <div class="section">
@@ -21,10 +53,9 @@ switch_to_blog( 1 );?>
 			<span class="close-video">x</span>
 			<iframe class="show-banner-video" id="showInnerVid" src="//player.vimeo.com/video/<?php the_field('vimeo_id'); ?>?badge=0&amp;byline=0&amp;portrait=0&amp;title=0" width="1060" height="400" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 		</div>
-		<?php $banner_text_alignment = get_field('banner_text_alignment') == 'right' ? "right-info" : "left-info";?>
-		<div class="show-banner-description <?php echo $banner_text_alignment; ?>">
-			<span class="date"><?php echo get_field('airing_schedule') ? date('F d, Y',get_field('airing_schedule')) : date('F d, Y');?></span>
-			<span class="time">Live at <?php echo get_field('airing_schedule') ? date('g:i a',get_field('airing_schedule')) : date('g:i a');?> <small>(<?php echo get_field('airing_time_jkt') ? date('h:i a',get_field('airing_time_jkt')) : date('h:i a');?> JKT/BKK)</small></span>
+		<div class="show-banner-description left-info">
+			<span class="date"><?php echo $airing_date; ?></span>
+			<span class="time"><?php echo "Live at " . $airing_time; ?><small><?php echo " (" . $airing_time_jkt . " JKT/BKK)"; ?></small></span>
 			<a href="#" class="watch-video"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>Watch Video</a>
 		</div>
 	</div>
