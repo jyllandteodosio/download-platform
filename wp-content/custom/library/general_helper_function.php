@@ -183,6 +183,8 @@ if ( !function_exists('checkEventCategoryByTitle') ){
         $args = array(
                     'post_type' => 'wpdmpro', 
                     's' => $show_title,
+                    'exact' => true,
+                    'sentence' => true,
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
@@ -192,6 +194,7 @@ if ( !function_exists('checkEventCategoryByTitle') ){
                       )
                   );
         $query_shows = new WP_Query( $args );
+        // echo "<br><br>".$query_shows->request;
         if ($current_blog_id != 1) restore_current_blog();
 
         return $query_shows->post_count;
