@@ -22,6 +22,7 @@ $args = tribe_get_events( array(
 	'title'		 	 => get_the_title()
 ));
 if(!$args) {
+	$args = null;
 	$args = tribe_get_events( array(
 		'eventDisplay'	 => 'past',
 		'posts_per_page' => 1,
@@ -37,7 +38,8 @@ foreach($args as $post) {
 	// Get the time only
 	$airing_time = tribe_get_start_date($post,false,'g:i a');
 	// Get JKT/BKK time
-	$airing_time_jkt = tribe_get_start_date($post,false,'g:i a','WIB');
+	$airing_time_jkt = strtotime('-1 hour', strtotime($airing_time));
+	$airing_time_jkt = date('g:i a', $airing_time_jkt);
 }
 wp_reset_postdata();
 
