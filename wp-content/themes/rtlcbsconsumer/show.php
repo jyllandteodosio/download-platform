@@ -16,14 +16,12 @@ get_template_part('channel-setter');
 global $post;
 $tmp = $post;
 
-the_title();
 $args = tribe_get_events( array(
 	'eventDisplay'	 => 'upcoming',
 	'posts_per_page' => 1,
 	'title'		 	 => get_the_title()
 ));
 if(!$args) {
-	$args = null;
 	$args = tribe_get_events( array(
 		'eventDisplay'	 => 'past',
 		'posts_per_page' => 1,
