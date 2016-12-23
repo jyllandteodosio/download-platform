@@ -17,12 +17,9 @@ global $post;
 // Store $post to temporary variable
 $tmp = $post;
 
-//$current_date = date("Y-m-d");
 $events = tribe_get_events( array(
 	'eventDisplay'	 => 'upcoming',
 	'posts_per_page' => 1
-/*	'start_date'	 => $current_date . ' 00:01',
-	'end_date'		 => $current_date . ' 23:59'*/
 ));
 
 foreach($events as $post) {
@@ -31,7 +28,7 @@ foreach($events as $post) {
 	// Get the time only
 	$airing_time = tribe_get_start_date($post,false,'g:i a');
 	// Get JKT/BKK time
-	$airing_time_jkt = tribe_get_start_date($post,false,'g:i a','JKT/BKK');
+	$airing_time_jkt = tribe_get_start_date($post,false,'g:i a','WIB');
 }
 
 // Flush $post custom query 
