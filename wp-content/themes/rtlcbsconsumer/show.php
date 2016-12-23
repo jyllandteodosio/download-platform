@@ -17,12 +17,14 @@ global $post;
 // Store $post to temporary variable
 $tmp = $post;
 
-$events = tribe_get_events( array(
+$args = tribe_get_events( array(
 	'eventDisplay'	 => 'upcoming',
-	'posts_per_page' => 1
+	'posts_per_page' => 1,
+	'title'		 	 => get_the_title()
 ));
 
-foreach($events as $post) {
+foreach($args as $post) {
+	setup_postdata($post);
 	// Get the airing date of the show (set to false to remove time)
 	$airing_date = tribe_get_start_date($post,false,'F d, Y');
 	// Get the time only
@@ -30,6 +32,7 @@ foreach($events as $post) {
 	// Get JKT/BKK time
 	$airing_time_jkt = tribe_get_start_date($post,false,'g:i a','WIB');
 }
+wp_reset_postdata();
 
 // Flush $post custom query 
 $post = null;
