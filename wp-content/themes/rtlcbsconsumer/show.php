@@ -12,9 +12,8 @@ get_template_part('channel-setter');
     get_header('rtl');
   endif;
 
-// Get next time airing schedule of show
+// Get next airing schedule of show
 global $post;
-// Store $post to temporary variable
 $tmp = $post;
 
 $args = tribe_get_events( array(
@@ -22,6 +21,14 @@ $args = tribe_get_events( array(
 	'posts_per_page' => 1,
 	'title'		 	 => get_the_title()
 ));
+if(!$args) {
+	$args = tribe_get_events( array(
+		'eventDisplay'	 => 'past',
+		'posts_per_page' => 1,
+		'title'		 	 => get_the_title(),
+		'order'			 => 'DESC'
+	));
+}
 
 foreach($args as $post) {
 	setup_postdata($post);
@@ -34,9 +41,7 @@ foreach($args as $post) {
 }
 wp_reset_postdata();
 
-// Flush $post custom query 
 $post = null;
-// Re-populate $post
 $post = $tmp; 
 switch_to_blog( 1 );?>
 
