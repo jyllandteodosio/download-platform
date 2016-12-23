@@ -722,6 +722,31 @@ if( !function_exists('get_current_user_country_group') ){
     }
 }
 
+if( !function_exists('get_operators_by_country') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function get_operators_by_country( $country_group = NULL ){
+        global $wpdb;
+        $return_value = $wpdb->get_results("SELECT operator_group FROM $wpdb->operator_access WHERE country_group = '{$country_group}'");
+        return $return_value;
+    }
+}
+
+if( !function_exists('check_user_is_pr_group') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function check_user_is_pr_group( $user_id = NULL, $operator_group = NULL, $country_group = NULL ){
+        global $wpdb;
+        $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
+        $return_value = $wpdb->get_var("SELECT is_pr_group FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'");
+        return $return_value;
+    }
+}
+
 if (!function_exists('custom_get_country_groups')){
     /**
      * Get Country groups declared in profile builder plugin
@@ -1271,19 +1296,30 @@ if (!function_exists('checkIfPromoIsAccessible')) {
      * @return Bool                                      Return 1 if accessibl, else 0
      */
     function checkIfPromoIsAccessible($promo_assigned_operator_group = "all"){
-        $current_user_role = strtolower(get_current_user_role());
-        $current_user_operator_group = get_current_user_operator_group();
-        if( ($current_user_role == 'administrator') || 
-                (   $current_user_role == 'operator' && 
-                    (   $promo_assigned_operator_group == $current_user_operator_group || 
-                        $promo_assigned_operator_group == 'all'
-                    )
-                )
-            ){
-                $return_value = 1;
-        }else {
-            $return_value = 0;
+        $user_id = get_current_user_id();
+        $user_role = strtolower(get_current_user_role());
+        $user_operator_group = get_current_user_operator_group();
+        $user_country_group = get_current_user_country_group();
+        $is_pr_group = check_user_is_pr_group( $user_id, $user_operator_group, $user_country_group );
+        $return_value = 0;
+
+        if( ( $user_role == 'administrator' ) ||
+            ( $user_country_group == 'all' && $is_pr_group == 'yes' ) ||
+            ( $promo_assigned_operator_group == $user_operator_group ) ||
+            ( $promo_assigned_operator_group == 'all' )
+        ){
+            $return_value = 1;
+
+        }else if ( $is_pr_group == 'yes' ){
+            $sub_operators = get_operators_by_country( $user_country_group );
+            foreach ($sub_operators as $so_key => $sub_op) {
+                if ( contains($promo_assigned_operator_group, $sub_op->operator_group ) ){
+                    $return_value = 1;
+                    break;
+                }
+            }
         }
+
         return $return_value;
     }
 }
@@ -1704,43 +1740,6 @@ if( !function_exists('getEPGThumbnail') ) {
     }
 }
 
-if( !function_exists('is_generate_file_panel') ){
-    /**
-     * Description:                     Check if a specific file should be visible to the user based on operator group
-     * @param  string  $prefix_general  The general prefix indicator ( e.g. Affiliate )
-     * @param  string  $fileTitle       Title of file
-     * @param  array   $allfiles_sorted Key value pair of all files sorted
-     * @param  array   $fileinfo        Key value pair of all files file title
-     * @return boolean                  Return true if file should be visible to the user, else false
-     */
-    function is_generate_file_panel( $prefix_general = '', $fileTitle = '', $allfiles_sorted = array(), $fileinfo = array() ){
-        $current_operator_group = get_current_user_operator_group();
-        $generate_file_panel = false;
-
-        if ( get_current_user_role() == "administrator"){
-            $generate_file_panel = true;
-
-        }else if(contains($fileTitle, $prefix_general)){
-            /* Commented out some confusing codes below */
-            // $exclusive_file_check = 0;
-            // foreach ($allfiles_sorted as $key => $value) {
-            //     if(contains($fileinfo[$key]['title'], $current_operator_group)){
-            //         $exclusive_file_check = 1;
-            //         break;
-            //     }
-            // }
-            // if(!$exclusive_file_check){
-                $generate_file_panel = true;
-            // }
-
-        }else if(contains($fileTitle, $current_operator_group)){
-            $generate_file_panel = true;
-        }
-
-        return $generate_file_panel;
-    }
-}
-
 /*
 The Events Manager reliant
 ====================================================================================================================================
@@ -1756,6 +1755,7 @@ if( !function_exists('getTribeEvents')) {
         $start_date = $start_date != '' || $start_date != null ? $start_date : date("Y-m-d H:i");
         $end_date   = $end_date != '' || $end_date != null ? $end_date : date("Y-m-d H:i");
         $events = tribe_get_events( array(
+                    'posts_per_page' => 40,
                     'start_date'   => $start_date,
                     'end_date'     => $end_date
                 ) );

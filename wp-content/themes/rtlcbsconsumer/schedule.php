@@ -48,11 +48,13 @@ get_template_part('channel-setter');
 						<?php 
 						if(function_exists('tribe_get_events')):
 							foreach($daterange as $date):
-								$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');?>
+								$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');
+								$hidden_tester = "<p style = 'display:none'>".$channel."";?>
 								<div>
 									<?php
 									if(count($events) > 0):
 										foreach ($events as $event) :
+
 											if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
 												$show_info = getShowInfoByTitle($event->post_title);
 												if ( $show_info['featured_show'] == 'featured' ):?>
@@ -62,7 +64,7 @@ get_template_part('channel-setter');
 															<div class="time">
 																<span class="timeslot"><?php echo date('H:i A',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
 																<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
-																<h3><?php echo mb_strimwidth($event->post_title,0,45,"...") ?></h3>
+																<h3><?php echo mb_strimwidth($event->post_title,0,45,"...").$hidden_tester ?></h3>
 															</div>
 														</div>
 													</a>
@@ -87,7 +89,6 @@ get_template_part('channel-setter');
 							$events_counter++;
 							$is_hidden = $events_counter > 1 ? "visibility-hidden" : "";
 							$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');?>
-
 							<div>
 								<?php $show_counter = 0;
 								if(count($events) > 0):
@@ -106,7 +107,7 @@ get_template_part('channel-setter');
 																<div class="time">
 																	<span class="timeslot"><?php echo date('H:i A',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
 																	<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
-																	<h3><?php echo mb_strimwidth($event->post_title,0,45,"...") ?></h3>
+																	<h3><?php echo mb_strimwidth($event->post_title,0,45,"...").$hidden_tester ?></h3>
 																</div>
 															</div>
 														</a> 
