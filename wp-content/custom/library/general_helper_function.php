@@ -92,7 +92,7 @@ if( !function_exists('getDateRange')) {
             $ending_date = date( 'Y-m-d', strtotime( 'saturday this week' ) );
         }else if($span == 'start-today'){
             /* To show trial data - for testing*/
-            // $date_try = strtotime(date('2016-07-01'));
+            // $date_try = strtotime(date('2016-12-08'));
             // $beginning_date = date( 'Y-m-d', $date_try);
             // $ending_date = date( 'Y-m-d', strtotime("+6 day", $date_try ) );
             /* To show actual data - for live */
