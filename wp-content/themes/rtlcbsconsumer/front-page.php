@@ -69,7 +69,7 @@ get_template_part('channel-setter');
 			<div class="swiper-wrapper">
 		<?php   if(function_exists('tribe_get_events')):
 					// $events = getTribeEvents(date('2016-07-01').' 00:00',current_time('Y-m-d').' 23:59');
-					$events = getTribeEvents(current_time('Y-m-d').' 00:00',current_time('Y-m-d').' 23:59');
+					$events = getTribeEvents(current_time('Y-m-d').' 00:00', current_time('Y-m-d').' 23:59');
                     
 					if(count($events) > 0):
         				$events_counter = 0;
@@ -83,14 +83,21 @@ get_template_part('channel-setter');
 							    <div class="swiper-slide" title="<?php echo $event->post_title;?>">
 									<div class="time">
 										<?php
-										$current_time = time();
-										$current_show_time = strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT));
-										$next_show_time = strtotime(tribe_get_start_date($next_show->ID, false, Tribe__Date_Utils::DBTIMEFORMAT));
+										$current_time = current_time('H:i');
+										$current_show_time = tribe_get_start_date($event->ID, false, 'H:i');
+										$next_show_time = tribe_get_start_date($next_show->ID, false, 'H:i');
+
 										if( $current_time>=$current_show_time && $current_time<=$next_show_time):?>
 											<span class="nowplaying"><div class="arrow-right"></div> Now Playing...</span>
-										<?php endif;?>
-										<span class="timeslot"><?php echo date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
-										<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
+										<?php endif;
+										// Get timeslot of show
+										$airing_time = tribe_get_start_date($event->ID, false,'H:i'); ?>
+										<span class="timeslot"><?php echo $airing_time; ?></span>
+
+										<?php // Calculate JKT/BKK time
+										$airing_time_jkt = strtotime('-1 hour', strtotime($airing_time));
+										$airing_time_jkt = date('H:i', $airing_time_jkt); ?>
+										<span class="timezone"><?php echo "(". $airing_time_jkt .' JKT/BKK)' ?></span>
 									</div>
 									<a href="<?php echo site_url($show_info['post_name']);?>"><p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p></a>
 									<div class="swiper-description">
