@@ -16,16 +16,19 @@ get_template_part('channel-setter');
 global $post;
 $tmp = $post;
 
+// Escape &apos; and replace with single quote
+$show_title = html_entity_decode(str_replace( "&#8217;", "\'", get_the_title() ));
+
 $args = tribe_get_events( array(
 	'eventDisplay'	 => 'upcoming',
 	'posts_per_page' => 1,
-	'title'		 	 => get_the_title()
+	'title'		 	 => $show_title
 ));
 if(!$args) {
 	$args = tribe_get_events( array(
 		'eventDisplay'	 => 'past',
 		'posts_per_page' => 1,
-		'title'		 	 => get_the_title(),
+		'title'		 	 => $show_title,
 		'order'			 => 'DESC'
 	));
 }
@@ -53,11 +56,13 @@ switch_to_blog( 1 );?>
 			<span class="close-video">x</span>
 			<iframe class="show-banner-video" id="showInnerVid" src="//player.vimeo.com/video/<?php the_field('vimeo_id'); ?>?badge=0&amp;byline=0&amp;portrait=0&amp;title=0" width="1060" height="400" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 		</div>
+		<?php if($args): ?>
 		<div class="show-banner-description left-info">
 			<span class="date"><?php echo $airing_date; ?></span>
 			<span class="time"><?php echo "Live at " . $airing_time; ?><small><?php echo " (" . $airing_time_jkt . " JKT/BKK)"; ?></small></span>
 			<a href="#" class="watch-video"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>Watch Video</a>
 		</div>
+		<?php endif; ?>
 	</div>
 	<div class="show-synopsis">
 		<div class="row">
