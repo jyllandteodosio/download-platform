@@ -1873,7 +1873,6 @@ a:hover {
 .show-banner {
 	height: 350px;
     background-size: cover;
-    background-position: center;
 }
 
 @media (max-width: 1119px) {
