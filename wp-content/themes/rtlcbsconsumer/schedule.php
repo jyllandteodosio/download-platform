@@ -46,9 +46,9 @@ get_template_part('channel-setter');
 
 					<div class="custom-slider-nav">
 						<?php 
-						if(function_exists('tribe_get_events')):
+						/*if(function_exists('tribe_get_events')):
 							foreach($daterange as $date):
-								$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');?>
+								$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59', $channel );?>
 								<div>
 									<?php
 									if(count($events) > 0):
@@ -75,25 +75,28 @@ get_template_part('channel-setter');
 									endif;?>
 								</div>
 							<?php endforeach;
-						endif;?>
+						endif;
+						*/?>
 					</div>
 
 				</div> <!-- End of #custom-slider-sticky -->
 
 				<div class="custom-slider-nav">
-					<?php if(function_exists('tribe_get_events')):
+					<?php
+					 if(function_exists('tribe_get_events')):
 						$time_list_rebased = getTribeEventsUniqueStartTime($daterange, $channel);
 						$events_counter = 0;
 						foreach($daterange as $date):
 							$events_counter++;
 							$is_hidden = $events_counter > 1 ? "visibility-hidden" : "";
-							$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');?>
+							$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59', $channel );?>
 
 							<div>
 								<?php $show_counter = 0;
 								if(count($events) > 0):
 									foreach ($events as $event) :
-										if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
+										// TODO :  find endless loading here
+										// if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
 											$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
 											$next_skip = true;
 											$show_info = getShowInfoByTitle($event->post_title);
@@ -116,12 +119,13 @@ get_template_part('channel-setter');
 										<?php   endif;
 												$show_counter++;
 											endwhile;
-										endif;
+										// endif;
 									endforeach;
 								endif;?>
 							</div>
 						<?php endforeach;
-					endif;?>
+					endif;
+					?>
 				</div> <!-- End of #custom-slider-nav -->
 
 				

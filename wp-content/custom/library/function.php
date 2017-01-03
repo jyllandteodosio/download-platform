@@ -1751,14 +1751,103 @@ if( !function_exists('getTribeEvents')) {
      * @param  Date $end_date       End date
      * @return Array                Array of events
      */
-    function getTribeEvents($start_date,$end_date){
+    function getTribeEvents($start_date,$end_date,$channel = 'entertainment'){
         $start_date = $start_date != '' || $start_date != null ? $start_date : date("Y-m-d H:i");
         $end_date   = $end_date != '' || $end_date != null ? $end_date : date("Y-m-d H:i");
-        $events = tribe_get_events( array(
-                    'posts_per_page' => 40,
-                    'start_date'   => $start_date,
-                    'end_date'     => $end_date
-                ) );
+        $term_id = getTermIDBySlug('shows-'.$channel) ;
+        // $events = tribe_get_events( array(
+        //             'posts_per_page' => 40,
+        //             'start_date'   => $start_date,
+        //             'end_date'     => $end_date
+        //         ) );
+        
+        // $start_date = '2016-12-08 00:45:00';
+        // $end_date = '2016-12-08 01:40:00';
+
+        // $events = get_posts(array(
+        //     'posts_per_page' => 20,
+        //     'paged' => 1,
+        //     'orderby' => 'ID',
+        //     'order' => 'ASC',
+        //     'post_type'     => 'tribe_events',
+        //     'meta_query'    => array(
+        //         array(
+        //             'key'       => '_EventStartDate',
+        //             'value'     => array($start_date, $end_date),
+        //             'compare'   => 'BETWEEN'
+        //         )
+        //     ),
+        // ));
+        
+        // $args = array(
+        //     'posts_per_page' => 20,
+        //     'paged' => 1,
+        //     'orderby' => 'ID',
+        //     'order' => 'ASC',
+        //     'post_type'     => 'tribe_events',
+        //     'meta_query'    => array(
+        //         array(
+        //             'key'       => '_EventStartDate',
+        //             'value'     => array($start_date, $end_date),
+        //             'compare'   => 'BETWEEN'
+        //         )
+        //     ),
+        // );
+        // $events = new WP_Query($args);
+        // echo $events->request;
+
+       
+        
+        global $wpdb;
+
+        // die($term_id);
+        $events = $wpdb->get_results("
+                SELECT DISTINCT post_2.*, MIN(rtl21016_2_postmeta.meta_value) as EventStartDate, MIN(tribe_event_end_date.meta_value) as EventEndDate 
+
+                FROM rtl21016_2_posts as post_2
+                INNER JOIN rtl21016_2_postmeta ON ( post_2.ID = rtl21016_2_postmeta.post_id ) 
+                INNER JOIN rtl21016_2_postmeta AS mt1 ON ( post_2.ID = mt1.post_id ) 
+                LEFT JOIN rtl21016_2_postmeta as tribe_event_end_date ON ( post_2.ID = tribe_event_end_date.post_id AND tribe_event_end_date.meta_key = '_EventEndDate' ) 
+                INNER JOIN rtl21016_posts ON ( rtl21016_posts.post_title = post_2.post_title )
+
+
+                WHERE 1=1 
+
+                AND (
+                 rtl21016_2_postmeta.meta_key = '_EventStartDate' 
+                 AND ( mt1.meta_key = '_EventStartDate' 
+                    AND CAST(mt1.meta_value AS CHAR) BETWEEN '{$start_date}' AND '{$end_date}' ) 
+                ) 
+
+                AND post_2.post_type = 'tribe_events' 
+                AND (
+                    post_2.post_status = 'publish') 
+                    
+
+                AND 1<= (
+                    
+                    SELECT COUNT(*)
+                    
+                    FROM rtl21016_posts post
+                    INNER JOIN rtl21016_term_relationships ON (post.ID = rtl21016_term_relationships.object_id) 
+                    
+                    WHERE 1=1 
+                    
+                    AND ( rtl21016_term_relationships.term_taxonomy_id IN ($term_id) ) 
+                    
+                    AND (post.post_title LIKE post_2.post_title)
+                    
+                    AND post.post_type = 'wpdmpro' 
+                    AND (post.post_status = 'publish') 
+                )
+                GROUP BY post_2.ID  ORDER BY EventStartDate ASC, post_2.ID ASC LIMIT 0, 2
+            ", OBJECT);
+
+        // echo "<pre>";
+        // print_r($events);
+        // echo "</pre>";
+        // // echo $events->request;
+        // die();
         return $events;
     }
 }

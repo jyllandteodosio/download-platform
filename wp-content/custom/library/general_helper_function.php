@@ -92,12 +92,12 @@ if( !function_exists('getDateRange')) {
             $ending_date = date( 'Y-m-d', strtotime( 'saturday this week' ) );
         }else if($span == 'start-today'){
             /* To show trial data - for testing*/
-            // $date_try = strtotime(date('2016-12-08'));
-            // $beginning_date = date( 'Y-m-d', $date_try);
-            // $ending_date = date( 'Y-m-d', strtotime("+6 day", $date_try ) );
+            $date_try = strtotime(date('2016-12-08'));
+            $beginning_date = date( 'Y-m-d', $date_try);
+            $ending_date = date( 'Y-m-d', strtotime("+6 day", $date_try ) );
             /* To show actual data - for live */
-            $beginning_date = date( 'Y-m-d');
-            $ending_date = date( 'Y-m-d', strtotime( "+6 day" ) );
+            // $beginning_date = date( 'Y-m-d');
+            // $ending_date = date( 'Y-m-d', strtotime( "+6 day" ) );
         }
 
         $begin = new DateTime( $beginning_date );
@@ -201,6 +201,22 @@ if ( !function_exists('checkEventCategoryByTitle') ){
     }
 }
 
+if( !function_exists('getTermIDBySlug') ){
+    function getTermIDBySlug($slug){
+
+        $current_blog_id = get_current_blog_id();
+        if ($current_blog_id != 1) switch_to_blog( 1 );
+
+        global $wpdb;
+        $term_id = $wpdb->get_var( "SELECT term_id FROM $wpdb->terms WHERE slug = '{$slug}'" );
+
+        if ($current_blog_id != 1) restore_current_blog();
+
+
+        return $term_id;
+    }
+}
+
 if( !function_exists('getSlugByTitle')) {
     /**
      * Decription                Will return the show slug via title
@@ -232,6 +248,15 @@ if (!function_exists('getUsersByRole')){
         $query_users = new WP_User_Query( $args );
         $users = $query_users->get_results();
         return $users;
+    }
+}
+
+if( !function_exists('getPostIdBySlug') ){
+    function getPostIdBySlug($slug){
+        global $wpdb;
+        $post_id = $wpdb->get_var( "SELECT ID FROM $wpdb->posts WHERE post_name = '".$slug."'" );
+
+        return $post_id;
     }
 }
 
