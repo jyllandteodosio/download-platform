@@ -251,7 +251,7 @@
       var time_list_rebased = [];
       $.post(
            ajaxurl, 
-           {   'action'       : 'get_tribe_events_unique_start_time',
+           {   'action'       : 'get_tribe_events_unique_start_time_ajax',
                'date_range'   : date_range,
                'channel'      : $(schedule_slider_container).attr('data-channel'),
                'schednonce'     : my_ajax_object.ajax_sched_nonce
@@ -283,7 +283,7 @@
                var limit = parseInt( $(schedule_slider_container).attr('data-limit') );
                $.post(
                  ajaxurl, 
-                 {   'action'       : 'get_tribe_events',
+                 {   'action'       : 'get_tribe_events_ajax',
                      'date_range'   : date_range,
                      'channel'      : $(schedule_slider_container).attr('data-channel'),
                      'offset'       : offset,

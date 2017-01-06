@@ -56,13 +56,13 @@ get_template_part('channel-setter');
 									if(count($events) > 0):
 										foreach ($events as $event) :
 											$show_info = getShowInfoByTitle($event->post_title);?>
-											<a href="<?php echo site_url($show_info['post_name']);?>">
-												<div class="schedule-shows" title="<?php echo $event->post_title;?>">
+											<a href="<?php echo site_url($show_info['post_name']);?>" title="<?php echo $event->post_title;?>">
+												<div class="schedule-shows">
 													<p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p>
 													<div class="time">
 														<span class="timeslot"><?php echo date('H:i A',strtotime($event->EventStartDate));?></span>
 														<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
-														<h3><?php echo mb_strimwidth($event->post_title,0,45,"...") ?></h3>
+														<h3><?php echo mb_strimwidth($event->post_title,0,45,"....") ?></h3>
 													</div>
 												</div>
 											</a>
@@ -78,18 +78,12 @@ get_template_part('channel-setter');
 
 				</div> <!-- End of #custom-slider-sticky -->
 
-				<div id="schedule-stubs-container" class="custom-slider-nav" data-limit="2" data-offset="0" data-channel = '<?php echo $channel;?>' >
+				<div id="schedule-stubs-container" class="custom-slider-nav" data-limit="10" data-offset="0" data-channel = '<?php echo $channel;?>' >
 					<?php
 					 if(function_exists('tribe_get_events')):
-						$time_list_rebased = getTribeEventsUniqueStartTime($daterange, $channel);
 						$events_counter = 0;
-						foreach($daterange as $date):
-							$events_counter++;
-							$is_hidden = $events_counter > 1 ? "visibility-hidden" : "";
-							// $events = getTribeEvents($date->format("Y-m-d").' 00:00:00',$date->format("Y-m-d").' 23:59:59', $channel, null, 0 );?>
-
+						foreach($daterange as $date):?>
 							<div id="stub-<?php echo $date->format("Y-m-d");?>" class="schedule-stubs" data-date='<?php echo $date->format("Y-m-d");?>'>
-								
 							</div>
 						<?php endforeach;
 					endif;

@@ -1806,14 +1806,14 @@ if( !function_exists('getTribeEvents')) {
     }
 }
 
-if( !function_exists('get_tribe_events')) {
+if( !function_exists('get_tribe_events_ajax')) {
     /**
      * Description:                 Get all tribe events for the given date range.
      * @param  Date $start_date     Start date
      * @param  Date $end_date       End date
      * @return Array                Array of events
      */
-    function get_tribe_events(){
+    function get_tribe_events_ajax(){
         $nonce = $_POST['schednonce'];
         if (!empty($_POST) && wp_verify_nonce($nonce, '__schedule_page_nonce__') ){
             $events = array();
@@ -1872,19 +1872,15 @@ if( !function_exists('get_tribe_events')) {
                 }
             }
             
-            // echo json_encode( $events );
-            
-            echo "<pre>";
-            print_r($events);
-            echo "</pre>";
+            echo json_encode( $events );
         }else{
             echo "Invalid Access";
         }
         die();
     }
 
-    add_action('wp_ajax_get_tribe_events', 'get_tribe_events');
-    add_action('wp_ajax_nopriv_get_tribe_events', 'get_tribe_events');
+    add_action('wp_ajax_get_tribe_events_ajax', 'get_tribe_events_ajax');
+    add_action('wp_ajax_nopriv_get_tribe_events_ajax', 'get_tribe_events_ajax');
 }
 
 if( !function_exists('getTribeEventsUniqueStartTime')) {
@@ -1917,14 +1913,13 @@ if( !function_exists('getTribeEventsUniqueStartTime')) {
     }
 }
 
-if( !function_exists('get_tribe_events_unique_start_time')) {
+if( !function_exists('get_tribe_events_unique_start_time_ajax')) {
     /**
      * Decription                Will return an array of unique timeslot in ascending order 
      * @param  Array $daterange  Range of dates to query
      * @return Array             Array of unique timeslots
      */
-    function get_tribe_events_unique_start_time(){
-        // $daterange = array(), $channel = 'entertainment'
+    function get_tribe_events_unique_start_time_ajax(){
         $daterange = $_POST['date_range'];
         $channel = $_POST['channel'];
         $time_list_rebased = array();
@@ -1935,12 +1930,10 @@ if( !function_exists('get_tribe_events_unique_start_time')) {
                 $events = getTribeEvents($date.' 00:00:00',$date.' 23:59:59', $channel, null, null);
                 if(count($events) > 0):
                     foreach ($events as $event) :
-                        // if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
-                            $show_start_time = date('H:i',strtotime($event->EventStartDate));
-                            if(!in_array($show_start_time, $time_list)){
-                                array_push($time_list, $show_start_time);
-                            }
-                        // endif;
+                        $show_start_time = date('H:i',strtotime($event->EventStartDate));
+                        if(!in_array($show_start_time, $time_list)){
+                            array_push($time_list, $show_start_time);
+                        }
                     endforeach;
                 endif;
             endforeach;
@@ -1951,11 +1944,10 @@ if( !function_exists('get_tribe_events_unique_start_time')) {
         echo json_encode($time_list_rebased);
 
         die();
-        // return $time_list_rebased;
     }
 
-    add_action('wp_ajax_get_tribe_events_unique_start_time', 'get_tribe_events_unique_start_time');
-    add_action('wp_ajax_nopriv_get_tribe_events_unique_start_time', 'get_tribe_events_unique_start_time');
+    add_action('wp_ajax_get_tribe_events_unique_start_time_ajax', 'get_tribe_events_unique_start_time_ajax');
+    add_action('wp_ajax_nopriv_get_tribe_events_unique_start_time_ajax', 'get_tribe_events_unique_start_time_ajax');
 }
 
 function templated_email($content){
