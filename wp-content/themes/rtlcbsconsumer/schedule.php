@@ -14,6 +14,8 @@ get_template_part('channel-setter');
   elseif($channel == 'none'):
     get_header('rtl');
   endif;
+
+  // echo "header : ".$channel;
 ?>
 
 <div class="content-area calendar-area">
@@ -46,42 +48,37 @@ get_template_part('channel-setter');
 
 					<div class="custom-slider-nav">
 						<?php 
-						/*if(function_exists('tribe_get_events')):
+						if(function_exists('tribe_get_events')):
 							foreach($daterange as $date):
-								$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59', $channel );?>
+								$events = getTribeEvents($date->format("Y-m-d").' 00:00:00',$date->format("Y-m-d").' 23:59:59', $channel, 'featured' );?>
 								<div>
 									<?php
 									if(count($events) > 0):
 										foreach ($events as $event) :
-
-											if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
-												$show_info = getShowInfoByTitle($event->post_title);
-												if ( $show_info['featured_show'] == 'featured' ):?>
-													<a href="<?php echo site_url($show_info['post_name']);?>">
-														<div class="schedule-shows" title="<?php echo $event->post_title;?>">
-															<p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p>
-															<div class="time">
-																<span class="timeslot"><?php echo date('H:i A',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
-																<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
-																<h3><?php echo mb_strimwidth($event->post_title,0,45,"...") ?></h3>
-															</div>
-														</div>
-													</a>
-													<?php  
-													break;
-												endif;
-											endif;
+											$show_info = getShowInfoByTitle($event->post_title);?>
+											<a href="<?php echo site_url($show_info['post_name']);?>">
+												<div class="schedule-shows" title="<?php echo $event->post_title;?>">
+													<p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p>
+													<div class="time">
+														<span class="timeslot"><?php echo date('H:i A',strtotime($event->EventStartDate));?></span>
+														<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
+														<h3><?php echo mb_strimwidth($event->post_title,0,45,"...") ?></h3>
+													</div>
+												</div>
+											</a>
+											<?php  
+											break;
 										endforeach;
 									endif;?>
 								</div>
 							<?php endforeach;
 						endif;
-						*/?>
+						?>
 					</div>
 
 				</div> <!-- End of #custom-slider-sticky -->
 
-				<div class="custom-slider-nav">
+				<div id="schedule-stubs-container" class="custom-slider-nav" data-limit="2" data-offset="0" data-channel = '<?php echo $channel;?>' >
 					<?php
 					 if(function_exists('tribe_get_events')):
 						$time_list_rebased = getTribeEventsUniqueStartTime($daterange, $channel);
@@ -89,44 +86,16 @@ get_template_part('channel-setter');
 						foreach($daterange as $date):
 							$events_counter++;
 							$is_hidden = $events_counter > 1 ? "visibility-hidden" : "";
-							$events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59', $channel );?>
+							// $events = getTribeEvents($date->format("Y-m-d").' 00:00:00',$date->format("Y-m-d").' 23:59:59', $channel, null, 0 );?>
 
-							<div>
-								<?php $show_counter = 0;
-								if(count($events) > 0):
-									foreach ($events as $event) :
-										// TODO :  find endless loading here
-										// if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
-											$show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
-											$next_skip = true;
-											$show_info = getShowInfoByTitle($event->post_title);
-											while($next_skip == true):
-												if($time_list_rebased[$show_counter] == $show_start_time): 
-													$is_no_preview = $show_info['featured_show'] != 'featured' ? "no-preview" : "";
-													$next_skip = false;?>    
-														<a href="<?php echo site_url($show_info['post_name']);?>">
-															<div class="schedule-shows no-preview " title="<?php echo $event->post_title;?>">
-																<p class="today-show-thumb-container" style=""></p>
-																<div class="time">
-																	<span class="timeslot"><?php echo date('H:i A',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));?></span>
-																	<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
-																	<h3><?php echo mb_strimwidth($event->post_title,0,45,"...") ?></h3>
-																</div>
-															</div>
-														</a> 
-										<?php   else: ?>
-													<div class="schedule-shows no-preview <?php echo $show_counter;?>"></div>
-										<?php   endif;
-												$show_counter++;
-											endwhile;
-										// endif;
-									endforeach;
-								endif;?>
+							<div id="stub-<?php echo $date->format("Y-m-d");?>" class="schedule-stubs" data-date='<?php echo $date->format("Y-m-d");?>'>
+								
 							</div>
 						<?php endforeach;
 					endif;
 					?>
 				</div> <!-- End of #custom-slider-nav -->
+				<div class="loading-bar no-display"></div>
 
 				
 			</div>
@@ -141,22 +110,6 @@ get_template_part('channel-setter');
 
 <script>
 	(function( $ ) {
-		// var show_counter = <?php //echo $show_counter;?>;
-		// console.log(show_counter);
-		// for (var i = 0; i <= show_counter; i++) {
-		// 	$('.schedule-shows.'+i).matchHeight();
-		// };
-
-		$("#custom-slider-sticky").stick_in_parent()
-		  .on("sticky_kit:stick", function(e) {
-		    console.log("has stuck!");
-		    $('.schedule-slideshow-button').addClass('is_stuck');
-		  })
-		  .on("sticky_kit:unstick", function(e) {
-		    console.log("has unstuck!");
-		    $('.schedule-slideshow-button').removeClass('is_stuck');
-		  });
-
 		var responsive_options = [
 		    {
 		      breakpoint: 600,

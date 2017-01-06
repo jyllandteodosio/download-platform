@@ -70,6 +70,17 @@ a:hover {
 	background: #000 url('images/background-blue.png') no-repeat fixed center top;
 	background-size: cover;
 }
+
+.loading-bar {
+	background: url('images/loading-bar.gif') no-repeat center center;
+	height: 30px;
+	width: 160px;
+	margin: 0 auto;
+}
+
+.no-display {
+	display: none;
+}
 /* BOOTSTRAP OVERRIDES
 ----------------------------------*/
 @media (min-width: 1200px) {

@@ -1751,105 +1751,140 @@ if( !function_exists('getTribeEvents')) {
      * @param  Date $end_date       End date
      * @return Array                Array of events
      */
-    function getTribeEvents($start_date,$end_date,$channel = 'entertainment'){
-        $start_date = $start_date != '' || $start_date != null ? $start_date : date("Y-m-d H:i");
-        $end_date   = $end_date != '' || $end_date != null ? $end_date : date("Y-m-d H:i");
+    function getTribeEvents($start_date,$end_date,$channel = 'entertainment', $is_featured = null, $page = 0 ){
+        $start_date = $start_date != '' || $start_date != null ? $start_date : date("Y-m-d H:i:s");
+        $end_date   = $end_date != '' || $end_date != null ? $end_date : date("Y-m-d H:i:s");
+        $limit = $page != null ? ' LIMIT $page, 1' : '';
         $term_id = getTermIDBySlug('shows-'.$channel) ;
-        // $events = tribe_get_events( array(
-        //             'posts_per_page' => 40,
-        //             'start_date'   => $start_date,
-        //             'end_date'     => $end_date
-        //         ) );
-        
-        // $start_date = '2016-12-08 00:45:00';
-        // $end_date = '2016-12-08 01:40:00';
-
-        // $events = get_posts(array(
-        //     'posts_per_page' => 20,
-        //     'paged' => 1,
-        //     'orderby' => 'ID',
-        //     'order' => 'ASC',
-        //     'post_type'     => 'tribe_events',
-        //     'meta_query'    => array(
-        //         array(
-        //             'key'       => '_EventStartDate',
-        //             'value'     => array($start_date, $end_date),
-        //             'compare'   => 'BETWEEN'
-        //         )
-        //     ),
-        // ));
-        
-        // $args = array(
-        //     'posts_per_page' => 20,
-        //     'paged' => 1,
-        //     'orderby' => 'ID',
-        //     'order' => 'ASC',
-        //     'post_type'     => 'tribe_events',
-        //     'meta_query'    => array(
-        //         array(
-        //             'key'       => '_EventStartDate',
-        //             'value'     => array($start_date, $end_date),
-        //             'compare'   => 'BETWEEN'
-        //         )
-        //     ),
-        // );
-        // $events = new WP_Query($args);
-        // echo $events->request;
-
        
-        
         global $wpdb;
-
-        // die($term_id);
-        $events = $wpdb->get_results("
-                SELECT DISTINCT post_2.*, MIN(rtl21016_2_postmeta.meta_value) as EventStartDate, MIN(tribe_event_end_date.meta_value) as EventEndDate 
+        $where_featured = $is_featured == 'featured' ? "AND mt1.meta_key = 'featured_show' AND mt1.meta_value LIKE '%featured%' " : "";
+        $query_string = "
+                SELECT post_2.*, MIN(mt2.meta_value) as EventStartDate 
 
                 FROM rtl21016_2_posts as post_2
-                INNER JOIN rtl21016_2_postmeta ON ( post_2.ID = rtl21016_2_postmeta.post_id ) 
-                INNER JOIN rtl21016_2_postmeta AS mt1 ON ( post_2.ID = mt1.post_id ) 
-                LEFT JOIN rtl21016_2_postmeta as tribe_event_end_date ON ( post_2.ID = tribe_event_end_date.post_id AND tribe_event_end_date.meta_key = '_EventEndDate' ) 
-                INNER JOIN rtl21016_posts ON ( rtl21016_posts.post_title = post_2.post_title )
+                INNER JOIN rtl21016_2_postmeta AS mt2 ON ( post_2.ID = mt2.post_id ) 
+                INNER JOIN rtl21016_posts post_1 ON ( post_1.post_title = post_2.post_title )
+                INNER JOIN rtl21016_postmeta AS mt1 ON ( post_1.ID = mt1.post_id ) 
 
-
-                WHERE 1=1 
-
-                AND (
-                 rtl21016_2_postmeta.meta_key = '_EventStartDate' 
-                 AND ( mt1.meta_key = '_EventStartDate' 
-                    AND CAST(mt1.meta_value AS CHAR) BETWEEN '{$start_date}' AND '{$end_date}' ) 
-                ) 
-
-                AND post_2.post_type = 'tribe_events' 
-                AND (
-                    post_2.post_status = 'publish') 
+                WHERE 
+                 mt2.meta_key = '_EventStartDate' 
+                 AND mt2.meta_value BETWEEN '{$start_date}' AND '{$end_date}'
+                 
+                 {$where_featured}
+                 
+                 AND post_2.post_type = 'tribe_events' 
+                 AND post_2.post_status = 'publish'
                     
-
-                AND 1<= (
+                 AND 1<= (
                     
                     SELECT COUNT(*)
                     
                     FROM rtl21016_posts post
-                    INNER JOIN rtl21016_term_relationships ON (post.ID = rtl21016_term_relationships.object_id) 
+                    INNER JOIN rtl21016_term_relationships term ON (post.ID = term.object_id) 
                     
-                    WHERE 1=1 
-                    
-                    AND ( rtl21016_term_relationships.term_taxonomy_id IN ($term_id) ) 
-                    
-                    AND (post.post_title LIKE post_2.post_title)
-                    
+                    WHERE 
+                    term.term_taxonomy_id IN ($term_id) 
+                    AND post.post_title LIKE post_2.post_title
                     AND post.post_type = 'wpdmpro' 
-                    AND (post.post_status = 'publish') 
-                )
-                GROUP BY post_2.ID  ORDER BY EventStartDate ASC, post_2.ID ASC LIMIT 0, 2
-            ", OBJECT);
+                    AND post.post_status = 'publish'
+                 )
+
+                GROUP BY post_2.ID  
+                ORDER BY EventStartDate ASC, post_2.ID ASC 
+                {$limit}
+            ";
+        $events = $wpdb->get_results( $query_string, OBJECT);
 
         // echo "<pre>";
         // print_r($events);
         // echo "</pre>";
-        // // echo $events->request;
+        // echo $query_string;
+        // echo $events->request;
         // die();
         return $events;
     }
+}
+
+if( !function_exists('get_tribe_events')) {
+    /**
+     * Description:                 Get all tribe events for the given date range.
+     * @param  Date $start_date     Start date
+     * @param  Date $end_date       End date
+     * @return Array                Array of events
+     */
+    function get_tribe_events(){
+        $nonce = $_POST['schednonce'];
+        if (!empty($_POST) && wp_verify_nonce($nonce, '__schedule_page_nonce__') ){
+            $events = array();
+            $channel = $_POST['channel'];
+            $offset = intval($_POST['offset']) > 0 ? intval($_POST['offset']) : 0 ;
+            $limit = intval($_POST['limit']) > 0 ? intval($_POST['limit']) : 0 ;
+            $is_featured = null;
+            $date_range   = $_POST['date_range'] != '' || $_POST['date_range'] != null ? $_POST['date_range'] : array();
+            $term_id = getTermIDBySlug('shows-'.$channel) ;
+           
+            global $wpdb;
+            $where_featured = $is_featured == 'featured' ? "AND mt1.meta_key = 'featured_show' AND mt1.meta_value LIKE '%featured%' " : "";
+
+            foreach ($date_range as $key => $date) {
+                $start_date = $date.' 00:00:00';
+                $end_date   = $date.' 23:59:59';
+
+                $query_string = "
+                    SELECT post_2.*, MIN(mt2.meta_value) as EventStartDate, post_1.post_name as main_post_name 
+
+                    FROM rtl21016_2_posts as post_2
+                    INNER JOIN rtl21016_2_postmeta AS mt2 ON ( post_2.ID = mt2.post_id ) 
+                    INNER JOIN rtl21016_posts post_1 ON ( post_1.post_title = post_2.post_title )
+                    INNER JOIN rtl21016_postmeta AS mt1 ON ( post_1.ID = mt1.post_id ) 
+
+                    WHERE 
+                     mt2.meta_key = '_EventStartDate' 
+                     AND mt2.meta_value BETWEEN '{$start_date}' AND '{$end_date}'
+                     
+                     {$where_featured}
+                     
+                     AND post_2.post_type = 'tribe_events' 
+                     AND post_2.post_status = 'publish'
+                        
+                     AND 1<= (
+                        
+                        SELECT COUNT(*)
+                        
+                        FROM rtl21016_posts post
+                        INNER JOIN rtl21016_term_relationships term ON (post.ID = term.object_id) 
+                        
+                        WHERE 
+                        term.term_taxonomy_id IN ($term_id) 
+                        AND post.post_title LIKE post_2.post_title
+                        AND post.post_type = 'wpdmpro' 
+                        AND post.post_status = 'publish'
+                     )
+
+                    GROUP BY post_2.ID  
+                    ORDER BY EventStartDate ASC, post_2.ID ASC 
+                    LIMIT $offset, $limit
+                ";
+                $events_tmp = $wpdb->get_results( $query_string, OBJECT);
+                if( count( $events_tmp ) > 0  ){
+                    $events[$date] = $events_tmp;
+                }
+            }
+            
+            // echo json_encode( $events );
+            
+            echo "<pre>";
+            print_r($events);
+            echo "</pre>";
+        }else{
+            echo "Invalid Access";
+        }
+        die();
+    }
+
+    add_action('wp_ajax_get_tribe_events', 'get_tribe_events');
+    add_action('wp_ajax_nopriv_get_tribe_events', 'get_tribe_events');
 }
 
 if( !function_exists('getTribeEventsUniqueStartTime')) {
@@ -1863,15 +1898,15 @@ if( !function_exists('getTribeEventsUniqueStartTime')) {
         if(!empty($daterange)):
             $time_list = array();
             foreach($daterange as $date):
-                $events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');
+                $events = getTribeEvents($date->format("Y-m-d").' 00:00:00',$date->format("Y-m-d").' 23:59:59', $channel);
                 if(count($events) > 0):
                     foreach ($events as $event) :
-                        if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
+                        // if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
                             $show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
                             if(!in_array($show_start_time, $time_list)){
                                 array_push($time_list, $show_start_time);
                             }
-                        endif;
+                        // endif;
                     endforeach;
                 endif;
             endforeach;
@@ -1880,6 +1915,47 @@ if( !function_exists('getTribeEventsUniqueStartTime')) {
         endif;
         return $time_list_rebased;
     }
+}
+
+if( !function_exists('get_tribe_events_unique_start_time')) {
+    /**
+     * Decription                Will return an array of unique timeslot in ascending order 
+     * @param  Array $daterange  Range of dates to query
+     * @return Array             Array of unique timeslots
+     */
+    function get_tribe_events_unique_start_time(){
+        // $daterange = array(), $channel = 'entertainment'
+        $daterange = $_POST['date_range'];
+        $channel = $_POST['channel'];
+        $time_list_rebased = array();
+
+        if(!empty($daterange)):
+            $time_list = array();
+            foreach($daterange as $date):
+                $events = getTribeEvents($date.' 00:00:00',$date.' 23:59:59', $channel, null, null);
+                if(count($events) > 0):
+                    foreach ($events as $event) :
+                        // if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
+                            $show_start_time = date('H:i',strtotime($event->EventStartDate));
+                            if(!in_array($show_start_time, $time_list)){
+                                array_push($time_list, $show_start_time);
+                            }
+                        // endif;
+                    endforeach;
+                endif;
+            endforeach;
+            asort($time_list);
+            $time_list_rebased = array_values($time_list);
+        endif;
+
+        echo json_encode($time_list_rebased);
+
+        die();
+        // return $time_list_rebased;
+    }
+
+    add_action('wp_ajax_get_tribe_events_unique_start_time', 'get_tribe_events_unique_start_time');
+    add_action('wp_ajax_nopriv_get_tribe_events_unique_start_time', 'get_tribe_events_unique_start_time');
 }
 
 function templated_email($content){
