@@ -266,6 +266,10 @@
            }
       );
 
+      if( $('.schedule-shows.no-preview').length == 0){
+         trigger_lazy_loading();
+      }
+
       /* Fetching of schedules through lazy loading */
       var last_scroll_top = 0;
       $(window).scroll(function() {
@@ -275,79 +279,8 @@
            if( ($(this).scrollTop() + $(this).height()) >= ($(document).height() - 150) ) {
 
             if( !schedule_slider_container.hasClass('loading') ){
-               schedule_slider_container.addClass('loading');
-               $( '.loading-bar' ).show();
-               console.log('lazy loading');
 
-               var offset = parseInt( $(schedule_slider_container).attr('data-offset') );
-               var limit = parseInt( $(schedule_slider_container).attr('data-limit') );
-               $.post(
-                 ajaxurl, 
-                 {   'action'       : 'get_tribe_events_ajax',
-                     'date_range'   : date_range,
-                     'channel'      : $(schedule_slider_container).attr('data-channel'),
-                     'offset'       : offset,
-                     'limit'        : limit,
-                     'schednonce'   : my_ajax_object.ajax_sched_nonce
-                 },function(response) {
-
-                     if(response != '' && response != 'false' && isJSON(response) ){
-                        var response_array = $.parseJSON(response);
-                        /** The response array looks like this
-                           [ 2017-01-01 ] => {
-                                 [0] => { // fetched show details }, [1] => { // fetched show details }  },
-                           [ 2017-01-02 ] => {
-                                 [0] => { // fetched show details }  }
-                         */
-                        if( !$.isEmptyObject( response_array ) ){ 
-
-                           $.each( response_array, function( event_date, event_list ){
-                              if( event_list.length > 0 ){
-                                 var show_date = event_date;
-                                 var show_counter = 0;
-                                 var div_stub_id = '#stub-'+show_date;
-
-                                 $.each( event_list, function(event_list_key, event_list_content) {
-                                    var show_counter = $( div_stub_id ).attr( 'data-show-counter') != undefined ? $( div_stub_id ).attr( 'data-show-counter') : 0;
-                                    var show_time = moment(event_list_content.EventStartDate).format('HH:mm');
-                                    var next_skip = true;
-
-                                    while( next_skip == true ){
-
-                                       if( time_list_rebased[ show_counter ] === show_time ){
-                                          next_skip = false;
-                                          var stub_element = generate_show_stub_html( event_list_content );
-                                       }else{
-                                          var stub_element = '<div class="schedule-shows no-preview '+show_counter+'"></div>';
-                                       }
-
-                                       $(div_stub_id).append( stub_element );
-                                       show_counter++;
-                                    }
-
-                                    $( div_stub_id ).attr( 'data-show-counter', show_counter );
-                                 });
-                              }
-                           });
-                       
-                           $( schedule_slider_container ).attr('data-offset', offset + limit );
-
-                        }else{
-                           $( '.loading-bar' ).remove();
-                           console.log('no more schedules');
-                        }
-
-                     }else{
-                        console.log('Invalid return value');
-                     }
-
-                     schedule_slider_container.removeClass('loading');
-                     $( '.loading-bar' ).hide();
-                     regenerate_sticky_kit();
-
-                 } // End of ajax function
-
-               ); // End of "$.post"
+               trigger_lazy_loading();
 
             }else{
                console.log( 'loading....' );
@@ -360,6 +293,83 @@
       }); // End of "$(window).scroll"
     
   } // End of " $( '.calendar-area' ).length > 0 "
+
+  function trigger_lazy_loading(){
+   schedule_slider_container.addClass('loading');
+   $( '.loading-bar' ).show();
+   console.log('lazy loading');
+
+   var offset = parseInt( $(schedule_slider_container).attr('data-offset') );
+   var limit = parseInt( $(schedule_slider_container).attr('data-limit') );
+   $.post(
+     ajaxurl, 
+     {   'action'       : 'get_tribe_events_ajax',
+         'date_range'   : date_range,
+         'channel'      : $(schedule_slider_container).attr('data-channel'),
+         'offset'       : offset,
+         'limit'        : limit,
+         'schednonce'   : my_ajax_object.ajax_sched_nonce
+     },function(response) {
+         console.log($.parseJSON(response));
+         if(response != '' && response != 'false' && isJSON(response) ){
+            var response_array = $.parseJSON(response);
+            /** The response array looks like this
+               [ 2017-01-01 ] => {
+                     [0] => { // fetched show details }, [1] => { // fetched show details }  },
+               [ 2017-01-02 ] => {
+                     [0] => { // fetched show details }  }
+             */
+            if( !$.isEmptyObject( response_array ) ){ 
+
+               $.each( response_array, function( event_date, event_list ){
+                  if( event_list.length > 0 ){
+                     var show_date = event_date;
+                     var show_counter = 0;
+                     var div_stub_id = '#stub-'+show_date;
+
+                     $.each( event_list, function(event_list_key, event_list_content) {
+                        var show_counter = $( div_stub_id ).attr( 'data-show-counter') != undefined ? $( div_stub_id ).attr( 'data-show-counter') : 0;
+                        var show_time = moment(event_list_content.EventStartDate).format('HH:mm');
+                        var next_skip = true;
+                        console.log('time_list_rebased',time_list_rebased);
+                        console.log('show_time', show_time);
+                        while( next_skip == true ){
+
+                           if( time_list_rebased[ show_counter ] === show_time ){
+                              next_skip = false;
+                              var stub_element = generate_show_stub_html( event_list_content );
+                           }else{
+                              var stub_element = '<div class="schedule-shows no-preview '+show_counter+'"></div>';
+                           }
+
+                           $(div_stub_id).append( stub_element );
+                           show_counter++;
+                        }
+
+                        $( div_stub_id ).attr( 'data-show-counter', show_counter );
+                     });
+                  }
+               });
+           
+               $( schedule_slider_container ).attr('data-offset', offset + limit );
+
+            }else{
+               $( '.loading-bar' ).remove();
+               console.log('no more schedules');
+            }
+
+         }else{
+            console.log('Invalid return value');
+         }
+
+         schedule_slider_container.removeClass('loading');
+         $( '.loading-bar' ).hide();
+         regenerate_sticky_kit();
+
+     } // End of ajax function
+
+   ); // End of "$.post"
+  }
   /* End of Show files lazy loading ======================================================================================================*/
 
    function get_attributes_from_elements( elem, attribute ){
