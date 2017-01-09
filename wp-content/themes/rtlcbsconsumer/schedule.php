@@ -78,7 +78,7 @@ get_template_part('channel-setter');
 
 				</div> <!-- End of #custom-slider-sticky -->
 
-				<div id="schedule-stubs-container" class="custom-slider-nav" data-limit="2" data-offset="0" data-channel = '<?php echo $channel;?>' >
+				<div id="schedule-stubs-container" class="custom-slider-nav" data-limit="1" data-offset="0" data-channel = '<?php echo $channel;?>' >
 					<?php
 					 if(function_exists('tribe_get_events')):
 						$events_counter = 0;

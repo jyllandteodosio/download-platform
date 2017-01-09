@@ -310,7 +310,7 @@
          'limit'        : limit,
          'schednonce'   : my_ajax_object.ajax_sched_nonce
      },function(response) {
-
+         console.log($.parseJSON(response));
          if(response != '' && response != 'false' && isJSON(response) ){
             var response_array = $.parseJSON(response);
             /** The response array looks like this
@@ -331,7 +331,8 @@
                         var show_counter = $( div_stub_id ).attr( 'data-show-counter') != undefined ? $( div_stub_id ).attr( 'data-show-counter') : 0;
                         var show_time = moment(event_list_content.EventStartDate).format('HH:mm');
                         var next_skip = true;
-
+                        console.log('time_list_rebased',time_list_rebased);
+                        console.log('show_time', show_time);
                         while( next_skip == true ){
 
                            if( time_list_rebased[ show_counter ] === show_time ){
