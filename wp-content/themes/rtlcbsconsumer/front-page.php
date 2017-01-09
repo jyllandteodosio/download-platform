@@ -65,7 +65,7 @@ get_template_part('channel-setter');
 			<div class="swiper-wrapper">
 		<?php   if(function_exists('tribe_get_events')):
 					// $events = getTribeEvents( date('2016-12-08').' 00:00:00', current_time('Y-m-d').' 23:59:59', $channel );
-					$events = getTribeEvents(current_time('Y-m-d').' 00:00:00', current_time('Y-m-d').' 23:59:59', $channel);
+					$events = getTribeEvents(current_time('Y-m-d').' 00:00:00', current_time('Y-m-d').' 23:59:59', $channel, null, null);
                     
 					if(count($events) > 0):
         				$events_counter = 0;
