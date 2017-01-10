@@ -408,15 +408,17 @@ a:hover {
 }
 
 #masthead .logo {
-	width: 100%;
 	height: auto;
+	width: auto;
 }
 #masthead .logo.logo-entertainment {
-	max-width: 253px;
+	max-height: 82px;
+    width: auto;
 }
 #masthead .logo.logo-extreme {
-	max-width: 151px;
-	margin-left: 20px;
+	margin-left: 15px;
+    max-height: 82px;
+    width: auto;
 }
 
 #masthead .ad-container {
