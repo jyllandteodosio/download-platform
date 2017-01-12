@@ -1022,19 +1022,21 @@ $message .= '
 	';
 	
 	if( $email_files_counter['entertainment'] > 0 ||  $email_files_counter['extreme'] > 0 ){
+		/* Uncomment this group of code if you want to debug */
 		// echo $message;
 		// return true;
+		/* END Uncomment this group of code if you want to debug */
 		
-		// Start output buffering to grab smtp debugging output
+		/* Start output buffering to grab smtp debugging output*/
 		ob_start();
 
-		// Send the test mail
+		/* Send the test mail*/
 		$result = wp_mail($to,$subject,$message,$headers);
 			
-		// Grab the smtp debugging output
+		/* Grab the smtp debugging output*/
 		$smtp_debug = ob_get_clean();
 		
-		// Output the response
+		/* Output the response*/
 		return $result;
 	}
 	return false;
