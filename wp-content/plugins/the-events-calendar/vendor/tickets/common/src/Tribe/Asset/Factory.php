@@ -1,4 +1,5 @@
 <?php
+
 class Tribe__Asset__Factory {
 	/**
 	 * @param string $name

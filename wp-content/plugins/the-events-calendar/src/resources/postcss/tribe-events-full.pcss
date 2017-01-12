@@ -95,9 +95,6 @@
 
 .tribe-events-back {
 	margin: 0 0 20px 0;
-	.events-list &.tribe-events-loop {
-		margin: 0 auto 20px;
-	}
 }
 
 /* Links */
@@ -1030,7 +1027,6 @@ select.tribe-events-dropdown {
 /* Global Tooltips */
 .tribe-events-calendar .tribe-events-tooltip,
 .tribe-events-week .tribe-events-tooltip,
-.tribe-events-shortcode.view-week .tribe-events-tooltip,
 .recurring-info-tooltip {
 	background-color: #f9f9f9;
 	border: 1px solid #666;
@@ -1059,7 +1055,6 @@ select.tribe-events-dropdown {
 
 .tribe-events-calendar .tribe-events-right .tribe-events-tooltip,
 .tribe-events-week .tribe-events-right .tribe-events-tooltip,
-.tribe-events-shortcode.view-week .tribe-events-right .tribe-events-tooltip,
 .recurring-info-tooltip {
 	left: auto;
 	right: 3px;
@@ -1173,12 +1168,14 @@ select.tribe-events-dropdown {
 #tribe-events-content {
 	.tribe-events-calendar div[id*='tribe-events-event-'] h3.tribe-events-month-event-title {
 		font-family: sans-serif;
-		font-size: 98%;
+		font-size: 13px;
+		font-weight: bold;
 		font-weight: normal;
+		letter-spacing: 0;
 		line-height: 1.25;
 		margin: 0;
 		overflow: hidden;
-		padding: 3%;
+		padding: 0;
 		text-transform: none;
 	}
 
@@ -2020,7 +2017,8 @@ input[name*='tribe-bar-']:-moz-placeholder {
 
 /* Twenty Sixteen
 ========================================================================== */
-.tribe-theme-twentysixteen {
+
+body.tribe-theme-twentysixteen {
 	table.tribe-events-calendar {
 		table-layout: auto;
 	}
@@ -2043,12 +2041,6 @@ input[name*='tribe-bar-']:-moz-placeholder {
 	.datepicker table {
 		border: 0;
 		width: auto;
-	}
-
-	.entry-content {
-		a {
-			box-shadow: none;
-		}
 	}
 }
 
