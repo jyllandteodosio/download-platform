@@ -64,7 +64,7 @@ get_template_part('channel-setter');
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
 		<?php   if(function_exists('tribe_get_events')):
-					// $events = getTribeEvents( date('2016-12-08').' 00:00:00', current_time('Y-m-d').' 23:59:59', $channel );
+					// $events = getTribeEvents( date('2016-12-08').' 00:00:00', current_time('Y-m-d').' 23:59:59', $channel, null, null );
 					$events = getTribeEvents(current_time('Y-m-d').' 00:00:00', current_time('Y-m-d').' 23:59:59', $channel, null, null);
                     
 					if(count($events) > 0):
@@ -74,15 +74,21 @@ get_template_part('channel-setter');
 
 							if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
 								$events_counter++;
-							    $show_info = getShowInfoByTitle($event->post_title);?>
-							   
-							    <div class="swiper-slide" title="<?php echo $event->post_title;?>">
+							    $show_info = getShowInfoByTitle($event->post_title);
+
+							    /* Determining Now Playing Schedule */
+							    $current_time = current_time('H:i:s');
+								$current_show_time = tribe_get_start_date($event->ID, false, 'H:i:s');
+								$next_show_time = tribe_get_start_date($next_show->ID, false, 'H:i:s');
+								$now_playing_class = '';
+
+							    if( $current_time >= $current_show_time && $current_time < $next_show_time):
+							    	$now_playing_class = 'now-playing';
+							    endif;?>
+
+								<div class="swiper-slide <?php echo $now_playing_class;?> " title="<?php echo $event->post_title;?>">
 									<div class="time">
-										<?php
-										$current_time = current_time('H:i:s');
-										$current_show_time = tribe_get_start_date($event->ID, false, 'H:i:s');
-										$next_show_time = tribe_get_start_date($next_show->ID, false, 'H:i:s');
-										if( $current_time >= $current_show_time && $current_time < $next_show_time):?>
+										<?php if( $now_playing_class != ''):?>
 											<span class="nowplaying"><div class="arrow-right"></div> Now Playing...</span>
 										<?php endif;
 										// Get timeslot of show
@@ -197,3 +203,30 @@ get_template_part('channel-setter');
 	</div>
 </div>
 <?php get_footer( 'rtl' ); ?>
+
+<script>
+	
+(function( $ ) {
+	var todaySlideShow = new Swiper( '#today-slideshow', {
+		slidesPerView: 4,
+		spaceBetween: 6,
+		nextButton: '.today-nav.swiper-button-next',
+        prevButton: '.today-nav.swiper-button-prev',
+            breakpoints: {
+            	640: {
+            		slidesPerView: 1
+            	},
+            	768: {
+            		slidesPerView: 3
+            	}, 
+            	992: {
+            		slidesPerView: 4
+            	}
+            },
+        preventClicks: false, 
+        preventClicksPropagation: true,
+	});
+
+	todaySlideShow.slideTo( $('.now-playing').index(), 1000, false );
+})( jQuery );
+</script>

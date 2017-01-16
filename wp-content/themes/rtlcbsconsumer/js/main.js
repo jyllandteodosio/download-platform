@@ -21,26 +21,6 @@
         preventClicksPropagation: true,
 	});
 
-	var todaySlideShow = new Swiper( '#today-slideshow', {
-		slidesPerView: 4,
-		spaceBetween: 6,
-		nextButton: '.today-nav.swiper-button-next',
-      prevButton: '.today-nav.swiper-button-prev',
-            breakpoints: {
-            	640: {
-            		slidesPerView: 1
-            	},
-            	768: {
-            		slidesPerView: 3
-            	}, 
-            	992: {
-            		slidesPerView: 4
-            	}
-            },
-        preventClicks: false, 
-        preventClicksPropagation: true,
-	});
-
    var otherSlideShow = new Swiper( '#other-shows-slideshow', {
       slidesPerView: 3,
       spaceBetween: 20,
