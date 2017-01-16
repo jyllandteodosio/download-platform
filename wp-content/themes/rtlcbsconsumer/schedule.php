@@ -60,8 +60,8 @@ get_template_part('channel-setter');
 												<div class="schedule-shows">
 													<p class="today-show-thumb-container" style="<?php echo $show_info['background_image'];?>"></p>
 													<div class="time">
-														<span class="timeslot"><?php echo date('H:i A',strtotime($event->EventStartDate));?></span>
-														<span class="timezone"><?php echo $event->post_content != '' ? "(".$event->post_content.' JKT/BKK)' : '';?></span>
+														<span class="timeslot"><?php echo $show_info['airing_time'];?></span>
+														<span class="timezone"><?php echo '('.$show_info['airing_time_jkt'].' JKT/BKK)';?></span>
 														<h3><?php echo mb_strimwidth($event->post_title,0,45,"....") ?></h3>
 													</div>
 												</div>
