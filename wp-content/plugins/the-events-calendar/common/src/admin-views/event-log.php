@@ -84,9 +84,6 @@
 </div>
 
 <div id="tribe-log-viewer">
-	<?php if ( empty( $log_entries ) ): ?>
-		<p><?php esc_html_e( 'The selected log file is empty or has not been generated yet.', 'tribe-common' ); ?></p>
-	<?php else: ?>
 
 	<table>
 		<?php foreach ( $log_entries as $data ): ?>
@@ -98,6 +95,8 @@
 		<?php endforeach; ?>
 	</table>
 
+	<?php if ( empty( $log_entries ) ): ?>
+		<p><?php esc_html_e( 'The selected log file is empty or has not been generated yet.', 'tribe-common' ); ?></p>
 	<?php endif; ?>
 
 </div>
