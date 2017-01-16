@@ -42,11 +42,10 @@ function rtlcbsconsumer_setup() {
 	// This theme uses wp_nav_menu() .
 	register_nav_menus( array(
 		'primary' => __( 'Primary Menu', 'rtlcbsconsumer' ),
-		'footer'  => __( 'Footer Menu (Entertainment)', 'rtlcbsconsumer' ),
-		'about'  => __( 'Footer About Menu (Entertainment)', 'rtlcbsconsumer' ),
-		'about-extreme'  => __( 'Footer About Menu (Extreme)', 'rtlcbsconsumer' ),
+		'footer'  => __( 'Footer Menu', 'rtlcbsconsumer' ),
+		'about'  => __( 'Footer About Menu', 'rtlcbsconsumer' ),
 		'extra'  => __( 'Footer Extra Menu', 'rtlcbsconsumer' ),
-		'social'  => __( 'Social Links Menu', 'rtlcbsconsumer' ),
+		'social'  => __( 'Social Links Menu (Entertainment)', 'rtlcbsconsumer' ),
 		'featured-shows'  => __( 'Featured Shows Menu (Entertainment)', 'rtlcbsconsumer' ),
 		'featured-shows-extreme'  => __( 'Featured Shows Menu (Extreme)', 'rtlcbsconsumer' ),
 	) );

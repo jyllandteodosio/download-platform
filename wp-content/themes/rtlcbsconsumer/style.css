@@ -81,6 +81,9 @@ a:hover {
 .no-display {
 	display: none;
 }
+.block-display {
+	display: block;
+}
 /* BOOTSTRAP OVERRIDES
 ----------------------------------*/
 @media (min-width: 1200px) {
@@ -202,18 +205,11 @@ a:hover {
 	-pie-background: url("images/flat-sprites.svg");
 }
 
-.social-footer {
-	/*margin-top: 10px;*/
-	margin-bottom: 10px;
-}
-
-
-
 .social-footer span {
 	vertical-align: -5px;
 }
 
-.social-footer .social {
+.social-footer .social-icons {
 	vertical-align: top;
 }
 
