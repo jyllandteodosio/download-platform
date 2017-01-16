@@ -196,4 +196,13 @@ get_template_part('channel-setter');
 		</div><!-- #primary-sidebar -->
 	</div>
 </div>
-<?php get_footer( 'rtl' ); ?>
+<?php 
+  if ( $channel == 'entertainment'):
+    get_footer( 'rtl' );
+  elseif ( $channel == 'extreme'):
+    get_footer('rtl-blue');
+  elseif($channel == 'none'):
+    get_footer('rtl');
+  endif;
+
+ ?>
