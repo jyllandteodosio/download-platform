@@ -60,8 +60,9 @@
 							</ul> -->
 							<div class="social-header visible-md visible-lg">
 							<span>Follow us on:</span>
-							<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="facebook">Facebook</a>
-							<a href="https://twitter.com/RTLCBSEntertain" title="Twitter" class="twitter">Twitter</a>
+							<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="social-icons facebook">Facebook</a>
+							<a href="https://twitter.com/RTLCBSEntertain" title="Twitter" class="social-icons twitter">Twitter</a>
+							<a href="https://www.instagram.com/rtlcbsextreme/" title="Instagram" class="social-icons instagram">Instagram</a>
 							<span><?php echo date("l, F j, Y");  ?></span>
 						</div>
 						</div><!--/.nav-collapse -->

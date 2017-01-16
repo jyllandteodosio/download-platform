@@ -137,7 +137,7 @@ get_template_part('channel-setter');
 									   
 									</div>
 									<div class="spotlight-details">
-										<h3 class="spotlight-title"><?php the_title(); ?></h3>
+										<h3 class="spotlight-title"><a href="<?php echo(get_site_url(2)."/".$post->post_name)?>"><?php the_title(); ?></a></h3>
 										<p class="spotlight-excerpt"><?php echo strip_tags(mb_strimwidth(get_the_excerpt(),0,150, '...'));?></p>
 										<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>">View More</a>
 									</div>

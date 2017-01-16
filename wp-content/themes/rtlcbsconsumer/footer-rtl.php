@@ -32,8 +32,8 @@
 							<div class="col-sm-4">
 								<div class="social-footer clearfix">
 									<p><span>Follow Us: </span>
-									<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="social facebook">Facebook</a>	
-									<a href="https://twitter.com/RTLCBSEntertain" title="Twitter" class="social twitter">Twitter</a>		
+									<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="social social-icons facebook">Facebook</a>	
+									<a href="https://twitter.com/RTLCBSEntertain" title="Twitter" class="social social-icons twitter">Twitter</a>		
 									</p>										
 								</div>
 								<?php wp_nav_menu( array(
