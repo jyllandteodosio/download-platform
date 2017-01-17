@@ -167,10 +167,13 @@ if( !function_exists('getShowInfoByTitle')) {
             $image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_info['id']), 'single-post-thumbnail' );
             $background_image = $image[0] != "" ? "background-image: url('".$image[0]."')" : "";
         endif;
-        $show_info['featured_show'] = get_field('featured_show',$show_info['id'])[0];
-        if ($current_blog_id != 1) restore_current_blog();
 
+        $show_info['featured_show'] = get_field('featured_show',$show_info['id'])[0];
         $show_info['background_image'] = $background_image;
+        $show_info['airing_time'] = get_field('airing_time', $show_info['id']) ? date('g:i a',get_field('airing_time',$show_info['id']) ) : "";
+        $show_info['airing_time_jkt'] = get_field('airing_time_jkt', $show_info['id']) ? date('g:i a',get_field('airing_time_jkt',$show_info['id']) ) : "";
+
+        if ($current_blog_id != 1) restore_current_blog();
 
         return $show_info;
     }

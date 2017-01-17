@@ -21,26 +21,6 @@
         preventClicksPropagation: true,
 	});
 
-	var todaySlideShow = new Swiper( '#today-slideshow', {
-		slidesPerView: 4,
-		spaceBetween: 6,
-		nextButton: '.today-nav.swiper-button-next',
-      prevButton: '.today-nav.swiper-button-prev',
-            breakpoints: {
-            	640: {
-            		slidesPerView: 1
-            	},
-            	768: {
-            		slidesPerView: 3
-            	}, 
-            	992: {
-            		slidesPerView: 4
-            	}
-            },
-        preventClicks: false, 
-        preventClicksPropagation: true,
-	});
-
    var otherSlideShow = new Swiper( '#other-shows-slideshow', {
       slidesPerView: 3,
       spaceBetween: 20,
@@ -247,24 +227,24 @@
       /* Get date range from schedule slider data attribute */
       date_range = get_attributes_from_elements( schedule_slider, 'data-date' );
       
-      /* Fetch the sorted list of schedule time */
-      var time_list_rebased = [];
-      $.post(
-           ajaxurl, 
-           {   'action'       : 'get_tribe_events_unique_start_time_ajax',
-               'date_range'   : date_range,
-               'channel'      : $(schedule_slider_container).attr('data-channel'),
-               'schednonce'     : my_ajax_object.ajax_sched_nonce
-           },function(response) {
-               if(response != '' && response != 'false'){
-                  var response_array = $.parseJSON(response);
-                  console.log( 'response_array.length', response_array.length );
-                  if( response_array.length > 0 ){
-                     time_list_rebased = response_array;
-                  }
-               }
-           }
-      );
+      /* Fetch the sorted list of schedule time. Used for horizontal alignment of schedule times */
+      // var time_list_rebased = [];
+      // $.post(
+      //      ajaxurl, 
+      //      {   'action'       : 'get_tribe_events_unique_start_time_ajax',
+      //          'date_range'   : date_range,
+      //          'channel'      : $(schedule_slider_container).attr('data-channel'),
+      //          'schednonce'     : my_ajax_object.ajax_sched_nonce
+      //      },function(response) {
+      //          if(response != '' && response != 'false'){
+      //             var response_array = $.parseJSON(response);
+      //             console.log( 'response_array.length', response_array.length );
+      //             if( response_array.length > 0 ){
+      //                time_list_rebased = response_array;
+      //             }
+      //          }
+      //      }
+      // );
 
       if( $('.schedule-shows.no-preview').length == 0){
          trigger_lazy_loading();
@@ -331,20 +311,22 @@
                         var show_counter = $( div_stub_id ).attr( 'data-show-counter') != undefined ? $( div_stub_id ).attr( 'data-show-counter') : 0;
                         var show_time = moment(event_list_content.EventStartDate).format('HH:mm');
                         var next_skip = true;
-                        console.log('time_list_rebased',time_list_rebased);
-                        console.log('show_time', show_time);
-                        while( next_skip == true ){
+                        var stub_element = generate_show_stub_html( event_list_content );
 
+                        $(div_stub_id).append( stub_element );
+                        show_counter++;
+
+                        /* Used for horizontal alignment of schedule times */
+                        /*while( next_skip == true ){
                            if( time_list_rebased[ show_counter ] === show_time ){
                               next_skip = false;
                               var stub_element = generate_show_stub_html( event_list_content );
                            }else{
                               var stub_element = '<div class="schedule-shows no-preview '+show_counter+'"></div>';
                            }
-
                            $(div_stub_id).append( stub_element );
                            show_counter++;
-                        }
+                        }*/
 
                         $( div_stub_id ).attr( 'data-show-counter', show_counter );
                      });

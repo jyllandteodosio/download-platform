@@ -60,8 +60,7 @@
 							</ul> -->
 							<div class="social-header visible-md visible-lg">
 							<span>Follow us on:</span>
-							<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="facebook">Facebook</a>
-							<a href="https://twitter.com/RTLCBSEntertain" title="Twitter" class="twitter">Twitter</a>
+							<?php get_template_part('social-extreme'); ?>
 							<span><?php echo date("l, F j, Y");  ?></span>
 						</div>
 						</div><!--/.nav-collapse -->

@@ -45,7 +45,7 @@ function rtlcbsconsumer_setup() {
 		'footer'  => __( 'Footer Menu', 'rtlcbsconsumer' ),
 		'about'  => __( 'Footer About Menu', 'rtlcbsconsumer' ),
 		'extra'  => __( 'Footer Extra Menu', 'rtlcbsconsumer' ),
-		'social'  => __( 'Social Links Menu', 'rtlcbsconsumer' ),
+		'social'  => __( 'Social Links Menu (Entertainment)', 'rtlcbsconsumer' ),
 		'featured-shows'  => __( 'Featured Shows Menu (Entertainment)', 'rtlcbsconsumer' ),
 		'featured-shows-extreme'  => __( 'Featured Shows Menu (Extreme)', 'rtlcbsconsumer' ),
 	) );
