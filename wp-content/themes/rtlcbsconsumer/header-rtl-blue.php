@@ -30,13 +30,14 @@
 						</div>
 					</div> -->
 					<!-- bloginfo( 'url' ) -->
-					<a href="<?php bloginfo( 'url' ) ?>?channel=entertainment"><img src="<?php echo get_template_directory_uri().'/images/header-nohd.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo logo-entertainment hidden-xs img-disabled" /></a>
-					<a href="<?php bloginfo( 'url' ) ?>?channel=extreme"><img src="<?php echo get_template_directory_uri().'/images/logo-extreme-nohd.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo logo-extreme hidden-xs" /></a>
+					<a href="<?php bloginfo( 'url' ) ?>?channel=entertainment"><img src="<?php echo get_template_directory_uri().'/images/ENT-New.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo logo-entertainment hidden-xs img-disabled" /></a>
+					<a href="<?php bloginfo( 'url' ) ?>?channel=extreme"><img src="<?php echo get_template_directory_uri().'/images/EXT-New.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="logo logo-extreme hidden-xs" /></a>
 				</div>
 				<nav class="navbar navbar-inverse">
 					<div class="container">					
 						<div class="navbar-header">
-							<a href="<?php bloginfo( 'url' ) ?>" class="navbar-brand visible-xs"><img src="<?php header_image(); ?>" alt="RTL CBS Asia" /></a>
+							<a href="<?php bloginfo( 'url' ) ?>?channel=entertainment" class="navbar-brand visible-xs logo-entertainment"><img src="<?php echo get_template_directory_uri().'/images/ENT-New.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo" class="img-disabled"/></a>
+							<a href="<?php bloginfo( 'url' ) ?>?channel=extreme" class="navbar-brand visible-xs logo-extreme"><img src="<?php echo get_template_directory_uri().'/images/EXT-New.png'; ?>" alt="<?php bloginfo( 'name' ) ?> Logo"/></a>
 							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
 								<span class="sr-only">Toggle navigation</span>
 								<span class="icon-bar"></span>
@@ -59,8 +60,7 @@
 							</ul> -->
 							<div class="social-header visible-md visible-lg">
 							<span>Follow us on:</span>
-							<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="facebook">Facebook</a>
-							<a href="https://twitter.com/RTLCBSEntertain" title="Twitter" class="twitter">Twitter</a>
+							<?php get_template_part('social-extreme'); ?>
 							<span><?php echo date("l, F j, Y");  ?></span>
 						</div>
 						</div><!--/.nav-collapse -->

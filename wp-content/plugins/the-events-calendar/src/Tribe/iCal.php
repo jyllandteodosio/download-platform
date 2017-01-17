@@ -1,7 +1,7 @@
 <?php
 
 /**
- *  Class that implements the export to iCal functionality
+ *    Class that implements the export to iCal functionality
  *  both for list and single events
  */
 class Tribe__Events__iCal {
@@ -13,7 +13,7 @@ class Tribe__Events__iCal {
 	public static function init() {
 		add_action( 'tribe_events_after_footer', array( __CLASS__, 'maybe_add_link' ), 10, 1 );
 		add_action( 'tribe_events_single_event_after_the_content', array( __CLASS__, 'single_event_links' ) );
-		add_action( 'template_redirect', array( __CLASS__, 'do_ical_template' ) );
+		add_action( 'tribe_tec_template_chooser', array( __CLASS__, 'do_ical_template' ) );
 		add_filter( 'tribe_get_ical_link', array( __CLASS__, 'day_view_ical_link' ), 20, 1 );
 		add_action( 'wp_head', array( __CLASS__, 'set_feed_link' ), 2, 0 );
 	}
@@ -233,7 +233,6 @@ class Tribe__Events__iCal {
 			$item = array();
 
 			$full_format = 'Ymd\THis';
-			$utc_format = 'Ymd\THis\Z';
 			$time = (object) array(
 				'start' => tribe_get_start_date( $event_post->ID, false, 'U' ),
 				'end' => tribe_get_end_date( $event_post->ID, false, 'U' ),
@@ -252,8 +251,8 @@ class Tribe__Events__iCal {
 			$tzoned = (object) array(
 				'start'    => date( $format, $time->start ),
 				'end'      => date( $format, $time->end ),
-				'modified' => date( $utc_format, $time->modified ),
-				'created'  => date( $utc_format, $time->created ),
+				'modified' => date( $format, $time->modified ),
+				'created'  => date( $format, $time->created ),
 			);
 
 			if ( 'DATE' === $type ){
@@ -318,7 +317,7 @@ class Tribe__Events__iCal {
 			}
 
 			// add organizer if available
-			$organizer_email = tribe_get_organizer_email( $event_post->ID, false );
+			$organizer_email = tribe_get_organizer_email( $event_post->ID );
 			if ( $organizer_email ) {
 				$organizer_id = tribe_get_organizer_id( $event_post->ID );
 				$organizer = get_post( $organizer_id );

@@ -165,6 +165,12 @@ class Package {
 
                /* For all WPDM Files */
                 if (is_array($allfiles_sorted)) {
+                    $affiliate_files = array();
+                    $user_id = get_current_user_id();
+                    $current_operator_group = get_current_user_operator_group();
+                    $current_country_group = get_current_user_country_group();
+                    $is_pr_group = check_user_is_pr_group( $user_id, $current_operator_group, $current_country_group );
+              
                     foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
                         $sfile = $sfileOriginal;
                         $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
@@ -180,23 +186,23 @@ class Package {
                             foreach (self::$file_attr_list['image'] as $file_type => $file_category) {
                                 foreach ($file_category as $file_category_key => $tab) {
                                     $prefix = $tab['prefix'];
-                                    // KEY
+                                    // "KEY" - Key Art
                                     if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['key_art']['prefix']){
                                         $categorized_files[self::$file_attr_list['image']['show']['key_art']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // EPI
+                                    // "EPI" - Episodic Stills
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['episodic_stills']['prefix']){
                                         $categorized_files[self::$file_attr_list['image']['show']['episodic_stills']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // GAL
+                                    // "GALLERY" - Gallery
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['gallery']['prefix']){
                                         $categorized_files[self::$file_attr_list['image']['show']['gallery']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // LOG
+                                    // "LOGO" - Logo
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['logos']['prefix']){
                                         $categorized_files[self::$file_attr_list['image']['show']['logos']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // OTHERS
+                                    // SHOW IMAGES OTHERS
                                     else if( !contains($fileTitle, self::$file_attr_list['image']['show']['key_art']['prefix']) 
                                         && !contains($fileTitle, self::$file_attr_list['image']['show']['episodic_stills']['prefix']) 
                                         && !contains($fileTitle, self::$file_attr_list['image']['show']['gallery']['prefix']) 
@@ -205,11 +211,11 @@ class Package {
                                         $categorized_files[self::$file_attr_list['image']['show']['others']['prefix']][$fileID] = $sfileOriginal;
                                     }
                                     /* END SHOW IMAGES ======================================================================= */
-                                    // CM_ELE
+                                    // "ELEMENTS" - Elements
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['channel']['channel_elements']['prefix']){
                                         $categorized_files[self::$file_attr_list['image']['channel']['channel_elements']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // CM_OTH
+                                    // CHANNEL MATERIALS IMAGES OTHERS
                                     else if( !contains($fileTitle, self::$file_attr_list['image']['channel']['channel_logos']['prefix']) 
                                         && !contains($fileTitle, self::$file_attr_list['image']['channel']['channel_elements']['prefix']) 
                                         && $prefix == self::$file_attr_list['image']['channel']['channel_others']['prefix']){
@@ -222,23 +228,23 @@ class Package {
                                 foreach ($file_category as $file_category_key => $tab) {
                                     $prefix = $tab['prefix'];
 
-                                    // SYN
+                                    // "SYNOPSIS" - Synopses
                                     if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['synopses']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['synopses']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // EPK
+                                    // "TRANS" - Transcripts / EPK
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['transcripts']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['transcripts']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // FAC
+                                    // "FACT" - Fact Sheet / Press Pack
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['fact_sheet']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['fact_sheet']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // FON
+                                    // "FONT" - Fonts
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['fonts']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['fonts']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // DOTH
+                                    // SHOW DOCUMENT OTHERS
                                     else if( !contains($fileTitle, self::$file_attr_list['document']['show']['synopses']['prefix']) 
                                         && !contains($fileTitle, self::$file_attr_list['document']['show']['transcripts']['prefix']) 
                                         && !contains($fileTitle, self::$file_attr_list['document']['show']['fact_sheet']['prefix']) 
@@ -246,29 +252,69 @@ class Package {
                                         && $prefix == self::$file_attr_list['document']['show']['document_others']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['document_others']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // CM_HIG
+                                    // "HIGHLIGHTS" - Highlights
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_highlights']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['channel']['channel_highlights']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // CM_BRA
+                                    // "BRAND" - Brand Guide
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_brand']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['channel']['channel_brand']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // CM_BOI
+                                    // "BOILER" - Boiler Plates
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_boiler']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['channel']['channel_boiler']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                     // CM_EPG
+                                    // "EPG" - EPG
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_epg']['prefix']){
-                                        if ( is_generate_file_panel( self::$operator_prefix_list['affiliate'], $fileTitle, $allfiles_sorted, $fileinfo) ){
+                                        if( get_current_user_role() == "administrator" || 
+                                            ($is_pr_group == 'yes' && $current_country_group == 'all' ) ) {
+                                            $affiliate_files['channel_epg'][$fileID] = $sfileOriginal;
+
+                                        }else if( $is_pr_group == 'yes' ){
+                                            $sub_operators = get_operators_by_country( $current_country_group );
+                                            foreach ($sub_operators as $key => $sub_op) {
+
+                                                if ( contains($fileTitle, $sub_op->operator_group) ){
+                                                    $categorized_files[self::$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $sfileOriginal;
+
+                                                }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                                    $affiliate_files['channel_epg'][$fileID] = $sfileOriginal;
+                                                }
+                                            }
+
+                                        }else if ( contains($fileTitle, $current_operator_group) ){
                                             $categorized_files[self::$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $sfileOriginal;
+
+                                        }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                            $affiliate_files['channel_epg'][$fileID] = $sfileOriginal;
                                         }
                                     }
-                                    // CM_CAT
+                                    // "CATCH" - Catch Up
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_catchup']['prefix']){
-                                        if ( is_generate_file_panel( self::$operator_prefix_list['affiliate'], $fileTitle, $allfiles_sorted, $fileinfo) ){
+                                        
+                                        if( get_current_user_role() == "administrator" || 
+                                            ($is_pr_group == 'yes' && $current_country_group == 'all' ) ) {
+                                            $affiliate_files['channel_catchup'][$fileID] = $sfileOriginal;
+
+                                        }else if( $is_pr_group == 'yes' ){
+                                            $sub_operators = get_operators_by_country( $current_country_group );
+                                            foreach ($sub_operators as $key => $sub_op) {
+
+                                                if ( contains($fileTitle, $sub_op->operator_group) ){
+                                                    $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
+
+                                                }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                                    $affiliate_files['channel_catchup'][$fileID] = $sfileOriginal;
+                                                }
+                                            }
+
+                                        }else if ( contains($fileTitle, $current_operator_group) ){
                                             $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
+
+                                        }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                            $affiliate_files['channel_catchup'][$fileID] = $sfileOriginal;
                                         }
+
                                     }
                                 }
                             }
@@ -276,8 +322,19 @@ class Package {
 
 
                     }
-                }
-            }
+
+                    /* FOR EPG AND CATCHUP ONLY -  Check if specific user already have some epg/catchup files and if affilate epg/catchup temporary container is not empty. Will assign the buffered affiliate files if epg/catchup files is empty */
+                    $affiliate_categories = [ 'channel_epg', 'channel_catchup' ];
+                    foreach ($affiliate_categories as $key => $prefix) {
+                        if( count( $categorized_files[self::$file_attr_list['document']['channel'][$prefix]['prefix']] ) == 0 && 
+                            isset( $affiliate_files[$prefix] ) > 0 ){
+                            foreach ($affiliate_files[$prefix] as $fileID => $sfileOriginal) {
+                                $categorized_files[self::$file_attr_list['document']['channel'][$prefix]['prefix']][$fileID] = $sfileOriginal;
+                            }
+                        }
+                    }
+                } 
+            } /* END of is_array( allfiles_sorted ) */
 
             foreach (self::$file_attr_list as $file_type => $file_category) {
                 foreach ($file_category as $file_category_key => $tab) {

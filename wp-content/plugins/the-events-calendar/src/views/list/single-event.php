@@ -6,7 +6,6 @@
  * Override this template in your own theme by creating a file at [your-theme]/tribe-events/list/single-event.php
  *
  * @package TribeEventsCalendar
- * @version  4.3
  *
  */
 if ( ! defined( 'ABSPATH' ) ) {
@@ -54,11 +53,6 @@ $organizer = tribe_get_organizer();
 			<!-- Venue Display Info -->
 			<div class="tribe-events-venue-details">
 				<?php echo implode( ', ', $venue_details ); ?>
-				<?php
-				if ( tribe_get_map_link() ) {
-					echo tribe_get_map_link_html();
-				}
-				?>
 			</div> <!-- .tribe-events-venue-details -->
 		<?php endif; ?>
 
