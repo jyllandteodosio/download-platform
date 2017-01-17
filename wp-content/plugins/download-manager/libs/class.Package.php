@@ -339,9 +339,11 @@ class Package {
             foreach (self::$file_attr_list as $file_type => $file_category) {
                 foreach ($file_category as $file_category_key => $tab) {
                     foreach ($tab as $key => $tab_attr) {
+                        // Count total number of files under each category
+                        $vars['file_count_' . $tab_attr['prefix']] = count($categorized_files[$tab_attr['prefix']]);
+
                         if( array_key_exists($tab_attr['prefix'], $categorized_files)){
                             if(strpos("_".$template,'['.$tab_attr['template_shortcode'].']')){
-
                                 $file_list_data_prep = array (
                                         'all_files' => $categorized_files[$tab_attr['prefix']],
                                         'prefix' => $tab_attr['prefix'],

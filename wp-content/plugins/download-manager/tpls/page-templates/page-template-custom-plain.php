@@ -12,18 +12,26 @@
         <div class="clear red-bar-separator"></div>    
 
         <div class="sub-tabs-wrap documents-sub-tabs fullwidth" data-parent-tab="documents-tab">
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelepg-tab" data-target="channelepg-tab-contents"><a href="#">EPG</a></div>
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelhighlights-tab" data-target="channelhighlights-tab-contents"><a href="#">Highlights</a></div>
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelbrand-tab" data-target="channelbrand-tab-contents"><a href="#">Brand Guide</a></div>    
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelboiler-tab" data-target="channelboiler-tab-contents"><a href="#">Boiler Plates</a></div>    
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelcatch-tab" data-target="channelcatch-tab-contents"><a href="#">Catch Up</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelepg-tab" data-target="channelepg-tab-contents">
+          <a href="#">EPG</a><span class="file-count">[file_count_epg]</span></div>
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelhighlights-tab" data-target="channelhighlights-tab-contents">
+          <a href="#">Highlights</a><span class="file-count">[file_count_highlights]</span></div>
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelbrand-tab" data-target="channelbrand-tab-contents">
+          <a href="#">Brand Guide</a><span class="file-count">[file_count_brand]</span></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelboiler-tab" data-target="channelboiler-tab-contents">
+          <a href="#">Boiler Plates</a><span class="file-count">[file_count_boiler]</span></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelcatch-tab" data-target="channelcatch-tab-contents">
+          <a href="#">Catch Up</a><span class="file-count">[file_count_catch]</span></div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->  
 
         <div class="sub-tabs-wrap images-sub-tabs fullwidth" data-parent-tab="images-tab">
-          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channellogos-tab" data-target="channellogos-tab-contents"><a href="#">Logos</a></div>
-          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channelelements-tab mid-tab" data-target="channelelements-tab-contents"><a href="#">Elements</a></div>
-          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channelothers-tab" data-target="channelothers-tab-contents"><a href="#">Others</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channellogos-tab" data-target="channellogos-tab-contents">
+          <a href="#">Logos</a><span class="file-count">[file_count_logo]</span></div>
+          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channelelements-tab mid-tab" data-target="channelelements-tab-contents">
+          <a href="#">Elements</a><span class="file-count">[file_count_elements]</span></div>
+          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channelothers-tab" data-target="channelothers-tab-contents">
+          <a href="#">Others</a><span class="file-count">[file_count_cm_oth]</span></div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->                 
         <div class="clear"></div><!-- this will maintain the flow of elements even if the next elements were set to float -->
