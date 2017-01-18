@@ -13,25 +13,25 @@
 
         <div class="sub-tabs-wrap documents-sub-tabs fullwidth" data-parent-tab="documents-tab">
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelepg-tab" data-target="channelepg-tab-contents">
-          <a href="#">EPG</a><span class="file-count">[file_count_epg]</span></div>
+          <a href="#">EPG</a>[file_count_epg]</div>
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelhighlights-tab" data-target="channelhighlights-tab-contents">
-          <a href="#">Highlights</a><span class="file-count">[file_count_highlights]</span></div>
+          <a href="#">Highlights</a>[file_count_highlights]</div>
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelbrand-tab" data-target="channelbrand-tab-contents">
-          <a href="#">Brand Guide</a><span class="file-count">[file_count_brand]</span></div>    
+          <a href="#">Brand Guide</a>[file_count_brand]</div>    
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelboiler-tab" data-target="channelboiler-tab-contents">
-          <a href="#">Boiler Plates</a><span class="file-count">[file_count_boiler]</span></div>    
+          <a href="#">Boiler Plates</a>[file_count_boiler]</div>    
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelcatch-tab" data-target="channelcatch-tab-contents">
-          <a href="#">Catch Up</a><span class="file-count">[file_count_catch]</span></div>    
+          <a href="#">Catch Up</a>[file_count_catch]</div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->  
 
         <div class="sub-tabs-wrap images-sub-tabs fullwidth" data-parent-tab="images-tab">
           <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channellogos-tab" data-target="channellogos-tab-contents">
-          <a href="#">Logos</a><span class="file-count">[file_count_logo]</span></div>
+          <a href="#">Logos</a>[file_count_logo]</div>
           <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channelelements-tab mid-tab" data-target="channelelements-tab-contents">
-          <a href="#">Elements</a><span class="file-count">[file_count_elements]</span></div>
+          <a href="#">Elements</a>[file_count_elements]</div>
           <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channelothers-tab" data-target="channelothers-tab-contents">
-          <a href="#">Others</a><span class="file-count">[file_count_cm_oth]</span></div>    
+          <a href="#">Others</a>[file_count_cm_oth]</div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->                 
         <div class="clear"></div><!-- this will maintain the flow of elements even if the next elements were set to float -->
