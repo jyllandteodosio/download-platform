@@ -46,7 +46,7 @@
           <a href="#">Gallery</a><span class="file-count">[file_count_gallery]</span></div>    
           <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center logos-tab" data-target="logos-tab-contents">
           <a href="#">Logos</a><span class="file-count">[file_count_logo]</span></div>    
-          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center others-tab last-tab" style="flex-basis: 5%;" data-target="others-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center others-tab last-tab" style="flex-basis: 8%;" data-target="others-tab-contents">
           <a href="#">Others - Special Web Assets etc</a><span class="file-count">[file_count_oth]</span></div>    
           <div class="clear"></div> 
         </div><!-- subtabs-wrap -->   
