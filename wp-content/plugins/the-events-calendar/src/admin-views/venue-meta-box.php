@@ -92,12 +92,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php
 			foreach ( Tribe__View_Helpers::loadStates() as $abbr => $fullname ) {
 				echo '<option value="' . esc_attr( $abbr ) . '"';
-
-				$state = -1 !== $_VenueStateProvince ? $_VenueStateProvince : $currentState;
-
-				// support matching by state abbreviation OR fullname.
-				// NOTE: converts to abbreviation on save
-				selected( ( $state === $abbr || $state === $fullname ) );
+				selected( ( ( $_VenueStateProvince != - 1 ? $_VenueStateProvince : $currentState ) == $abbr ) );
 				echo '>' . esc_html( $fullname ) . '</option>';
 			}
 			?>
