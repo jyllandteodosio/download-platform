@@ -13,6 +13,7 @@
      * Function to create and update wpdm email notifier DB table upon plugin activation
      */
 	function wpdm_email_activation() {
+
 		global $wpdb;
 		global $wea_db_version;
 
@@ -508,6 +509,8 @@ function trigger_email_notification_checker(){
 				}
 			    $entertainment_category_id = getCategoryIdBySlug('entertainment');
 			    $extreme_category_id = getCategoryIdBySlug('extreme');
+
+			    print_r($categories_data);
 
 				/* Check if show categories includes entertainment or extreme */
 				$is_exist_channel = array();

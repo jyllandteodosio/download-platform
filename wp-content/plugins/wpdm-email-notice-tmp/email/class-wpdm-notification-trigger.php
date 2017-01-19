@@ -1,8 +1,8 @@
 <?php
-
+// NOT WORKING
 class WPDM_Notification_Trigger {
 	public function __construct( ) {
-		add_action('email_notice_event', 'trigger_email_notification_checker');
+		// add_action('email_notice_event', array( $this, 'trigger_email_notification_checker') );
 
 	}
 	
@@ -32,6 +32,8 @@ function trigger_email_notification_checker(){
 				}
 			    $entertainment_category_id = $this->getCategoryIdBySlug('entertainment');
 			    $extreme_category_id = $this->getCategoryIdBySlug('extreme');
+
+			    // print_r($categories_data);
 
 				/* Check if show categories includes entertainment or extreme */
 				$is_exist_channel = array();
@@ -90,17 +92,19 @@ function trigger_email_notification_checker(){
 		}
 	}
 	// echo "<br>count-email_recipient:".count($email_recipient);
+	// echo "<br>count-email_recipient:".count($email_recipient);                       
 	// die('asd');
+
 	if( count($email_recipient) > 0 ){
 		$email_recipient_serialized = serialize($email_recipient);
-		$return_value_email = setEmailEntryStatus('sent');
+		$return_value_email = $this->setEmailEntryStatus('sent'); /* Not continuing after this */
+
 		if( $return_value_email === FALSE ){
-			addEmailLogs('failed', $email_recipient_serialized);
+			$this->addEmailLogs('failed', $email_recipient_serialized);
 		}else{
-			addEmailLogs('success', $email_recipient_serialized);
+			$this->addEmailLogs('success', $email_recipient_serialized);
 		}
 	}
-
 }
 
 // if (!function_exists('check_user_group_access')){
