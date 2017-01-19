@@ -134,7 +134,7 @@ class Package {
                 $specific_thumbnails = array(); /* Thumbnails container for TIF files */
 
                 /* Sort files by file title */
-                $filename_sort = array();
+               /* $filename_sort = array();
                 foreach ($allfiles as $key => $row) {
                     if (!contains($fileinfo[$key]['title'],self::$specific_thumbs_prefix))
                         $filename_sort[$key] = $fileinfo[$key]['title'];
@@ -146,7 +146,7 @@ class Package {
                 $allfiles_sorted = array();
                 foreach ($filename_sort as $key => $value) {
                     $allfiles_sorted[$key] = $allfiles[$key];
-                }
+                }*/
 
                 /* For Promo Files */
                 if (is_array($allpromofiles)) {
@@ -164,14 +164,14 @@ class Package {
                 }
 
                /* For all WPDM Files */
-                if (is_array($allfiles_sorted)) {
+                if (is_array($allfiles)) {
                     $affiliate_files = array();
                     $user_id = get_current_user_id();
                     $current_operator_group = get_current_user_operator_group();
                     $current_country_group = get_current_user_country_group();
                     $is_pr_group = check_user_is_pr_group( $user_id, $current_operator_group, $current_country_group );
               
-                    foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
+                    foreach ($allfiles as $fileID => $sfileOriginal) {
                         $sfile = $sfileOriginal;
                         $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
                                         $fileinfo[$sfile]['title']:
@@ -339,9 +339,16 @@ class Package {
             foreach (self::$file_attr_list as $file_type => $file_category) {
                 foreach ($file_category as $file_category_key => $tab) {
                     foreach ($tab as $key => $tab_attr) {
+                        // Count total number of files under each category
+                        $file_flag = count($categorized_files[$tab_attr['prefix']]);
+                        if($file_flag > 0) {
+                            $vars['file_count_' . $tab_attr['prefix']] = '<span class="file-count">' . $file_flag . '</span>';
+                        } else {
+                            $vars['file_count_' . $tab_attr['prefix']] = "";
+                        }
+
                         if( array_key_exists($tab_attr['prefix'], $categorized_files)){
                             if(strpos("_".$template,'['.$tab_attr['template_shortcode'].']')){
-
                                 $file_list_data_prep = array (
                                         'all_files' => $categorized_files[$tab_attr['prefix']],
                                         'prefix' => $tab_attr['prefix'],
