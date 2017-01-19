@@ -23,16 +23,18 @@ class WPDM_Notification_Trigger {
 			
 			$show_files_raw = $user->show_files;
 			$show_files = array();
-			echo 'Show Files Raw: ' . $show_files_raw;
+			// echo 'Show Files Raw: ' . $show_files_raw;
 			if($show_files_raw != '') {
 				$show_files = explode(",",$show_files_raw);
 			}
-			// print_r($show_files);
+			print_r($show_files);
 			
 			$channel_materials_raw = $user->channel_materials;
 			$channel_materials = explode(",",$channel_materials_raw);
-			// print_r($channel_materials);
+			print_r($channel_materials);
 			echo '</pre>';
+
+			$show_files = array_merge($show_files, $channel_materials);
 
 			$files = array();
 			if(count($email_entries) > 0){
@@ -189,23 +191,12 @@ class WPDM_Notification_Trigger {
 			}
 		}
 
-		var_dump($show_files);
-		echo count($show_files);
+		// var_dump($show_files);
+		// echo count($show_files);
 			
 		if (count($raw_files) > 0) {
 			foreach ($raw_files as $key => $value) {
 				$file_title = $file_info[$key]['title'];
-				$flag = false;
-
-				/*echo 'Title: ' . $file_title . '<br>';
-				foreach($show_files as $show_files_prefix) {
-					echo 'Prefix: ' . $show_files_prefix . '<br>';
-					if( contains($file_title,$show_files_prefix ) ) {
-						echo 'true <br>';
-						$flag = true;
-					}
-				}*/	
-
 
 				foreach ($filtered_categories as $fc_key => $prefix) {
 					if( contains($value, $prefix) ){
