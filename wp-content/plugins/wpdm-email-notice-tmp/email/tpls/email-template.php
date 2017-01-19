@@ -49,7 +49,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <td>
 
 
-
+[file_list]
 
 
 
@@ -75,7 +75,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </center></td>
 </tr>
 <tr>
-<td><center><img src="email_logo" alt="RTL CBS Logo" /></center>
+<td><center><img src="[email_logo]" alt="RTL CBS Logo" /></center>
 
 <p>&nbsp;</p>
 </td>

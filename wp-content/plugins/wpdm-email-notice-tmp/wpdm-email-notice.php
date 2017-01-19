@@ -76,8 +76,8 @@ function email_notice_deactivation() {
  * Begins execution of the plugin.
  */
 if( is_admin() ){
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wpdm-email-notice.php';
-	$wen_plugin = new WPDM_Email_Notice();
+	require_once plugin_dir_path( __FILE__ ) . 'admin/class-wpdm-email-notice-admin.php';
+	$admin_dash = new WPDM_Email_Notice_Admin( );	
 
 	require_once plugin_dir_path( __FILE__ ) . 'email/class-wpdm-file-monitor.php';
 	$file_monitor = new WPDM_File_Monitor( );	
@@ -86,27 +86,3 @@ if( is_admin() ){
 require_once plugin_dir_path( __FILE__ ) . 'email/class-wpdm-notification-trigger.php';
 $notification_trigger = new WPDM_Notification_Trigger( );
 add_action('email_notice_event', array($notification_trigger,'trigger_email_notification_checker'));
-
-
-
-
-$template_path = plugin_dir_path( __FILE__ ) . 'email/tpls/email-template.php';
-if (file_exists($template_path)) {
-	$template = file_get_contents($template_path);
-}
-
-// print_r($template);
-
-$vars['user_email'] = "dianne@yehey.com";
-if(strpos($template, '[user_email]')) {
-	// echo "entered";
-	$template = str_replace('[user_email]', $vars['user_email'], $template );
-            // $vars['file_types'] = self::fileTypes($vars['ID'], false);
-            // $vars['file_type_icons'] = self::fileTypes($vars['ID']);
-}
-
-print_r($template);
-die('yesss');
-// else if (file_exists($ltpldir . $template)) $template = file_get_contents($ltpldir . $template);
-// else if (file_exists($ltpldir . $template . '.php')) $template = file_get_contents($ltpldir . $template . '.php');
-// else if (file_exists($ltpldir. $type . "-template-" . $template . '.php')) $template = file_get_contents($ltpldir. $type . "-template-" . $template . '.php');

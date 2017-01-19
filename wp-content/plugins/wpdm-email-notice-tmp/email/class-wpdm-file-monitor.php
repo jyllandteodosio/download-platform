@@ -1,5 +1,6 @@
 <?php
 
+if ( ! class_exists( 'WPDM_File_Monitor' ) ) {
 class WPDM_File_Monitor {
 
 	public function __construct(  ) {
@@ -325,7 +326,7 @@ class WPDM_File_Monitor {
 
 }
 
-
+}
 
 
 

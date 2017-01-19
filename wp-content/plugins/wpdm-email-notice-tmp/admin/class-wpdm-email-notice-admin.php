@@ -1,5 +1,6 @@
 <?php
 
+if ( ! class_exists( 'WPDM_Email_Notice_Admin' ) ) {
 class WPDM_Email_Notice_Admin {
 
 	public function __construct( ) {
@@ -28,5 +29,7 @@ class WPDM_Email_Notice_Admin {
         </div>
         <?php
 	}
+
+}
 
 }
