@@ -16,6 +16,23 @@ class WPDM_Notification_Trigger {
 		$permalink = get_permalink($id);
 		$email_recipient = array();
 		foreach ($users as $user) {
+			echo '<pre>';
+			echo $user->user_email . '<br>';
+			echo $user->country_group . '<br>';
+			echo $user->operator_group . '<br>';
+			
+			$show_files_raw = $user->show_files;
+			$show_files = array();
+			echo 'Show Files Raw: ' . $show_files_raw;
+			if($show_files_raw != '') {
+				$show_files = explode(",",$show_files_raw);
+			}
+			// print_r($show_files);
+			
+			$channel_materials_raw = $user->channel_materials;
+			$channel_materials = explode(",",$channel_materials_raw);
+			// print_r($channel_materials);
+			echo '</pre>';
 
 			$files = array();
 			if(count($email_entries) > 0){
@@ -55,8 +72,10 @@ class WPDM_Notification_Trigger {
 				    $matched_operator_access = $this->check_user_group_access($user, $operator_access);
 					if($matched_operator_access){
 						$uns_email_entry = unserialize($email_entry->data_new);
-						$files[$email_entry->post_id]['promo'] = $this->get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group']);
-						$files[$email_entry->post_id]['show'] = $this->get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group']);
+						$files[$email_entry->post_id]['promo'] = $this->get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$show_files);
+						$files[$email_entry->post_id]['show'] = $this->get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],
+							$uns_email_entry['raw_files']['file_info'],
+							$show_files);
 					}
 				}
 			}
@@ -68,16 +87,18 @@ class WPDM_Notification_Trigger {
 			}
 		}                
 
-		if( count($email_recipient) > 0 ){
-			$email_recipient_serialized = serialize($email_recipient);
-			$return_value_email = $this->setEmailEntryStatus('sent');
+		/* Code to update wpdm_email and wpdm_email_logs table. */
+		// if( count($email_recipient) > 0 ){
+		// 	$email_recipient_serialized = serialize($email_recipient);
+		// 	$return_value_email = $this->setEmailEntryStatus('sent');
 
-			if( $return_value_email === FALSE ){
-				$this->addEmailLogs('failed', $email_recipient_serialized);
-			}else{
-				$this->addEmailLogs('success', $email_recipient_serialized);
-			}
-		}
+		// 	if( $return_value_email === FALSE ){
+		// 		$this->addEmailLogs('failed', $email_recipient_serialized);
+		// 	}else{
+		// 		$this->addEmailLogs('success', $email_recipient_serialized);
+		// 	}
+		// }
+		/* END -  Code to update wpdm_email and wpdm_email_logs table. */
 	}
 
 	/**
@@ -112,30 +133,32 @@ class WPDM_Notification_Trigger {
 	 * @param  Array  $all_promos     	All current promos from the submitted form
 	 * @return Array                  	Array of promo file names
 	 */
-	function get_user_accessible_promos($user, $promo_files, $is_pr_group = ''){
+	function get_user_accessible_promos($user, $promo_files, $is_pr_group = '', $show_files = array()){
 		$accessible_promo_files = array();
 
-		if (count($promo_files) > 0) {
-			foreach ($promo_files as $key => $value) {
+		if ( in_array('promo', $show_files) || count($show_files) == 0) {
+			if (count($promo_files) > 0) {
+				foreach ($promo_files as $key => $value) {
 
-				if(  $user->country_group == 'all' && $is_pr_group == 'yes' ||
-					 contains($value['operator_access'], $user->operator_group) ||
-					 contains($value['operator_access'], 'all' )
-					){
-                	array_push($accessible_promo_files, $value);
+					if(  $user->country_group == 'all' && $is_pr_group == 'yes' ||
+						 contains($value['operator_access'], $user->operator_group) ||
+						 contains($value['operator_access'], 'all' )
+						){
+	                	array_push($accessible_promo_files, $value);
 
-                }else if( $is_pr_group == 'yes'){
+	                }else if( $is_pr_group == 'yes'){
 
-                    $sub_operators = get_operators_by_country( $user->country_group );
+	                    $sub_operators = get_operators_by_country( $user->country_group );
 
-                    foreach ($sub_operators as $so_key => $sub_op) {
-                        if ( contains($value['operator_access'], $sub_op->operator_group ) ){
-                        	array_push($accessible_promo_files, $value);
-                            break;
+	                    foreach ($sub_operators as $so_key => $sub_op) {
+	                        if ( contains($value['operator_access'], $sub_op->operator_group ) ){
+	                        	array_push($accessible_promo_files, $value);
+	                            break;
 
-                        }
-                    }
-                }
+	                        }
+	                    }
+	                }
+				}
 			}
 		}
 		return $accessible_promo_files;
@@ -148,13 +171,41 @@ class WPDM_Notification_Trigger {
 	 * @param  Array  $all_promos     	All current promos from the submitted form
 	 * @return Array                  	Array of promo file names
 	 */
-	function get_user_accessible_files($user, $all_files, $raw_files, $is_pr_group = ''){
+	function get_user_accessible_files($user, $all_files, $raw_files, $is_pr_group = '', $file_info = array(), $show_files = array()){
 		$affiliate_files = array();
 		$filtered_files = array();
 		$filtered_categories = [ 'epg', 'catch' ];
+		$file_types = [ 'show', 'document', 'promo' ];
 
+		if(count($show_files) > 0) {
+			foreach( $file_types as $file_type ) {
+				if (isset($all_files[$file_type])) {
+					foreach( $all_files[$file_type] as $key => $value ) {
+						if ( !in_array($key, $show_files) ) {
+							unset( $all_files[$file_type][$key] );
+						}
+					}
+				}
+			}
+		}
+
+		var_dump($show_files);
+		echo count($show_files);
+			
 		if (count($raw_files) > 0) {
 			foreach ($raw_files as $key => $value) {
+				$file_title = $file_info[$key]['title'];
+				$flag = false;
+
+				/*echo 'Title: ' . $file_title . '<br>';
+				foreach($show_files as $show_files_prefix) {
+					echo 'Prefix: ' . $show_files_prefix . '<br>';
+					if( contains($file_title,$show_files_prefix ) ) {
+						echo 'true <br>';
+						$flag = true;
+					}
+				}*/	
+
 
 				foreach ($filtered_categories as $fc_key => $prefix) {
 					if( contains($value, $prefix) ){
@@ -191,19 +242,28 @@ class WPDM_Notification_Trigger {
 							if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
 		                }
 					}
-				}
-				
-			}
-			/* FOR EPG and CATCH UP ONLY */  
-			foreach ($filtered_categories as $fc_key => $prefix) {
-				if( count($filtered_files['document'][$prefix]) == 0 && count($affiliate_files['document'][$prefix]) > 0 ){
-					foreach ( $affiliate_files['document'][$prefix] as $key => $value) {
-						$all_files['document'][$prefix][$key] = $value;
+				}	
+
+
+				/*	} else {
+						unset(  );
+
+						continue;
+					} // If statement of $flag 	
+				} // Outer foreach loop*/
+
+				/* FOR EPG and CATCH UP ONLY */  
+				foreach ($filtered_categories as $fc_key => $prefix) {
+					if( count($filtered_files['document'][$prefix]) == 0 && count($affiliate_files['document'][$prefix]) > 0 ){
+						foreach ( $affiliate_files['document'][$prefix] as $key => $value) {
+							$all_files['document'][$prefix][$key] = $value;
+						}
 					}
 				}
-			}
 
+			}
 		}
+
 		return $all_files;
 	}
 
@@ -421,17 +481,20 @@ class WPDM_Notification_Trigger {
 		if( $email_files_counter['entertainment'] > 0 ||  $email_files_counter['extreme'] > 0 ){
 			$message = $this->update_email_template( $email_vars );
 
+			/* Uncomment this echo code if you are not testing  */
+			echo $message;
+
 			/* Start output buffering to grab smtp debugging output*/
-			ob_start();
+			// ob_start();
 
 			/* Send the test mail*/
-			$result = wp_mail($to,$subject,$message,$headers);
+			// $result = wp_mail($to,$subject,$message,$headers);
 				
 			/* Grab the smtp debugging output*/
-			$smtp_debug = ob_get_clean();
+			// $smtp_debug = ob_get_clean();
 			
 			/* Output the response*/
-			return $result;
+			// return $result;
 		}
 		return false;
 	}

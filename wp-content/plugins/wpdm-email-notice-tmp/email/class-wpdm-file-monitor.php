@@ -8,6 +8,13 @@ class WPDM_File_Monitor {
 	}
 
 	function wpdm_check_new_files($post_id){
+		/* Code to test email sender trigger */
+		require_once plugin_dir_path( dirname( __FILE__ )  ) . 'email/class-wpdm-notification-trigger.php';
+		$notification_trigger2 = new WPDM_Notification_Trigger( );
+		$notification_trigger2->trigger_email_notification_checker();
+		die('fsdfs');
+		/* END - Code to test email sender trigger */
+
 		    global $wpdb;
 			/* Get current POST data */
 		    $post = get_post($id, ARRAY_A);
