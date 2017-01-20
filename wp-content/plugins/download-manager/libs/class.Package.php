@@ -24,7 +24,7 @@ class Package {
                                     'document' => array (
                                         'show'  => array (
                                             'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
-                                            'transcripts'       => array('prefix' => 'trans'        , 'template_shortcode' => 'file_category,epk' ),
+                                            'transcripts'       => array('prefix' => 'transcript'        , 'template_shortcode' => 'file_category,epk' ),
                                             'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
                                             'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
                                             'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),

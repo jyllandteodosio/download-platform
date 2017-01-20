@@ -16,28 +16,28 @@ class WPDM_Notification_Trigger {
 		$permalink = get_permalink($id);
 		$email_recipient = array();
 		foreach ($users as $user) {
-			echo '<pre>';
+			echo '<pre><br><br>';
 			echo $user->user_email . '<br>';
 			echo $user->country_group . '<br>';
-			echo $user->operator_group . '<br>';
+			echo $user->operator_group . '<br><br>';
 			
 			$show_files_raw = $user->show_files;
-			$show_files = array();
-			// echo 'Show Files Raw: ' . $show_files_raw;
-			if($show_files_raw != '') {
-				$show_files = explode(",",$show_files_raw);
-			}
+			$show_files = $show_files_raw != '' ? explode(",",$show_files_raw) : array();
+			echo "Shows:<br>";
 			print_r($show_files);
 			
 			$channel_materials_raw = $user->channel_materials;
-			$channel_materials = explode(",",$channel_materials_raw);
+			$channel_materials = $channel_materials_raw != '' ? explode(",",$channel_materials_raw) : array();
+			echo "Channel Materials:<br>";
 			print_r($channel_materials);
+			
+			$show_files = !empty($show_files) || !empty($channel_materials) ? array_merge($show_files, $channel_materials) : $show_files;
+			echo "Merged:<br>";
+			print_r($show_files);
 			echo '</pre>';
 
-			$show_files = array_merge($show_files, $channel_materials);
-
 			$files = array();
-			if(count($email_entries) > 0){
+			if( !empty($email_entries) ){
 				foreach ($email_entries as $key => $email_entry) {
 					$categories_data = array();
 					$categories = array();
@@ -82,7 +82,7 @@ class WPDM_Notification_Trigger {
 				}
 			}
 
-			if( count($files) > 0 ){
+			if( !empty($files) ){
 				$email_sent = $this->send_email_notice($user, $files);
 				if($email_sent)
 					array_push($email_recipient,$user->user_email);
@@ -138,8 +138,8 @@ class WPDM_Notification_Trigger {
 	function get_user_accessible_promos($user, $promo_files, $is_pr_group = '', $show_files = array()){
 		$accessible_promo_files = array();
 
-		if ( in_array('promo', $show_files) || count($show_files) == 0) {
-			if (count($promo_files) > 0) {
+		if ( in_array('promo', $show_files) || empty($show_files) ) {
+			if (!empty($promo_files)) {
 				foreach ($promo_files as $key => $value) {
 
 					if(  $user->country_group == 'all' && $is_pr_group == 'yes' ||
@@ -177,13 +177,22 @@ class WPDM_Notification_Trigger {
 		$affiliate_files = array();
 		$filtered_files = array();
 		$filtered_categories = [ 'epg', 'catch' ];
-		$file_types = [ 'show', 'document', 'promo' ];
+		$file_types = [ 'image', 'document', 'promo' ];
 
-		if(count($show_files) > 0) {
+		// echo "<pre>";
+		// echo "All Files: ";
+		// print_r($all_files);
+		// echo "</pre>";
+
+		// echo "<br>Count show files : ".count($show_files)."<br>";
+		if( !empty($show_files) ) {
 			foreach( $file_types as $file_type ) {
 				if (isset($all_files[$file_type])) {
 					foreach( $all_files[$file_type] as $key => $value ) {
+						// echo "<br>key : ".$key."<br>";
+						// var_dump($show_files);
 						if ( !in_array($key, $show_files) ) {
+							// echo " TRUE<BR>";
 							unset( $all_files[$file_type][$key] );
 						}
 					}
@@ -194,7 +203,7 @@ class WPDM_Notification_Trigger {
 		// var_dump($show_files);
 		// echo count($show_files);
 			
-		if (count($raw_files) > 0) {
+		if ( !empty($raw_files) ) {
 			foreach ($raw_files as $key => $value) {
 				$file_title = $file_info[$key]['title'];
 
@@ -217,7 +226,7 @@ class WPDM_Notification_Trigger {
 	                    			break;
 	                            }
 	                        }
-	                        if( count( $filtered_files['document'][$prefix][$key] ) == 0 && count( $affiliate_files['document'][$prefix][$key] ) == 0 ){
+	                        if( empty( $filtered_files['document'][$prefix][$key] ) && empty( $affiliate_files['document'][$prefix][$key] ) ){
 	                        	if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
 	                        }
 
@@ -245,7 +254,7 @@ class WPDM_Notification_Trigger {
 
 				/* FOR EPG and CATCH UP ONLY */  
 				foreach ($filtered_categories as $fc_key => $prefix) {
-					if( count($filtered_files['document'][$prefix]) == 0 && count($affiliate_files['document'][$prefix]) > 0 ){
+					if( empty($filtered_files['document'][$prefix]) && !empty($affiliate_files['document'][$prefix]) ){
 						foreach ( $affiliate_files['document'][$prefix] as $key => $value) {
 							$all_files['document'][$prefix][$key] = $value;
 						}
