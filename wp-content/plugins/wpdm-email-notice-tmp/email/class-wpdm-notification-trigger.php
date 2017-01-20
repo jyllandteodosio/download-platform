@@ -319,7 +319,7 @@ class WPDM_Notification_Trigger {
 							foreach ($prefixes as $prefix => $file_list) :
 								if( count($file_list) > 0 ) :
 								$message_temp .= '
-									<tr style="background-color: #d0cece;"> <td >'.$this->getCategoryNameByPrefix($prefix).'</td> </tr>';
+									<tr style="background-color: #d0cece;"> <td >'.get_file_prefixes('',$prefix).'</td> </tr>';
 									$file_counter = 1;
 									foreach ($file_list as $file_id => $file_name) :
 										$email_files_counter[$is_channel_material['channel']]++;
@@ -512,36 +512,6 @@ class WPDM_Notification_Trigger {
 		}
 
 		return $message;
-	}
-
-	function getCategoryNameByPrefix($prefix = null){
-		$categories = array(
-				'key' => 'Key Art',
-				'epi' => 'Episodic Stills',
-				'gallery' => 'Gallery',
-				'logo' => 'Logos',
-				'oth' => 'Others',
-				'elements' => 'Elements',
-
-				'synopsis' => 'Synopses',
-				'transcript' => 'Transcripts/EPK',
-				'fact' => 'Fact Sheet/Press Pack',
-				'font' => 'Fonts',
-				'doth' => 'Others',
-
-				'epg' => 'EPG',
-				'highlights' => 'Highlights',
-				'brand' => 'Brand Guide',
-				'boiler' => 'Boiler Plates',
-				'catch' => 'Catch Up',
-
-				'promo' => 'Promos'
-			);
-
-		if( isset($categories[$prefix]) ) 
-			return $categories[$prefix];
-		else 
-			return '';
 	}
 
 	function checkIfChannelMaterials($post_id = null){

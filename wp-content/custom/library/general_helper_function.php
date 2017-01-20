@@ -392,12 +392,77 @@ function multi_array_filter($pattern = '/.*/', $haysack = array(), $limit = null
 
 }
 
+function get_file_prefixes($type_of_list = 'categorized', $prefix = '') {
+    if($type_of_list == 'categorized') {
+        return array(
+            'image' =>  array (
+                'show'  => array (
+                    'key_art'           => array('prefix' => 'key'          , 'template_shortcode' => 'file_category,key'), 
+                    'episodic_stills'   => array('prefix' => 'epi'          , 'template_shortcode' => 'file_category,epi'), 
+                    'gallery'           => array('prefix' => 'gallery'      , 'template_shortcode' => 'file_category,gal'), 
+                    'logos'             => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,log'),
+                    'others'            => array('prefix' => 'oth'          , 'template_shortcode' => 'file_category,oth')),
+                'channel'=> array (
+                    'channel_logos'     => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,cm_log'), 
+                    'channel_elements'  => array('prefix' => 'elements'     , 'template_shortcode' => 'file_category,cm_ele'), 
+                    'channel_others'    => array('prefix' => 'cm_oth'       , 'template_shortcode' => 'file_category,cm_oth'))
+                ),
+            'document' => array (
+                'show'  => array (
+                    'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
+                    'transcripts'       => array('prefix' => 'transcript'   , 'template_shortcode' => 'file_category,epk' ),
+                    'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
+                    'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
+                    'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
+                'channel' => array (
+                    'channel_epg'       => array('prefix' => 'epg'          , 'template_shortcode' => 'file_category,cm_epg'),
+                    'channel_highlights'=> array('prefix' => 'highlights'   , 'template_shortcode' => 'file_category,cm_hig'),
+                    'channel_brand'     => array('prefix' => 'brand'        , 'template_shortcode' => 'file_category,cm_bra'),
+                    'channel_boiler'    => array('prefix' => 'boiler'       , 'template_shortcode' => 'file_category,cm_boi'),
+                    'channel_catchup'   => array('prefix' => 'catch'        , 'template_shortcode' => 'file_category,cm_cat'))
+                ),
+            'promo' => array (
+                'show'  => array (
+                    'promos'            => array('prefix' => 'promo'        , 'template_shortcode' => 'file_category,promo'))
+                )
+            );
+    } else {
+        $categories = array(
+            'key' => 'Key Art',
+            'epi' => 'Episodic Stills',
+            'gallery' => 'Gallery',
+            'logo' => 'Logos',
+            'oth' => 'Others',
+            'elements' => 'Elements',
+
+            'synopsis' => 'Synopses',
+            'transcript' => 'Transcripts/EPK',
+            'fact' => 'Fact Sheet/Press Pack',
+            'font' => 'Fonts',
+            'doth' => 'Others',
+
+            'epg' => 'EPG',
+            'highlights' => 'Highlights',
+            'brand' => 'Brand Guide',
+            'boiler' => 'Boiler Plates',
+            'catch' => 'Catch Up',
+
+            'promo' => 'Promos'
+        );
+
+        if( isset($categories[$prefix]) ) 
+            return $categories[$prefix];
+        else 
+            return '';
+    } // endif
+
+}
 
 
 
 
 
-
+ 
 
 
 

@@ -8,38 +8,7 @@ class Package {
     public $PackageData = array();
 
     // Added by Dianne D.R. - custom vars
-    private static $file_attr_list = array(
-                                    'image' =>  array (
-                                        'show'  => array (
-                                            'key_art'           => array('prefix' => 'key'          , 'template_shortcode' => 'file_category,key'), 
-                                            'episodic_stills'   => array('prefix' => 'epi'          , 'template_shortcode' => 'file_category,epi'), 
-                                            'gallery'           => array('prefix' => 'gallery'      , 'template_shortcode' => 'file_category,gal'), 
-                                            'logos'             => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,log'),
-                                            'others'            => array('prefix' => 'oth'          , 'template_shortcode' => 'file_category,oth')),
-                                        'channel'=> array (
-                                            'channel_logos'     => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,cm_log'), 
-                                            'channel_elements'  => array('prefix' => 'elements'     , 'template_shortcode' => 'file_category,cm_ele'), 
-                                            'channel_others'    => array('prefix' => 'cm_oth'       , 'template_shortcode' => 'file_category,cm_oth'))
-                                        ),
-                                    'document' => array (
-                                        'show'  => array (
-                                            'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
-                                            'transcripts'       => array('prefix' => 'transcript'        , 'template_shortcode' => 'file_category,epk' ),
-                                            'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
-                                            'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
-                                            'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
-                                        'channel' => array (
-                                            'channel_epg'       => array('prefix' => 'epg'          , 'template_shortcode' => 'file_category,cm_epg'),
-                                            'channel_highlights'=> array('prefix' => 'highlights'   , 'template_shortcode' => 'file_category,cm_hig'),
-                                            'channel_brand'     => array('prefix' => 'brand'        , 'template_shortcode' => 'file_category,cm_bra'),
-                                            'channel_boiler'    => array('prefix' => 'boiler'       , 'template_shortcode' => 'file_category,cm_boi'),
-                                            'channel_catchup'   => array('prefix' => 'catch'        , 'template_shortcode' => 'file_category,cm_cat'))
-                                        ),
-                                    'promo' => array (
-                                        'show'  => array (
-                                            'promos'            => array('prefix' => 'promo'        , 'template_shortcode' => 'file_category,promo'))
-                                        )
-                                    );
+    private static $file_attr_list = array();                            
     private static $operator_prefix_list = array(
                                     'affiliate'         => 'Affiliate'
                                     );
@@ -47,6 +16,9 @@ class Package {
     // End of custom vars
 
     function __construct($ID = null){
+        /* Custom Code */
+        self::$file_attr_list = get_file_prefixes('categorized');   
+
         global $post;
         if(!$ID && $post->post_type == 'wpdmpro') $ID = $post->ID;
         $this->ID = $ID;

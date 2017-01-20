@@ -189,38 +189,7 @@ class WPDM_File_Monitor {
 	function categorized_files($allfiles_sorted, $fileinfo, $other_files = array()){
 		$allfiles_sorted = $allfiles_sorted + $other_files;
 		$categorized_files = array();
-		$file_attr_list = array(
-			                'image' =>  array (
-			                    'show'  => array (
-			                        'key_art'           => array('prefix' => 'key'          , 'template_shortcode' => 'file_category,key'), 
-			                        'episodic_stills'   => array('prefix' => 'epi'          , 'template_shortcode' => 'file_category,epi'), 
-			                        'gallery'           => array('prefix' => 'gallery'      , 'template_shortcode' => 'file_category,gal'), 
-			                        'logos'             => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,log'),
-			                        'others'            => array('prefix' => 'oth'          , 'template_shortcode' => 'file_category,oth')),
-			                    'channel'=> array (
-			                        'channel_logos'     => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,cm_log'), 
-			                        'channel_elements'  => array('prefix' => 'elements'     , 'template_shortcode' => 'file_category,cm_ele'), 
-			                        'channel_others'    => array('prefix' => 'cm_oth'       , 'template_shortcode' => 'file_category,cm_oth'))
-			                    ),
-			                'document' => array (
-			                    'show'  => array (
-			                        'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
-			                        'transcripts'       => array('prefix' => 'transcript'        , 'template_shortcode' => 'file_category,epk' ),
-			                        'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
-			                        'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
-			                        'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
-			                    'channel' => array (
-			                        'channel_epg'       => array('prefix' => 'epg'          , 'template_shortcode' => 'file_category,cm_epg'),
-			                        'channel_highlights'=> array('prefix' => 'highlights'   , 'template_shortcode' => 'file_category,cm_hig'),
-			                        'channel_brand'     => array('prefix' => 'brand'        , 'template_shortcode' => 'file_category,cm_bra'),
-			                        'channel_boiler'    => array('prefix' => 'boiler'       , 'template_shortcode' => 'file_category,cm_boi'),
-			                        'channel_catchup'   => array('prefix' => 'catch'        , 'template_shortcode' => 'file_category,cm_cat'))
-			                    ),
-			                'promo' => array (
-			                    'show'  => array (
-			                        'promos'            => array('prefix' => 'promo'        , 'template_shortcode' => 'file_category,promo'))
-			                    )
-			                );
+		$file_attr_list = get_file_prefixes('categorized'); 
 
 		if (count($allfiles_sorted) > 0) {
 	        foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
