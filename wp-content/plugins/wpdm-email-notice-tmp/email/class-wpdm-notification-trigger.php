@@ -304,7 +304,7 @@ class WPDM_Notification_Trigger {
 			$promo_files_control['extreme'] = 10;
 
 			foreach ($files as $post_id => $type) :
-				$is_channel_material = $this->checkIfChannelMaterials($post_id);
+				$is_channel_material = checkIfChannelMaterials($post_id);
 
 				if( count($type['show']) > 0 ) :
 					$show_title = get_the_title($post_id);
@@ -514,7 +514,7 @@ class WPDM_Notification_Trigger {
 		return $message;
 	}
 
-	function checkIfChannelMaterials($post_id = null){
+	/*function checkIfChannelMaterials($post_id = null){
 		if( $post_id != null ){
 			$categories_data = get_the_terms($post_id,'wpdmcategory');
 			$channel = array();
@@ -534,7 +534,7 @@ class WPDM_Notification_Trigger {
 			}
 		}
 		return false;
-	}
+	}*/
 
 	function setEmailEntryStatus($status = 'pending'){
 		global $wpdb;

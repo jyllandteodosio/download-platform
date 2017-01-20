@@ -17,7 +17,7 @@ class WPDM_File_Monitor {
 
 		    global $wpdb;
 			/* Get current POST data */
-		    $post = get_post($id, ARRAY_A);
+		    $post = get_post($post_id, ARRAY_A);
 
 		    if($post_id != '' || $post_id != null){
 		    	$serialized_data_old = '';
@@ -71,7 +71,8 @@ class WPDM_File_Monitor {
 
 			    /* Will evaluate to true if there are newly uploaded files or promos */
 			    if(count($files_diff) >= 1 || count($promos_diff) >= 1){
-			    	$structured_files_diff = $this->categorized_files($files_diff,$wpdm_fileinfo_new);
+			    	// $structured_files_diff = $this->categorized_files($files_diff,$wpdm_fileinfo_new);
+			    	$structured_files_diff = $this->categorized_files($files_diff,$wpdm_fileinfo_new, array(),$post_id);
 
 			    	/* Will evaluate to true if there are no current email entries for this show today  */
 			    	if ( count($email_entry) == 0){
@@ -117,7 +118,8 @@ class WPDM_File_Monitor {
 			    		$raw_data_new['raw_files']['files'] = $raw_email_entry_new['raw_files']['files'] + $files_diff;
 			    		$raw_data_new['raw_files']['file_info'] = $raw_email_entry_new['raw_files']['file_info'] + $fileinfo_intersect;
 
-			    		$merged_files_diff = $this->categorized_files($files_diff, $wpdm_fileinfo_new, $raw_email_entry_new['raw_files']['files']);
+			    		// $merged_files_diff = $this->categorized_files($files_diff, $wpdm_fileinfo_new, $raw_email_entry_new['raw_files']['files']);
+			    		$merged_files_diff = $this->categorized_files($files_diff, $wpdm_fileinfo_new, $raw_email_entry_new['raw_files']['files'],$post_id);
 			    		$raw_data_new['files'] = $merged_files_diff;
 
 			    		$raw_data_new['promos'] = $raw_email_entry_new['promos'] + $structured_promos_diff;
@@ -150,7 +152,8 @@ class WPDM_File_Monitor {
 					    			unset($raw_email_entry_new['raw_files']['file_info'][$key]);
 					    	}
 
-					    	$structured_files_diff = $this->categorized_files($raw_email_entry_new['raw_files']['files'],$raw_email_entry_new['raw_files']['file_info']);
+					    	// $structured_files_diff = $this->categorized_files($raw_email_entry_new['raw_files']['files'],$raw_email_entry_new['raw_files']['file_info']);
+					    	$structured_files_diff = $this->categorized_files($raw_email_entry_new['raw_files']['files'],$raw_email_entry_new['raw_files']['file_info'],$post_id);
 						    $raw_email_entry_new['files'] = $structured_files_diff;
 					    }
 
@@ -186,7 +189,8 @@ class WPDM_File_Monitor {
 	 * @param  Array $fileinfo         Key/Value pair of files and their new file title
 	 * @return Array                   Categorized array of files
 	 */
-	function categorized_files($allfiles_sorted, $fileinfo, $other_files = array()){
+	// function categorized_files($allfiles_sorted, $fileinfo, $other_files = array()){
+	function categorized_files($allfiles_sorted, $fileinfo, $other_files = array(), $post_id = null){
 		$allfiles_sorted = $allfiles_sorted + $other_files;
 		$categorized_files = array();
 		$file_attr_list = get_file_prefixes('categorized'); 
@@ -225,7 +229,28 @@ class WPDM_File_Monitor {
 			                    && !contains($fileTitle, $file_attr_list['image']['show']['logos']['prefix']) 
 			                    && !contains($fileTitle, $file_attr_list['image']['channel']['channel_elements']['prefix']) 
 			                    && $prefix == $file_attr_list['image']['show']['others']['prefix']){
-			                    $categorized_files['image'][$file_attr_list['image']['show']['others']['prefix']][$fileID] = $fileTitle;
+
+			                	$is_channel_materials = checkIfChannelMaterials($post_id);
+				                // echo '$post_id : '.$post_id . '<br>';
+			                	$others_type = $is_channel_materials['is_channel_material'] ? 'channel_others' : 'others';
+			                	$category_type = $is_channel_materials['is_channel_material'] ? 'channel' : 'show';
+			                	// echo '$others_type : ' . $others_type . '<br>';
+
+			                	/*if( $is_channel_materials['is_channel_material'] ) {
+			                		$others_type = 'channel_others';
+			                	} else {
+			                		$others_type = 'others';
+			                	}*/
+
+			                    // $categorized_files['image'][$file_attr_list['image']['show']['others']['prefix']][$fileID] = $fileTitle;
+			                    $categorized_files['image'][ $file_attr_list['image'][$category_type][$others_type]['prefix'] ][$fileID] = $fileTitle;
+								// echo "<pre>";
+								// print_r($file_attr_list['image']['show']);
+			     //                print_r($categorized_files);
+								// echo "</pre>";
+
+			     //                print_r($fileTitle);
+			     //                die();
 			                }
 			                /* END SHOW IMAGES ======================================================================= */
 			                /* CHANNEL IMAGES ======================================================================= */

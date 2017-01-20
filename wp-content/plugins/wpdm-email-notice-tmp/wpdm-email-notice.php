@@ -71,6 +71,27 @@ function email_notice_deactivation() {
 		return $email_entries;
 	}
 // }
+	function checkIfChannelMaterials($post_id = null){
+		if( $post_id != null ){
+			$categories_data = get_the_terms($post_id,'wpdmcategory');
+			$channel = array();
+			foreach ($categories_data as $key => $value) {
+				if(contains($value->slug, 'channel')){
+					$channel = explode("-",$value->slug);
+					if( in_array('extreme', $channel) ){
+						return array( 'is_channel_material' => true, 'channel' => 'extreme', 'channel_switcher' => '?channel=extreme');
+					}else{
+						return array( 'is_channel_material' => true, 'channel' => 'entertainment', 'channel_switcher' => '?channel=entertainment');
+					}
+				}else if(contains($value->slug, 'extreme')){
+					return array( 'is_channel_material' => false, 'channel' => 'extreme', 'channel_switcher' => '?channel=extreme');
+				}else{
+					return array( 'is_channel_material' => false, 'channel' => 'entertainment', 'channel_switcher' => '?channel=entertainment');
+				}
+			}
+		}
+		return false;
+	}
 
 /**
  * Begins execution of the plugin.

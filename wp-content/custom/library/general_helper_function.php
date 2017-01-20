@@ -432,14 +432,15 @@ function get_file_prefixes($type_of_list = 'categorized', $prefix = '') {
             'epi' => 'Episodic Stills',
             'gallery' => 'Gallery',
             'logo' => 'Logos',
-            'oth' => 'Others',
+            'oth' => 'Others (Image)',
+            'cm_oth' => 'Others (Image)',
             'elements' => 'Elements',
 
             'synopsis' => 'Synopses',
             'transcript' => 'Transcripts/EPK',
             'fact' => 'Fact Sheet/Press Pack',
             'font' => 'Fonts',
-            'doth' => 'Others',
+            'doth' => 'Others (Document)',
 
             'epg' => 'EPG',
             'highlights' => 'Highlights',
