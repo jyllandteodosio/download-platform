@@ -305,6 +305,7 @@ class WPDM_Notification_Trigger {
 
 			foreach ($files as $post_id => $type) :
 				$is_channel_material = checkIfChannelMaterials($post_id);
+				$file_checker = 0;
 
 				if( count($type['show']) > 0 ) :
 					$show_title = get_the_title($post_id);
@@ -312,11 +313,12 @@ class WPDM_Notification_Trigger {
 					$show_title = $is_channel_material['is_channel_material'] != false ? $is_channel_material['channel'] : $show_title;
 					$permalink = get_permalink($post_id).$is_channel_material['channel_switcher'];
 					
-					$message_temp = '
+					$show_title_temp = '
 					<tr style="background-color: #3b3838; color: #fff;"> <td>'.ucwords($show_title).'</td> </tr>';
 					foreach ($type['show'] as $category => $prefixes) :
 						if(count($prefixes) > 0):
 							foreach ($prefixes as $prefix => $file_list) :
+								$file_checker++;
 								if( count($file_list) > 0 ) :
 								$message_temp .= '
 									<tr style="background-color: #d0cece;"> <td >'.get_file_prefixes('',$prefix).'</td> </tr>';
@@ -339,16 +341,16 @@ class WPDM_Notification_Trigger {
 
 						if( $is_channel_material['channel'] == 'entertainment' ){
 							if( $is_channel_material['is_channel_material'] ){
-								$message_entertainment['channel'] .= $message_temp;
+								$message_entertainment_tmp['channel'] .= $message_temp;
 							}else{
-								$message_entertainment['shows'] .= $message_temp;
+								$message_entertainment_tmp['shows'] .= $message_temp;
 							}
 						}else if( $is_channel_material['channel'] == 'extreme' ){
 							if( $is_channel_material['is_channel_material'] ){
-								$message_extreme['channel'] .= $message_temp;
+								$message_extreme_tmp['channel'] .= $message_temp;
 
 							}else{
-								$message_extreme['shows'] .= $message_temp;
+								$message_extreme_tmp['shows'] .= $message_temp;
 							}
 						}
 						$message_temp = '';
@@ -375,6 +377,7 @@ class WPDM_Notification_Trigger {
 
 							if( $is_channel_material['channel'] == 'entertainment' ){
 								$message_entertainment['promos'] .= $message_temp;
+
 							}else if( $is_channel_material['channel'] == 'extreme' ){
 								$message_extreme['promos'] .= $message_temp;
 							}
@@ -386,6 +389,25 @@ class WPDM_Notification_Trigger {
 						$promo_files_control[ $is_channel_material['channel'] ] = $promo_counter;
 					endif;
 				}
+
+				echo 'show_title : ' . ucwords($show_title)." -- ".$file_checker."<br>";
+				if( $file_checker > 0 ){
+					if( $is_channel_material['channel'] == 'entertainment' ){
+						if( $is_channel_material['is_channel_material'] ){
+							$message_entertainment['channel'] .= $show_title_temp . $message_entertainment_tmp['channel'];
+						}else{
+							$message_entertainment['shows'] .= $show_title_temp . $message_entertainment_tmp['shows'];
+						}
+					}else if( $is_channel_material['channel'] == 'extreme' ){
+						if( $is_channel_material['is_channel_material'] ){
+							$message_extreme['channel'] .= $show_title_temp . $message_extreme_tmp['channel'];
+
+						}else{
+							$message_extreme['shows'] .= $show_title_temp . $message_extreme_tmp['shows'];
+						}
+					}
+				}
+
 			endforeach;
 		endif;
 
