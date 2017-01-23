@@ -1886,60 +1886,12 @@ if( !function_exists('get_tribe_events_unique_start_time_ajax')) {
     add_action('wp_ajax_nopriv_get_tribe_events_unique_start_time_ajax', 'get_tribe_events_unique_start_time_ajax');
 }
 
-function templated_email($content){
-    $plugin_img_dir = plugins_url().'/wpdm-email-notice/images/';
-    $template = '
-
-        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-        <html>
-          <head>
-            <meta http-equiv="Content-Type" content="text/html;UTF-8" />
-          </head>
-          <body style="margin: 0px; background-color: #FFF; font-family: Helvetica, Arial, sans-serif; font-size:12px;" text="#444444" bgcolor="#F4F3F4" link="#21759B" alink="#21759B" vlink="#21759B" marginheight="0" topmargin="0" marginwidth="0" leftmargin="0">
-            <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#000">
-              <tbody>
-                <tr>
-
-                  <td valign="baseline"><span> <a style="text-decoration: none;" href="'.get_site_url().'" target="_blank"> <img class="" src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="645" height="140" /> </a> </span></td>
-                </tr>
-                <tr>
-                  <td style="padding: 0 15px 15px;"><center>
-                    <table style="height: 106px;" width="604" cellspacing="0" cellpadding="0" align="center" bgcolor="#ffffff">
-                      <tbody>
-                        <tr>
-                          <td align="left">
-                            <div style="border: solid 1px #d9d9d9;">
-                              <table id="content" style="margin-right: 30px; margin-left: 30px; color: #444444; line-height: 1.6; font-size: 12px; font-family: Arial, sans-serif; height: 64px;" border="0" width="540" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
-                                <tbody>
-                                  <tr>
-                                    <td colspan="2">
-                                      <div style="padding: 15px 0;">
-                                        '.$content.'
-                                      </div>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    </center></td>
-                </tr>
-                <tr>
-                  <td><center><img src="'.$plugin_img_dir.'rtl-logo-plain.png" alt="RTL CBS Logo" /></center>
-                    <p>&nbsp;</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </body>
-        </html>
-
-
-    ';
-
+function templated_email($content) {
+    // If option doesn't exist, save default option
+    if ( get_option( 'wpbe_options' ) !== false ) {
+        $email_template = get_option('wpbe_options');
+        $template = str_replace( '%content%', $content, $email_template['template'] );
+    }
     return $template;
 }
 

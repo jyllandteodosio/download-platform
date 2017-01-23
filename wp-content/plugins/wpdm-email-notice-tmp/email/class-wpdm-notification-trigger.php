@@ -533,6 +533,8 @@ class WPDM_Notification_Trigger {
 			}
 		}
 
+		// If option doesn't exist, save default option
+		$message = templated_email($message);
 		return $message;
 	}
 
