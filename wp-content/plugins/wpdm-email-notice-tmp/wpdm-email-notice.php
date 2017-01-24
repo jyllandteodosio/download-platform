@@ -53,10 +53,57 @@ function email_notice_deactivation() {
 }
 
 
+// if( !function_exists('get_email_entries') ){
+	/**
+	 * Get Email Entries by post ID
+	 * @param  INT $post_id   Post ID
+	 * @return ARRAY          Email entries
+	 */
+	function get_email_entries($post_id = null){
+		global $wpdb;
+
+		$where_post_id = $post_id != null ? " AND post_id = {$post_id} " : '';
+		$limit = $post_id != null ? " LIMIT 1 " : '';
+
+		$sql_query = "SELECT id, data_new, post_id FROM $wpdb->wpdm_email WHERE status = 'pending' ".$where_post_id."ORDER BY id DESC ".$limit;
+
+		$email_entries = $post_id != null ? $wpdb->get_results( $sql_query)[0] : $wpdb->get_results( $sql_query);
+		return $email_entries;
+	}
+// }
+	function checkIfChannelMaterials($post_id = null){
+		if( $post_id != null ){
+			$categories_data = get_the_terms($post_id,'wpdmcategory');
+			$channel = array();
+			foreach ($categories_data as $key => $value) {
+				if(contains($value->slug, 'channel')){
+					$channel = explode("-",$value->slug);
+					if( in_array('extreme', $channel) ){
+						return array( 'is_channel_material' => true, 'channel' => 'extreme', 'channel_switcher' => '?channel=extreme');
+					}else{
+						return array( 'is_channel_material' => true, 'channel' => 'entertainment', 'channel_switcher' => '?channel=entertainment');
+					}
+				}else if(contains($value->slug, 'extreme')){
+					return array( 'is_channel_material' => false, 'channel' => 'extreme', 'channel_switcher' => '?channel=extreme');
+				}else{
+					return array( 'is_channel_material' => false, 'channel' => 'entertainment', 'channel_switcher' => '?channel=entertainment');
+				}
+			}
+		}
+		return false;
+	}
+
 /**
  * Begins execution of the plugin.
  */
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-wpdm-email-notice.php';
-if( is_admin() )
-	$wen_plugin = new WPDM_Email_Notice();
+if( is_admin() ){
+	require_once plugin_dir_path( __FILE__ ) . 'admin/class-wpdm-email-notice-admin.php';
+	$admin_dash = new WPDM_Email_Notice_Admin( );	
 
+	require_once plugin_dir_path( __FILE__ ) . 'email/class-wpdm-file-monitor.php';
+	$file_monitor = new WPDM_File_Monitor( );	
+}
+
+require_once plugin_dir_path( __FILE__ ) . 'email/class-wpdm-notification-trigger.php';
+$notification_trigger = new WPDM_Notification_Trigger( );
+add_action('email_notice_event', array($notification_trigger,'trigger_email_notification_checker'));

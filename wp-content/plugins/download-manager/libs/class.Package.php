@@ -8,38 +8,7 @@ class Package {
     public $PackageData = array();
 
     // Added by Dianne D.R. - custom vars
-    private static $file_attr_list = array(
-                                    'image' =>  array (
-                                        'show'  => array (
-                                            'key_art'           => array('prefix' => 'key'          , 'template_shortcode' => 'file_category,key'), 
-                                            'episodic_stills'   => array('prefix' => 'epi'          , 'template_shortcode' => 'file_category,epi'), 
-                                            'gallery'           => array('prefix' => 'gallery'      , 'template_shortcode' => 'file_category,gal'), 
-                                            'logos'             => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,log'),
-                                            'others'            => array('prefix' => 'oth'          , 'template_shortcode' => 'file_category,oth')),
-                                        'channel'=> array (
-                                            'channel_logos'     => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,cm_log'), 
-                                            'channel_elements'  => array('prefix' => 'elements'     , 'template_shortcode' => 'file_category,cm_ele'), 
-                                            'channel_others'    => array('prefix' => 'cm_oth'       , 'template_shortcode' => 'file_category,cm_oth'))
-                                        ),
-                                    'document' => array (
-                                        'show'  => array (
-                                            'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
-                                            'transcripts'       => array('prefix' => 'trans'        , 'template_shortcode' => 'file_category,epk' ),
-                                            'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
-                                            'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
-                                            'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
-                                        'channel' => array (
-                                            'channel_epg'       => array('prefix' => 'epg'          , 'template_shortcode' => 'file_category,cm_epg'),
-                                            'channel_highlights'=> array('prefix' => 'highlights'   , 'template_shortcode' => 'file_category,cm_hig'),
-                                            'channel_brand'     => array('prefix' => 'brand'        , 'template_shortcode' => 'file_category,cm_bra'),
-                                            'channel_boiler'    => array('prefix' => 'boiler'       , 'template_shortcode' => 'file_category,cm_boi'),
-                                            'channel_catchup'   => array('prefix' => 'catch'        , 'template_shortcode' => 'file_category,cm_cat'))
-                                        ),
-                                    'promo' => array (
-                                        'show'  => array (
-                                            'promos'            => array('prefix' => 'promo'        , 'template_shortcode' => 'file_category,promo'))
-                                        )
-                                    );
+    private static $file_attr_list = array();                            
     private static $operator_prefix_list = array(
                                     'affiliate'         => 'Affiliate'
                                     );
@@ -47,6 +16,9 @@ class Package {
     // End of custom vars
 
     function __construct($ID = null){
+        /* Custom Code */
+        self::$file_attr_list = get_file_prefixes('categorized');   
+
         global $post;
         if(!$ID && $post->post_type == 'wpdmpro') $ID = $post->ID;
         $this->ID = $ID;
@@ -134,7 +106,7 @@ class Package {
                 $specific_thumbnails = array(); /* Thumbnails container for TIF files */
 
                 /* Sort files by file title */
-                $filename_sort = array();
+               /* $filename_sort = array();
                 foreach ($allfiles as $key => $row) {
                     if (!contains($fileinfo[$key]['title'],self::$specific_thumbs_prefix))
                         $filename_sort[$key] = $fileinfo[$key]['title'];
@@ -146,7 +118,7 @@ class Package {
                 $allfiles_sorted = array();
                 foreach ($filename_sort as $key => $value) {
                     $allfiles_sorted[$key] = $allfiles[$key];
-                }
+                }*/
 
                 /* For Promo Files */
                 if (is_array($allpromofiles)) {
@@ -164,14 +136,14 @@ class Package {
                 }
 
                /* For all WPDM Files */
-                if (is_array($allfiles_sorted)) {
+                if (is_array($allfiles)) {
                     $affiliate_files = array();
                     $user_id = get_current_user_id();
                     $current_operator_group = get_current_user_operator_group();
                     $current_country_group = get_current_user_country_group();
                     $is_pr_group = check_user_is_pr_group( $user_id, $current_operator_group, $current_country_group );
               
-                    foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
+                    foreach ($allfiles as $fileID => $sfileOriginal) {
                         $sfile = $sfileOriginal;
                         $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
                                         $fileinfo[$sfile]['title']:
@@ -339,9 +311,16 @@ class Package {
             foreach (self::$file_attr_list as $file_type => $file_category) {
                 foreach ($file_category as $file_category_key => $tab) {
                     foreach ($tab as $key => $tab_attr) {
+                        // Count total number of files under each category
+                        $file_flag = count($categorized_files[$tab_attr['prefix']]);
+                        if($file_flag > 0) {
+                            $vars['file_count_' . $tab_attr['prefix']] = '<span class="file-count">' . $file_flag . '</span>';
+                        } else {
+                            $vars['file_count_' . $tab_attr['prefix']] = "";
+                        }
+
                         if( array_key_exists($tab_attr['prefix'], $categorized_files)){
                             if(strpos("_".$template,'['.$tab_attr['template_shortcode'].']')){
-
                                 $file_list_data_prep = array (
                                         'all_files' => $categorized_files[$tab_attr['prefix']],
                                         'prefix' => $tab_attr['prefix'],
