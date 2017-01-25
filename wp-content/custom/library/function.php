@@ -1390,6 +1390,44 @@ if (!function_exists('custom_get_shows()')) {
     }
 }
 
+
+if (!function_exists('get_all_shows')) {
+    /**
+     * Get Shows
+     * @return array key value pair of show id and title
+     */
+    function get_all_shows(){
+        $cids = array('shows-entertainment', 'shows-extreme', 'extreme', 'entertainment');
+        $channel_materials = array('channel-materials-entertainment','channel-materials-extreme');
+
+        $params = array(
+            'post_type' => 'wpdmpro',
+             'orderby'     => 'modified',
+            'order'       => 'DESC',
+            'status' => 'publish',
+            'tax_query' => array(array(
+                    'taxonomy' => 'wpdmcategory',
+                    'field' => 'slug',
+                    'terms' => $cids,
+                    'operator' => $operator
+                ), array(
+                    'taxonomy' => 'wpdmcategory',
+                    'field' => 'slug',
+                    'terms' => $channel_materials,
+                    'operator' => 'NOT IN'
+                )
+            )
+        );
+        
+        $query = get_posts( $params );
+        // $shows = array();
+        // while($query->have_posts()) {$query->the_post();
+        //     $shows[get_the_ID()] = get_the_title();
+        // }
+        return $query;
+    }
+}
+
 if(!function_exists('generate_show_files')){
     /**
      * Ajax function for adding specific files to cart
@@ -1444,6 +1482,84 @@ if(!function_exists('generate_show_files')){
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
+}
+
+if(!function_exists('generate_recent_files')){
+    /**
+     * Ajax function for adding specific files to cart
+     */
+    function generate_recent_files(){
+        $security_nonce = $_POST['security_nonce'];
+        // if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ){ 
+
+            echo "recent_files";
+            $serialized_data = $_POST['serialized-data'];
+            $files_limit = $_POST['limit'];
+
+            // $files_filtered = $_POST['filtered'];
+            // $files_prefix = $_POST['prefix'];
+            $files_search_filter = $_POST['search_filter'];
+
+            $unserialized_form =  unserializeForm($serialized_data);
+
+
+            $serialized_show_files = $unserialized_form['serialized-data'];
+            $show_files = unserialize($serialized_show_files);
+            $topreview_show_files = $show_files['all_files'];
+
+            // $start_date = strtotime( $files_search_filter );
+            // $end_date = time();
+
+            // foreach ($topreview_show_files as $file_info_key => $file_info_value) {
+            //     // $file_name = $files[$file_info_key];
+            //     $file_info_key_orig = $file_info_key;
+            //     $file_info_key = substr($file_info_key, 0, -3);
+            //     $file_info_key = (int)$file_info_key;
+
+            //     if($file_info_key >= $start_date && $file_info_key <= $end_date) {
+            //         // if(checkIfImageFile($file_name, 'image')) {
+            //             $img_array[ $show_object->ID ][ $file_info_key_orig ] = $file_name;   
+            //         // } else {
+            //         //     $doc_array[ $show_object->ID ][] = $file_name;
+            //         // }
+            //     }       
+            // }
+
+            // $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            // if ( count($show_files['all_files']) > 0 ){
+
+            //     if( $files_filtered == 'true' ){
+            //         $pattern = "/".$files_prefix.".*".$files_search_filter."/";
+            //         $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
+            //     }else{
+            //         $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            //     }
+            //     $return_array['topreview_show_files'] = $topreview_show_files;
+            
+            //     $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
+            //     $return_array['show_all_files'] = $show_files['all_files'];
+                
+            //     $return_array['hidden_files_count'] = count($show_files['all_files']);
+            // }
+
+            // if ( $show_files !== false ){
+            //     $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+
+            //     $return_array['files'] = $categorizedFileList;
+            //     $return_array['updated_serialized_data'] = serialize($show_files);
+                
+            //     $return_value = 1;
+            // }
+        // }
+        // echo "tester";
+        // print_r($serialized_data);
+        print_r( $unserialized_form );
+        // print_r($topreview_show_files );
+        // echo json_encode($topreview_show_files );
+        // echo $return_value == 1 ? json_encode($return_array) : false;
+        die();
+    }
+    add_action('wp_ajax_generate_recent_files', 'generate_recent_files');
 }
 
 if(!function_exists('unserialize_php_array')){
