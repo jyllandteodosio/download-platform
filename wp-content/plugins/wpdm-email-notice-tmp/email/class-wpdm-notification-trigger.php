@@ -138,6 +138,8 @@ class WPDM_Notification_Trigger {
 	function get_user_accessible_promos($user, $promo_files, $is_pr_group = '', $show_files = array()){
 		$accessible_promo_files = array();
 
+		print_r( $promo_files );
+
 		if ( in_array('promo', $show_files) || empty($show_files) ) {
 			if (!empty($promo_files)) {
 				foreach ($promo_files as $key => $value) {
