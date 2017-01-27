@@ -463,14 +463,17 @@ class FileList
         $cart_array['channel'] = $channel;
         $cart_data = prepare_cart_data($cart_array);
         $serialized_cart = serialize($cart_data);
-        
+
+        // Convert UNIX Timestamp to human readable date
+        $file_upload_date = date('n/j/y', substr($fileID, 0, -3));
+
         // FILE PANEL CONTAINER 
         $fhtml .= "     <div class='item {$fileID} {$isFileRemovable}'>";
         $fhtml .= "         <input type='hidden' name='{$fileID}' value='{$serialized_cart}'>";
         $fhtml .=           "<div class='file-thumb'>".$file_thumb."</div>";
         $fhtml .= "         <div class='show-meta'>";
         $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
-        $fhtml .= "             <p class='file-size'>".custom_wpdm_file_size($absolute_file_path,0)."</p>";
+        $fhtml .= "             <p class='file-size'>".custom_wpdm_file_size($absolute_file_path,0)." | Uploaded on $file_upload_date</p>";
         $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID} $isFileClickable'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' data-channel='{$channel}' >{$buttonText}</a>";
         $fhtml .= "         </div>";
         $fhtml .= "         <span class='close-btn' data-file-id='{$fileID}' data-user-id='{$userID}'><i class='fa fa-lg fa-times'></i></span>";

@@ -61,7 +61,7 @@
 			} );
 		}
 
-		$( '#tribe-events-content-wrapper,.tribe-events-view-wrapper' ).on( 'click', 'ul.tribe-events-sub-nav a[rel="next"]',function( e ) {
+		$( '#tribe-events-content-wrapper' ).on( 'click', 'ul.tribe-events-sub-nav a[rel="next"]',function( e ) {
 			e.preventDefault();
 
 			if ( ts.ajax_running ) {
@@ -174,9 +174,7 @@
 				if ( pathname.match( /\/all\/$/ ) ) {
 					ts.view = 'all';
 				} else {
-					var display = tribeUtils.getQueryVars().tribe_event_display;
-
-					ts.view = undefined !== display ? display : 'list';
+					ts.view = 'list';
 				}
 
 				ts.popping = false;

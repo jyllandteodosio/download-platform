@@ -31,9 +31,17 @@
 							</div>
 							<div class="col-sm-4">
 								<div class="social-footer clearfix">
-									<p><span>Follow Us: </span>
-									<a href="http://www.facebook.com/RTLCBSEntertainment" title="Facebook" class="social facebook">Facebook</a>	
-									<a href="https://twitter.com/RTLCBSEntertain" title="Twitter" class="social twitter">Twitter</a>		
+									<p><span class="block-display">Follow Us: </span>
+										<?php
+										$channel = $_SESSION['channel'];
+										  if ( $channel == 'entertainment'):
+										    get_template_part('social-entertainment');
+										  elseif ( $channel == 'extreme'):
+										    get_template_part('social-extreme');
+										  elseif($channel == 'none'):
+										    get_template_part('social-entertainment');
+										  endif;
+										?>
 									</p>										
 								</div>
 								<?php wp_nav_menu( array(

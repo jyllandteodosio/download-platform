@@ -45,7 +45,7 @@ function rtlcbsconsumer_setup() {
 		'footer'  => __( 'Footer Menu', 'rtlcbsconsumer' ),
 		'about'  => __( 'Footer About Menu', 'rtlcbsconsumer' ),
 		'extra'  => __( 'Footer Extra Menu', 'rtlcbsconsumer' ),
-		'social'  => __( 'Social Links Menu', 'rtlcbsconsumer' ),
+		'social'  => __( 'Social Links Menu (Entertainment)', 'rtlcbsconsumer' ),
 		'featured-shows'  => __( 'Featured Shows Menu (Entertainment)', 'rtlcbsconsumer' ),
 		'featured-shows-extreme'  => __( 'Featured Shows Menu (Extreme)', 'rtlcbsconsumer' ),
 	) );
@@ -86,6 +86,16 @@ function rtlcbsconsumer_scripts() {
 	wp_enqueue_script( 'sticky-kit', get_template_directory_uri() . '/js/sticky-kit.js', false, 1.0, true);
 	wp_enqueue_script( 'slick', get_template_directory_uri() . '/js/slick.min.js', false, 1.0, true);
 	wp_enqueue_script( 'main-js', get_template_directory_uri() . '/js/main.js', false, 1.0, true);
+
+	wp_enqueue_script( 'moment-js', 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js', false, 1.0, true);
+
+	
+
+	wp_localize_script( 'main-js', 'my_ajax_object',
+            array( 	'ajax_url' => admin_url( 'admin-ajax.php' ),
+            		'site_url' => site_url(),
+                    'ajax_sched_nonce' => wp_create_nonce('__schedule_page_nonce__')
+            ));
 }
 add_action( 'wp_enqueue_scripts', 'rtlcbsconsumer_scripts' );
 

@@ -24,30 +24,26 @@ get_template_part('channel-setter');
 	            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
 	                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 	                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
-					 <div class="swiper-slide" style="background-image:url('<?php the_field('featured_banner_image'); ?>');" title="<?php //the_title();?>">
+					 <div class="swiper-slide" style="background-image:url('<?php the_field('featured_banner_image'); ?>');" >
 						<!-- <img src="<?php //the_field('featured_banner_image'); ?>" class="swiper-photo" title="<?php //the_title();?>" /> -->
 						<?php $banner_text_alignment = get_field('banner_text_alignment') == 'right' ? "right-info" : "left-info";?>
 						<div class="swiper-description <?php echo $banner_text_alignment; ?>">
 							<span class="day">
 								<?php
 									echo (get_field('airing_schedule_format')=="date") ? 
-	                                      (get_field('airing_schedule') ? 
-	                                        date('F d, Y',strtotime(get_field('airing_schedule'))) 
-	                                        : ""  ) 
+	                                      (get_field('airing_schedule') ? date('F d, Y',strtotime(get_field('airing_schedule'))) : ""  ) 
 	                                      : get_field('airing_day');
 	                            ?>
 							</span>
 							<div class="time">
 								<span class="timeslot"><?php 
 									echo (get_field('airing_schedule_format')=="date") ? date('l',strtotime(get_field('airing_schedule')))." " : "";
-									echo get_field('airing_time') ? 
-											date('g:i a',get_field('airing_time')) 
-											: "";
+									echo get_field('airing_time') ? date('g:i a',get_field('airing_time')) : "";
 								?></span>
 								<span class="timezone"><?php echo get_field('airing_time_jkt') ? "(".date('g:i a',get_field('airing_time_jkt'))." JKT/BKK)" : "";?></span>
 							</div>
 							<span class="title"><?php the_title(); ?></span>
-							<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,320,"...");?></p>
+							<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,180,"...");?></p>
 							<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>" class="view-more">View More</a>
 						</div>	
 					</div> 
@@ -68,8 +64,8 @@ get_template_part('channel-setter');
 		<div id="today-slideshow" class="swiper-container">
 			<div class="swiper-wrapper">
 		<?php   if(function_exists('tribe_get_events')):
-					// $events = getTribeEvents(date('2016-07-01').' 00:00',current_time('Y-m-d').' 23:59');
-					$events = getTribeEvents(current_time('Y-m-d').' 00:00', current_time('Y-m-d').' 23:59');
+					// $events = getTribeEvents( date('2016-12-08').' 00:00:00', current_time('Y-m-d').' 23:59:59', $channel, null, null );
+					$events = getTribeEvents(current_time('Y-m-d').' 00:00:00', current_time('Y-m-d').' 23:59:59', $channel, null, null);
                     
 					if(count($events) > 0):
         				$events_counter = 0;
@@ -78,16 +74,21 @@ get_template_part('channel-setter');
 
 							if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
 								$events_counter++;
-							    $show_info = getShowInfoByTitle($event->post_title);?>
-							   
-							    <div class="swiper-slide" title="<?php echo $event->post_title;?>">
-									<div class="time">
-										<?php
-										$current_time = current_time('H:i');
-										$current_show_time = tribe_get_start_date($event->ID, false, 'H:i');
-										$next_show_time = tribe_get_start_date($next_show->ID, false, 'H:i');
+							    $show_info = getShowInfoByTitle($event->post_title);
 
-										if( $current_time>=$current_show_time && $current_time<=$next_show_time):?>
+							    /* Determining Now Playing Schedule */
+							    $current_time = current_time('H:i:s');
+								$current_show_time = tribe_get_start_date($event->ID, false, 'H:i:s');
+								$next_show_time = tribe_get_start_date($next_show->ID, false, 'H:i:s');
+								$now_playing_class = '';
+
+							    if( $current_time >= $current_show_time && $current_time < $next_show_time):
+							    	$now_playing_class = 'now-playing';
+							    endif;?>
+
+								<div class="swiper-slide <?php echo $now_playing_class;?> " title="<?php echo $event->post_title;?>">
+									<div class="time">
+										<?php if( $now_playing_class != ''):?>
 											<span class="nowplaying"><div class="arrow-right"></div> Now Playing...</span>
 										<?php endif;
 										// Get timeslot of show
@@ -142,7 +143,7 @@ get_template_part('channel-setter');
 									   
 									</div>
 									<div class="spotlight-details">
-										<h3 class="spotlight-title"><?php the_title(); ?></h3>
+										<h3 class="spotlight-title"><a href="<?php echo(get_site_url(2)."/".$post->post_name)?>"><?php the_title(); ?></a></h3>
 										<p class="spotlight-excerpt"><?php echo strip_tags(mb_strimwidth(get_the_excerpt(),0,150, '...'));?></p>
 										<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>">View More</a>
 									</div>
@@ -202,3 +203,30 @@ get_template_part('channel-setter');
 	</div>
 </div>
 <?php get_footer( 'rtl' ); ?>
+
+<script>
+	
+(function( $ ) {
+	var todaySlideShow = new Swiper( '#today-slideshow', {
+		slidesPerView: 4,
+		spaceBetween: 6,
+		nextButton: '.today-nav.swiper-button-next',
+        prevButton: '.today-nav.swiper-button-prev',
+            breakpoints: {
+            	640: {
+            		slidesPerView: 1
+            	},
+            	768: {
+            		slidesPerView: 3
+            	}, 
+            	992: {
+            		slidesPerView: 4
+            	}
+            },
+        preventClicks: false, 
+        preventClicksPropagation: true,
+	});
+
+	todaySlideShow.slideTo( $('.now-playing').index(), 1000, false );
+})( jQuery );
+</script>

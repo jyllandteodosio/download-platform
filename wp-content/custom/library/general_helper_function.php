@@ -92,7 +92,7 @@ if( !function_exists('getDateRange')) {
             $ending_date = date( 'Y-m-d', strtotime( 'saturday this week' ) );
         }else if($span == 'start-today'){
             /* To show trial data - for testing*/
-            // $date_try = strtotime(date('2016-12-08'));
+            // $date_try = strtotime(date('2016-12-06'));
             // $beginning_date = date( 'Y-m-d', $date_try);
             // $ending_date = date( 'Y-m-d', strtotime("+6 day", $date_try ) );
             /* To show actual data - for live */
@@ -167,10 +167,13 @@ if( !function_exists('getShowInfoByTitle')) {
             $image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_info['id']), 'single-post-thumbnail' );
             $background_image = $image[0] != "" ? "background-image: url('".$image[0]."')" : "";
         endif;
-        $show_info['featured_show'] = get_field('featured_show',$show_info['id'])[0];
-        if ($current_blog_id != 1) restore_current_blog();
 
+        $show_info['featured_show'] = get_field('featured_show',$show_info['id'])[0];
         $show_info['background_image'] = $background_image;
+        $show_info['airing_time'] = get_field('airing_time', $show_info['id']) ? date('g:i a',get_field('airing_time',$show_info['id']) ) : "";
+        $show_info['airing_time_jkt'] = get_field('airing_time_jkt', $show_info['id']) ? date('g:i a',get_field('airing_time_jkt',$show_info['id']) ) : "";
+
+        if ($current_blog_id != 1) restore_current_blog();
 
         return $show_info;
     }
@@ -198,6 +201,22 @@ if ( !function_exists('checkEventCategoryByTitle') ){
         if ($current_blog_id != 1) restore_current_blog();
 
         return $query_shows->post_count;
+    }
+}
+
+if( !function_exists('getTermIDBySlug') ){
+    function getTermIDBySlug($slug){
+
+        $current_blog_id = get_current_blog_id();
+        if ($current_blog_id != 1) switch_to_blog( 1 );
+
+        global $wpdb;
+        $term_id = $wpdb->get_var( "SELECT term_id FROM $wpdb->terms WHERE slug = '{$slug}'" );
+
+        if ($current_blog_id != 1) restore_current_blog();
+
+
+        return $term_id;
     }
 }
 
@@ -232,6 +251,15 @@ if (!function_exists('getUsersByRole')){
         $query_users = new WP_User_Query( $args );
         $users = $query_users->get_results();
         return $users;
+    }
+}
+
+if( !function_exists('getPostIdBySlug') ){
+    function getPostIdBySlug($slug){
+        global $wpdb;
+        $post_id = $wpdb->get_var( "SELECT ID FROM $wpdb->posts WHERE post_name = '".$slug."'" );
+
+        return $post_id;
     }
 }
 
