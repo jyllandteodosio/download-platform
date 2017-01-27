@@ -236,11 +236,11 @@ class WPDM_File_Monitor {
 			                	$category_type = $is_channel_materials['is_channel_material'] ? 'channel' : 'show';
 			                	// echo '$others_type : ' . $others_type . '<br>';
 
-			                	/*if( $is_channel_materials['is_channel_material'] ) {
+			                	if( $is_channel_materials['is_channel_material'] ) {
 			                		$others_type = 'channel_others';
 			                	} else {
 			                		$others_type = 'others';
-			                	}*/
+			                	}
 
 			                    // $categorized_files['image'][$file_attr_list['image']['show']['others']['prefix']][$fileID] = $fileTitle;
 			                    $categorized_files['image'][ $file_attr_list['image'][$category_type][$others_type]['prefix'] ][$fileID] = $fileTitle;
