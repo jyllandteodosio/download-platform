@@ -55,7 +55,7 @@
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center synopses-tab" data-target="synopses-tab-contents">
           <a href="#">Synopses</a>[file_count_synopsis]</div>
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center epk-tab" data-target="epk-tab-contents">
-          <a href="#">Transcripts/EPK</a>[file_count_trans]</div>
+          <a href="#">Transcripts/EPK</a>[file_count_transcript]</div>
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center factsheet-tab" data-target="factsheet-tab-contents">
           <a href="#">Fact Sheet/Press Pack</a>[file_count_fact]</div>    
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center fonts-tab" data-target="fonts-tab-contents">
