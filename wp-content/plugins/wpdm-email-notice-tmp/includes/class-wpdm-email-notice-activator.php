@@ -37,6 +37,7 @@ class WPDM_Email_Notice_Activator {
 		/* TODO:  remove code decalration below, already declared in main php file */
 		$db_table_name = $wpdb->prefix . 'wpdm_email';
 		$db_table_name_logs = $wpdb->prefix . 'wpdm_email_logs';
+		$db_table_name_settings = $wpdb->prefix . 'wpdm_email_settings';
 
 		/* Create a table if not yet existing */
 		if( $wpdb->get_var( "SHOW TABLES LIKE '$db_table_name'" ) != $db_table_name ) {
@@ -65,6 +66,15 @@ class WPDM_Email_Notice_Activator {
 				  PRIMARY KEY  (id)
 				) $charset_collate;
 
+				CREATE TABLE $db_table_name_settings (
+				  id int(11) NOT NULL AUTO_INCREMENT,
+				  type varchar(40) DEFAULT 'default',
+				  schedule_day varchar(20),
+				  template_data longtext,
+				  created_at datetime DEFAULT '0000-00-00 00:00:00',
+				  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+				  PRIMARY KEY  (id)
+				) $charset_collate;
 				";
 			dbDelta( $sql );
 
@@ -92,6 +102,16 @@ class WPDM_Email_Notice_Activator {
 				  status varchar(100),
 				  recipient longtext,
 				  created_at datetime DEFAULT '0000-00-00 00:00:00',
+				  PRIMARY KEY  (id)
+				) $charset_collate;
+
+				CREATE TABLE $db_table_name_settings (
+				  id int(11) NOT NULL AUTO_INCREMENT,
+				  type varchar(40) DEFAULT 'default',
+				  schedule_day varchar(20),
+				  template_data longtext,
+				  created_at datetime DEFAULT '0000-00-00 00:00:00',
+				  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 				  PRIMARY KEY  (id)
 				) $charset_collate;
 				";

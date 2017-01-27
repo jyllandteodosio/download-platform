@@ -39,29 +39,29 @@
         <!--START OF SUB TABS-->    
         <div class="sub-tabs-wrap images-sub-tabs fullwidth" data-parent-tab="images-tab">
           <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center keyart-tab" data-target="keyart-tab-contents">
-          <a href="#">Key Art</a><span class="file-count">[file_count_key]</span></div>
+          <a href="#">Key Art</a>[file_count_key]</div>
           <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center episodicstills-tab" data-target="episodicstills-tab-contents">
-          <a href="#">Episodic Stills</a><span class="file-count">[file_count_epi]</span></div>
+          <a href="#">Episodic Stills</a>[file_count_epi]</div>
           <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center gallery-tab" data-target="gallery-tab-contents">
-          <a href="#">Gallery</a><span class="file-count">[file_count_gallery]</span></div>    
+          <a href="#">Gallery</a>[file_count_gallery]</div>    
           <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center logos-tab" data-target="logos-tab-contents">
-          <a href="#">Logos</a><span class="file-count">[file_count_logo]</span></div>    
+          <a href="#">Logos</a>[file_count_logo]</div>    
           <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center others-tab last-tab" style="flex-basis: 8%;" data-target="others-tab-contents">
-          <a href="#">Others - Special Web Assets etc</a><span class="file-count">[file_count_oth]</span></div>    
+          <a href="#">Others - Special Web Assets etc</a>[file_count_oth]</div>    
           <div class="clear"></div> 
         </div><!-- subtabs-wrap -->   
          
         <div class="sub-tabs-wrap documents-sub-tabs fullwidth" data-parent-tab="documents-tab">
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center synopses-tab" data-target="synopses-tab-contents">
-          <a href="#">Synopses</a><span class="file-count">[file_count_synopsis]</span></div>
+          <a href="#">Synopses</a>[file_count_synopsis]</div>
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center epk-tab" data-target="epk-tab-contents">
-          <a href="#">Transcripts/EPK</a><span class="file-count">[file_count_trans]</span></div>
+          <a href="#">Transcripts/EPK</a>[file_count_trans]</div>
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center factsheet-tab" data-target="factsheet-tab-contents">
-          <a href="#">Fact Sheet/Press Pack</a><span class="file-count">[file_count_fact]</span></div>    
+          <a href="#">Fact Sheet/Press Pack</a>[file_count_fact]</div>    
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center fonts-tab" data-target="fonts-tab-contents">
-          <a href="#">Fonts</a><span class="file-count">[file_count_font]</span></div>    
+          <a href="#">Fonts</a>[file_count_font]</div>    
           <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center othersdocuments-tab" data-target="othersdocuments-tab-contents">
-          <a href="#">Others</a><span class="file-count">[file_count_doth]</span></div>    
+          <a href="#">Others</a>[file_count_doth]</div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->
 
