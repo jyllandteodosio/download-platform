@@ -80,15 +80,6 @@ class WPDM_Notification_Trigger {
 				    $matched_operator_access = $this->check_user_group_access($user, $operator_access);
 					if($matched_operator_access){
 						$uns_email_entry = unserialize($email_entry->data_new);
-						
-						/*echo '<pre>';
-						print_r($uns_email_entry);
-						echo '</pre>';*/
-
-						/*// Check if file is a Channel Material
-						$is_channel_material = checkIfChannelMaterials($post_id);
-						$cm_trigger = $is_channel_material['is_channel_material'];*/
-						
 						$files[$email_entry->post_id]['promo'] = $this->get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$show_files,
 							$post_ids);
 						$files[$email_entry->post_id]['show'] = $this->get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],
@@ -106,16 +97,16 @@ class WPDM_Notification_Trigger {
 		}                
 
 		/* Code to update wpdm_email and wpdm_email_logs table. */
-		// if( count($email_recipient) > 0 ){
-		// 	$email_recipient_serialized = serialize($email_recipient);
-		// 	$return_value_email = $this->setEmailEntryStatus('sent');
+		if( count($email_recipient) > 0 ){
+			$email_recipient_serialized = serialize($email_recipient);
+			$return_value_email = $this->setEmailEntryStatus('sent');
 
-		// 	if( $return_value_email === FALSE ){
-		// 		$this->addEmailLogs('failed', $email_recipient_serialized);
-		// 	}else{
-		// 		$this->addEmailLogs('success', $email_recipient_serialized);
-		// 	}
-		// }
+			if( $return_value_email === FALSE ){
+				$this->addEmailLogs('failed', $email_recipient_serialized);
+			}else{
+				$this->addEmailLogs('success', $email_recipient_serialized);
+			}
+		}
 		/* END -  Code to update wpdm_email and wpdm_email_logs table. */
 	}
 
@@ -547,19 +538,19 @@ class WPDM_Notification_Trigger {
 			$message = $this->update_email_template( $email_vars );
 
 			/* Uncomment this echo code if you are not testing  */
-			echo $message;
+			// echo $message;
 
 			/* Start output buffering to grab smtp debugging output*/
-			// ob_start();
+			ob_start();
 
 			/* Send the test mail*/
-			// $result = wp_mail($to,$subject,$message,$headers);
+			$result = wp_mail($to,$subject,$message,$headers);
 				
 			/* Grab the smtp debugging output*/
-			// $smtp_debug = ob_get_clean();
+			$smtp_debug = ob_get_clean();
 			
 			/* Output the response*/
-			// return $result;
+			return $result;
 		}
 		return false;
 	}
