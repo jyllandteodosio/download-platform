@@ -156,7 +156,7 @@ if(isset($_GET['country'])){
         ";
        
         $reports_data = $wpdb->get_results($query_string, ARRAY_A);
-        echo " <br>query_string : ".$query_string;
+        // echo " <br>query_string : ".$query_string;
 
 
         /* TODO : MERGE! */
@@ -188,7 +188,7 @@ if(isset($_GET['country'])){
         // $query_string_list = setRtlReportList($period_date_format, $period_date_format_standard, $period_start_label, $select_max_created_at_list, $condition_period );
         // $reports_data = $wpdb->get_results($query_string_list, ARRAY_A);
         
-        echo "<br>query_string_exportsreports : <br>".$query_string_exportsreports;
+        // echo "<br>query_string_exportsreports : <br>".$query_string_exportsreports;
 
         $query_string_exportsreports_list = "
             SELECT date_format(r.created_at, '".$period_date_format_standard."') as ".$period_start_label.",
@@ -210,7 +210,7 @@ if(isset($_GET['country'])){
               ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
         ";
 
-        echo "<br>query_string_exportsreports_list : <br>".$query_string_exportsreports_list;
+        // echo "<br>query_string_exportsreports_list : <br>".$query_string_exportsreports_list;
 
         $return_value = updateToExportsReports($query_string_exportsreports_list, $report_name = 'RTLList' );
         $return_value = updateToExportsReports($query_string_exportsreports, $report_name = 'RTL' );
