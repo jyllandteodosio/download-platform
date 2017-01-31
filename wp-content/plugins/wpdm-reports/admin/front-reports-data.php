@@ -140,16 +140,12 @@
 			$title = $form_data['filter'] && !empty($reports_data) ? "" : "Click 'Show Report' first before exporting.";
 			$export_button_visibility = 'style="display:none"';
 		?>
-		
 		<input type="button" value=" Export Report" id="export_sum" class="button" <?php echo $disabled?> title="<?php echo $title;?>" <?php echo $_GET['result_type'] != 'sum' ? $export_button_visibility : '';?> onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
+
 		<input type="button" value=" Export Report" id="export_list" class="button" <?php echo $disabled?> title="<?php echo $title;?>" <?php echo !isset($_GET['result_type']) ? '' : (($_GET['result_type'] != 'list' ) ? $export_button_visibility : '');?> onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
-		<!-- <input type="button" value=" Export Report " id="auto_report" class="button" style="display:block" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports','temp_report_window');"> -->
 		
 		<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
-		
-		<script>
-			// jQuery('#auto_report').trigger('click');
-		</script>
+
 	</div>
 	<table class="wpdmr-reports-data wp-list-table striped widefat">
 		<thead>
@@ -157,6 +153,7 @@
 			<th>Period</th>
 			<th>Country Group</th>
 			<th>Operator Group</th>
+			<th>Account Group</th>
 			<th>Operator Account</th>
 			<th>Show</th>
 			<th>Downloaded Files</th>
@@ -165,44 +162,40 @@
 
 		<tbody id="the-list">
 		
-		
 		<?php
 		if(isset($reports_data) && !empty($reports_data)):
-			foreach ($reports_data as $key => $value):
-				// echo "<pre>";print_r($reports_data);echo "</pre>";
-		?>
-		<tr>
-			<td><?php 
-				echo $value['period'];
-				if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
-				?>
-			</td>
-			<td><?php echo $value['country_group'] != '' && $value['country_group'] != NULL ? get_country_name($value['country_group']) : 'Admin' ;?></td>
-			<td><?php echo $value['operator_group'] != '' && $value['operator_group'] != NULL ? $value['operator_group'] : 'Admin' ;?></td>
-			<!-- <td><?php //echo $value['operator_group'];?></td> -->
-			<td><?php echo $value['user_email'];?></td>
-			<td><?php echo $value['post_title'];?></td>
-			<td><?php echo $value['downloaded_files'];?></td>
-		</tr>
+			foreach ($reports_data as $key => $value): ?>
+			<tr>
+				<td><?php 
+					echo $value['period'];
+					if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
+					?>
+				</td>
+				<td><?php echo $value['country_group'] != '' && $value['country_group'] != NULL ? get_country_name($value['country_group']) : 'Admin' ;?></td>
+				<td><?php echo $value['operator_group'] != '' && $value['operator_group'] != NULL ? $value['operator_group'] : 'Admin' ;?></td>
+				<td><?php echo $value['account_group'] != '' && $value['account_group'] != NULL ? $value['account_group'] : '-' ;?></td>
+				<td><?php echo $value['user_email'];?></td>
+				<td><?php echo $value['post_title'];?></td>
+				<td><?php echo $value['downloaded_files'];?></td>
+			</tr>
 		<?php 
 			endforeach;
-			else: ?>
+		else: ?>
 			<tr><td colspan="6" >No results</td></tr>
 		<?php endif; ?>
 
 		</tbody>
-
 		<tfoot>
 			<tr>
 				<th>Period</th>
 				<th>Country Group</th>
 				<th>Operator Group</th>
+				<th>Account Group</th>
 				<th>Operator Account</th>
 				<th>Show</th>
 				<th>Downloaded Files</th>
 			</tr>
 		</tfoot>
-
 	</table>
 	
 	<div class="tablenav">

@@ -496,14 +496,14 @@ if (!function_exists('checkFileInCart')){
 Custom Export Reports
 ====================================================================================================================================
  */
-function updateToExportsReports($query_string_exportsreports_list){
+function updateToExportsReports($query_string_exportsreports_list, $report_name = 'RTLList' ){
     global $wpdb;
     $return_value = $wpdb->update( 
         $wpdb->exportsreports_reports, 
         array( 
             'sql_query' => $query_string_exportsreports_list
         ), 
-        array( 'name' => 'RTLList' )
+        array( 'name' => $report_name )
     );
     return $return_value;
 }
@@ -526,6 +526,7 @@ if(!function_exists('insertToCustomReports')){
                 $user_id = get_current_user_id( );
                 $country_group = get_current_user_country_group($user_id);
                 $operator_group = get_current_user_operator_group($user_id);
+                $account_group = get_current_user_account_group($user_id);
 
                 $return_value = $wpdb->insert(
                                         $wpdb->custom_reports,
@@ -533,6 +534,7 @@ if(!function_exists('insertToCustomReports')){
                                             'user_id' => $user_id,
                                             'country_group' => $country_group,
                                             'operator_group' => $operator_group,
+                                            'account_group' => $account_group,
                                             'post_id' => $value['post_id'],
                                             'file_id' => $file_id,
                                             'file_title' => $value['file_title'],
@@ -596,6 +598,7 @@ if(!function_exists('setRtlReportList')){
                 ".$select_max_created_at_list."
                 ".$country_groups_select_case."
                 IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
+                IF( r.account_group IS NULL or r.account_group = '','',r.account_group) as account_group, 
                 u.user_email, p.post_title, r.file_title as downloaded_files
             FROM ".$wpdb->custom_reports." r 
             INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
@@ -603,7 +606,7 @@ if(!function_exists('setRtlReportList')){
             WHERE ".$condition_period.
             " ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
         ";
-        // echo "<br><br>list:".$query_string_exportsreports_list;
+        echo "<br><br>list:".$query_string_exportsreports_list;
         $return_value = updateToExportsReports($query_string_exportsreports_list);
 
         return $query_string_exportsreports_list;
@@ -708,6 +711,17 @@ if( !function_exists('get_current_user_operator_group') ){
     function get_current_user_operator_group($user_id = NULL){
         $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
         return get_user_meta( $userid, 'operator_group', true);
+    }
+}
+
+if( !function_exists('get_current_user_account_group') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function get_current_user_account_group($user_id = NULL){
+        $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
+        return get_user_meta( $userid, 'account_group', true);
     }
 }
 

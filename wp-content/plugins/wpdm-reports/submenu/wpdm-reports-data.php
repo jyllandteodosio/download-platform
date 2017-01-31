@@ -60,7 +60,8 @@ if(isset($_GET['country'])){
         		$form_data['results_period'] = $form_data['date_from_formatted_mdy'].' - '.$form_data['date_to_formatted_mdy'];
         		break;
         	case 'period-month':
-                $period_date_format = "%m/%Y";
+                // $period_date_format = "%m/%Y";
+                $period_date_format = "%m/%d/%Y";
                 $period_date_format_standard = "%Y-%m";
                 $period_start_label = " Period";
                 $groupby_period = " ,period_format_standard";
@@ -70,7 +71,8 @@ if(isset($_GET['country'])){
         		$form_data['results_period'] = $form_data['date_from_formatted_my'];
         		break;
         	case 'period-year':
-                $period_date_format = "%Y";
+                // $period_date_format = "%Y";
+                $period_date_format = "%m/%d/%Y";
                 $period_date_format_standard = "%Y";
                 $period_start_label = " Period";
                 $groupby_period = " ,period_format_standard";
@@ -92,7 +94,6 @@ if(isset($_GET['country'])){
         }
 
         /* Setting WHERE condition for r.created_at date */
-        // $condition_period = ($form_data['date_from'] != '' && $form_data['date_to'] != '') ? "r.created_at BETWEEN '".$form_data['date_from']."' AND '".$form_data['date_to']."'" : '1';
         $condition_period = '1';
         if ($form_data['date_from'] != '' && $form_data['date_to'] != '') {
         	$condition_period = "r.created_at BETWEEN '".$form_data['date_from']."' AND '".$form_data['date_to']."'";
@@ -133,13 +134,10 @@ if(isset($_GET['country'])){
         $page = isset( $_GET['cpage'] ) ? abs( (int) $_GET['cpage'] ) : 1;
         $total_reports_count = count($reports_count);
         $limit_start = $reports_per_page * ($page - 1);
-        // echo "limit-".$limit_start."<br>";
-        
-        // IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
-        
+
         /* Query string for displayed reports table */
         $query_string = "
-    		SELECT r.country_group, r.operator_group, u.user_email, p.post_title, 
+    		SELECT u.id as user_id, r.country_group, r.operator_group, r.account_group, u.user_email, p.post_title, 
                 ".$select_count."
                 date_format(r.created_at, '".$period_date_format."') as period, 
                 date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
@@ -158,17 +156,22 @@ if(isset($_GET['country'])){
         ";
        
         $reports_data = $wpdb->get_results($query_string, ARRAY_A);
-        // echo $query_string;
+        echo " <br>query_string : ".$query_string;
 
+
+        /* TODO : MERGE! */
         /* QUERY string for exported reports */
         $country_groups_select_case .= getCountryGroupSelectCase();
+        $group_by_exportsreports = $form_data['result_type'] == 'sum' ?  " GROUP BY r.user_id, r.post_id, ". $groupby_period_exportsreports." " : " ";
+        $select_file_title_exportsreports = $form_data['result_type'] == 'sum' ?  " count(*) " : " r.file_title ";
 
         $query_string_exportsreports = "
             SELECT date_format(r.created_at, '".$period_date_format_standard."') as ".$period_start_label.",
                 ".$select_max_created_at."
                 ".$country_groups_select_case."
                 IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
-                u.user_email, p.post_title, count(*) as downloaded_files
+                IF( r.account_group IS NULL or r.account_group = '','',r.account_group) as account_group, 
+                u.user_email, p.post_title, ".$select_file_title_exportsreports." as downloaded_files
             FROM ".$wpdb->custom_reports." r 
             INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
             INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
@@ -178,24 +181,39 @@ if(isset($_GET['country'])){
             " AND ".$condition_operator_group.
             " AND ".$condition_operator_account.
             " AND ".$condition_show.
-            " GROUP BY r.user_id, r.post_id, ". $groupby_period_exportsreports."
+            $group_by_exportsreports."
               ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
         ";
         // echo "<br></br>".$query_string_exportsreports;
-        $query_string_list = setRtlReportList($period_date_format,$period_date_format_standard,$period_start_label,$select_max_created_at_list,$condition_period );
+        // $query_string_list = setRtlReportList($period_date_format, $period_date_format_standard, $period_start_label, $select_max_created_at_list, $condition_period );
         // $reports_data = $wpdb->get_results($query_string_list, ARRAY_A);
+        
+        echo "<br>query_string_exportsreports : <br>".$query_string_exportsreports;
 
-        // echo $query_string;
+        $query_string_exportsreports_list = "
+            SELECT date_format(r.created_at, '".$period_date_format_standard."') as ".$period_start_label.",
+                ".$select_max_created_at."
+                ".$country_groups_select_case."
+                IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
+                IF( r.account_group IS NULL or r.account_group = '','',r.account_group) as account_group, 
+                u.user_email, p.post_title, ".$select_file_title_exportsreports." as downloaded_files
+            FROM ".$wpdb->custom_reports." r 
+            INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
+            INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
+            WHERE ".
+            $condition_period.
+            " AND ".$condition_country.
+            " AND ".$condition_operator_group.
+            " AND ".$condition_operator_account.
+            " AND ".$condition_show.
+            $group_by_exportsreports."
+              ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
+        ";
 
-        // echo "<br><br>".$query_string_exportsreports;
+        echo "<br>query_string_exportsreports_list : <br>".$query_string_exportsreports_list;
 
-        /* Saving of export query to database */
-        $return_value = $wpdb->update( 
-            $wpdb->exportsreports_reports, 
-            array( 
-                'sql_query' => $query_string_exportsreports
-            ), 
-            array( 'name' => 'RTL' )
-        );
+        $return_value = updateToExportsReports($query_string_exportsreports_list, $report_name = 'RTLList' );
+        $return_value = updateToExportsReports($query_string_exportsreports, $report_name = 'RTL' );
+
     }
 }
