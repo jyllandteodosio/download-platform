@@ -1746,11 +1746,11 @@ if (!function_exists('getMonthsPromos')) {
         $args = array(
                     'post_type' => 'wpdmpro', 
                     'posts_per_page' => -1,
-                    'meta_query' => array(
-                          'key' => 'add_promo_files_%_upload_date',
-                          'value' => '"' . get_the_ID() . '"',
-                          'compare' => 'LIKE'
-                        ),
+                    // 'meta_query' => array(
+                    //       'key' => 'add_promo_files_%_upload_date',
+                    //       'value' => '"' . get_the_ID() . '"',
+                    //     ),
+                    'meta_key' => 'add_promo_files_%_upload_date',
                     'orderby' => 'meta_value',
                     'order' => 'DESC',
                     'tax_query' => array(
@@ -1762,7 +1762,7 @@ if (!function_exists('getMonthsPromos')) {
                       )
                   );
         $query_shows = new WP_Query( $args );
-        // echo  $query_shows->request;
+        
         $promos = array();
         if($query_shows->have_posts()){
           while($query_shows->have_posts()) { 
