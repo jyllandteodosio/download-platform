@@ -1741,6 +1741,9 @@ if (!function_exists('getMonthsPromos')) {
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
+                          'meta_key' => 'upload_date',
+                          'orderby' => 'meta_value',
+                          'order' => 'ASC',
                           'field'    => 'slug',
                           'terms'    => array('shows-'.$channel,'channel-materials-'.$channel ),
                         ),
