@@ -32,9 +32,9 @@ class WPDM_Notification_Trigger {
 			print_r($channel_materials);*/
 			
 			$show_files = !empty($show_files) || !empty($channel_materials) ? array_merge($show_files, $channel_materials) : $show_files;
-			echo "Accessible Files:<br>";
+			/*echo "Accessible Files:<br>";
 			print_r($show_files);
-			echo '</pre>';
+			echo '</pre>';*/
 
 			$files = array();
 			if( !empty($email_entries) ){

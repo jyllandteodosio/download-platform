@@ -5,8 +5,8 @@
 <td>
 <p>Hi [user_email]</p>
 <p>&nbsp;</p>
-<p>There are new files available for download in the RTL CBS Operator Site.</p>
-<p>Please find the updated assets below.</p>
+<p>There are new files available for download in the RTL CBS Operator Site. The files below are sent to you based on the profile you have provided.</p>
+<p>You may download relevant documents from the links below.</p>
 <p>&nbsp;</p>
 </td>
 <td>&nbsp;</td>
@@ -26,7 +26,9 @@
 <tr>
 <td>&nbsp;</td>
 <td>
-<p>To view and download the files, log on to the&nbsp;<a title="Operator Site" href="[operator_link]" target="_blank">Operator Site</a>.</p>
+<p>To access and download the full range of assets, please log on to the&nbsp;<a title="Operator Site" href="[operator_link]" target="_blank">Operator Site</a>.</p>
+<p>&nbsp;</p>
+<p>Please contact us if you wish to receive notification for other files that are uploaded.</p>
 <p>&nbsp;</p>
 <p>Thanks,</p>
 <p><strong>RTL CBS</strong></p>
