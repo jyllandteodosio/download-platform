@@ -1626,8 +1626,10 @@ if (!function_exists('getFeaturedShows')) {
         $paged = ( get_query_var($query_var) ) ? get_query_var($query_var) : 1;
 
         $args = array(
-                    'post_type' => 'wpdmpro', 
-                    'orderby'   => 'title',
+                    'post_type' => 'wpdmpro',
+                    'meta_key' => 'banner_order', 
+                    'orderby' => 'meta_value',
+                    //'orderby'   => 'title',
                     'order'     => 'ASC',
                     'paged' => $paged,
                     'tax_query' => array(

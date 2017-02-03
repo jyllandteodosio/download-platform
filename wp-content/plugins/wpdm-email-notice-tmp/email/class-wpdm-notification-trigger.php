@@ -146,10 +146,6 @@ class WPDM_Notification_Trigger {
 	function get_user_accessible_promos($user, $promo_files, $is_pr_group = '', $show_files = array(), $post_ids = array()) {
 		$accessible_promo_files = array();
 
-		/*echo '<pre>';
-		print_r($post_ids);
-		echo '</pre>';*/
-
 		if ( in_array('promo', $show_files) || in_array('cm_promo', $show_files) || empty($show_files) ) {
 			if (!empty($promo_files)) {
 				foreach ($post_ids as $post_id) {
@@ -166,33 +162,6 @@ class WPDM_Notification_Trigger {
 				}
 			}
 		}
-
-		/*if ( in_array('promo', $show_files) || in_array('cm_promo', $show_files) || empty($show_files) ) {
-			if (!empty($promo_files)) {
-				foreach ($promo_files as $key => $value) {
-
-					if (  $user->country_group == 'all' && $is_pr_group == 'yes' ||
-						 contains($value['operator_access'], $user->operator_group) ||
-						 contains($value['operator_access'], 'all' )
-						) {
-	                	array_push($accessible_promo_files, $value);
-
-	                } else if( $is_pr_group == 'yes'){
-
-	                    $sub_operators = get_operators_by_country( $user->country_group );
-
-	                    foreach ($sub_operators as $so_key => $sub_op) {
-	                        if ( contains($value['operator_access'], $sub_op->operator_group ) ){
-	                        	array_push($accessible_promo_files, $value);
-	                            break;
-
-	                        }
-	                    }
-	                }
-
-				}
-			}
-		}*/
 		return $accessible_promo_files;
 	}
 
