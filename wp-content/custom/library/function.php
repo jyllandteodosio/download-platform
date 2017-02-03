@@ -1752,7 +1752,7 @@ if (!function_exists('getMonthsPromos')) {
                           'compare' => 'LIKE'
                         ),
                     'orderby' => 'meta_value',
-                    'order' => 'ASC',
+                    'order' => 'DESC',
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
