@@ -1730,15 +1730,7 @@ if (!function_exists('getMonthsPromos')) {
      * @return array
      * @usage returns an array of promo files, otherwise empty array
      */
-    // custom filter to replace '=' with 'LIKE'
-    function my_posts_where( $where )
-    {
-        $where = str_replace("meta_key = 'add_promo_files_%_upload_date'", "meta_key LIKE 'add_promo_files_%_upload_date'", $where);
-        return $where;
-    }
-     
-    add_filter('posts_where', 'my_posts_where');
-
+    
     function getMonthsPromos($category = 'on-air', $promo_filter = 'this-month'){
         wp_reset_query();
         $channel = $_SESSION['channel'];
@@ -1746,11 +1738,7 @@ if (!function_exists('getMonthsPromos')) {
         $args = array(
                     'post_type' => 'wpdmpro', 
                     'posts_per_page' => -1,
-                    // 'meta_query' => array(
-                    //       'key' => 'add_promo_files_%_upload_date',
-                    //       'value' => '"' . get_the_ID() . '"',
-                    //     ),
-                    'meta_key' => 'add_promo_files_%_upload_date',
+                    'meta_key' => 'add_promo_files_0_upload_date',
                     'orderby' => 'meta_value',
                     'order' => 'DESC',
                     'tax_query' => array(
