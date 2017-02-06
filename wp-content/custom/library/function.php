@@ -1162,6 +1162,7 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
 
     $params = array(
         'post_type' => 'wpdmpro',
+        'post_status' => 'publish',
         'paged' => $cp,
         'posts_per_page' => $items_per_page,
         'include_children' => false,
