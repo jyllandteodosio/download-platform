@@ -1825,6 +1825,7 @@ if (!function_exists('get_promos')) {
             $category = 'all';
             $promo_filter = $_POST['promo-timeline'];
             $promos = getMonthsPromos($category, $promo_filter);
+            usort($promos, "sortPromosByUploadDate");
         }
         echo json_encode($promos);
         die();
