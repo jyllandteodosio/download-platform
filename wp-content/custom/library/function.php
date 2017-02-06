@@ -1807,7 +1807,7 @@ if (!function_exists('getMonthsPromos')) {
 
 if (!function_exists('sortPromosByUploadDate')) {
     function sortPromosByUploadDate($a, $b) {
-        return strtotime($a["upload_date"]) - strtotime($b["upload_date"]);
+        return strtotime($b["upload_date"]) - strtotime($a["upload_date"]);
     }
 }
 
