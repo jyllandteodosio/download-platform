@@ -1739,9 +1739,10 @@ if (!function_exists('getMonthsPromos')) {
         $args = array(
                     'post_type' => 'wpdmpro', 
                     'posts_per_page' => -1,
-                    'meta_key' => 'add_promo_files_0_upload_date',
+                    // 'meta_key' => 'add_promo_files_0_upload_date',
+                    'meta_key' => 'add_promo_files',
                     'orderby' => 'meta_value',
-                    'order' => 'DESC',
+                    'order' => 'ASC',
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
