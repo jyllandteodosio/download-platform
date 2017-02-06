@@ -1417,7 +1417,7 @@ if (!function_exists('get_all_shows')) {
 
         $params = array(
             'post_type' => 'wpdmpro',
-            'orderby'     => 'modified',
+             'orderby'     => 'modified',
             'order'       => 'DESC',
             'status' => 'publish',
             'tax_query' => array(array(
@@ -1630,6 +1630,7 @@ if (!function_exists('getFeaturedShows')) {
                     'post_type' => 'wpdmpro',
                     'meta_key' => 'banner_order', 
                     'orderby' => 'meta_value',
+                    //'orderby'   => 'title',
                     'order'     => 'ASC',
                     'paged' => $paged,
                     'tax_query' => array(
@@ -1738,8 +1739,6 @@ if (!function_exists('getMonthsPromos')) {
         $args = array(
                     'post_type' => 'wpdmpro', 
                     'posts_per_page' => -1,
-                    'orderby' => get_post_meta(get_the_ID(), '__wpdm_publish_date', true),
-                    'order' => 'DESC',
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
