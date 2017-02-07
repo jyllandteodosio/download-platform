@@ -168,7 +168,7 @@
 			<tr>
 				<td><?php 
 					echo $value['period'];
-					if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
+					// if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
 					?>
 				</td>
 				<td><?php echo $value['country_group'] != '' && $value['country_group'] != NULL ? get_country_name($value['country_group']) : 'Admin' ;?></td>
@@ -219,7 +219,8 @@
 
 <script>
 	jQuery(document).ready(function(){
-		var curr_date, curr_month, curr_year, days, firstDay, lastDay;
+		var days = 0;
+		var curr_date, curr_month, curr_year, firstDay, lastDay;
 
 		jQuery("#period-day").click(function(e){
 			e.preventDefault();
@@ -255,7 +256,7 @@
 		function setActiveDatePeriod(current){
 			jQuery(".periods").removeClass('current');
 			jQuery("#"+current).addClass('current');
-			jQuery("#current-period").val(current);
+			var current_period = jQuery("#current-period").val(current);
 		}
 
 		jQuery("#date_from").on("change", function() {
