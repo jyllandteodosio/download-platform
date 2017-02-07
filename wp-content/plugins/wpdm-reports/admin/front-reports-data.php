@@ -150,7 +150,7 @@
 	<table class="wpdmr-reports-data wp-list-table striped widefat">
 		<thead>
 		<tr>
-			<th>Period</th>
+			<th>Date</th>
 			<th>Country Group</th>
 			<th>Operator Group</th>
 			<th>Account Group</th>
@@ -168,7 +168,7 @@
 			<tr>
 				<td><?php 
 					echo $value['period'];
-					if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
+					// if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
 					?>
 				</td>
 				<td><?php echo $value['country_group'] != '' && $value['country_group'] != NULL ? get_country_name($value['country_group']) : 'Admin' ;?></td>
@@ -187,7 +187,7 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<th>Period</th>
+				<th>Date</th>
 				<th>Country Group</th>
 				<th>Operator Group</th>
 				<th>Account Group</th>
@@ -219,27 +219,21 @@
 
 <script>
 	jQuery(document).ready(function(){
-		var curr_date, curr_month, curr_year, days, firstDay, lastDay;
+		// var curr_date, curr_month, curr_year, firstDay, lastDay;
 
 		jQuery("#period-day").click(function(e){
 			e.preventDefault();
 			setActiveDatePeriod(jQuery(this).attr('id'));
-
-			days = 0;
 		});
 
 		jQuery("#period-week").click(function(e){
 			e.preventDefault();
 			setActiveDatePeriod(jQuery(this).attr('id'));
-
-			days = 7;
 		});
 
 		jQuery("#period-month").click(function(e){
 			e.preventDefault();
 			setActiveDatePeriod(jQuery(this).attr('id'));
-
-			days = 30;
 		});
 
 		jQuery("#period-year").click(function(e){
@@ -260,13 +254,18 @@
 
 		jQuery("#date_from").on("change", function() {
 			var startDate = new Date( jQuery("#date_from").val() );
-			var endDate = new Date( startDate.setDate( startDate.getDate() + days ));
+			var endDate = new Date( startDate.setDate( startDate.getDate() ));
 
 			// Format date for datepicker
 			var eYear = endDate.getFullYear();
+			if ( jQuery("#period-year").hasClass('current') ) eYear++;
+			
 			var eMonth = endDate.getMonth() + 1;
+			if ( jQuery("#period-month").hasClass('current') ) eMonth++;
 			eMonth = ("0" + eMonth).slice(-2);
+			
 			var eDay = endDate.getDate();
+			if ( jQuery("#period-week").hasClass('current') ) eDay+=7;
 			eDay = ("0" + eDay).slice(-2);
 
 			var endDate = eYear + "-" + eMonth + "-" + eDay;
