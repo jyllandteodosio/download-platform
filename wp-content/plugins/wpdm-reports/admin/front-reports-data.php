@@ -219,21 +219,27 @@
 
 <script>
 	jQuery(document).ready(function(){
-		var curr_date, curr_month, curr_year, firstDay, lastDay;
+		var curr_date, curr_month, curr_year, days, firstDay, lastDay;
 
 		jQuery("#period-day").click(function(e){
 			e.preventDefault();
 			setActiveDatePeriod(jQuery(this).attr('id'));
+
+			days = 0;
 		});
 
 		jQuery("#period-week").click(function(e){
 			e.preventDefault();
 			setActiveDatePeriod(jQuery(this).attr('id'));
+
+			days = 7;
 		});
 
 		jQuery("#period-month").click(function(e){
 			e.preventDefault();
 			setActiveDatePeriod(jQuery(this).attr('id'));
+
+			days = 30;
 		});
 
 		jQuery("#period-year").click(function(e){
@@ -241,16 +247,31 @@
 			setActiveDatePeriod(jQuery(this).attr('id'));
 		});
 
-		function setDatePeriod(firstDay, lastDay){
+		/*function setDatePeriod(firstDay, lastDay){
 			jQuery("#date_from").val(firstDay);
 			jQuery("#date_to").val(lastDay);
-		}
+		}*/
 
 		function setActiveDatePeriod(current){
 			jQuery(".periods").removeClass('current');
 			jQuery("#"+current).addClass('current');
 			jQuery("#current-period").val(current);
 		}
+
+		jQuery("#date_from").on("change", function() {
+			var startDate = new Date( jQuery("#date_from").val() );
+			var endDate = new Date( startDate.setDate( startDate.getDate() + days ));
+
+			// Format date for datepicker
+			var eYear = endDate.getFullYear();
+			var eMonth = endDate.getMonth() + 1;
+			eMonth = ("0" + eMonth).slice(-2);
+			var eDay = endDate.getDate();
+			eDay = ("0" + eDay).slice(-2);
+
+			var endDate = eYear + "-" + eMonth + "-" + eDay;
+			jQuery("#date_to").val(endDate);
+		});
 
 		jQuery('#date_from').datepicker({ dateFormat: 'yy-mm-dd' });	
 		jQuery('#date_to').datepicker({ dateFormat: 'yy-mm-dd' });	

@@ -52,15 +52,15 @@ if(isset($_GET['country'])){
         	case 'period-week':
                 $period_date_format = "%m/%d/%Y";
                 $period_date_format_standard = "%Y-%m-%d";
-                $period_start_label = " Start";
+                $period_start_label = " Period";
                 $groupby_period = " ,YEARWEEK(r.created_at)";
                 $groupby_period_exportsreports = " YEARWEEK(r.created_at)";
                 $select_max_created_at = "date_format(max(r.created_at), '%Y-%m-%d') as 'End', ";
                 $select_max_created_at_list = "date_format(r.created_at, '%Y-%m-%d') as 'End', ";
         		$form_data['results_period'] = $form_data['date_from_formatted_mdy'].' - '.$form_data['date_to_formatted_mdy'];
-        		break;
+                // $form_data['results_period'] = $form_data['date_from_formatted_mdy'];
+                break;
         	case 'period-month':
-                // $period_date_format = "%m/%Y";
                 $period_date_format = "%m/%d/%Y";
                 $period_date_format_standard = "%Y-%m";
                 $period_start_label = " Period";
@@ -71,7 +71,6 @@ if(isset($_GET['country'])){
         		$form_data['results_period'] = $form_data['date_from_formatted_my'];
         		break;
         	case 'period-year':
-                // $period_date_format = "%Y";
                 $period_date_format = "%m/%d/%Y";
                 $period_date_format_standard = "%Y";
                 $period_start_label = " Period";
@@ -156,7 +155,6 @@ if(isset($_GET['country'])){
         ";
        
         $reports_data = $wpdb->get_results($query_string, ARRAY_A);
-        // echo " <br>query_string : ".$query_string;
 
 
         /* TODO : MERGE! */
