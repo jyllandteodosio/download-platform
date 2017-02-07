@@ -5,7 +5,7 @@ class WPDM_Notification_Trigger {
 
 	public function __construct( ) {
 	}
-	
+
 	function trigger_email_notification_checker(){
 		global $wpdb;
 
@@ -32,25 +32,25 @@ class WPDM_Notification_Trigger {
 			print_r($channel_materials);*/
 			
 			$show_files = !empty($show_files) || !empty($channel_materials) ? array_merge($show_files, $channel_materials) : $show_files;
-			/*echo "Accessible Files:<br>";
-			print_r($show_files);
-			echo '</pre>';*/
+			// echo "Accessible Files:<br>";
+			// print_r($show_files);
+			// echo '</pre>';
 
 			$files = array();
 			if( !empty($email_entries) ){
 				foreach ($email_entries as $key => $email_entry) {
-					/*echo '<pre>';
-					print_r($email_entries);
-					echo '</pre>';*/
 					$post_ids = array();
 					$post_ids[] = $email_entry->post_id;
 
 					$categories_data = array();
 					$categories = array();
 					$categories_data = get_the_terms($email_entry->post_id,'wpdmcategory');
-					foreach ($categories_data as $key => $value) {
-						$categories[$key] = $value->term_id;
+					if (is_array( $categories_data )) {
+						foreach ($categories_data as $key => $value) {
+							$categories[$key] = $value->term_id;
+						}
 					}
+					
 				    $entertainment_category_id = $this->getCategoryIdBySlug('entertainment');
 				    $extreme_category_id = $this->getCategoryIdBySlug('extreme');
 
