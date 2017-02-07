@@ -27,7 +27,6 @@
 <td>&nbsp;</td>
 <td>
 <p>To access and download the full range of assets, please log on to the&nbsp;<a title="Operator Site" href="[operator_link]" target="_blank">Operator Site</a>.</p>
-<p>&nbsp;</p>
 <p>Please contact us if you wish to receive notification for other files that are uploaded.</p>
 <p>&nbsp;</p>
 <p>Thanks,</p>
