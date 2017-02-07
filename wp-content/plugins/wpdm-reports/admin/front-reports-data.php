@@ -219,6 +219,7 @@
 
 <script>
 	jQuery(document).ready(function(){
+		var days = 0;
 		// var curr_date, curr_month, curr_year, firstDay, lastDay;
 
 		jQuery("#period-day").click(function(e){
@@ -252,9 +253,15 @@
 			jQuery("#current-period").val(current);
 		}
 
-		jQuery("#date_from").on("change", function() {
+		jQuery("#date_from").on("click change", function() {
+			if ( jQuery("#period-week").hasClass('current') ) {
+				days = 7;
+			} else {
+				days = 0;
+			}
+
 			var startDate = new Date( jQuery("#date_from").val() );
-			var endDate = new Date( startDate.setDate( startDate.getDate() ));
+			var endDate = new Date( startDate.setDate( startDate.getDate() + days ));
 
 			// Format date for datepicker
 			var eYear = endDate.getFullYear();
@@ -265,7 +272,6 @@
 			eMonth = ("0" + eMonth).slice(-2);
 			
 			var eDay = endDate.getDate();
-			if ( jQuery("#period-week").hasClass('current') ) eDay+=7;
 			eDay = ("0" + eDay).slice(-2);
 
 			var endDate = eYear + "-" + eMonth + "-" + eDay;
