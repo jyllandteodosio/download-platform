@@ -42,9 +42,9 @@ if(isset($_GET['country'])){
         	case 'period-day':
                 $period_date_format = "%m/%d/%Y";
                 $period_date_format_standard = "%Y-%m-%d";
-                $period_start_label = " Period";
+                $period_start_label = " Date";
                 $groupby_period = " ,period_format_standard";
-                $groupby_period_exportsreports = " Period";
+                $groupby_period_exportsreports = " Date";
                 $select_max_created_at = "";
                 $select_max_created_at_list = "";
         		$form_data['results_period'] = $form_data['date_from_formatted_mdy'];
@@ -53,7 +53,7 @@ if(isset($_GET['country'])){
                 $period_date_format = "%m/%d/%Y";
                 $period_date_format_standard = "%Y-%m-%d";
                 // $period_start_label = " Start";
-                $period_start_label = " Period";
+                $period_start_label = " Date";
                 $groupby_period = " ,YEARWEEK(r.created_at)";
                 $groupby_period_exportsreports = " YEARWEEK(r.created_at)";
                 // $select_max_created_at = "date_format(max(r.created_at), '%Y-%m-%d') as 'End', ";
@@ -67,9 +67,9 @@ if(isset($_GET['country'])){
                 // $period_date_format = "%m/%Y";
                 $period_date_format = "%m/%d/%Y";
                 $period_date_format_standard = "%Y-%m";
-                $period_start_label = " Period";
+                $period_start_label = " Date";
                 $groupby_period = " ,period_format_standard";
-                $groupby_period_exportsreports = " Period";
+                $groupby_period_exportsreports = " Date";
                 $select_max_created_at = "";
                 $select_max_created_at_list = "";
         		$form_data['results_period'] = $form_data['date_from_formatted_my'];
@@ -78,9 +78,9 @@ if(isset($_GET['country'])){
                 // $period_date_format = "%Y";
                 $period_date_format = "%m/%d/%Y";
                 $period_date_format_standard = "%Y";
-                $period_start_label = " Period";
+                $period_start_label = " Date";
                 $groupby_period = " ,period_format_standard";
-                $groupby_period_exportsreports = " Period";
+                $groupby_period_exportsreports = " Date";
                 $select_max_created_at = "";
                 $select_max_created_at_list = "";
         		$form_data['results_period'] = $form_data['date_from_formatted_y'];
@@ -88,9 +88,9 @@ if(isset($_GET['country'])){
         	default:
                 $period_date_format = "%m/%d/%Y";
                 $period_date_format_standard = "%Y-%m-%d";
-                $period_start_label = " Period";
+                $period_start_label = " Date";
                 $groupby_period = "";
-                $groupby_period_exportsreports = " Period";
+                $groupby_period_exportsreports = " Date";
                 $select_max_created_at = "";
                 $select_max_created_at_list = "";
         		$form_data['results_period'] = "";
