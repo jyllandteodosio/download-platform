@@ -1350,21 +1350,22 @@ if (!function_exists('getRecentFileUploads')){
         $args = array(
                     'orderby'=> 'modified',
                     'order' => 'DESC',
-                    'post_type' => 'wpdmpro', 
+                    'post_type' => 'wpdmpro',
+                    'posts_per_page' => -1, 
                     'tax_query' => array(
                         array(
-                          'taxonomy' => 'wpdmcategory',
-                          'field'    => 'slug',
-                          'terms'    => 'shows-'.$channel,
+                           'taxonomy' => 'wpdmcategory',
+                           'field'    => 'slug',
+                           'terms'    => 'shows-'.$channel,
                         ),
-                      ),
+                      )
                     'date_query' => array(
                       array(
                         'column' => 'post_modified',
                         'after'  => '1 month ago',
                       ))
                   );
-        $query_shows = new WP_Query( $args );
+        $query_shows_tmp = new WP_Query( $args );
         return $query_shows;
     }
 }
