@@ -228,7 +228,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 
 <tr><td style="height: 120px;">
 	<center>
-	<img src="http://operator.rtlcbsasia.com/wp-content/plugins/wpdm-email-notice/images/rtl-logo-plain.png" alt="RTL CBS Banner" width="280"/>
+	<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280"/>
 	</center>
 </td>
 </tr>
