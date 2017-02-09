@@ -222,7 +222,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </style>
 </head>
 <body>
-<table style="height: 400px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
+<table style="height: 449px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
 
@@ -233,7 +233,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </td></tr>
 
 <tr><td><center>
-	<table style="background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="593">
+	<table style="height: auto; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="593">
 	<tbody>
 	<tr>
 		<td>
