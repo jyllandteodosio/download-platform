@@ -222,7 +222,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </style>
 </head>
 <body>
-<table style="height: 415px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
+<table style="height: 390px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
 
@@ -251,10 +251,10 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
     		<center>
     		<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/reset_button.png" />
     		</center>
-    	</a><br/><br/> 
+    	</a><br/>
 
     	If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
-    	<br/><br/><br/>
+    	<br/><br/>
     	</td>
 	</tr>
 	</tbody>
