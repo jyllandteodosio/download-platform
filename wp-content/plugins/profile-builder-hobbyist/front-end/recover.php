@@ -214,11 +214,14 @@ function wppb_front_end_password_recovery(){
 
                 //send primary email message
                 $recoveruserMailMessage1 = sprintf( __('
+                	<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;UTF-8" />
 <style type="text/css">
 body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
 </style>
  </head>
-<body >
+<body>
 <table style="height: 617px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
@@ -235,19 +238,8 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <td valign="top"><center>
 <table style="height: 194px; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="522">
 <tbody>
-<tr>
-<td>&nbsp;&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;&nbsp;</td>
-</tr>
-<tr>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td>&nbsp;</td>
-<td>
+<tr><td></td>
+					<td>
                 	Hi <b>%1$s</b>, 
                 	<br/><br/> 
                 	We received a request to reset your RTL CBS Operator Site password. 
@@ -262,7 +254,10 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
                 	</a><br/><br/> 
 
                 	If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
-
+                	</td>
+<td></td></tr>
+</tbody>
+</body></html>
 ', 'profile-builder'), $display_username_email);
 
                 // $recoveruserMailMessage1  = sprintf( __('Someone requested that the password be reset for the following account: <b>%1$s</b><br/>If this was a mistake, just ignore this email and nothing will happen.<br/>To reset your password, visit the following link:%2$s', 'profile-builder'), $display_username_email, '<a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'</a>');
