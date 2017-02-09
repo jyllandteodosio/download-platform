@@ -222,24 +222,24 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </style>
  </head>
 <body>
-<table style="height: 617px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
+<table style="height: 449px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
 
-<tr>
-<td valign="center">
-<!--<p>&nbsp;</p><p>&nbsp;</p>-->
-<img src="http://operator.rtlcbsasia.com/wp-content/plugins/wpdm-email-notice/images/rtl-logo-plain.png" alt="RTL CBS Banner" width="599"/>
-
+<tr><td style="height: 120px;">
+	<center>
+	<img src="http://operator.rtlcbsasia.com/wp-content/plugins/wpdm-email-notice/images/rtl-logo-plain.png" alt="RTL CBS Banner" width="280"/>
+	</center>
 </td>
 </tr>
 
 <tr>
-<td valign="top"><center>
-<table style="height: 194px; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="522">
+<td><center>
+<table style="height: auto; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="593">
 <tbody>
 <tr><td></td>
 					<td>
+					<br/><br/><br/>
                 	Hi <b>%1$s</b>, 
                 	<br/><br/> 
                 	We received a request to reset your RTL CBS Operator Site password. 
@@ -254,6 +254,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
                 	</a><br/><br/> 
 
                 	If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
+                	<br/>
                 	</td>
 <td></td></tr>
 </tbody>
