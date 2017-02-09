@@ -1,5 +1,4 @@
 <?php
-
 if ( ! class_exists( 'WPDM_Notification_Trigger' ) ) {
 class WPDM_Notification_Trigger {
 
@@ -9,6 +8,33 @@ class WPDM_Notification_Trigger {
 	function trigger_email_notification_checker(){
 		global $wpdb;
 
+		/* ROTATING BANNER PLUS CONTENT */
+		// $get_template = $wpdb->get_results( 'SELECT option_value FROM rtl21016_options WHERE option_name = "wpbe_options"');
+		// $email_template = unserialize($get_template[0]->option_value);
+		// $email_template = explode('"', $email_template['template']);
+
+		// $image_urls = array();
+		// foreach($email_template as $value) {
+		// 	if ( substr_count($value, '.jpeg') > 0 ) {
+		// 		array_push($image_urls, $value);
+		// 	} elseif ( substr_count($value, '.jpg') > 0 ) {
+		// 		array_push($image_urls, $value);
+		// 	} elseif ( substr_count($value, '.png') > 0 ) {
+		// 		array_push($image_urls, $value);
+		// 	} elseif ( substr_count($value, '.gif') > 0 ) {
+		// 		array_push($image_urls, $value);
+		// 	}
+		// }
+
+		// $header_href = $image_urls[0];
+		// $header_url = $image_urls[1];
+		// $footer_url = $image_urls[2];
+		
+		// echo '<pre>';
+		// echo $header_href;
+		// echo '</pre>';
+		/* END */
+		
 		$email_entries = get_email_entries();
 
 		$users = getUsersByRole('Operator');
@@ -16,7 +42,7 @@ class WPDM_Notification_Trigger {
 		$permalink = get_permalink($id);
 		$email_recipient = array();
 		foreach ($users as $user) {
-			echo '<pre><br><br>';
+			// echo '<pre><br><br>';
 			/*echo $user->user_email . '<br>';
 			echo $user->country_group . '<br>';
 			echo $user->operator_group . '<br><br>';*/
@@ -97,16 +123,16 @@ class WPDM_Notification_Trigger {
 		}                
 
 		/* Code to update wpdm_email and wpdm_email_logs table. */
-		if( count($email_recipient) > 0 ){
-			$email_recipient_serialized = serialize($email_recipient);
-			$return_value_email = $this->setEmailEntryStatus('sent');
+		// if( count($email_recipient) > 0 ){
+		// 	$email_recipient_serialized = serialize($email_recipient);
+		// 	$return_value_email = $this->setEmailEntryStatus('sent');
 
-			if( $return_value_email === FALSE ){
-				$this->addEmailLogs('failed', $email_recipient_serialized);
-			}else{
-				$this->addEmailLogs('success', $email_recipient_serialized);
-			}
-		}
+		// 	if( $return_value_email === FALSE ){
+		// 		$this->addEmailLogs('failed', $email_recipient_serialized);
+		// 	}else{
+		// 		$this->addEmailLogs('success', $email_recipient_serialized);
+		// 	}
+		// }
 		/* END -  Code to update wpdm_email and wpdm_email_logs table. */
 	}
 
@@ -507,19 +533,19 @@ class WPDM_Notification_Trigger {
 			$message = $this->update_email_template( $email_vars );
 
 			/* Uncomment this echo code if you are not testing  */
-			// echo $message;
+			echo $message;
 
 			/* Start output buffering to grab smtp debugging output*/
-			ob_start();
+			// ob_start();
 
 			/* Send the test mail*/
-			$result = wp_mail($to,$subject,$message,$headers);
+			// $result = wp_mail($to,$subject,$message,$headers);
 				
 			/* Grab the smtp debugging output*/
-			$smtp_debug = ob_get_clean();
+			// $smtp_debug = ob_get_clean();
 			
 			/* Output the response*/
-			return $result;
+			// return $result;
 		}
 		return false;
 	}
