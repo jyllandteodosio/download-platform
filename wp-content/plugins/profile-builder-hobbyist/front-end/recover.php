@@ -214,6 +214,40 @@ function wppb_front_end_password_recovery(){
 
                 //send primary email message
                 $recoveruserMailMessage1 = sprintf( __('
+<style type="text/css">
+body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
+</style>
+ </head>
+<body >
+<table style="height: 617px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
+
+<tbody>
+
+<tr>
+<td valign="center">
+<!--<p>&nbsp;</p><p>&nbsp;</p>-->
+<img src="http://operator.rtlcbsasia.com/wp-content/plugins/wpdm-email-notice/images/rtl-logo-plain.png" alt="RTL CBS Banner" width="599"/>
+
+</td>
+</tr>
+
+<tr>
+<td valign="top"><center>
+<table style="height: 194px; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="522">
+<tbody>
+<tr>
+<td>&nbsp;&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>
                 	Hi <b>%1$s</b>, 
                 	<br/><br/> 
                 	We received a request to reset your RTL CBS Operator Site password. 
@@ -227,8 +261,10 @@ function wppb_front_end_password_recovery(){
                 		</center>
                 	</a><br/><br/> 
 
-                	If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.', 'profile-builder'), $display_username_email);
-                
+                	If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
+
+', 'profile-builder'), $display_username_email);
+
                 // $recoveruserMailMessage1  = sprintf( __('Someone requested that the password be reset for the following account: <b>%1$s</b><br/>If this was a mistake, just ignore this email and nothing will happen.<br/>To reset your password, visit the following link:%2$s', 'profile-builder'), $display_username_email, '<a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'</a>');
                 $recoveruserMailMessage1  = apply_filters( 'wppb_recover_password_message_content_sent_to_user1', $recoveruserMailMessage1, $requestedUserID, $requestedUserLogin, $requestedUserEmail );
 
@@ -237,7 +273,8 @@ function wppb_front_end_password_recovery(){
 
                 //we add this filter to enable html encoding
                 add_filter('wp_mail_content_type',create_function('', 'return "text/html"; '));
-                $recoveruserMailMessage1 = templated_email($recoveruserMailMessage1); /* Custom code by Dianne D.R. - adds email template */
+                // $recoveruserMailMessage1 = templated_email($recoveruserMailMessage1); /* Custom code by Dianne D.R. - adds email template */
+                
                 //send mail to the user notifying him of the reset request
                 if (trim($recoveruserMailMessageTitle1) != ''){
                     $sent = wp_mail($requestedUserEmail, $recoveruserMailMessageTitle1, $recoveruserMailMessage1);
