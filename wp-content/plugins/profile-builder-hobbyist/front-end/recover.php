@@ -222,15 +222,17 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </style>
 </head>
 <body>
-<table style="height: 449px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
+<table style="height: 430px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
 
+<tr><td style="height: 20px"></td></tr>
 <tr><td>
 	<center>
 	<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280"/>
 	</center>
 </td></tr>
+<tr><td style="height: 20px"></td></tr>
 
 <tr><td><center>
 	<table style="height: auto; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="593">
