@@ -226,13 +226,13 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 
 <tbody>
 
-<tr><td style="height: 20px"></td></tr>
 <tr><td>
 	<center>
+	<br/>
 	<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280"/>
+	<br/>
 	</center>
 </td></tr>
-<tr><td style="height: 20px"></td></tr>
 
 <tr><td><center>
 	<table style="height: auto; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="593">
