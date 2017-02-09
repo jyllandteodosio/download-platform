@@ -254,10 +254,10 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
     	If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
     	<br/>
     	</td>
-	</td></td></tr>
+	<td></td></tr>
 	</tbody>
 	</table>
-</td></center></tr>
+</center></td></tr>
 
 </tbody>
 </table>
