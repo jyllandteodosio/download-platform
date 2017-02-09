@@ -123,16 +123,16 @@ class WPDM_Notification_Trigger {
 		}                
 
 		/* Code to update wpdm_email and wpdm_email_logs table. */
-		// if( count($email_recipient) > 0 ){
-		// 	$email_recipient_serialized = serialize($email_recipient);
-		// 	$return_value_email = $this->setEmailEntryStatus('sent');
+		if( count($email_recipient) > 0 ){
+			$email_recipient_serialized = serialize($email_recipient);
+			$return_value_email = $this->setEmailEntryStatus('sent');
 
-		// 	if( $return_value_email === FALSE ){
-		// 		$this->addEmailLogs('failed', $email_recipient_serialized);
-		// 	}else{
-		// 		$this->addEmailLogs('success', $email_recipient_serialized);
-		// 	}
-		// }
+			if( $return_value_email === FALSE ){
+				$this->addEmailLogs('failed', $email_recipient_serialized);
+			}else{
+				$this->addEmailLogs('success', $email_recipient_serialized);
+			}
+		}
 		/* END -  Code to update wpdm_email and wpdm_email_logs table. */
 	}
 
@@ -533,19 +533,19 @@ class WPDM_Notification_Trigger {
 			$message = $this->update_email_template( $email_vars );
 
 			/* Uncomment this echo code if you are not testing  */
-			echo $message;
+			// echo $message;
 
 			/* Start output buffering to grab smtp debugging output*/
-			// ob_start();
+			ob_start();
 
 			/* Send the test mail*/
-			// $result = wp_mail($to,$subject,$message,$headers);
+			$result = wp_mail($to,$subject,$message,$headers);
 				
 			/* Grab the smtp debugging output*/
-			// $smtp_debug = ob_get_clean();
+			$smtp_debug = ob_get_clean();
 			
 			/* Output the response*/
-			// return $result;
+			return $result;
 		}
 		return false;
 	}
