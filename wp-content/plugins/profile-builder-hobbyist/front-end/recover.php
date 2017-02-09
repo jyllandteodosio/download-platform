@@ -222,15 +222,15 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </style>
 </head>
 <body>
-<table style="height: 430px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
+<table style="height: 400px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
 <tbody>
 
 <tr><td>
 	<center>
-	<br/>
+	<br/><br/>
 	<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280"/>
-	<br/>
+	<br/><br/>
 	</center>
 </td></tr>
 
@@ -239,7 +239,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 	<tbody>
 	<tr>
 		<td>
-		<br/><br/><br/>
+		<br/><br/>
     	Hi <b>%1$s</b>, 
     	<br/><br/> 
     	We received a request to reset your RTL CBS Operator Site password. 
@@ -254,7 +254,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
     	</a><br/><br/> 
 
     	If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
-    	<br/><br/><br/>
+    	<br/><br/>
     	</td>
 	</tr>
 	</tbody>
