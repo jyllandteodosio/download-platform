@@ -254,7 +254,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
     	</a><br/><br/> 
 
     	If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
-    	<br/><br/>
+    	<br/><br/><br/>
     	</td>
 	</tr>
 	</tbody>
