@@ -228,9 +228,9 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 
 <tr><td>
 	<center>
-	<br/><br/>
+	<br><br>
 	<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280"/>
-	<br/><br/>
+	<br><br>
 	</center>
 </td></tr>
 
