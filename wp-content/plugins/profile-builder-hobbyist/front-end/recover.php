@@ -238,6 +238,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <table style="height:auto; background-color:#F4F3F4; color:#444444; margin-left: auto; margin-right:auto;" width="593">
 <tbody>
 <tr>
+<td width="20">&nbsp;</td>
 <td>
 <br/><br/>
 Hi <b>%1$s</b>, 
@@ -254,6 +255,7 @@ If you ignore this message, your password won\'t be changed.
 If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
 <br/><br/><br/>
 </td>
+<td width="20">&nbsp;</td>
 </tr>
 </tbody>
 </table>
