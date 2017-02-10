@@ -223,39 +223,37 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </style>
 </head>
 <body >
-<table style="height: 415px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
+<table style="height: 295px; background-color: #000;" width="484" cellspacing="0" cellpadding="0">
 <tbody>
 
+<tr style="height: 20px;"><td>&nbsp;</td></tr>
 <tr><td>
 <center>
-<br/><br/>
 <img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280" />
-<br/><br/>
 </center>
 </td></tr>
+<tr style="height: 10px;"><td>&nbsp;</td></tr>
 
 <tr><td><center>
-<table style="height:auto; background-color:#F4F3F4; color:#444444; margin-left: auto; margin-right:auto;" width="593">
+<table style="height:186px; background-color:#F4F3F4; color:#444444; margin-left: auto; margin-right:auto;" width="480">
 <tbody>
 <tr>
-<td width="20">&nbsp;</td>
+<td width="10">&nbsp;</td>
 <td>
-<br/><br/>
+<br/>
 Hi <b>%1$s</b>, 
 <br/><br/> 
-We received a request to reset your RTL CBS Operator Site password. 
-<br/><br/> 
-If you ignore this message, your password won\'t be changed. 
-<br/><br/> 
+We received a request to reset your RTL CBS Operator Site password.  
+<br/>
 
 <a href="'. esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'"> 
 <center><img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/reset_button.png" /></center>
-</a><br/><br/> 
+</a>
 
-If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
-<br/><br/><br/>
+If you ignore this message, your password won\'t be changed.
+<br/><br/>
 </td>
-<td width="20">&nbsp;</td>
+<td width="10">&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -265,6 +263,10 @@ If the button above does not work, please visit this <a href="'.esc_url( add_que
 </table>
 </body></html>
 ', 'profile-builder'), $display_username_email);
+
+                /* EMAIL LINK */
+				// If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
+				// <br/><br/>
 
                 // $recoveruserMailMessage1  = sprintf( __('Someone requested that the password be reset for the following account: <b>%1$s</b><br/>If this was a mistake, just ignore this email and nothing will happen.<br/>To reset your password, visit the following link:%2$s', 'profile-builder'), $display_username_email, '<a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'</a>');
                 $recoveruserMailMessage1  = apply_filters( 'wppb_recover_password_message_content_sent_to_user1', $recoveruserMailMessage1, $requestedUserID, $requestedUserLogin, $requestedUserEmail );
