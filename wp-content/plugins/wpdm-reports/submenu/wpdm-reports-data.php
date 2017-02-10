@@ -66,7 +66,7 @@ if(isset($_GET['country'])){
         	case 'period-month':
                 // $period_date_format = "%m/%Y";
                 $period_date_format = "%m/%d/%Y";
-                $period_date_format_standard = "%Y-%m";
+                $period_date_format_standard = "%m/%d/%Y";
                 $period_start_label = " Date";
                 $groupby_period = " ,period_format_standard";
                 $groupby_period_exportsreports = " Date";
@@ -77,7 +77,7 @@ if(isset($_GET['country'])){
         	case 'period-year':
                 // $period_date_format = "%Y";
                 $period_date_format = "%m/%d/%Y";
-                $period_date_format_standard = "%Y";
+                $period_date_format_standard = "%m/%d/%Y";
                 $period_start_label = " Date";
                 $groupby_period = " ,period_format_standard";
                 $groupby_period_exportsreports = " Date";
@@ -121,7 +121,8 @@ if(isset($_GET['country'])){
         /* Preparing pagination details */
         $query_string_count = "
             SELECT date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
-            FROM ".$wpdb->custom_reports." r 
+            FROM ".$wpdb->custom_reports." r
+            INNER JOIN ".$wpdb->usermeta." um ON r.user_id = um.user_id 
             INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
             INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
             WHERE ".
@@ -130,6 +131,7 @@ if(isset($_GET['country'])){
             " AND ".$condition_operator_group.
             " AND ".$condition_operator_account.
             " AND ".$condition_show.
+            " AND um.meta_key = 'account_group' ".
             $group_by.
             " ORDER BY period_format_standard,u.user_email,p.post_title
         ";
@@ -141,11 +143,12 @@ if(isset($_GET['country'])){
 
         /* Query string for displayed reports table */
         $query_string = "
-    		SELECT u.id as user_id, r.country_group, r.operator_group, r.account_group, u.user_email, p.post_title, 
+    		SELECT u.id as user_id, r.country_group, r.operator_group, um.meta_value as account_group, u.user_email, p.post_title, 
                 ".$select_count."
                 date_format(r.created_at, '".$period_date_format."') as period, 
                 date_format(r.created_at, '".$period_date_format_standard."') as period_format_standard
     		FROM ".$wpdb->custom_reports." r 
+            INNER JOIN ".$wpdb->usermeta." um ON r.user_id = um.user_id
     		INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
     		INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
     		WHERE ".
@@ -154,7 +157,8 @@ if(isset($_GET['country'])){
     		" AND ".$condition_operator_group.
     		" AND ".$condition_operator_account.
     		" AND ".$condition_show.
-    		 $group_by."
+            " AND um.meta_key = 'account_group' ".
+    		  $group_by."
               ORDER BY period_format_standard DESC,u.user_email,p.post_title
               LIMIT ".$limit_start.", ".$reports_per_page."
         ";
@@ -174,9 +178,10 @@ if(isset($_GET['country'])){
                 ".$select_max_created_at."
                 ".$country_groups_select_case."
                 IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
-                IF( r.account_group IS NULL or r.account_group = '','',r.account_group) as account_group, 
+                IF( um.meta_value IS NULL or um.meta_value = '','',um.meta_value) as account_group, 
                 u.user_email, p.post_title, ".$select_file_title_exportsreports." as downloaded_files
-            FROM ".$wpdb->custom_reports." r 
+            FROM ".$wpdb->custom_reports." r
+            INNER JOIN ".$wpdb->usermeta." um ON r.user_id = um.user_id 
             INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
             INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
             WHERE ".
@@ -185,6 +190,7 @@ if(isset($_GET['country'])){
             " AND ".$condition_operator_group.
             " AND ".$condition_operator_account.
             " AND ".$condition_show.
+            " AND um.meta_key = 'account_group' ".
             $group_by_exportsreports."
               ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
         ";
@@ -199,9 +205,10 @@ if(isset($_GET['country'])){
                 ".$select_max_created_at."
                 ".$country_groups_select_case."
                 IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
-                IF( r.account_group IS NULL or r.account_group = '','',r.account_group) as account_group, 
+                IF( um.meta_value IS NULL or um.meta_value = '','',um.meta_value) as account_group, 
                 u.user_email, p.post_title, ".$select_file_title_exportsreports." as downloaded_files
-            FROM ".$wpdb->custom_reports." r 
+            FROM ".$wpdb->custom_reports." r
+            INNER JOIN ".$wpdb->usermeta." um ON r.user_id = um.user_id 
             INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
             INNER JOIN ".$wpdb->posts." p ON r.post_id = p.id
             WHERE ".
@@ -210,6 +217,7 @@ if(isset($_GET['country'])){
             " AND ".$condition_operator_group.
             " AND ".$condition_operator_account.
             " AND ".$condition_show.
+            " AND um.meta_key = 'account_group' ".
             $group_by_exportsreports."
               ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
         ";
