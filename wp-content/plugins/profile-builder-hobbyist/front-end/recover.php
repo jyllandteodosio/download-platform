@@ -214,6 +214,7 @@ function wppb_front_end_password_recovery(){
 
                 //send primary email message
                 $recoveruserMailMessage1 = sprintf( __('
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;UTF-8" />
@@ -221,44 +222,41 @@ function wppb_front_end_password_recovery(){
 body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
 </style>
 </head>
-<body>
+<body >
 <table style="height: 415px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
-
 <tbody>
 
 <tr><td>
-	<center>
-	<br/><br/>
-	<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280"/>
-	<br/><br/>
-	</center>
+<center>
+<br/><br/>
+<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280" />
+<br/><br/>
+</center>
 </td></tr>
 
 <tr><td><center>
-	<table style="height: auto; background-color: #F4F3F4;color:#444444;margin-left: auto; margin-right: auto;" width="593">
-	<tbody>
-	<tr>
-		<td>
-		<br/><br/>
-    	Hi <b>%1$s</b>, 
-    	<br/><br/> 
-    	We received a request to reset your RTL CBS Operator Site password. 
-    	<br/><br/> 
-    	If you ignore this message, your password won\'t be changed. 
-    	<br/><br/> 
+<table style="height:auto; background-color:#F4F3F4; color:#444444; margin-left: auto; margin-right:auto;" width="593">
+<tbody>
+<tr>
+<td>
+<br/><br/>
+Hi <b>%1$s</b>, 
+<br/><br/> 
+We received a request to reset your RTL CBS Operator Site password. 
+<br/><br/> 
+If you ignore this message, your password won\'t be changed. 
+<br/><br/> 
 
-    	<a href="'. esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'"> 
-    		<center>
-    		<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/reset_button.png" />
-    		</center>
-    	</a><br/><br/> 
+<a href="'. esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'"> 
+<center><img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/reset_button.png" /></center>
+</a><br/><br/> 
 
-    	If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
-    	<br/><br/><br/>
-    	</td>
-	</tr>
-	</tbody>
-	</table>
+If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
+<br/><br/><br/>
+</td>
+</tr>
+</tbody>
+</table>
 </center></td></tr>
 
 </tbody>
