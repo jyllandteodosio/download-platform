@@ -1347,23 +1347,42 @@ if (!function_exists('getRecentFileUploads')){
      */
     function getRecentFileUploads($channel = 'entertainment'){
 
+        global $wpdb;
+        $results = $wpdb->get_results("SELECT * FROM rtl21016_postmeta WHERE meta_key = '__wpdm_fileinfo' ");
+
+        $filtered_shows = array();
+        $start_date = date('Y-m-d', strtotime('- 10 days'));
+        $end_date = date('Y-m-d'); 
+        // $current_date = date('Y-m-d');
+
+        foreach ($results as $key => $value) {
+            $file_info = unserialize($value->meta_value);
+            $file_array = array_keys($file_info);
+            $post_id = $value->post_id;
+
+            foreach ( $file_array as $file_key ) {
+                // Convert UNIX Timestamp to human readable date
+                $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+                
+                if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                    array_push($filtered_shows, $post_id);
+                    break;
+                }
+            }
+        }
+   
         $args = array(
-                    'orderby'=> 'modified',
-                    'order' => 'DESC',
-                    'post_type' => 'wpdmpro',
-                    // 'posts_per_page' => -1, 
+                    // 'orderby'=> 'modified',
+                    // 'order' => 'DESC',
+                    // 'post_type' => 'wpdmpro',
+                    'post__in' => $filtered_shows,
                     'tax_query' => array(
                         array(
                            'taxonomy' => 'wpdmcategory',
                            'field'    => 'slug',
                            'terms'    => 'shows-'.$channel,
                         ),
-                      ),
-                    'date_query' => array(
-                      array(
-                        'column' => 'post_modified',
-                        'after'  => '1 month ago',
-                      ))
+                      )
                   );
         $query_shows = new WP_Query( $args );
         return $query_shows;
