@@ -1388,6 +1388,58 @@ if (!function_exists('getRecentFileUploads')){
     }
 }
 
+function displayRecentFileUploads() {
+    class ShowItem {
+        public $thumbnail = "";
+        public $publish_date = "";
+        public $expire_date = "";
+    }
+
+    $query_shows = getRecentFileUploads($_POST['channel'], $_POST['days']);
+    $filteredShows = [];
+    
+    if($query_shows->have_posts()){
+        while($query_shows->have_posts()) { $query_shows->the_post();
+            $result = new ShowItem();
+            
+            $thumb_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];
+            $result->thumbnail = wpdm_dynamic_thumb($thumb_url, array(270, 296));
+
+            $result->publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+            $result->expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+
+            array_push($filteredShows, $result);
+
+        // $thumb_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];
+        // $thumb_url = wpdm_dynamic_thumb($thumb_url, array(270, 296));
+
+        // $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+        // $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+        /*if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
+          <div class="item">
+            <div class='file-thumb'><img src="<?php echo $thumb_url ?>" alt="><?php the_title();?>"/></div>
+            <div class="show-meta">
+              <p><?php the_title();?></p>
+            </div>
+            <a href="<?php echo the_permalink();?>" class="item-link" title="<?php the_title();?>"></a>
+          </div>
+        <?php 
+        endif;*/
+        }
+    }
+    // } else {
+    //   echo "No Recent File Upload at the moment.";
+    // }
+
+    // echo json_encode($filteredShows);
+    echo json_encode($filteredShows);
+    die();
+}
+add_action('wp_ajax_displayRecentFileUploads', 'displayRecentFileUploads');
+add_action('wp_ajax_nopriv_displayRecentFileUploads', 'displayRecentFileUploads');
+
+
+
 if (!function_exists('custom_get_shows()')) {
     /**
      * Get Shows
