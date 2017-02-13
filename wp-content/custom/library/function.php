@@ -1345,15 +1345,14 @@ if (!function_exists('getRecentFileUploads')){
      * @param  string $channel Either entertainment or extreme
      * @return Object          Returns recently modified shows within a month.
      */
-    function getRecentFileUploads($channel = 'entertainment'){
+    function getRecentFileUploads($channel = 'entertainment', $days = '- 10 days'){
 
         global $wpdb;
         $results = $wpdb->get_results("SELECT * FROM rtl21016_postmeta WHERE meta_key = '__wpdm_fileinfo' ");
 
         $filtered_shows = array();
-        $start_date = date('Y-m-d', strtotime('- 10 days'));
+        $start_date = date('Y-m-d', strtotime($days));
         $end_date = date('Y-m-d'); 
-        // $current_date = date('Y-m-d');
 
         foreach ($results as $key => $value) {
             $file_info = unserialize($value->meta_value);
