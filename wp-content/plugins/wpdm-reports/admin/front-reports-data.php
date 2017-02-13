@@ -140,23 +140,20 @@
 			$title = $form_data['filter'] && !empty($reports_data) ? "" : "Click 'Show Report' first before exporting.";
 			$export_button_visibility = 'style="display:none"';
 		?>
-		
 		<input type="button" value=" Export Report" id="export_sum" class="button" <?php echo $disabled?> title="<?php echo $title;?>" <?php echo $_GET['result_type'] != 'sum' ? $export_button_visibility : '';?> onclick="window.open('?page=exports-reports&amp;report=3&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
+
 		<input type="button" value=" Export Report" id="export_list" class="button" <?php echo $disabled?> title="<?php echo $title;?>" <?php echo !isset($_GET['result_type']) ? '' : (($_GET['result_type'] != 'list' ) ? $export_button_visibility : '');?> onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_reports_data','temp_report_window');">
-		<!-- <input type="button" value=" Export Report " id="auto_report" class="button" style="display:block" onclick="window.open('?page=exports-reports&amp;report=4&amp;action=export&amp;export_type=csv&amp;export_source=custom_monthly_reports','temp_report_window');"> -->
 		
 		<iframe name="temp_report_window" id="temp_report_window" class="temp_report_window"></iframe>
-		
-		<script>
-			// jQuery('#auto_report').trigger('click');
-		</script>
+
 	</div>
 	<table class="wpdmr-reports-data wp-list-table striped widefat">
 		<thead>
 		<tr>
-			<th>Period</th>
+			<th>Date</th>
 			<th>Country Group</th>
 			<th>Operator Group</th>
+			<th>Account Group</th>
 			<th>Operator Account</th>
 			<th>Show</th>
 			<th>Downloaded Files</th>
@@ -165,44 +162,40 @@
 
 		<tbody id="the-list">
 		
-		
 		<?php
 		if(isset($reports_data) && !empty($reports_data)):
-			foreach ($reports_data as $key => $value):
-				// echo "<pre>";print_r($reports_data);echo "</pre>";
-		?>
-		<tr>
-			<td><?php 
-				echo $value['period'];
-				if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
-				?>
-			</td>
-			<td><?php echo $value['country_group'] != '' && $value['country_group'] != NULL ? get_country_name($value['country_group']) : 'Admin' ;?></td>
-			<td><?php echo $value['operator_group'] != '' && $value['operator_group'] != NULL ? $value['operator_group'] : 'Admin' ;?></td>
-			<!-- <td><?php //echo $value['operator_group'];?></td> -->
-			<td><?php echo $value['user_email'];?></td>
-			<td><?php echo $value['post_title'];?></td>
-			<td><?php echo $value['downloaded_files'];?></td>
-		</tr>
+			foreach ($reports_data as $key => $value): ?>
+			<tr>
+				<td><?php 
+					echo $value['period'];
+					// if($form_data['current_period'] == 'period-week') echo " - ".date('m/d/Y',strtotime($value['max_created_date']));
+					?>
+				</td>
+				<td><?php echo $value['country_group'] != '' && $value['country_group'] != NULL ? get_country_name($value['country_group']) : 'Admin' ;?></td>
+				<td><?php echo $value['operator_group'] != '' && $value['operator_group'] != NULL ? $value['operator_group'] : 'Admin' ;?></td>
+				<td><?php echo $value['account_group'] != '' && $value['account_group'] != NULL ? $value['account_group'] : '-' ;?></td>
+				<td><?php echo $value['user_email'];?></td>
+				<td><?php echo $value['post_title'];?></td>
+				<td><?php echo $value['downloaded_files'];?></td>
+			</tr>
 		<?php 
 			endforeach;
-			else: ?>
+		else: ?>
 			<tr><td colspan="6" >No results</td></tr>
 		<?php endif; ?>
 
 		</tbody>
-
 		<tfoot>
 			<tr>
-				<th>Period</th>
+				<th>Date</th>
 				<th>Country Group</th>
 				<th>Operator Group</th>
+				<th>Account Group</th>
 				<th>Operator Account</th>
 				<th>Show</th>
 				<th>Downloaded Files</th>
 			</tr>
 		</tfoot>
-
 	</table>
 	
 	<div class="tablenav">
@@ -226,7 +219,8 @@
 
 <script>
 	jQuery(document).ready(function(){
-		var curr_date, curr_month, curr_year, firstDay, lastDay;
+		var days = 0;
+		// var curr_date, curr_month, curr_year, firstDay, lastDay;
 
 		jQuery("#period-day").click(function(e){
 			e.preventDefault();
@@ -248,16 +242,41 @@
 			setActiveDatePeriod(jQuery(this).attr('id'));
 		});
 
-		function setDatePeriod(firstDay, lastDay){
+		/*function setDatePeriod(firstDay, lastDay){
 			jQuery("#date_from").val(firstDay);
 			jQuery("#date_to").val(lastDay);
-		}
+		}*/
 
 		function setActiveDatePeriod(current){
 			jQuery(".periods").removeClass('current');
 			jQuery("#"+current).addClass('current');
 			jQuery("#current-period").val(current);
 		}
+
+		jQuery("#date_from").on("click change", function() {
+			if ( jQuery("#period-week").hasClass('current') ) {
+				days = 7;
+			} else {
+				days = 0;
+			}
+
+			var startDate = new Date( jQuery("#date_from").val() );
+			var endDate = new Date( startDate.setDate( startDate.getDate() + days ));
+
+			// Format date for datepicker
+			var eYear = endDate.getFullYear();
+			if ( jQuery("#period-year").hasClass('current') ) eYear++;
+			
+			var eMonth = endDate.getMonth() + 1;
+			if ( jQuery("#period-month").hasClass('current') ) eMonth++;
+			eMonth = ("0" + eMonth).slice(-2);
+			
+			var eDay = endDate.getDate();
+			eDay = ("0" + eDay).slice(-2);
+
+			var endDate = eYear + "-" + eMonth + "-" + eDay;
+			jQuery("#date_to").val(endDate);
+		});
 
 		jQuery('#date_from').datepicker({ dateFormat: 'yy-mm-dd' });	
 		jQuery('#date_to').datepicker({ dateFormat: 'yy-mm-dd' });	

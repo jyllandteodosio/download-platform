@@ -496,14 +496,14 @@ if (!function_exists('checkFileInCart')){
 Custom Export Reports
 ====================================================================================================================================
  */
-function updateToExportsReports($query_string_exportsreports_list){
+function updateToExportsReports($query_string_exportsreports_list, $report_name = 'RTLList' ){
     global $wpdb;
     $return_value = $wpdb->update( 
         $wpdb->exportsreports_reports, 
         array( 
             'sql_query' => $query_string_exportsreports_list
         ), 
-        array( 'name' => 'RTLList' )
+        array( 'name' => $report_name )
     );
     return $return_value;
 }
@@ -526,6 +526,7 @@ if(!function_exists('insertToCustomReports')){
                 $user_id = get_current_user_id( );
                 $country_group = get_current_user_country_group($user_id);
                 $operator_group = get_current_user_operator_group($user_id);
+                $account_group = get_current_user_account_group($user_id);
 
                 $return_value = $wpdb->insert(
                                         $wpdb->custom_reports,
@@ -533,6 +534,7 @@ if(!function_exists('insertToCustomReports')){
                                             'user_id' => $user_id,
                                             'country_group' => $country_group,
                                             'operator_group' => $operator_group,
+                                            'account_group' => $account_group,
                                             'post_id' => $value['post_id'],
                                             'file_id' => $file_id,
                                             'file_title' => $value['file_title'],
@@ -596,6 +598,7 @@ if(!function_exists('setRtlReportList')){
                 ".$select_max_created_at_list."
                 ".$country_groups_select_case."
                 IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
+                IF( r.account_group IS NULL or r.account_group = '','',r.account_group) as account_group, 
                 u.user_email, p.post_title, r.file_title as downloaded_files
             FROM ".$wpdb->custom_reports." r 
             INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
@@ -603,7 +606,7 @@ if(!function_exists('setRtlReportList')){
             WHERE ".$condition_period.
             " ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
         ";
-        // echo "<br><br>list:".$query_string_exportsreports_list;
+        echo "<br><br>list:".$query_string_exportsreports_list;
         $return_value = updateToExportsReports($query_string_exportsreports_list);
 
         return $query_string_exportsreports_list;
@@ -708,6 +711,17 @@ if( !function_exists('get_current_user_operator_group') ){
     function get_current_user_operator_group($user_id = NULL){
         $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
         return get_user_meta( $userid, 'operator_group', true);
+    }
+}
+
+if( !function_exists('get_current_user_account_group') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function get_current_user_account_group($user_id = NULL){
+        $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
+        return get_user_meta( $userid, 'account_group', true);
     }
 }
 
@@ -1148,6 +1162,7 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
 
     $params = array(
         'post_type' => 'wpdmpro',
+        'post_status' => 'publish',
         'paged' => $cp,
         'posts_per_page' => $items_per_page,
         'include_children' => false,
@@ -1335,12 +1350,13 @@ if (!function_exists('getRecentFileUploads')){
         $args = array(
                     'orderby'=> 'modified',
                     'order' => 'DESC',
-                    'post_type' => 'wpdmpro', 
+                    'post_type' => 'wpdmpro',
+                    // 'posts_per_page' => -1, 
                     'tax_query' => array(
                         array(
-                          'taxonomy' => 'wpdmcategory',
-                          'field'    => 'slug',
-                          'terms'    => 'shows-'.$channel,
+                           'taxonomy' => 'wpdmcategory',
+                           'field'    => 'slug',
+                           'terms'    => 'shows-'.$channel,
                         ),
                       ),
                     'date_query' => array(
@@ -1387,6 +1403,44 @@ if (!function_exists('custom_get_shows()')) {
             $shows[get_the_ID()] = get_the_title();
         }
         return $shows;
+    }
+}
+
+
+if (!function_exists('get_all_shows')) {
+    /**
+     * Get Shows
+     * @return array key value pair of show id and title
+     */
+    function get_all_shows(){
+        $cids = array('shows-entertainment', 'shows-extreme', 'extreme', 'entertainment');
+        $channel_materials = array('channel-materials-entertainment','channel-materials-extreme');
+
+        $params = array(
+            'post_type' => 'wpdmpro',
+             'orderby'     => 'modified',
+            'order'       => 'DESC',
+            'status' => 'publish',
+            'tax_query' => array(array(
+                    'taxonomy' => 'wpdmcategory',
+                    'field' => 'slug',
+                    'terms' => $cids,
+                    'operator' => $operator
+                ), array(
+                    'taxonomy' => 'wpdmcategory',
+                    'field' => 'slug',
+                    'terms' => $channel_materials,
+                    'operator' => 'NOT IN'
+                )
+            )
+        );
+        
+        $query = get_posts( $params );
+        // $shows = array();
+        // while($query->have_posts()) {$query->the_post();
+        //     $shows[get_the_ID()] = get_the_title();
+        // }
+        return $query;
     }
 }
 
@@ -1446,6 +1500,84 @@ if(!function_exists('generate_show_files')){
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
 }
 
+if(!function_exists('generate_recent_files')){
+    /**
+     * Ajax function for adding specific files to cart
+     */
+    function generate_recent_files(){
+        $security_nonce = $_POST['security_nonce'];
+        // if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ){ 
+
+            echo "recent_files";
+            $serialized_data = $_POST['serialized-data'];
+            $files_limit = $_POST['limit'];
+
+            // $files_filtered = $_POST['filtered'];
+            // $files_prefix = $_POST['prefix'];
+            $files_search_filter = $_POST['search_filter'];
+
+            $unserialized_form =  unserializeForm($serialized_data);
+
+
+            $serialized_show_files = $unserialized_form['serialized-data'];
+            $show_files = unserialize($serialized_show_files);
+            $topreview_show_files = $show_files['all_files'];
+
+            // $start_date = strtotime( $files_search_filter );
+            // $end_date = time();
+
+            // foreach ($topreview_show_files as $file_info_key => $file_info_value) {
+            //     // $file_name = $files[$file_info_key];
+            //     $file_info_key_orig = $file_info_key;
+            //     $file_info_key = substr($file_info_key, 0, -3);
+            //     $file_info_key = (int)$file_info_key;
+
+            //     if($file_info_key >= $start_date && $file_info_key <= $end_date) {
+            //         // if(checkIfImageFile($file_name, 'image')) {
+            //             $img_array[ $show_object->ID ][ $file_info_key_orig ] = $file_name;   
+            //         // } else {
+            //         //     $doc_array[ $show_object->ID ][] = $file_name;
+            //         // }
+            //     }       
+            // }
+
+            // $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            // if ( count($show_files['all_files']) > 0 ){
+
+            //     if( $files_filtered == 'true' ){
+            //         $pattern = "/".$files_prefix.".*".$files_search_filter."/";
+            //         $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
+            //     }else{
+            //         $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            //     }
+            //     $return_array['topreview_show_files'] = $topreview_show_files;
+            
+            //     $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
+            //     $return_array['show_all_files'] = $show_files['all_files'];
+                
+            //     $return_array['hidden_files_count'] = count($show_files['all_files']);
+            // }
+
+            // if ( $show_files !== false ){
+            //     $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+
+            //     $return_array['files'] = $categorizedFileList;
+            //     $return_array['updated_serialized_data'] = serialize($show_files);
+                
+            //     $return_value = 1;
+            // }
+        // }
+        // echo "tester";
+        // print_r($serialized_data);
+        print_r( $unserialized_form );
+        // print_r($topreview_show_files );
+        // echo json_encode($topreview_show_files );
+        // echo $return_value == 1 ? json_encode($return_array) : false;
+        die();
+    }
+    add_action('wp_ajax_generate_recent_files', 'generate_recent_files');
+}
+
 if(!function_exists('unserialize_php_array')){
     /**
      * Ajax function for adding specific files to cart
@@ -1496,8 +1628,10 @@ if (!function_exists('getFeaturedShows')) {
         $paged = ( get_query_var($query_var) ) ? get_query_var($query_var) : 1;
 
         $args = array(
-                    'post_type' => 'wpdmpro', 
-                    'orderby'   => 'title',
+                    'post_type' => 'wpdmpro',
+                    'meta_key' => 'banner_order', 
+                    'orderby' => 'meta_value',
+                    //'orderby'   => 'title',
                     'order'     => 'ASC',
                     'paged' => $paged,
                     'tax_query' => array(
@@ -1598,10 +1732,10 @@ if (!function_exists('getMonthsPromos')) {
      * @return array
      * @usage returns an array of promo files, otherwise empty array
      */
+    
     function getMonthsPromos($category = 'on-air', $promo_filter = 'this-month'){
         wp_reset_query();
         $channel = $_SESSION['channel'];
-
 
         $args = array(
                     'post_type' => 'wpdmpro', 
@@ -1615,7 +1749,7 @@ if (!function_exists('getMonthsPromos')) {
                       )
                   );
         $query_shows = new WP_Query( $args );
-        // echo  $query_shows->request;
+        
         $promos = array();
         if($query_shows->have_posts()){
           while($query_shows->have_posts()) { 
@@ -1672,6 +1806,12 @@ if (!function_exists('getMonthsPromos')) {
     }
 }
 
+if (!function_exists('sortPromosByUploadDate')) {
+    function sortPromosByUploadDate($a, $b) {
+        return strtotime($b["upload_date"]) - strtotime($a["upload_date"]);
+    }
+}
+
 if (!function_exists('get_promos')) {
     /**
      * @usage function to get promo under a given category
@@ -1686,6 +1826,7 @@ if (!function_exists('get_promos')) {
             $category = 'all';
             $promo_filter = $_POST['promo-timeline'];
             $promos = getMonthsPromos($category, $promo_filter);
+            usort($promos, "sortPromosByUploadDate");
         }
         echo json_encode($promos);
         die();

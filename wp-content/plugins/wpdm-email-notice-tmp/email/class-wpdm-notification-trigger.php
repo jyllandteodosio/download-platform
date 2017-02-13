@@ -1,14 +1,40 @@
 <?php
-
 if ( ! class_exists( 'WPDM_Notification_Trigger' ) ) {
 class WPDM_Notification_Trigger {
 
 	public function __construct( ) {
 	}
-	
+
 	function trigger_email_notification_checker(){
 		global $wpdb;
 
+		/* ROTATING BANNER PLUS CONTENT */
+		// $get_template = $wpdb->get_results( 'SELECT option_value FROM rtl21016_options WHERE option_name = "wpbe_options"');
+		// $email_template = unserialize($get_template[0]->option_value);
+		// $email_template = explode('"', $email_template['template']);
+
+		// $image_urls = array();
+		// foreach($email_template as $value) {
+		// 	if ( substr_count($value, '.jpeg') > 0 ) {
+		// 		array_push($image_urls, $value);
+		// 	} elseif ( substr_count($value, '.jpg') > 0 ) {
+		// 		array_push($image_urls, $value);
+		// 	} elseif ( substr_count($value, '.png') > 0 ) {
+		// 		array_push($image_urls, $value);
+		// 	} elseif ( substr_count($value, '.gif') > 0 ) {
+		// 		array_push($image_urls, $value);
+		// 	}
+		// }
+
+		// $header_href = $image_urls[0];
+		// $header_url = $image_urls[1];
+		// $footer_url = $image_urls[2];
+		
+		// echo '<pre>';
+		// echo $header_href;
+		// echo '</pre>';
+		/* END */
+		
 		$email_entries = get_email_entries();
 
 		$users = getUsersByRole('Operator');
@@ -16,35 +42,41 @@ class WPDM_Notification_Trigger {
 		$permalink = get_permalink($id);
 		$email_recipient = array();
 		foreach ($users as $user) {
-			echo '<pre><br><br>';
-			echo $user->user_email . '<br>';
+			// echo '<pre><br><br>';
+			/*echo $user->user_email . '<br>';
 			echo $user->country_group . '<br>';
-			echo $user->operator_group . '<br><br>';
+			echo $user->operator_group . '<br><br>';*/
 			
 			$show_files_raw = $user->show_files;
 			$show_files = $show_files_raw != '' ? explode(",",$show_files_raw) : array();
-			echo "Shows:<br>";
-			print_r($show_files);
+			/*echo "Shows:<br>";
+			print_r($show_files);*/
 			
 			$channel_materials_raw = $user->channel_materials;
 			$channel_materials = $channel_materials_raw != '' ? explode(",",$channel_materials_raw) : array();
-			echo "Channel Materials:<br>";
-			print_r($channel_materials);
+			/*echo "Channel Materials:<br>";
+			print_r($channel_materials);*/
 			
 			$show_files = !empty($show_files) || !empty($channel_materials) ? array_merge($show_files, $channel_materials) : $show_files;
-			echo "Merged:<br>";
-			print_r($show_files);
-			echo '</pre>';
+			// echo "Accessible Files:<br>";
+			// print_r($show_files);
+			// echo '</pre>';
 
 			$files = array();
 			if( !empty($email_entries) ){
 				foreach ($email_entries as $key => $email_entry) {
+					$post_ids = array();
+					$post_ids[] = $email_entry->post_id;
+
 					$categories_data = array();
 					$categories = array();
 					$categories_data = get_the_terms($email_entry->post_id,'wpdmcategory');
-					foreach ($categories_data as $key => $value) {
-						$categories[$key] = $value->term_id;
+					if (is_array( $categories_data )) {
+						foreach ($categories_data as $key => $value) {
+							$categories[$key] = $value->term_id;
+						}
 					}
+					
 				    $entertainment_category_id = $this->getCategoryIdBySlug('entertainment');
 				    $extreme_category_id = $this->getCategoryIdBySlug('extreme');
 
@@ -74,7 +106,8 @@ class WPDM_Notification_Trigger {
 				    $matched_operator_access = $this->check_user_group_access($user, $operator_access);
 					if($matched_operator_access){
 						$uns_email_entry = unserialize($email_entry->data_new);
-						$files[$email_entry->post_id]['promo'] = $this->get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$show_files);
+						$files[$email_entry->post_id]['promo'] = $this->get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$show_files,
+							$post_ids);
 						$files[$email_entry->post_id]['show'] = $this->get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],
 							$uns_email_entry['raw_files']['file_info'],
 							$show_files);
@@ -135,35 +168,50 @@ class WPDM_Notification_Trigger {
 	 * @param  Array  $all_promos     	All current promos from the submitted form
 	 * @return Array                  	Array of promo file names
 	 */
-	function get_user_accessible_promos($user, $promo_files, $is_pr_group = '', $show_files = array()){
+
+	function get_user_accessible_promos($user, $promo_files, $is_pr_group = '', $show_files = array(), $post_ids = array()) {
 		$accessible_promo_files = array();
 
-		if ( in_array('promo', $show_files) || empty($show_files) ) {
+		if ( in_array('promo', $show_files) || in_array('cm_promo', $show_files) || empty($show_files) ) {
 			if (!empty($promo_files)) {
-				foreach ($promo_files as $key => $value) {
+				foreach ($post_ids as $post_id) {
+					$is_channel_material = checkIfChannelMaterials($post_id);
 
-					if(  $user->country_group == 'all' && $is_pr_group == 'yes' ||
-						 contains($value['operator_access'], $user->operator_group) ||
-						 contains($value['operator_access'], 'all' )
-						){
-	                	array_push($accessible_promo_files, $value);
-
-	                }else if( $is_pr_group == 'yes'){
-
-	                    $sub_operators = get_operators_by_country( $user->country_group );
-
-	                    foreach ($sub_operators as $so_key => $sub_op) {
-	                        if ( contains($value['operator_access'], $sub_op->operator_group ) ){
-	                        	array_push($accessible_promo_files, $value);
-	                            break;
-
-	                        }
-	                    }
-	                }
+					foreach ( $promo_files as $key => $value ) {
+						// Check post if channel material
+						if ( $is_channel_material['is_channel_material'] == true && in_array('cm_promo', $show_files) ) {
+							$accessible_promo_files = $this->add_promo_file($user, $is_pr_group, $value);
+						} else if ( $is_channel_material['is_channel_material'] == false && in_array('promo', $show_files) || empty($show_files)) {
+							$accessible_promo_files = $this->add_promo_file($user, $is_pr_group, $value);
+						}
+					}	
 				}
 			}
 		}
 		return $accessible_promo_files;
+	}
+
+	function add_promo_file($user, $is_pr_group = '', $value) {
+		$accessible_promo_files = array();
+
+		if (  $user->country_group == 'all' && $is_pr_group == 'yes' ||
+			contains($value['operator_access'], $user->operator_group) ||
+			contains($value['operator_access'], 'all' )
+			) {
+        	array_push($accessible_promo_files, $value);
+
+        } else if( $is_pr_group == 'yes'){
+
+            $sub_operators = get_operators_by_country( $user->country_group );
+
+            foreach ($sub_operators as $so_key => $sub_op) {
+                if ( contains($value['operator_access'], $sub_op->operator_group ) ){
+                	array_push($accessible_promo_files, $value);
+                    break;
+                }
+            }
+        }
+        return $accessible_promo_files;
 	}
 
 	/**
@@ -177,31 +225,19 @@ class WPDM_Notification_Trigger {
 		$affiliate_files = array();
 		$filtered_files = array();
 		$filtered_categories = [ 'epg', 'catch' ];
-		$file_types = [ 'image', 'document', 'promo' ];
+		$file_types = [ 'image', 'document' ];
 
-		// echo "<pre>";
-		// echo "All Files: ";
-		// print_r($all_files);
-		// echo "</pre>";
-
-		// echo "<br>Count show files : ".count($show_files)."<br>";
 		if( !empty($show_files) ) {
 			foreach( $file_types as $file_type ) {
 				if (isset($all_files[$file_type])) {
 					foreach( $all_files[$file_type] as $key => $value ) {
-						// echo "<br>key : ".$key."<br>";
-						// var_dump($show_files);
 						if ( !in_array($key, $show_files) ) {
-							// echo " TRUE<BR>";
 							unset( $all_files[$file_type][$key] );
 						}
 					}
 				}
 			}
 		}
-
-		// var_dump($show_files);
-		// echo count($show_files);
 			
 		if ( !empty($raw_files) ) {
 			foreach ($raw_files as $key => $value) {
@@ -243,14 +279,6 @@ class WPDM_Notification_Trigger {
 		                }
 					}
 				}	
-
-
-				/*	} else {
-						unset(  );
-
-						continue;
-					} // If statement of $flag 	
-				} // Outer foreach loop*/
 
 				/* FOR EPG and CATCH UP ONLY */  
 				foreach ($filtered_categories as $fc_key => $prefix) {
@@ -390,7 +418,6 @@ class WPDM_Notification_Trigger {
 					endif;
 				}
 
-				echo 'show_title : ' . ucwords($show_title)." -- ".$file_checker."<br>";
 				if( $file_checker > 0 ){
 					if( $is_channel_material['channel'] == 'entertainment' ){
 						if( $is_channel_material['is_channel_material'] ){
@@ -407,6 +434,8 @@ class WPDM_Notification_Trigger {
 						}
 					}
 				}
+
+				unset( $message_entertainment_tmp );
 
 			endforeach;
 		endif;
@@ -537,28 +566,6 @@ class WPDM_Notification_Trigger {
 		$message = templated_email($message);
 		return $message;
 	}
-
-	/*function checkIfChannelMaterials($post_id = null){
-		if( $post_id != null ){
-			$categories_data = get_the_terms($post_id,'wpdmcategory');
-			$channel = array();
-			foreach ($categories_data as $key => $value) {
-				if(contains($value->slug, 'channel')){
-					$channel = explode("-",$value->slug);
-					if( in_array('extreme', $channel) ){
-						return array( 'is_channel_material' => true, 'channel' => 'extreme', 'channel_switcher' => '?channel=extreme');
-					}else{
-						return array( 'is_channel_material' => true, 'channel' => 'entertainment', 'channel_switcher' => '?channel=entertainment');
-					}
-				}else if(contains($value->slug, 'extreme')){
-					return array( 'is_channel_material' => false, 'channel' => 'extreme', 'channel_switcher' => '?channel=extreme');
-				}else{
-					return array( 'is_channel_material' => false, 'channel' => 'entertainment', 'channel_switcher' => '?channel=entertainment');
-				}
-			}
-		}
-		return false;
-	}*/
 
 	function setEmailEntryStatus($status = 'pending'){
 		global $wpdb;

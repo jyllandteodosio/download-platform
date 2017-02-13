@@ -746,6 +746,27 @@ function send_email_notice($user = null, $files = null){
 	$subject = 'RTL CBS Asia Notification - New files are available for you today!';
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
+	$get_template = $wpdb->get_results( 'SELECT option_value FROM rtl21016_options WHERE option_name = "wpbe_options"');
+	$email_template = unserialize($get_template[0]->option_value);
+	$email_template = explode('"', $email_template['template']);
+
+	$image_urls = array();
+	foreach($email_template as $value) {
+		if ( substr_count($value, '.jpeg') > 0 ) {
+			array_push($image_urls, $value);
+		} elseif ( substr_count($value, '.jpg') > 0 ) {
+			array_push($image_urls, $value);
+		} elseif ( substr_count($value, '.png') > 0 ) {
+			array_push($image_urls, $value);
+		} elseif ( substr_count($value, '.gif') > 0 ) {
+			array_push($image_urls, $value);
+		}
+	}
+
+	$header_href = $image_urls[0];
+	$header_url = $image_urls[1];
+	$footer_url = $image_urls[2];
+			
 	$message = '
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -763,7 +784,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <tr>
 <td valign="center">
 <!--<p>&nbsp;</p><p>&nbsp;</p>-->
-<img src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="599"/>
+<img src="'.$header_url.'" alt="RTL CBS Banner" width="599"/>
 
 </td>
 </tr>
@@ -787,8 +808,8 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <td>
 <p>Hi '.$user->user_login.',</p>
 <p>&nbsp;</p>
-<p>There are new files available for download in the RTL CBS Operator Site.</p>
-<p>Please find the updated assets below.</p>
+<p>There are new files available for download in the RTL CBS Operator Site. The files below are sent to you based on the profile you have provided.</p>
+<p>You may download relevant documents from the links below.</p>
 <p>&nbsp;</p>
 </td>
 <td>&nbsp;</td>
@@ -999,7 +1020,8 @@ $message .= '
 <tr>
 <td>&nbsp;</td>
 <td>
-<p>To view and download the files, log on to the&nbsp;<a title="Operator Site" href="'.$operator_site_link.'" target="_blank">Operator Site</a>.</p>
+<p>To access and download the full range of assets, please log on to the&nbsp;<a title="Operator Site" href="'.$operator_site_link.'" target="_blank">Operator Site</a>.</p>
+<p>Please contact us if you wish to receive notification for other files that are uploaded.</p>
 <p>&nbsp;</p>
 <p>Thanks,</p>
 <p><strong>RTL CBS</strong></p>
@@ -1014,7 +1036,7 @@ $message .= '
 </center></td>
 </tr>
 <tr>
-<td><center><img src="'.$plugin_img_dir.'rtl-logo-plain.png" alt="RTL CBS Logo" /></center>
+<td><center><img src="'.$footer_url.'" alt="RTL CBS Footer Image" /></center>
 
 <p>&nbsp;</p>
 </td>

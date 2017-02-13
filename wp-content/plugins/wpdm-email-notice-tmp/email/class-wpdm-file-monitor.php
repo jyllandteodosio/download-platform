@@ -9,10 +9,10 @@ class WPDM_File_Monitor {
 
 	function wpdm_check_new_files($post_id){
 		/* Code to test email sender trigger */
-		/*require_once plugin_dir_path( dirname( __FILE__ )  ) . 'email/class-wpdm-notification-trigger.php';
-		$notification_trigger2 = new WPDM_Notification_Trigger( );
-		$notification_trigger2->trigger_email_notification_checker();
-		die('fsdfs');*/
+		// require_once plugin_dir_path( dirname( __FILE__ )  ) . 'email/class-wpdm-notification-trigger.php';
+		// $notification_trigger2 = new WPDM_Notification_Trigger( );
+		// $notification_trigger2->trigger_email_notification_checker();
+		// die('fsdfs');
 		/* END - Code to test email sender trigger */
 
 		    global $wpdb;
@@ -236,11 +236,11 @@ class WPDM_File_Monitor {
 			                	$category_type = $is_channel_materials['is_channel_material'] ? 'channel' : 'show';
 			                	// echo '$others_type : ' . $others_type . '<br>';
 
-			                	/*if( $is_channel_materials['is_channel_material'] ) {
+			                	if( $is_channel_materials['is_channel_material'] ) {
 			                		$others_type = 'channel_others';
 			                	} else {
 			                		$others_type = 'others';
-			                	}*/
+			                	}
 
 			                    // $categorized_files['image'][$file_attr_list['image']['show']['others']['prefix']][$fileID] = $fileTitle;
 			                    $categorized_files['image'][ $file_attr_list['image'][$category_type][$others_type]['prefix'] ][$fileID] = $fileTitle;
