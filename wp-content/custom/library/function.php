@@ -1866,8 +1866,16 @@ if( !function_exists('getEPGThumbnail') ) {
         if( have_rows('special_thumb', $postID) ):
             while ( have_rows('special_thumb', $postID) ) : the_row();
                 $epg_month = strtolower(get_sub_field('month'));
-                $thumbnail_path = $prefix == 'epg' ? get_sub_field('epg_thumb') : get_sub_field('catch_up_thumb') ;
-                if(($epg_month!="" && $epg_month != null) && ($thumbnail_path != "" && $thumbnail_path != null)){
+                // $thumbnail_path = $prefix == 'epg' ? get_sub_field('epg_thumb') : get_sub_field('catch_up_thumb') ;
+                if ( $prefix == 'epg' ) {   
+                    $thumbnail_path = get_sub_field('epg_thumb'); // EPG
+                } elseif ( $prefix == 'catchup_img' ) {
+                    $thumbnail_path = get_sub_field('catch_up_img_thumb'); // Catch Up Images
+                } elseif ( $prefix ==  'catchup') {
+                    $thumbnail_path = get_sub_field('catch_up_thumb'); // Catch Up Documents
+                }
+
+                if (($epg_month!="" && $epg_month != null) && ($thumbnail_path != "" && $thumbnail_path != null)){
                     $epg_thumbnails[$epg_month] = $thumbnail_path;
                 }
             endwhile;
