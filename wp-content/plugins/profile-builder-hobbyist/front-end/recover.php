@@ -223,7 +223,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </style>
 </head>
 <body >
-<table style="height: 295px; background-color: #000;" width="484" cellspacing="0" cellpadding="0">
+<table style="height: 265px; background-color: #000;" width="484" cellspacing="0" cellpadding="0">
 <tbody>
 
 <tr style="height: 20px;"><td>&nbsp;</td></tr>
@@ -258,6 +258,7 @@ If you ignore this message, your password won\'t be changed.
 </tbody>
 </table>
 </center></td></tr>
+<tr style="height: 2px;"><td></td></tr>
 
 </tbody>
 </table>
