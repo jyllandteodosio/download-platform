@@ -435,11 +435,11 @@ class FileList
         // }
 
         /* Check if EPG file will assign a special thumbnail if ever - Tassha Nakagawa */
-        if ( contains($sfile,self::$prefix_list['channel_epg']) ) {
+        if ( contains($fileTitle,self::$prefix_list['channel_epg']) ) {
             $thumb_path = getEPGThumbnail($fileTitle, $postID, 'epg');
-        } else if ( contains($sfile,self::$prefix_list['channel_catchup_img']) ) { 
+        } else if ( contains($fileTitle,self::$prefix_list['channel_catchup_img']) ) { 
             $thumb_path = getEPGThumbnail($fileTitle, $postID, 'catchup_img');
-        } else if ( contains($sfile,self::$prefix_list['channel_catchup']) ) {
+        } else if ( contains($fileTitle,self::$prefix_list['channel_catchup']) ) {
             $thumb_path = getEPGThumbnail($fileTitle, $postID, 'catchup');
         } else {
             $thumb_path = WPDM_CACHE_DIR.basename($thumb);
