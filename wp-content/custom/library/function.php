@@ -1388,6 +1388,7 @@ if (!function_exists('getRecentFileUploads')){
     }
 }
 
+// AJAX Function for Recent File Uploads
 function displayRecentFileUploads() {
     class ShowItem {
         public $thumbnail = "";
@@ -1426,12 +1427,11 @@ function displayRecentFileUploads() {
         <?php 
         endif;*/
         }
+    } else {
+      $result = "No Recent File Upload at the moment.";
+      array_push($filteredShows, $result);
     }
-    // } else {
-    //   echo "No Recent File Upload at the moment.";
-    // }
 
-    // echo json_encode($filteredShows);
     echo json_encode($filteredShows);
     die();
 }
