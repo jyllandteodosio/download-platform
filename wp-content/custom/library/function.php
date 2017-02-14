@@ -1351,7 +1351,7 @@ if (!function_exists('getRecentFileUploads')){
         $results = $wpdb->get_results("SELECT * FROM rtl21016_postmeta WHERE meta_key = '__wpdm_fileinfo' ");
 
         $filtered_shows = array();
-        $start_date = date('Y-m-d', strtotime($days));
+        $start_date = date('Y-m-d', strtotime("- " . $days . " days"));
         $end_date = date('Y-m-d'); 
 
         foreach ($results as $key => $value) {
@@ -1392,6 +1392,8 @@ if (!function_exists('getRecentFileUploads')){
 function displayRecentFileUploads() {
     class ShowItem {
         public $thumbnail = "";
+        public $title = "";
+        public $permalink = "";
         public $publish_date = "";
         public $expire_date = "";
     }
@@ -1405,22 +1407,15 @@ function displayRecentFileUploads() {
             
             $thumb_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];
             $result->thumbnail = wpdm_dynamic_thumb($thumb_url, array(270, 296));
+            $result->title = get_the_title();
+            $result->permalink = get_the_permalink();
 
             $result->publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
             $result->expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 
-            array_push($filteredShows, $result);
+            $result->filter = $_POST['days'];
 
-        /*if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
-          <div class="item">
-            <div class='file-thumb'><img src="<?php echo $thumb_url ?>" alt="><?php the_title();?>"/></div>
-            <div class="show-meta">
-              <p><?php the_title();?></p>
-            </div>
-            <a href="<?php echo the_permalink();?>" class="item-link" title="<?php the_title();?>"></a>
-          </div>
-        <?php 
-        endif;*/
+            array_push($filteredShows, $result);
         }
     } else {
       $result = "No Recent File Upload at the moment.";
