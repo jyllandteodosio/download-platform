@@ -746,6 +746,8 @@ function send_email_notice($user = null, $files = null){
 	$subject = 'RTL CBS Asia Notification - New files are available for you today!';
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
+	global $wpdb;
+
 	$get_template = $wpdb->get_results( 'SELECT option_value FROM rtl21016_options WHERE option_name = "wpbe_options"');
 	$email_template = unserialize($get_template[0]->option_value);
 	$email_template = explode('"', $email_template['template']);
