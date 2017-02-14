@@ -25,7 +25,7 @@
 	      	<div class="clear"></div><!--clear floats-->
 	    </div><!--item-details-->
   	</div><!--main-content-wrap-->
-  
+
   	<!--START SINGLE ITEM CATALOG: NOTE: THIS CONTENT FROM HERE IS JUST A COPY OF CATALOG ITEMS -->
   	<div class="shows-listing innerpage-show-listing show-catalog">        
         <div class="main-tabs">
@@ -73,15 +73,25 @@
         <div class="clear"></div><!-- this will maintain the flow of elements even if the next elements were set to float -->
 
         <div class="show-items-wrap images-tab-contents">
-          <form id='table-key' class="table-files" method='post' >
+            <form id='table-key' class="table-files" method='post' >
             <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
+                <input type='submit'  class="show-filter" value='Select All'>
+
+                <!-- CUSTOM DAY FILTER -->
+                <select class="recent-uploads-filter show-page-filter" data-channel="<?php echo $channel; ?>" >
+                    <option value="0">All Files</option>
+                    <option value="10">10 Days</option>
+                    <option value="15">15 Days</option>
+                    <option value="20">20 Days</option>
+                    <option value="30">30 Days</option>
+                </select>
             </div><!-- filter-wrap -->
+
             <div class='show-items'>
-           		[file_category,key]
-           		<div class='clear'></div>
-           	</div>
-          </form>
+       		   [file_category,key]
+       		   <div class='clear'></div>
+       	    </div>
+            </form>
         </div><!-- recent-tab-contents -->
         
         <div class="show-items-wrap keyart-tab-contents keyart-images">
