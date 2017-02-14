@@ -1345,7 +1345,7 @@ if (!function_exists('getRecentFileUploads')){
      * @param  string $channel Either entertainment or extreme
      * @return Object          Returns recently modified shows within a month.
      */
-    function getRecentFileUploads($channel = 'entertainment', $days = '- 10 days'){
+    function getRecentFileUploads($channel = 'entertainment', $days){
 
         global $wpdb;
         $results = $wpdb->get_results("SELECT * FROM rtl21016_postmeta WHERE meta_key = '__wpdm_fileinfo' ");
@@ -1411,11 +1411,6 @@ function displayRecentFileUploads() {
 
             array_push($filteredShows, $result);
 
-        // $thumb_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];
-        // $thumb_url = wpdm_dynamic_thumb($thumb_url, array(270, 296));
-
-        // $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
-        // $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
         /*if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
           <div class="item">
             <div class='file-thumb'><img src="<?php echo $thumb_url ?>" alt="><?php the_title();?>"/></div>
