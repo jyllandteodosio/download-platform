@@ -1,6 +1,6 @@
 <!-- WPDM Template: Custom Template -->
 
-<div class="single-item-wrap">
+<div class="single-item-wrap" data-channel="[current_channel]" data-filter="[filter_days]">
  	<div class="single-item-banner-wrap">
     	<img src="[acf_banner_image]" class="banner-bg fullwidth"/> <!--This is used to assign the custom filtered background behind the primary image --> 
   	</div><!-- single-item-banner-wrap -->
@@ -77,14 +77,9 @@
             <div class="filter-wrap clear text-left">
                 <input type='submit'  class="show-filter" value='Select All'>
 
-                <!-- CUSTOM DAY FILTER -->
-                <select class="recent-uploads-filter show-page-filter" data-channel="<?php echo $channel; ?>" >
-                    <option value="0">All Files</option>
-                    <option value="10">10 Days</option>
-                    <option value="15">15 Days</option>
-                    <option value="20">20 Days</option>
-                    <option value="30">30 Days</option>
-                </select>
+                <!-- custom days filter -->
+                [days_filter_dropdown]
+                
             </div><!-- filter-wrap -->
 
             <div class='show-items'>

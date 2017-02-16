@@ -62,6 +62,11 @@ class Package {
 
         $vars = array_merge($vars, $data);
 
+        //* Additional code for filtered recent file uploads
+        $vars['current_channel'] = $_SESSION['channel'];
+        // $vars['filter_days'] = $_GET['filter'];
+        $vars['days_filter_dropdown'] = self::GenerateDaysFilter();
+
         $vars['files'] = get_post_meta($vars['ID'], '__wpdm_files', true);
         $vars['file_count'] = count($vars['files']);
         if(strpos("_".$template,'[file_list]') || strpos("_".$template,'[play_list]') || strpos("_".$template,'[audio_player]')) {
@@ -514,6 +519,31 @@ class Package {
             $this->$key = $val;
         }
         return $this;
+    }
+
+    /** 
+     * @usage Generate dropdown based on selected filter
+     * @param null
+     * @return string
+     * Tassha Nakagawa
+     */
+    public static function GenerateDaysFilter() {
+        $selected_days = $_GET['filter'];
+        $days_array = array("10","15","20","30");
+
+        $dropdown_filter = '<select class="recent-uploads-filter show-page-filter"><option value="0">All Files</option>';
+            
+        foreach ( $days_array as $cnt ) {
+            if ( $selected_days == $cnt ) {
+                $dropdown_filter .= '<option value='.$cnt.' selected>'.$cnt.' Days</option>';  
+            } else {
+                $dropdown_filter .= '<option value='.$cnt.'>'.$cnt.' Days</option>';
+            }
+        }
+
+        $dropdown_filter .= '</select>';
+
+        return $dropdown_filter;
     }
 
     /**
