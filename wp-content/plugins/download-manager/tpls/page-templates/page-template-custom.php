@@ -74,175 +74,223 @@
 
         <div class="show-items-wrap images-tab-contents">
             <form id='table-key' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-                <input type='submit'  class="show-filter" value='Select All'>
+                <div class="filter-wrap clear text-left">
+                    <input type='submit'  class="show-filter" value='Select All'>
 
-                <!-- custom days filter -->
-                [days_filter_dropdown]
-                
-            </div><!-- filter-wrap -->
+                    <!-- custom days filter -->
+                    [days_filter_dropdown]
 
-            <div class='show-items'>
-       		   [file_category,key]
-       		   <div class='clear'></div>
-       	    </div>
+                </div><!-- filter-wrap -->
+
+                <div class='show-items'>
+           		   [file_category,key]
+           		   <div class='clear'></div>
+           	    </div>
             </form>
         </div><!-- recent-tab-contents -->
         
         <div class="show-items-wrap keyart-tab-contents keyart-images">
-          <form id='table-key' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-            </div><!-- filter-wrap -->
-            <div class='show-items'>
-          		[file_category,key]
-          		<div class='clear'></div>
-          	</div>
-          </form>
+            <form id='table-key' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                    <input type='submit'  class="show-filter" value='Select All'>
+
+                    <!-- custom days filter -->
+                    [days_filter_dropdown]
+
+                </div><!-- filter-wrap -->
+                <div class='show-items'>
+              		[file_category,key]
+              		<div class='clear'></div>
+              	</div>
+            </form>
         </div><!-- keyart-tab-contents -->
 
         <div class="show-items-wrap episodicstills-tab-contents">
-          <p class="show-category-note">[acf_category_note]</p>
-          <form id='table-epi' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-              <select name="episode_code" id="episode_code" class="filter_select">
-                <option value='all'>All Episodes</option>
-              </select>
-            </div><!-- filter-wrap -->
-          <div class="show-items">
-            [file_category,epi]
-            <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-          </div>
-          </form>
+            <p class="show-category-note">[acf_category_note]</p>
+            <form id='table-epi' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                    <input type='submit'  class="show-filter" value='Select All'>
+
+                    <!-- custom days filter -->
+                    [days_filter_dropdown]
+
+                    <select name="episode_code" id="episode_code" class="filter_select">
+                        <option value='all'>All Episodes</option>
+                    </select>
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,epi]
+                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div>
+            </form>
         </div><!-- episodicstills-tab-contents -->
 
         <div class="show-items-wrap gallery-tab-contents">
-          <form id='table-gal' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-            </div><!-- filter-wrap -->
-          <div class="show-items">
-            [file_category,gal]
-            <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-          </div>
-          </form>
+            <form id='table-gal' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                <input type='submit'  class="show-filter" value='Select All'>
+
+                <!-- custom days filter -->
+                [days_filter_dropdown]
+
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,gal]
+                    <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div>
+            </form>
         </div><!-- gallery-tab-contents -->
 
         <div class="show-items-wrap logos-tab-contents">
-          <form id='table-log' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-            </div><!-- filter-wrap -->
-          <div class="show-items">
-            [file_category,log]
-            <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-          </div>
-          </form>
+            <form id='table-log' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                <input type='submit'  class="show-filter" value='Select All'>
+
+                <!-- custom days filter -->
+                [days_filter_dropdown]
+            
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,log]
+                    <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div>
+            </form>
         </div><!-- logos-tab-contents -->
 
         <div class="show-items-wrap others-tab-contents">
-          <form id='table-oth' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-            </div><!-- filter-wrap -->
-          <div class="show-items">
-            [file_category,oth]
-            <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-          </div>
-          </form>
+            <form id='table-oth' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                <input type='submit'  class="show-filter" value='Select All'>
+
+                <!-- custom days filter -->
+                [days_filter_dropdown]
+
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,oth]
+                    <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div>
+            </form>
         </div><!-- others-tab-contents -->
 
         <div class="show-items-wrap documents-tab-contents active-tab-content">
-          <p class="show-category-note">[acf_category_note]</p>
-          <form id='table-syn' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-              <select name="synopsis_code" id="document_synopsis_code" class="filter_select synopsis_code">
-                <option value='all'>All Episodes</option>
-              </select>
-            </div><!-- filter-wrap -->
-           <div class="show-items">
-            [file_category,syn]
-            <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-          </div><!-- show-items -->
-          </form>
+            <p class="show-category-note">[acf_category_note]</p>
+            <form id='table-syn' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                    <input type='submit'  class="show-filter" value='Select All'>
+
+                    <!-- custom days filter -->
+                    [days_filter_dropdown]
+
+                    <select name="synopsis_code" id="document_synopsis_code" class="filter_select synopsis_code">
+                        <option value='all'>All Episodes</option>
+                    </select>
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,syn]
+                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div><!-- show-items -->
+            </form>
         </div><!-- documents-tab-contents -->
         
         <div class="show-items-wrap synopses-tab-contents">
-          <p class="show-category-note">[acf_category_note]</p>
-          <form id='table-syn' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-               <select name="synopsis_code" id="synopsis_code" class="filter_select synopsis_code">
-                <option value='all'>All Episodes</option>
-              </select>
-            </div><!-- filter-wrap -->
-          <div class="show-items">
-                [file_category,syn]
-                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-          </div>
-          </form>
+            <p class="show-category-note">[acf_category_note]</p>
+            <form id='table-syn' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                    <input type='submit'  class="show-filter" value='Select All'>
+
+                    <!-- custom days filter -->
+                    [days_filter_dropdown]
+
+                   <select name="synopsis_code" id="synopsis_code" class="filter_select synopsis_code">
+                    <option value='all'>All Episodes</option>
+                  </select>
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,syn]
+                    <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div>
+            </form>
         </div><!-- synopses-tab-contents -->
 
         <div class="show-items-wrap epk-tab-contents">
-          <form id='table-epk' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-            </div><!-- filter-wrap -->
-          <div class="show-items">
-                [file_category,epk]
-                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-          </div>
-          </form>
+            <form id='table-epk' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                    <input type='submit'  class="show-filter" value='Select All'>
+
+                    <!-- custom days filter -->
+                    [days_filter_dropdown]
+
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,epk]
+                    <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div>
+            </form>
         </div><!-- epk-tab-contents -->
 
         <div class="show-items-wrap factsheet-tab-contents">
-          <form id='table-fac' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-            </div><!-- filter-wrap -->
-          <div class="show-items">
-                [file_category,fac]
-                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-          </div>
-          </form>
+            <form id='table-fac' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                <input type='submit'  class="show-filter" value='Select All'>
+                
+                <!-- custom days filter -->
+                [days_filter_dropdown]
+
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,fac]
+                    <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div>
+            </form>
         </div><!-- factsheettab-contents -->
 
         <div class="show-items-wrap fonts-tab-contents">
-          <form id='table-fon' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-            </div><!-- filter-wrap -->
-          <div class="show-items">
-                [file_category,fon]
-                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-          </div>
-          </form>
+            <form id='table-fon' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                    <input type='submit'  class="show-filter" value='Select All'>
+                
+                    <!-- custom days filter -->
+                    [days_filter_dropdown]
+
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,fon]
+                    <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div>
+            </form>
         </div><!-- fonts-tab-contents -->
 
         <div class="show-items-wrap othersdocuments-tab-contents">
-          <form id='table-doth' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-            </div><!-- filter-wrap -->
-          <div class="show-items">
-                [file_category,doth]
-                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-          </div>
-          </form>
+            <form id='table-doth' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                    <input type='submit'  class="show-filter" value='Select All'>
+                
+                    <!-- custom days filter -->
+                    [days_filter_dropdown]
+
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,doth]
+                    <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div>
+            </form>
         </div><!-- othersdocuments-tab-contents -->
 
         <div class="show-items-wrap promo-tab-contents">
-          <form id='table-promo' class="table-files" method='post' >
-            <div class="filter-wrap clear text-left">
-              <input type='submit'  class="show-filter" value='Select All'>
-            </div><!-- filter-wrap -->
-            <div class="show-items">
-              [file_category,promo]
-              <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-            </div>
-          </form>
+            <form id='table-promo' class="table-files" method='post' >
+                <div class="filter-wrap clear text-left">
+                    <input type='submit'  class="show-filter" value='Select All'>
+                
+                    <!-- custom days filter -->
+                    [days_filter_dropdown]
+
+                </div><!-- filter-wrap -->
+                <div class="show-items">
+                    [file_category,promo]
+                    <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
+                </div>
+            </form>
         </div><!--promo-tab-contents -->
         
         <div class="clear"></div> <!-- use to clear floats for listing wrap, this will make this container full height -->  

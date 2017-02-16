@@ -1506,7 +1506,7 @@ if (!function_exists('get_all_shows')) {
 
 if(!function_exists('generate_show_files')){
     /**
-     * Ajax function for adding specific files to cart
+     * Ajax function for adding specific files to cart and lazy load (show files)
      */
     function generate_show_files(){
         $security_nonce = $_POST['security_nonce'];
@@ -1527,25 +1527,64 @@ if(!function_exists('generate_show_files')){
             $show_files = unserialize($serialized_show_files);
             $topreview_show_files = $show_files['all_files'];
 
-            // $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
-            if ( count($show_files['all_files']) > 0 ){
+            $current_channel = $_POST['current_channel'];
+            $filter_days = $_POST['filter_days'];
 
-                if( $files_filtered == 'true' ){
+
+            //* FILTER FILES - RECENT FILE UPLOADS *//
+            $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
+            $end_date = date('Y-m-d'); 
+
+            $filtered_shows = $final_results = array();
+
+            // class FilteredShows {
+            //     public $file_id = "";
+            //     public $file_name = "";
+            // }
+            foreach ( $topreview_show_files as $key => $value ) {
+                // Convert UNIX Timestamp to human readable date
+                $file_upload_date = date('Y-m-d', substr($key, 0, -3));
+
+                if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                    // $final_results = new FilteredShows();
+                    // $final_results->file_id = $key;
+                    // $final_results->file_name = $value;
+
+                    // array_push($filtered_shows, $final_results[$key] = $value));
+                    $filtered_shows[$key] = $value;
+                }
+            }
+
+            // foreach ( $file_array as $file_key ) {
+            //     // Convert UNIX Timestamp to human readable date
+            //     $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+                
+            //     if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+            //         array_push($filtered_shows, $file_key);
+            //     }
+            // }       
+            //* FILTER FILES - RECENT FILE UPLOADS *//
+
+
+            if ( count($show_files['all_files']) > 0 && count($filter_shows) > 0 ){
+
+                if ( $files_filtered == 'true' ) {
                     $pattern = "/".$files_prefix.".*".$files_search_filter."/";
                     $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
-                }else{
-                    $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+                } else {
+                    $filtered_shows_raw = $filtered_shows;
+                    $filtered_shows_sliced = array_slice($filtered_shows_raw,0,$files_limit,true);
                 }
-                $return_array['topreview_show_files'] = $topreview_show_files;
+                // $return_array['topreview_show_files'] = $topreview_show_files;
             
-                $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
+                $show_files['all_files'] = array_diff_key($filtered_shows_raw, $filtered_shows_sliced);
                 $return_array['show_all_files'] = $show_files['all_files'];
                 
                 $return_array['hidden_files_count'] = count($show_files['all_files']);
             }
 
-            if ( $show_files !== false ){
-                $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+            if ( $show_files !== false ) {
+                $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($filtered_shows,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
 
                 $return_array['files'] = $categorizedFileList;
                 $return_array['updated_serialized_data'] = serialize($show_files);

@@ -64,7 +64,7 @@ class Package {
 
         //* Additional code for filtered recent file uploads
         $vars['current_channel'] = $_SESSION['channel'];
-        // $vars['filter_days'] = $_GET['filter'];
+        $vars['filter_days'] = $_GET['filter'];
         $vars['days_filter_dropdown'] = self::GenerateDaysFilter();
 
         $vars['files'] = get_post_meta($vars['ID'], '__wpdm_files', true);
@@ -358,6 +358,10 @@ class Package {
         
         // Shows - Custom Script
         if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = '';//\WPDM\libs\FileList::getScriptFile();
+
+        /*echo '<pre>';
+        var_dump($vars);
+        echo '</pre>';*/
         // End of custom 
     endif;
 
