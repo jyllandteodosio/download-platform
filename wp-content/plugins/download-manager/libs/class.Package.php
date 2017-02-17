@@ -64,7 +64,7 @@ class Package {
 
         //* Additional code for filtered recent file uploads
         $vars['current_channel'] = $_SESSION['channel'];
-        $vars['filter_days'] = $_GET['filter'];
+        $_GET['filter'] != null ? $vars['filter_days'] = $_GET['filter'] : $vars['filter_days'] = 0;
         $vars['days_filter_dropdown'] = self::GenerateDaysFilter();
 
         $vars['files'] = get_post_meta($vars['ID'], '__wpdm_files', true);
@@ -96,8 +96,6 @@ class Package {
         // End of custom shortcodes from acf
         
         // @todo:: minify code
-        if(function_exists('set_last_visited_show')) set_last_visited_show();
-        // $file['ID'] = $this->ID;
         $file['files'] = maybe_unserialize($vars['files']);
         $fhtml = '';
         $files_counter = 0;
@@ -359,9 +357,6 @@ class Package {
         // Shows - Custom Script
         if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = '';//\WPDM\libs\FileList::getScriptFile();
 
-        /*echo '<pre>';
-        var_dump($vars);
-        echo '</pre>';*/
         // End of custom 
     endif;
 
@@ -532,8 +527,8 @@ class Package {
      * Tassha Nakagawa
      */
     public static function GenerateDaysFilter() {
-        $selected_days = $_GET['filter'];
-        $days_array = array("10","15","20","30");
+        $_GET['filter'] != null ? $selected_days = $_GET['filter'] : 0;
+        $days_array = array(10,15,20,30);
 
         $dropdown_filter = '<select class="recent-uploads-filter show-page-filter"><option value="0">All Files</option>';
             

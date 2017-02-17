@@ -79,7 +79,8 @@
 
                     <!-- custom days filter -->
                     [days_filter_dropdown]
-
+                    <!-- <span style="text-align: right; color: black;">Display latest files in the last:</span> -->
+        
                 </div><!-- filter-wrap -->
 
                 <div class='show-items'>
@@ -95,7 +96,7 @@
                     <input type='submit'  class="show-filter" value='Select All'>
 
                     <!-- custom days filter -->
-                    [days_filter_dropdown]
+                    Display latest files in the last: [days_filter_dropdown]
 
                 </div><!-- filter-wrap -->
                 <div class='show-items'>
