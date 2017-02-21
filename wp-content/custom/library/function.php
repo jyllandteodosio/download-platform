@@ -1479,7 +1479,7 @@ if (!function_exists('get_all_shows')) {
 
         $params = array(
             'post_type' => 'wpdmpro',
-             'orderby'     => 'modified',
+            'orderby'     => 'modified',
             'order'       => 'DESC',
             'status' => 'publish',
             'tax_query' => array(array(
@@ -1499,6 +1499,16 @@ if (!function_exists('get_all_shows')) {
         $query = get_posts( $params );
         return $query;
     }
+}
+
+//* Tassha Nakagawa
+//* Generate new file count on change of filter value
+if(!function_exists('generate_file_count')) {
+    function generate_new_file_count() {
+        echo json_encode($final_file_count);
+        die();
+    }
+    add_action('wp_ajax_generate_new_file_count', 'generate_new_file_count');
 }
 
 if(!function_exists('generate_show_files')){
@@ -1560,14 +1570,10 @@ if(!function_exists('generate_show_files')){
                         $filtered_shows_raw = $filtered_shows;
                         $filtered_shows_sliced = array_slice($filtered_shows_raw,0,$files_limit,true);
                         $show_files['all_files'] = array_diff_key($filtered_shows_raw, $filtered_shows_sliced);
-
-                        $check_value = "FILTERED";
                     } else {
                         $return_array['topreview_show_files'] = $topreview_show_files;
                         $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
                         $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
-
-                        $check_value = "TO PREVIEW";
                     }
                 }
                 $return_array['show_all_files'] = $show_files['all_files'];
