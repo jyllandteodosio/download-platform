@@ -1,7 +1,11 @@
 <!-- WPDM Template: Custom Template -->
 
 <div class="single-item-wrap" data-channel="[current_channel]" data-filter="[filter_days]">
- 	<div class="single-item-banner-wrap">
+ 	<form id='table-key' class="table-files" method='post' >
+        [categorized_files]
+    </form>
+
+    <div class="single-item-banner-wrap">
     	<img src="[acf_banner_image]" class="banner-bg fullwidth"/> <!--This is used to assign the custom filtered background behind the primary image --> 
   	</div><!-- single-item-banner-wrap -->
 
@@ -38,29 +42,29 @@
         <!-- To revert original sub tabs style, add " single-item-subtabs " in sub tabs wrapper and remove "fifths" and "pull-left" class on each sub tabs -->
         <!--START OF SUB TABS-->    
         <div class="sub-tabs-wrap images-sub-tabs fullwidth" data-parent-tab="images-tab">
-          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center keyart-tab" data-target="keyart-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center keyart-tab" id="key" data-target="keyart-tab-contents">
           <a href="#">Key Art</a>[file_count_key]</div>
-          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center episodicstills-tab" data-target="episodicstills-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center episodicstills-tab" id="epi" data-target="episodicstills-tab-contents">
           <a href="#">Episodic Stills</a>[file_count_epi]</div>
-          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center gallery-tab" data-target="gallery-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center gallery-tab" id="gallery" data-target="gallery-tab-contents">
           <a href="#">Gallery</a>[file_count_gallery]</div>    
-          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center logos-tab" data-target="logos-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center logos-tab" id="logo" data-target="logos-tab-contents">
           <a href="#">Logos</a>[file_count_logo]</div>    
-          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center others-tab last-tab" style="flex-basis: 8%;" data-target="others-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs to-uppercase pull-left text-center others-tab last-tab" id="oth" style="flex-basis: 8%;" data-target="others-tab-contents">
           <a href="#">Others - Special Web Assets etc</a>[file_count_oth]</div>    
           <div class="clear"></div> 
         </div><!-- subtabs-wrap -->   
          
         <div class="sub-tabs-wrap documents-sub-tabs fullwidth" data-parent-tab="documents-tab">
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center synopses-tab" data-target="synopses-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center synopses-tab" id="synopsis" data-target="synopses-tab-contents">
           <a href="#">Synopses</a>[file_count_synopsis]</div>
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center epk-tab" data-target="epk-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center epk-tab" id="transcript" data-target="epk-tab-contents">
           <a href="#">Transcripts/EPK</a>[file_count_transcript]</div>
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center factsheet-tab" data-target="factsheet-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center factsheet-tab" id="fact" data-target="factsheet-tab-contents">
           <a href="#">Fact Sheet/Press Pack</a>[file_count_fact]</div>    
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center fonts-tab" data-target="fonts-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center fonts-tab" id="font" data-target="fonts-tab-contents">
           <a href="#">Fonts</a>[file_count_font]</div>    
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center othersdocuments-tab" data-target="othersdocuments-tab-contents">
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center othersdocuments-tab" id="doth" data-target="othersdocuments-tab-contents">
           <a href="#">Others</a>[file_count_doth]</div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->
@@ -284,7 +288,7 @@
                     <input type='submit'  class="show-filter" value='Select All'>
                 
                     <!-- custom days filter -->
-                    [days_filter_dropdown]
+                    <!-- [days_filter_dropdown] -->
 
                 </div><!-- filter-wrap -->
                 <div class="show-items">

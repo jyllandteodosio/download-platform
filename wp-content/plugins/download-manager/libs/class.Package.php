@@ -311,40 +311,14 @@ class Package {
             } /* END of is_array( allfiles_sorted ) */
 
 
+            $tab_attr_array = array();
             foreach (self::$file_attr_list as $file_type => $file_category) {
                 foreach ($file_category as $file_category_key => $tab) {
                     foreach ($tab as $key => $tab_attr) {
-                        //* Count total number of files under each category
-                        $file_count = count($categorized_files[$tab_attr['prefix']]);
-
-                        if($file_count > 0) {
-                            //* Reset counter
-                            $file_count = 0;
-                            $file_keys_raw = array_keys($categorized_files[$tab_attr['prefix']]);
-
-                            //* Declare variables to filter files
-                            $filter_days = $_GET['filter'];
-                            $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
-                            $end_date = date('Y-m-d');
-
-                            foreach($file_keys_raw as $file_key) {
-                                $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
-
-                                if ($file_upload_date >= $start_date && $file_upload_date <= $end_date) {
-                                    $file_count++;
-                                }
-                            }
-
-                            if ($file_count > 0) {
-                                $vars['file_count_' . $tab_attr['prefix']] = '<span class="file-count">' . $file_count . '</span>';            
-                            } else {
-                                $vars['file_count_' . $tab_attr['prefix']] = "";    
-                            }
+                        
+                        //* Push all file prefixes in an array
+                        array_push($tab_attr_array, $tab_attr['prefix']);
                             
-                        } else {
-                            $vars['file_count_' . $tab_attr['prefix']] = "";
-                        }   
-
                         if ( array_key_exists($tab_attr['prefix'], $categorized_files)) {
                             if (strpos("_".$template,'['.$tab_attr['template_shortcode'].']')) {
                                 $file_list_data_prep = array (
@@ -373,7 +347,30 @@ class Package {
                 }
             }
 
-        }else{
+            //* Call file counter function and generate initial filecount and shortcode
+            $filter_days = $vars['filter_days'];
+            $categorized_files_serialized = serialize($categorized_files);
+            $vars['categorized_files'] = "<input name='categorized-serialized-data' class='categorized-serialized-data' type='hidden' value='".$categorized_files_serialized."'>";
+            
+            // echo '<pre>';
+            // print_r($tab_attr_array);
+            // echo '</pre>';
+
+            $file_count_array = generate_file_count($categorized_files, $tab_attr_array, $filter_days);
+            // echo '<pre>';
+            // print_r($file_count_array);
+            // echo '</pre>';    
+
+            foreach ( $file_count_array as $file_prefix => $file_count) {
+                if ($file_count > 0) {
+                    $vars['file_count_' . $file_prefix] = '<span class="file-count '.$file_prefix.'">' . $file_count . '</span>';            
+                } else {
+                    $vars['file_count_' . $file_prefix] = "";    
+                }
+            }
+            
+
+        } else {
             $vars[self::$file_attr_list['image']['show']['key_art']['template_shortcode']] = "<p style='color:black'>This package is not available for download</p>";
         }
         

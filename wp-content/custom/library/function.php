@@ -1501,15 +1501,71 @@ if (!function_exists('get_all_shows')) {
     }
 }
 
-//* Tassha Nakagawa
+
 //* Generate new file count on change of filter value
 if(!function_exists('generate_file_count')) {
+    function generate_file_count($categorized_files, $tab_attr_array, $filter_days = 0) {
+        
+        $file_count_array = array();
+
+        foreach($tab_attr_array as $tab_attr) {
+            //* Count total number of files under each category
+            $file_count = count($categorized_files[$tab_attr]);
+
+            if($file_count > 0 && $filter_days > 0) {
+                //* Reset counter
+                $file_count = 0;
+                $file_keys_raw = array_keys($categorized_files[$tab_attr]);
+
+                //* Declare variables to filter files
+                $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
+                $end_date = date('Y-m-d');
+
+                //* Loop through all files
+                foreach($file_keys_raw as $file_key) {
+                    $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+
+                    if ($file_upload_date >= $start_date && $file_upload_date <= $end_date) {
+                        $file_count++;
+                    }
+                }
+
+                $file_count_array[$tab_attr] = $file_count;
+            
+            } else {
+                $file_count_array[$tab_attr] = $file_count;
+                $file_count = 0;
+            }
+        }
+
+        // return $categorized_files;
+        return $file_count_array;
+    }
+}
+
+if(!function_exists('generate_new_file_count')) {
+    /**
+     * Ajax function for generating a new file count
+     */
     function generate_new_file_count() {
-        echo json_encode($final_file_count);
+        //* Prepare data
+        $unserialized_categorized_data = $_POST['categorized-serialized-data'];
+        $unserialized_form = unserializeForm($unserialized_categorized_data);
+        $serialized_data = $unserialized_form['categorized-serialized-data'];
+        $categorized_files = unserialize($serialized_data);
+
+        $tab_attr_array = array('key','epi','gallery','logo','oth','logo','elements','cm_oth','synopsis','transcript','fact','font','doth','epg','highlights','brand','boiler','catch');
+        $filter_days = $_POST['filter_days'];
+
+        $file_count = generate_file_count($categorized_files, $tab_attr_array, $filter_days);
+
+        echo json_encode($file_count);
+        // echo json_encode($categorized_files);
         die();
     }
     add_action('wp_ajax_generate_new_file_count', 'generate_new_file_count');
 }
+
 
 if(!function_exists('generate_show_files')){
     /**
