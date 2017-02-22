@@ -1348,25 +1348,41 @@ if (!function_exists('getRecentFileUploads')){
     function getRecentFileUploads($channel = 'entertainment', $days){
 
         global $wpdb;
+        global $file_count_array_home;
         $results = $wpdb->get_results("SELECT * FROM rtl21016_postmeta WHERE meta_key = '__wpdm_fileinfo' ");
 
+        $file_count_array_home = array();
         $filtered_shows = array();
         $start_date = date('Y-m-d', strtotime("- " . $days . " days"));
         $end_date = date('Y-m-d'); 
 
+        //* Loop through shows
         foreach ($results as $key => $value) {
             $file_info = unserialize($value->meta_value);
             $file_array = array_keys($file_info);
             $post_id = $value->post_id;
+            $file_count = 0;
 
+            //* Loop through all files
             foreach ( $file_array as $file_key ) {
                 // Convert UNIX Timestamp to human readable date
                 $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
                 
-                if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                /*if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
                     array_push($filtered_shows, $post_id);
                     break;
+                }*/
+
+                if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                    if ( !in_array($post_id, $filtered_shows) ) {
+                        array_push($filtered_shows, $post_id);
+                    }
+                    $file_count++; 
                 }
+            }
+
+            if ($file_count > 0) {
+                $file_count_array_home[$post_id] = $file_count;
             }
         }
    
@@ -1390,6 +1406,8 @@ if (!function_exists('getRecentFileUploads')){
 
 // AJAX Function for Recent File Uploads
 function displayRecentFileUploads() {
+    global $file_count_array_home;
+
     class ShowItem {
         public $thumbnail = "";
         public $title = "";
@@ -1410,7 +1428,7 @@ function displayRecentFileUploads() {
             $result->thumbnail = wpdm_dynamic_thumb($thumb_url, array(270, 296));
             $result->title = get_the_title();
             $result->permalink = get_the_permalink();
-            $result->filecount = 5;
+            $result->filecount = $file_count_array_home[get_the_ID()];
 
             $result->publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
             $result->expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
@@ -1425,6 +1443,7 @@ function displayRecentFileUploads() {
     }
 
     echo json_encode($filteredShows);
+    // echo json_encode($file_count_array_home['175']);
     die();
 }
 add_action('wp_ajax_displayRecentFileUploads', 'displayRecentFileUploads');
