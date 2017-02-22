@@ -1374,7 +1374,6 @@ if (!function_exists('getRecentFileUploads')){
         $args = array(
                     // 'orderby'=> 'modified',
                     // 'order' => 'DESC',
-                    // 'post_type' => 'wpdmpro',
                     'post__in' => $filtered_shows,
                     'tax_query' => array(
                         array(
@@ -1395,6 +1394,7 @@ function displayRecentFileUploads() {
         public $thumbnail = "";
         public $title = "";
         public $permalink = "";
+        public $filecount = "";
         public $publish_date = "";
         public $expire_date = "";
     }
@@ -1410,6 +1410,7 @@ function displayRecentFileUploads() {
             $result->thumbnail = wpdm_dynamic_thumb($thumb_url, array(270, 296));
             $result->title = get_the_title();
             $result->permalink = get_the_permalink();
+            $result->filecount = 5;
 
             $result->publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
             $result->expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);

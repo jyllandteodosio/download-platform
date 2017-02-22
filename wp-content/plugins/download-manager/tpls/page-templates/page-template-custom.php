@@ -82,8 +82,8 @@
                     <input type='submit'  class="show-filter" value='Select All'>
 
                     <!-- custom days filter -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
                     [days_filter_dropdown]
-                    <!-- <span style="text-align: right; color: black;">Display latest files in the last:</span> -->
         
                 </div><!-- filter-wrap -->
 
@@ -100,7 +100,8 @@
                     <input type='submit'  class="show-filter" value='Select All'>
 
                     <!-- custom days filter -->
-                    Display latest files in the last: [days_filter_dropdown]
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
+                    [days_filter_dropdown]
 
                 </div><!-- filter-wrap -->
                 <div class='show-items'>
@@ -117,6 +118,7 @@
                     <input type='submit'  class="show-filter" value='Select All'>
 
                     <!-- custom days filter -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
                     [days_filter_dropdown]
 
                     <select name="episode_code" id="episode_code" class="filter_select">
@@ -136,6 +138,7 @@
                 <input type='submit'  class="show-filter" value='Select All'>
 
                 <!-- custom days filter -->
+                <span class="recent-filter-text show-page">Display latest files in the last: </span>
                 [days_filter_dropdown]
 
                 </div><!-- filter-wrap -->
@@ -152,6 +155,7 @@
                 <input type='submit'  class="show-filter" value='Select All'>
 
                 <!-- custom days filter -->
+                <span class="recent-filter-text show-page">Display latest files in the last: </span>
                 [days_filter_dropdown]
             
                 </div><!-- filter-wrap -->
@@ -168,6 +172,7 @@
                 <input type='submit'  class="show-filter" value='Select All'>
 
                 <!-- custom days filter -->
+                <span class="recent-filter-text show-page">Display latest files in the last: </span>
                 [days_filter_dropdown]
 
                 </div><!-- filter-wrap -->
@@ -185,6 +190,7 @@
                     <input type='submit'  class="show-filter" value='Select All'>
 
                     <!-- custom days filter -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
                     [days_filter_dropdown]
 
                     <select name="synopsis_code" id="document_synopsis_code" class="filter_select synopsis_code">
@@ -205,6 +211,7 @@
                     <input type='submit'  class="show-filter" value='Select All'>
 
                     <!-- custom days filter -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
                     [days_filter_dropdown]
 
                    <select name="synopsis_code" id="synopsis_code" class="filter_select synopsis_code">
@@ -224,6 +231,7 @@
                     <input type='submit'  class="show-filter" value='Select All'>
 
                     <!-- custom days filter -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
                     [days_filter_dropdown]
 
                 </div><!-- filter-wrap -->
@@ -240,6 +248,7 @@
                 <input type='submit'  class="show-filter" value='Select All'>
                 
                 <!-- custom days filter -->
+                <span class="recent-filter-text show-page">Display latest files in the last: </span>
                 [days_filter_dropdown]
 
                 </div><!-- filter-wrap -->
@@ -256,6 +265,7 @@
                     <input type='submit'  class="show-filter" value='Select All'>
                 
                     <!-- custom days filter -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
                     [days_filter_dropdown]
 
                 </div><!-- filter-wrap -->
@@ -272,6 +282,7 @@
                     <input type='submit'  class="show-filter" value='Select All'>
                 
                     <!-- custom days filter -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
                     [days_filter_dropdown]
 
                 </div><!-- filter-wrap -->
