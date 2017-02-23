@@ -1634,39 +1634,42 @@ if(!function_exists('generate_show_files')){
                     }
                 }
             }   
-            //* FILTER FILES - RECENT FILE UPLOADS *//
-
+            
 
             if ( count($show_files['all_files']) > 0 ){
 
-                if ( $files_filtered == 'true' ) {
-                    $pattern = "/".$files_prefix.".*".$files_search_filter."/";
-                    $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
-                } else {
-
+                // if ( $files_filtered == true && $filter_days != 0) {
+                //     $pattern = "/".$files_prefix.".*".$files_search_filter."/";
+                //     // $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
+                //     $checker = 'filtered';
+                // } else {
                     if ( $filter_days != 0 ) {
-                        $filtered_shows_raw = $filtered_shows;
-                        $filtered_shows_sliced = array_slice($filtered_shows_raw,0,$files_limit,true);
-                        $show_files['all_files'] = array_diff_key($filtered_shows_raw, $filtered_shows_sliced);
+                        $return_array['topreview_show_files'] = $filtered_shows;
+                        $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
+                        $show_files['all_files'] = array_diff_key($filtered_shows, $topreview_show_files);
+                    
+                        $checker = 'not filtered: filtered_shows';
                     } else {
                         $return_array['topreview_show_files'] = $topreview_show_files;
                         $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
                         $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
+                        
+                        $checker = 'not filtered: topreview_show_files';
                     }
-                }
+                //}
                 $return_array['show_all_files'] = $show_files['all_files'];
                 $return_array['hidden_files_count'] = count($show_files['all_files']);
             }
 
             if ( $show_files !== false ) {
                 
-                if ( $filter_days != 0 ) {
-                    $filter_type = $filtered_shows;
-                } else {
-                    $filter_type = $topreview_show_files;
-                }   
+                // if ( $filter_days != 0 ) {
+                //     $filter_type = $filtered_shows_sliced;
+                // } else {
+                //     $filter_type = $topreview_show_files;
+                // }   
 
-                $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($filter_type,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+                $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
                 $return_array['files'] = $categorizedFileList;
                 $return_array['updated_serialized_data'] = serialize($show_files);
                 
@@ -1675,7 +1678,7 @@ if(!function_exists('generate_show_files')){
         }
         
         echo $return_value == 1 ? json_encode($return_array) : false;
-        // echo json_encode($filter_type);
+        // echo json_encode($checker);
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
