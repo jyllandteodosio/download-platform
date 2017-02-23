@@ -1352,13 +1352,16 @@ if (!function_exists('getRecentFileUploads')){
         $results = $wpdb->get_results("SELECT * FROM rtl21016_postmeta WHERE meta_key = '__wpdm_fileinfo' ");
 
         $file_count_array_home = array();
-        $filtered_shows = array();
+        $filtered_shows_raw = array();
+
         $start_date = date('Y-m-d', strtotime("- " . $days . " days"));
         $end_date = date('Y-m-d'); 
 
         //* Loop through shows
         foreach ($results as $key => $value) {
             $file_info = unserialize($value->meta_value);
+            krsort($file_info);
+
             $file_array = array_keys($file_info);
             $post_id = $value->post_id;
             $file_count = 0;
@@ -1367,15 +1370,10 @@ if (!function_exists('getRecentFileUploads')){
             foreach ( $file_array as $file_key ) {
                 // Convert UNIX Timestamp to human readable date
                 $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
-                
-                /*if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
-                    array_push($filtered_shows, $post_id);
-                    break;
-                }*/
 
                 if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
-                    if ( !in_array($post_id, $filtered_shows) ) {
-                        array_push($filtered_shows, $post_id);
+                    if ( !array_key_exists($post_id, $filtered_shows_raw) ) {
+                        $filtered_shows_raw[$post_id] = $file_upload_date;
                     }
                     $file_count++; 
                 }
@@ -1385,20 +1383,24 @@ if (!function_exists('getRecentFileUploads')){
                 $file_count_array_home[$post_id] = $file_count;
             }
         }
-   
-        //* TO DO: SORT SHOWS BY RECENT FILE UPLOADS 
+
+        //* Sort shows according to recently uploaded files
+        arsort($filtered_shows_raw);
+        $filtered_shows = array_keys($filtered_shows_raw);
+        
+        //* Wordpress query   
         $args = array(
-                    // 'orderby'=> 'modified',
-                    // 'order' => 'DESC',
-                    'post__in' => $filtered_shows,
+                    'post__in'  => $filtered_shows,
+                    'orderby'   => 'post__in',
+                    'order'     => 'DESC',
                     'tax_query' => array(
                         array(
                            'taxonomy' => 'wpdmcategory',
                            'field'    => 'slug',
                            'terms'    => 'shows-'.$channel,
                         ),
-                      )
-                  );
+                    )
+                );
         $query_shows = new WP_Query( $args );
         return $query_shows;
     }
