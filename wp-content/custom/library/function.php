@@ -1612,25 +1612,49 @@ if(!function_exists('generate_show_files')){
             $current_channel = $_POST['current_channel'];
             $filter_days = $_POST['filter_days'];
 
+            $filter_days_array = array(5,10,15,20,30);
+
 
             //* FILTER FILES - RECENT FILE UPLOADS *//
-            if ( $filter_days != 0 ) {
-                $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
-                $end_date = date('Y-m-d'); 
+            // if ( $filter_days != 0 ) {
+            //     $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
+            //     $end_date = date('Y-m-d'); 
 
-                $filtered_shows = array();
+            //     $filtered_shows = array();
 
-                //* Loop files per category and push them in an array
-                foreach ( $topreview_show_files as $key => $value ) {
-                    //* Convert UNIX Timestamp to human readable date
-                    $file_upload_date = date('Y-m-d', substr($key, 0, -3));
+            //     //* Loop files per category and push them in an array
+            //     foreach ( $topreview_show_files as $key => $value ) {
+            //         //* Convert UNIX Timestamp to human readable date
+            //         $file_upload_date = date('Y-m-d', substr($key, 0, -3));
 
-                    if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
-                        //* Array format: ["File ID" : "File Name"]
-                        $filtered_shows[$key] = $value;
+            //         if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+            //             //* Array format: ["File ID" : "File Name"]
+            //             $filtered_shows[$key] = $value;
+            //         }
+            //     }
+            // }  
+
+            if( $files_prefix == 'epi' || $files_prefix == 'synopsis' ) {
+                foreach( $filter_days_array as $day ) {
+                    $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
+                    $end_date = date('Y-m-d'); 
+
+                    $filtered_shows = array();
+
+                    //* Loop files per category and push them in an array
+                    foreach ( $topreview_show_files as $key => $value ) {
+                        //* Convert UNIX Timestamp to human readable date
+                        $file_upload_date = date('Y-m-d', substr($key, 0, -3));
+
+                        if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                            //* Array format: ["File ID" : "File Name"]
+                            $filtered_shows[$key] = $value;
+                        }
                     }
-                }
-            }   
+
+                    $return_array[$day] = serialize($filtered_shows); 
+                } 
+            }
             
 
             if ( count($show_files['all_files']) > 0 ){
