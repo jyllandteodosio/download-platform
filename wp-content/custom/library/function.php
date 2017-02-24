@@ -1439,9 +1439,6 @@ function displayRecentFileUploads() {
 
             array_push($filteredShows, $result);
         }
-    } else {
-      $result = "No Recent File Upload at the moment.";
-      array_push($filteredShows, $result);
     }
 
     echo json_encode($filteredShows);
