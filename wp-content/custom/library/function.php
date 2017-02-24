@@ -1638,11 +1638,11 @@ if(!function_exists('generate_show_files')){
 
             if ( count($show_files['all_files']) > 0 ){
 
-                // if ( $files_filtered == true && $filter_days != 0) {
-                //     $pattern = "/".$files_prefix.".*".$files_search_filter."/";
-                //     // $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
-                //     $checker = 'filtered';
-                // } else {
+                if ( $files_filtered == true ) {
+                    $pattern = "/".$files_prefix.".*".$files_search_filter."/";
+                    // $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
+                    $checker = 'filtered';
+                } else {
                     if ( $filter_days != 0 ) {
                         $return_array['topreview_show_files'] = $filtered_shows;
                         $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
@@ -1656,18 +1656,12 @@ if(!function_exists('generate_show_files')){
                         
                         $checker = 'not filtered: topreview_show_files';
                     }
-                //}
+                }
                 $return_array['show_all_files'] = $show_files['all_files'];
                 $return_array['hidden_files_count'] = count($show_files['all_files']);
             }
 
             if ( $show_files !== false ) {
-                
-                // if ( $filter_days != 0 ) {
-                //     $filter_type = $filtered_shows_sliced;
-                // } else {
-                //     $filter_type = $topreview_show_files;
-                // }   
 
                 $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
                 $return_array['files'] = $categorizedFileList;
