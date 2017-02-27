@@ -263,7 +263,7 @@ if( !function_exists('getPostIdBySlug') ){
     }
 }
 
-if(!function_exists('unserializeForm')){
+if(!function_exists('unserializeForm')){ 
     /**
      * function to unserialize a form created by jquery .serialize method.
      */

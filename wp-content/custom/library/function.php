@@ -1605,8 +1605,19 @@ if(!function_exists('generate_show_files')){
             $filter_days = $_POST['filter_days'];
             $filter_days_array = $_POST['filter_days_array'];
 
-            if ( ($filter_triggered == 'recent-uploads-filter') ) {
-                $topreview_show_files = $_POST['serialized-data'];
+            if ( ($filter_triggered == 'recent-uploads-filter') || ($files_triggered == 'filter_select') ) {
+                /**
+                 * Hi Tasshaaa! Good morning :D working na to in a way na
+                 * Wala nang error na "Unexpected token < in JSON at position 0"
+                 * 
+                 * Yung urldecode() ginagawa sa unserializeForm so apply din naten
+                 * dito para fair. :D
+                 *
+                 * Aaand di siya naglelazy load soooo,
+                 * see comments below chaaarot.
+                 */
+
+                $topreview_show_files = unserialize(urldecode($_POST['serialized-data']));
             } else {
                 $serialized_data = $_POST['serialized-data'];
                 $unserialized_form = unserializeForm($serialized_data);
@@ -1643,35 +1654,89 @@ if(!function_exists('generate_show_files')){
             //     $checker = 'do nothing';
             // }
 
-            if ( count($show_files['all_files']) > 0 ){
+            /**
+             * PMR added if else statement 
+             * 
+             * Tassha, question possible ba yung madirty na serialize data
+             * save sa global object naten? Or pwede magawan ng ibang paraan yung
+             * $show_files['file_type'], $show_files['prefix'], $show_files['category'] etc.
+             * kase parang galing din yung mga yun sa madirty serialized data.
+             *
+             */
+            if ( ($filter_triggered == 'recent-uploads-filter')  || ($files_triggered == 'filter_select')) {
 
-                if ( $filter_days != 0 ) {
-                    $return_array['topreview_show_files'] = $filtered_shows;
-                    $return_array['original_filtered_data'] = serialize($filtered_shows);
+                if ( count($topreview_show_files) > 0 ){
+
+                    if ( $filter_days != 0 ) {
+                        $return_array['topreview_show_files'] = $filtered_shows;
+                        $return_array['original_filtered_data'] = serialize($filtered_shows);
+                        
+                        $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
+                        $show_files['all_files'] = array_diff_key($filtered_shows, $topreview_show_files);
                     
-                    $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
-                    $show_files['all_files'] = array_diff_key($filtered_shows, $topreview_show_files);
-                
-                    // $checker = 'not filtered: filtered_shows';
-                } else {
-                    $return_array['topreview_show_files'] = $topreview_show_files;
-                    $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
-                    $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
-                    
-                    // $checker = 'not filtered: topreview_show_files';
+                        // $checker = 'not filtered: filtered_shows';
+                    } else {
+                        $return_array['topreview_show_files'] = $topreview_show_files;
+                        $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
+                        $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
+                        
+                        // $checker = 'not filtered: topreview_show_files';
+                    }
+
+                    $return_array['show_all_files'] = $show_files['all_files'];
+                    $return_array['hidden_files_count'] = count($show_files['all_files']);
                 }
 
-                $return_array['show_all_files'] = $show_files['all_files'];
-                $return_array['hidden_files_count'] = count($show_files['all_files']);
-            }
+                if ( $topreview_show_files !== false ) {
+                    $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+                    $return_array['files'] = $categorizedFileList;
+                    $return_array['updated_serialized_data'] = serialize($show_files);
+                    
+                    $return_value = 1;
+                }
 
-            if ( $show_files !== false ) {
-                $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-                $return_array['files'] = $categorizedFileList;
-                $return_array['updated_serialized_data'] = serialize($show_files);
-                
-                $return_value = 1;
+            } else {
+
+                /**
+                 * Original code
+                 */
+
+                if ( count($show_files['all_files']) > 0 ){
+
+                    if ( $filter_days != 0 ) {
+                        $return_array['topreview_show_files'] = $filtered_shows;
+                        $return_array['original_filtered_data'] = serialize($filtered_shows);
+                        
+                        $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
+                        $show_files['all_files'] = array_diff_key($filtered_shows, $topreview_show_files);
+                    
+                        // $checker = 'not filtered: filtered_shows';
+                    } else {
+                        $return_array['topreview_show_files'] = $topreview_show_files;
+                        $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
+                        $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
+                        
+                        // $checker = 'not filtered: topreview_show_files';
+                    }
+
+                    $return_array['show_all_files'] = $show_files['all_files'];
+                    $return_array['hidden_files_count'] = count($show_files['all_files']);
+                }
+
+                if ( $show_files !== false ) {
+                    $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+                    $return_array['files'] = $categorizedFileList;
+                    $return_array['updated_serialized_data'] = serialize($show_files);
+                    
+                    $return_value = 1;
+                }
+
+                /**
+                 * END Original code
+                 */
+
             }
+                
         }
         
         echo $return_value == 1 ? json_encode($return_array) : false;
