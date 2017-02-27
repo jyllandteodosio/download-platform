@@ -1615,10 +1615,6 @@ if(!function_exists('generate_show_files')){
 
 
             //* FILTER FILES - RECENT FILE UPLOADS *//
-            if ( $filter_days == 0 ) {
-                $return_array[0] = serialize($topreview_show_files);
-            }
-            
             foreach( $filter_days_array as $day ) {
                 $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
                 $end_date = date('Y-m-d'); 
@@ -1638,6 +1634,7 @@ if(!function_exists('generate_show_files')){
 
                 $return_array[$day] = serialize($filtered_shows); 
             }
+            $return_array[0] = serialize($topreview_show_files);
             // $filtered_shows = $return_array[$filter_days];
 
             //* Further filter files if episode filter was triggered
