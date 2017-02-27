@@ -1612,28 +1612,9 @@ if(!function_exists('generate_show_files')){
             $current_channel = $_POST['current_channel'];
             $filter_days = $_POST['filter_days'];
 
-            $filter_days_array = array(5,10,15,20,30);
-
+            $filter_days_array = $_POST['filter_days_array'];
 
             //* FILTER FILES - RECENT FILE UPLOADS *//
-            // if ( $filter_days != 0 ) {
-            //     $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
-            //     $end_date = date('Y-m-d'); 
-
-            //     $filtered_shows = array();
-
-            //     //* Loop files per category and push them in an array
-            //     foreach ( $topreview_show_files as $key => $value ) {
-            //         //* Convert UNIX Timestamp to human readable date
-            //         $file_upload_date = date('Y-m-d', substr($key, 0, -3));
-
-            //         if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
-            //             //* Array format: ["File ID" : "File Name"]
-            //             $filtered_shows[$key] = $value;
-            //         }
-            //     }
-            // }  
-
             if( $files_prefix == 'epi' || $files_prefix == 'synopsis' ) {
                 foreach( $filter_days_array as $day ) {
                     $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
@@ -1653,17 +1634,34 @@ if(!function_exists('generate_show_files')){
                     }
 
                     $return_array[$day] = serialize($filtered_shows); 
-                } 
-            }
+                }
+                 
+            } else if ( $filter_days != 0 ) {
+                $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
+                $end_date = date('Y-m-d'); 
+
+                $filtered_shows = array();
+
+                //* Loop files per category and push them in an array
+                foreach ( $topreview_show_files as $key => $value ) {
+                    //* Convert UNIX Timestamp to human readable date
+                    $file_upload_date = date('Y-m-d', substr($key, 0, -3));
+
+                    if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                        //* Array format: ["File ID" : "File Name"]
+                        $filtered_shows[$key] = $value;
+                    }
+                }
+            } 
             
 
             if ( count($show_files['all_files']) > 0 ){
 
-                if ( $files_filtered == true ) {
-                    $pattern = "/".$files_prefix.".*".$files_search_filter."/";
-                    // $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
-                    $checker = 'filtered';
-                } else {
+                // if ( $files_filtered == true ) {
+                //     $pattern = "/".$files_prefix.".*".$files_search_filter."/";
+                //     // $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
+                //     $checker = 'filtered';
+                // } else {
                     if ( $filter_days != 0 ) {
                         $return_array['topreview_show_files'] = $filtered_shows;
                         $return_array['original_filtered_data'] = serialize($filtered_shows);
@@ -1679,7 +1677,7 @@ if(!function_exists('generate_show_files')){
                         
                         $checker = 'not filtered: topreview_show_files';
                     }
-                }
+                //}
                 $return_array['show_all_files'] = $show_files['all_files'];
                 $return_array['hidden_files_count'] = count($show_files['all_files']);
             }
