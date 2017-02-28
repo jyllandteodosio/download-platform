@@ -1604,103 +1604,88 @@ if (!function_exists('generate_show_files')) {
             $filter_triggered = $_POST['filter_triggered'];
             $filter_days = $_POST['filter_days'];
             $filter_days_array = $_POST['filter_days_array'];
-
-            $show_files = unserialize( stripslashes($_POST['serialized-data']) );
         
-            foreach ( $show_files as $sub_arrays => $value) {
-                foreach( $filter_days_array as $day ) {
-                    if ( $day > 0 ) {
-                        $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
-                        $end_date = date('Y-m-d'); 
+            if ( $files_triggered == '' ) {
+                $show_files = unserialize( stripslashes($_POST['serialized-data']) );
 
-                        $filtered_shows = array();
-                        //* Loop all files in the array and push them to filtered_shows
-                        foreach ( $show_files['all_files'] as $file_key => $file_name ) {
-                            //* Convert UNIX Timestamp to human reSadable date
-                            $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+                foreach ( $show_files as $sub_arrays => $value) {
+                    foreach( $filter_days_array as $day ) {
+                        if ( $day > 0 ) {
+                            $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
+                            $end_date = date('Y-m-d'); 
 
-                            if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
-                                //* Array format: ["File ID" : "File Name"]
-                                $filtered_shows[$file_key] = $file_name;
+                            $filtered_shows = array();
+                            //* Loop all files in the array and push them to filtered_shows
+                            foreach ( $show_files['all_files'] as $file_key => $file_name ) {
+                                //* Convert UNIX Timestamp to human reSadable date
+                                $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+
+                                if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                                    //* Array format: ["File ID" : "File Name"]
+                                    $filtered_shows[$file_key] = $file_name;
+                                }
+
                             }
 
-                        }
-
-                        $file_object = array();
-                        foreach( $show_files['file_object']['files'] as $object_key => $object_value ) {
-                            if ( array_key_exists($object_key, $filtered_shows) ) {
-                                $file_object['files'][$object_key] = $object_value;
-                            } 
-                        }
-
-                        $file_info = array();
-                        foreach( $show_files['file_info'] as $file_info_key => $file_array ) {
-                            if ( array_key_exists($file_info_key, $filtered_shows) ) {
-                                $file_info[$file_info_key] = $file_array;
+                            $file_object = array();
+                            foreach( $show_files['file_object']['files'] as $object_key => $object_value ) {
+                                if ( array_key_exists($object_key, $filtered_shows) ) {
+                                    $file_object['files'][$object_key] = $object_value;
+                                } 
                             }
+
+                            $file_info = array();
+                            foreach( $show_files['file_info'] as $file_info_key => $file_array ) {
+                                if ( array_key_exists($file_info_key, $filtered_shows) ) {
+                                    $file_info[$file_info_key] = $file_array;
+                                }
+                            }
+                        } else {
+                            $filtered_shows = $show_files['all_files'];
+                            $file_object = $show_files['file_object'];
+                            $file_info = $show_files['file_info'];
                         }
-                    } else {
-                        $filtered_shows = $show_files['all_files'];
-                        $file_object = $show_files['file_object'];
-                        $file_info = $show_files['file_info'];
+
+                        $file_list_data = array (
+                                            'all_files'            =>  $filtered_shows,
+                                            'prefix'               =>  $show_files['prefix'],
+                                            'category'             =>  $show_files['category'],
+                                            'file_object'          =>  $file_object,
+                                            'specific_thumbnails'  =>  $show_files['specific_thumbnails'],
+                                            'file_type'            =>  $show_files['file_type'],
+                                            'file_info'            =>  $file_info,
+                                            'post_id'              =>  $show_files['post_id'],
+                                            'permalink'            =>  $show_files['permalink']
+                                        );
+
+                        $return_array[$day] = serialize($file_list_data); 
                     }
-
-                    $file_list_data = array (
-                                        'all_files'            =>  $filtered_shows,
-                                        'prefix'               =>  $show_files['prefix'],
-                                        'category'             =>  $show_files['category'],
-                                        'file_object'          =>  $file_object,
-                                        'specific_thumbnails'  =>  $show_files['specific_thumbnails'],
-                                        'file_type'            =>  $show_files['file_type'],
-                                        'file_info'            =>  $file_info,
-                                        'post_id'              =>  $show_files['post_id'],
-                                        'permalink'            =>  $show_files['permalink']
-                                    );
-
-                    $return_array[$day] = serialize($file_list_data); 
                 }
+            } else {
+                $show_files['all_files'] = unserialize( $_POST['serialized-data'] );
             }
 
-
-            // if ( count($show_files['all_files']) > 0 ){
-            //     if ( $filter_days != 0 ) {
-            //         $return_array['topreview_show_files'] = $filtered_shows;
-            //         // $return_array['original_filtered_data'] = serialize($filtered_shows);
-                    
-            //         $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
-            //         $show_files['all_files'] = array_diff_key($filtered_shows, $topreview_show_files);
+            if ( count($show_files['all_files']) > 0 ) {
+                $return_array['topreview_show_files'] = $show_files['all_files'];
+                $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+                $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
                 
-            //         // $checker = 'not filtered: filtered_shows';
-            //     } else {
-            //         $return_array['topreview_show_files'] = $show_files['all_files'];
-            //         $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
-            //         $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
+                $return_array['show_all_files'] = $show_files['all_files'];
+                $return_array['hidden_files_count'] = count($show_files['all_files']);
+
+                if ( $show_files !== false ) {
+                    $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+                    $return_array['files'] = $categorizedFileList;
+                    $return_array['updated_serialized_data'] = serialize($show_files);
                     
-            //         // $checker = 'not filtered: topreview_show_files';
-            //     }
-
-            //     $return_array['show_all_files'] = $show_files['all_files'];
-            //     $return_array['hidden_files_count'] = count($show_files['all_files']);
-            // }
-
-            $return_array['topreview_show_files'] = $show_files['all_files'];
-            $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
-            $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
+                    $return_value = 1;
+                }
+            } 
             
-            $return_array['show_all_files'] = $show_files['all_files'];
-            $return_array['hidden_files_count'] = count($show_files['all_files']);
-
-            if ( $show_files !== false ) {
-                $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-                $return_array['files'] = $categorizedFileList;
-                $return_array['updated_serialized_data'] = serialize($show_files);
-                
-                $return_value = 1;
-            }
         }
         
         echo $return_value == 1 ? json_encode($return_array) : false;
-        // echo json_encode($return_array);
+        // echo json_encode($show_files['all_files']);
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
