@@ -1597,15 +1597,13 @@ if (!function_exists('generate_show_files')) {
         $return_array['hidden_files_count'] = 0;
         if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ) { 
             $files_limit = $_POST['limit'];
-            $files_prefix = $_POST['prefix'];
-            $files_search_filter = $_POST['search_filter'];
 
             // $current_channel = $_POST['current_channel'];
             $filter_triggered = $_POST['filter_triggered'];
             $filter_days = $_POST['filter_days'];
             $filter_days_array = $_POST['filter_days_array'];
         
-            if ( $files_triggered == '' ) {
+            if ( $filter_triggered == '' ) {
                 $show_files = unserialize( stripslashes($_POST['serialized-data']) );
 
                 foreach ( $show_files as $sub_arrays => $value) {
@@ -1662,7 +1660,23 @@ if (!function_exists('generate_show_files')) {
                     }
                 }
             } else {
-                $show_files['all_files'] = unserialize( $_POST['serialized-data'] );
+                $show_files = unserialize( stripslashes($_POST['serialized-data']) );
+
+                if ( $filter_triggered == 'filter_select' ) {
+                    $file_prefix = $_POST['prefix'];
+                    $file_epi_number = $_POST['search_filter'];
+
+                    $filtered_episodes = array();
+                    foreach( $show_files['all_files'] as $file_key => $file_name ) {
+                        if ( (substr_count($file_name, $file_prefix) > 0) && (substr_count($file_name, $file_epi_number) > 0)  ) {
+                            $filtered_episodes[$file_key] = $file_name;
+                        }
+                    }  
+                }
+
+                $show_files['all_files'] = array();
+                $show_files['all_files'] = $filtered_episodes;
+                $return_array['filtered_episodes'] = $filtered_episodes;
             }
 
             if ( count($show_files['all_files']) > 0 ) {
