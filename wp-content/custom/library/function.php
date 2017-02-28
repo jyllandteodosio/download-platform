@@ -1671,12 +1671,12 @@ if (!function_exists('generate_show_files')) {
                         if ( (substr_count($file_name, $file_prefix) > 0) && (substr_count($file_name, $file_epi_number) > 0)  ) {
                             $filtered_episodes[$file_key] = $file_name;
                         }
-                    }  
-                }
+                    } 
 
-                $show_files['all_files'] = array();
-                $show_files['all_files'] = $filtered_episodes;
-                $return_array['filtered_episodes'] = $filtered_episodes;
+                    $show_files['all_files'] = array(); 
+                    $show_files['all_files'] = $filtered_episodes;
+                    $return_array['filtered_episodes'] = $filtered_episodes;
+                }
             }
 
             if ( count($show_files['all_files']) > 0 ) {
