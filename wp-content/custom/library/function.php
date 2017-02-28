@@ -1586,7 +1586,7 @@ if(!function_exists('generate_new_file_count')) {
 }
 
 
-if(!function_exists('generate_show_files')){
+if (!function_exists('generate_show_files')) {
     /**
      * Ajax function for adding specific files to cart and lazy load (show files)
      */
@@ -1605,146 +1605,251 @@ if(!function_exists('generate_show_files')){
             $filter_days = $_POST['filter_days'];
             $filter_days_array = $_POST['filter_days_array'];
 
-            if ( ($filter_triggered == 'recent-uploads-filter') || ($files_triggered == 'filter_select') ) {
-                /**
-                 * Hi Tasshaaa! Good morning :D working na to in a way na
-                 * Wala nang error na "Unexpected token < in JSON at position 0"
-                 * 
-                 * Yung urldecode() ginagawa sa unserializeForm so apply din naten
-                 * dito para fair. :D
-                 *
-                 * Aaand di siya naglelazy load soooo,
-                 * see comments below chaaarot.
-                 */
+            $show_files = unserialize( stripslashes($_POST['serialized-data']) );
+        
+            foreach ( $show_files as $sub_arrays => $value) {
+                foreach( $filter_days_array as $day ) {
+                    if ( $day > 0 ) {
+                        $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
+                        $end_date = date('Y-m-d'); 
 
-                $topreview_show_files = unserialize(urldecode($_POST['serialized-data']));
-            } else {
-                $serialized_data = $_POST['serialized-data'];
-                $unserialized_form = unserializeForm($serialized_data);
-                $serialized_show_files = $unserialized_form['serialized-data'];
-                $show_files = unserialize($serialized_show_files);
-                $topreview_show_files = $show_files['all_files'];
-            }
+                        $filtered_shows = array();
+                        //* Loop all files in the array and push them to filtered_shows
+                        foreach ( $show_files['all_files'] as $file_key => $file_name ) {
+                            //* Convert UNIX Timestamp to human reSadable date
+                            $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
 
-            //* FILTER FILES - RECENT FILE UPLOADS *//
-            foreach( $filter_days_array as $day ) {
-                $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
-                $end_date = date('Y-m-d'); 
+                            if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                                //* Array format: ["File ID" : "File Name"]
+                                $filtered_shows[$file_key] = $file_name;
+                            }
 
-                $filtered_shows = array();
+                        }
 
-                //* Loop files per category and push them in an array
-                foreach ( $topreview_show_files as $key => $value ) {
-                    //* Convert UNIX Timestamp to human reSadable date
-                    $file_upload_date = date('Y-m-d', substr($key, 0, -3));
+                        $file_object = array();
+                        foreach( $show_files['file_object']['files'] as $object_key => $object_value ) {
+                            if ( array_key_exists($object_key, $filtered_shows) ) {
+                                $file_object['files'][$object_key] = $object_value;
+                            } 
+                        }
 
-                    if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
-                        //* Array format: ["File ID" : "File Name"]
-                        $filtered_shows[$key] = $value;
+                        $file_info = array();
+                        foreach( $show_files['file_info'] as $file_info_key => $file_array ) {
+                            if ( array_key_exists($file_info_key, $filtered_shows) ) {
+                                $file_info[$file_info_key] = $file_array;
+                            }
+                        }
+                    } else {
+                        $filtered_shows = $show_files['all_files'];
+                        $file_object = $show_files['file_object'];
+                        $file_info = $show_files['file_info'];
                     }
-                }
-                $return_array[$day] = serialize($filtered_shows); 
-            }
-            $return_array[0] = serialize($topreview_show_files);
 
-            //* Further filter files if episode filter was triggered
-            // if ( $filter_triggered == 'filter_select' ) {
-            //     $checker = 'episode filter was triggered';
-            // } else {
-            //     $checker = 'do nothing';
+                    $file_list_data = array (
+                                        'all_files'            =>  $filtered_shows,
+                                        'prefix'               =>  $show_files['prefix'],
+                                        'category'             =>  $show_files['category'],
+                                        'file_object'          =>  $file_object,
+                                        'specific_thumbnails'  =>  $show_files['specific_thumbnails'],
+                                        'file_type'            =>  $show_files['file_type'],
+                                        'file_info'            =>  $file_info,
+                                        'post_id'              =>  $show_files['post_id'],
+                                        'permalink'            =>  $show_files['permalink']
+                                    );
+
+                    $return_array[$day] = serialize($file_list_data); 
+                }
+            }
+
+
+            // if ( count($show_files['all_files']) > 0 ){
+            //     if ( $filter_days != 0 ) {
+            //         $return_array['topreview_show_files'] = $filtered_shows;
+            //         // $return_array['original_filtered_data'] = serialize($filtered_shows);
+                    
+            //         $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
+            //         $show_files['all_files'] = array_diff_key($filtered_shows, $topreview_show_files);
+                
+            //         // $checker = 'not filtered: filtered_shows';
+            //     } else {
+            //         $return_array['topreview_show_files'] = $show_files['all_files'];
+            //         $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
+            //         $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
+                    
+            //         // $checker = 'not filtered: topreview_show_files';
+            //     }
+
+            //     $return_array['show_all_files'] = $show_files['all_files'];
+            //     $return_array['hidden_files_count'] = count($show_files['all_files']);
             // }
 
-            /**
-             * PMR added if else statement 
-             * 
-             * Tassha, question possible ba yung madirty na serialize data
-             * save sa global object naten? Or pwede magawan ng ibang paraan yung
-             * $show_files['file_type'], $show_files['prefix'], $show_files['category'] etc.
-             * kase parang galing din yung mga yun sa madirty serialized data.
-             *
-             */
-            if ( ($filter_triggered == 'recent-uploads-filter')  || ($files_triggered == 'filter_select')) {
-
-                if ( count($topreview_show_files) > 0 ){
-
-                    if ( $filter_days != 0 ) {
-                        $return_array['topreview_show_files'] = $filtered_shows;
-                        $return_array['original_filtered_data'] = serialize($filtered_shows);
-                        
-                        $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
-                        $show_files['all_files'] = array_diff_key($filtered_shows, $topreview_show_files);
-                    
-                        // $checker = 'not filtered: filtered_shows';
-                    } else {
-                        $return_array['topreview_show_files'] = $topreview_show_files;
-                        $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
-                        $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
-                        
-                        // $checker = 'not filtered: topreview_show_files';
-                    }
-
-                    $return_array['show_all_files'] = $show_files['all_files'];
-                    $return_array['hidden_files_count'] = count($show_files['all_files']);
-                }
-
-                if ( $topreview_show_files !== false ) {
-                    $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-                    $return_array['files'] = $categorizedFileList;
-                    $return_array['updated_serialized_data'] = serialize($show_files);
-                    
-                    $return_value = 1;
-                }
-
-            } else {
-
-                /**
-                 * Original code
-                 */
-
-                if ( count($show_files['all_files']) > 0 ){
-
-                    if ( $filter_days != 0 ) {
-                        $return_array['topreview_show_files'] = $filtered_shows;
-                        $return_array['original_filtered_data'] = serialize($filtered_shows);
-                        
-                        $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
-                        $show_files['all_files'] = array_diff_key($filtered_shows, $topreview_show_files);
-                    
-                        // $checker = 'not filtered: filtered_shows';
-                    } else {
-                        $return_array['topreview_show_files'] = $topreview_show_files;
-                        $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
-                        $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
-                        
-                        // $checker = 'not filtered: topreview_show_files';
-                    }
-
-                    $return_array['show_all_files'] = $show_files['all_files'];
-                    $return_array['hidden_files_count'] = count($show_files['all_files']);
-                }
-
-                if ( $show_files !== false ) {
-                    $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-                    $return_array['files'] = $categorizedFileList;
-                    $return_array['updated_serialized_data'] = serialize($show_files);
-                    
-                    $return_value = 1;
-                }
-
-                /**
-                 * END Original code
-                 */
-
-            }
+            // if ( $show_files !== false ) {
+            //     $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+            //     $return_array['files'] = $categorizedFileList;
+            //     $return_array['updated_serialized_data'] = serialize($show_files);
                 
+            //     $return_value = 1;
+            // }
         }
         
-        echo $return_value == 1 ? json_encode($return_array) : false;
-        // echo json_encode($topreview_show_files);
+        // echo $return_value == 1 ? json_encode($return_array) : false;
+        echo json_encode($return_array);
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
 }
+
+
+//         $security_nonce = $_POST['security_nonce'];
+//         $return_value = 0;
+//         $return_array = array();
+//         $return_array['hidden_files_count'] = 0;
+//         if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ) { 
+//             $files_limit = $_POST['limit'];
+//             $files_prefix = $_POST['prefix'];
+//             $files_search_filter = $_POST['search_filter'];
+
+//             // $current_channel = $_POST['current_channel'];
+//             $filter_triggered = $_POST['filter_triggered'];
+//             $filter_days = $_POST['filter_days'];
+//             $filter_days_array = $_POST['filter_days_array'];
+
+//             if ( ($filter_triggered == 'recent-uploads-filter') || ($files_triggered == 'filter_select') ) {
+//                 $topreview_show_files = unserialize(urldecode($_POST['serialized-data']));
+//             } else {
+//                 $serialized_data = $_POST['serialized-data'];
+//                 $unserialized_form = unserializeForm($serialized_data);
+//                 $serialized_show_files = $unserialized_form['serialized-data'];
+//                 $show_files = unserialize($serialized_show_files);
+//                 $topreview_show_files = $show_files['all_files'];
+//             }
+
+//             //* FILTER FILES - RECENT FILE UPLOADS *//
+//             foreach( $filter_days_array as $day ) {
+//                 $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
+//                 $end_date = date('Y-m-d'); 
+
+//                 $filtered_shows = array();
+
+//                 //* Loop files per category and push them in an array
+//                 foreach ( $topreview_show_files as $key => $value ) {
+//                     //* Convert UNIX Timestamp to human reSadable date
+//                     $file_upload_date = date('Y-m-d', substr($key, 0, -3));
+
+//                     if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+//                         //* Array format: ["File ID" : "File Name"]
+//                         $filtered_shows[$key] = $value;
+//                     }
+
+//                     array_push($filtered_shows, $value);
+//                 }
+//                 $return_array[$day] = serialize($filtered_shows); 
+//             }
+//             $return_array[0] = serialize($topreview_show_files);
+
+
+//             foreach( $filter_days_array as $day ) {
+//                 $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
+//                 $end_date = date('Y-m-d'); 
+
+//                 $filtered_shows = array();
+
+//                 //* Loop files per category and push them in an array
+//                 foreach ( $topreview_show_files as $key => $value ) {
+//                     //* Convert UNIX Timestamp to human reSadable date
+//                     $file_upload_date = date('Y-m-d', substr($key, 0, -3));
+
+//                     if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+//                         //* Array format: ["File ID" : "File Name"]
+//                         $filtered_shows[$key] = $value;
+//                     }
+//                 }
+//                 $return_array[$day] = serialize($filtered_shows); 
+//             }
+//             $return_array[0] = serialize($topreview_show_files);
+
+//             * Further filter files if episode filter was triggered
+//             if ( $filter_triggered == 'filter_select' ) {
+//                 $checker = 'episode filter was triggered';
+//             } else {
+//                 $checker = 'do nothing';
+//             }
+
+//             if ( ($filter_triggered == 'recent-uploads-filter')  || ($files_triggered == 'filter_select')) {
+
+//                 if ( count($topreview_show_files) > 0 ){
+
+//                     if ( $filter_days != 0 ) {
+//                         $return_array['topreview_show_files'] = $filtered_shows;
+//                         $return_array['original_filtered_data'] = serialize($filtered_shows);
+                        
+//                         $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
+//                         $show_files['all_files'] = array_diff_key($filtered_shows, $topreview_show_files);
+                    
+//                         // $checker = 'not filtered: filtered_shows';
+//                     } else {
+//                         $return_array['topreview_show_files'] = $topreview_show_files;
+//                         $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
+//                         $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
+                        
+//                         // $checker = 'not filtered: topreview_show_files';
+//                     }
+
+//                     $return_array['show_all_files'] = $show_files['all_files'];
+//                     $return_array['hidden_files_count'] = count($show_files['all_files']);
+//                 }
+
+//                 if ( $topreview_show_files !== false ) {
+//                     $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+//                     $return_array['files'] = $categorizedFileList;
+//                     $return_array['updated_serialized_data'] = serialize($show_files);
+                    
+//                     $return_value = 1;
+//                 }
+
+//             } else {
+
+//                 /**
+//                  * Original code
+//                  */
+
+//                 if ( count($show_files['all_files']) > 0 ){
+
+//                     if ( $filter_days != 0 ) {
+//                         $return_array['topreview_show_files'] = $filtered_shows;
+//                         $return_array['original_filtered_data'] = serialize($filtered_shows);
+                        
+//                         $topreview_show_files = array_slice($filtered_shows,0,$files_limit,true);
+//                         $show_files['all_files'] = array_diff_key($filtered_shows, $topreview_show_files);
+                    
+//                         // $checker = 'not filtered: filtered_shows';
+//                     } else {
+//                         $return_array['topreview_show_files'] = $topreview_show_files;
+//                         $topreview_show_files = array_slice($topreview_show_files,0,$files_limit,true);
+//                         $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
+                        
+//                         // $checker = 'not filtered: topreview_show_files';
+//                     }
+
+//                     $return_array['show_all_files'] = $show_files['all_files'];
+//                     $return_array['hidden_files_count'] = count($show_files['all_files']);
+//                 }
+
+//                 if ( $show_files !== false ) {
+//                     $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+//                     $return_array['files'] = $categorizedFileList;
+//                     $return_array['updated_serialized_data'] = serialize($show_files);
+                    
+//                     $return_value = 1;
+//                 }
+
+//                 /**
+//                  * END Original code
+//                  */
+
+//             }
+                
+//         }
 
 
 if(!function_exists('generate_recent_files')){
