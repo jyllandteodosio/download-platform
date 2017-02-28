@@ -1683,17 +1683,24 @@ if (!function_exists('generate_show_files')) {
             //     $return_array['hidden_files_count'] = count($show_files['all_files']);
             // }
 
-            // if ( $show_files !== false ) {
-            //     $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-            //     $return_array['files'] = $categorizedFileList;
-            //     $return_array['updated_serialized_data'] = serialize($show_files);
+            $return_array['topreview_show_files'] = $show_files['all_files'];
+            $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+            $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
+            
+            $return_array['show_all_files'] = $show_files['all_files'];
+            $return_array['hidden_files_count'] = count($show_files['all_files']);
+
+            if ( $show_files !== false ) {
+                $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+                $return_array['files'] = $categorizedFileList;
+                $return_array['updated_serialized_data'] = serialize($show_files);
                 
-            //     $return_value = 1;
-            // }
+                $return_value = 1;
+            }
         }
         
-        // echo $return_value == 1 ? json_encode($return_array) : false;
-        echo json_encode($return_array);
+        echo $return_value == 1 ? json_encode($return_array) : false;
+        // echo json_encode($return_array);
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
