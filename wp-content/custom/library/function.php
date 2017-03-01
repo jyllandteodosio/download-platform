@@ -1675,14 +1675,13 @@ if (!function_exists('generate_show_files')) {
             $filter_triggered = $_POST['filter_triggered'];
             // $filter_days = $_POST['filter_days'];
             $filter_days_array = $_POST['filter_days_array'];
-            $first_run_checker = $_POST['first_run_checker'];
             $show_files = unserialize( stripslashes($_POST['serialized-data']) );
             
             if ( count($show_files['all_files']) != 0 ) {
                 $file_prefix = $_POST['prefix'];
                 $file_search_filter = $_POST['search_filter'];
 
-                if ( $filter_triggered == 'filter_select' ) {
+                if ( $filter_triggered == 'filter_select' && $file_search_filter != 'all') {
                     $filtered_episodes = array();
 
                     foreach( $show_files['all_files'] as $file_key => $file_name ) {
