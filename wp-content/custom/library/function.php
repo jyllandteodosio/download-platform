@@ -1603,7 +1603,8 @@ if (!function_exists('generate_show_files')) {
             $filter_days_array = $_POST['filter_days_array'];
             $first_run_checker = $_POST['first_run_checker'];
 
-            $show_files = unserialize( stripslashes($_POST['serialized-data']) );
+            $serialized_data = $_POST['serialized-data'];
+            $show_files = unserialize( stripslashes($serialized_data) );
             
             if ( $first_run_checker == true ) {
                 foreach ( $show_files as $sub_arrays => $value) {
@@ -1661,12 +1662,11 @@ if (!function_exists('generate_show_files')) {
                         } else {
                             $return_array[$day] = 0;
                         }
-                    
+                        // $return_array[$day] = serialize($file_list_data); 
                     }
                 }
             } else {
                 // $show_files = unserialize( stripslashes($_POST['serialized-data']) );
-                // $show_files = unserialize( $_POST['serialized-data'] );
 
                 if ( $show_files != 0 ) {
                     $file_prefix = $_POST['prefix'];
