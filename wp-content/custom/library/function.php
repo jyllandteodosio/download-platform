@@ -1638,12 +1638,12 @@ if (!function_exists('populate_global_variable')) {
                                     'permalink'            =>  $show_files['permalink']
                                 );
 
-                    if ( count($filtered_shows) > 0 ) {
-                        $return_array[$tab_name][$day] = serialize($file_list_data); 
-                    } else {
-                        $return_array[$tab_name][$day] = null;
-                    }
-                    // $return_array[$tab_name][$day] = serialize($file_list_data); 
+                    // if ( count($filtered_shows) > 0 ) {
+                    //     $return_array[$tab_name][$day] = serialize($file_list_data); 
+                    // } else {
+                    //     $return_array[$tab_name][$day] = null;
+                    // }
+                    $return_array[$tab_name][$day] = serialize($file_list_data); 
                 
                 } // end if 
 
@@ -1678,7 +1678,7 @@ if (!function_exists('generate_show_files')) {
             $first_run_checker = $_POST['first_run_checker'];
             $show_files = unserialize( stripslashes($_POST['serialized-data']) );
             
-            if ( count($show_files['all_files']) > 0 ) {
+            if ( count($show_files['all_files']) != 0 ) {
                 $file_prefix = $_POST['prefix'];
                 $file_search_filter = $_POST['search_filter'];
 
@@ -1701,15 +1701,16 @@ if (!function_exists('generate_show_files')) {
                 
                 $return_array['show_all_files'] = $show_files['all_files'];
                 $return_array['hidden_files_count'] = count($show_files['all_files']);
-
-                if ( $show_files !== false ) {
-                    $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-                    $return_array['files'] = $categorizedFileList;
-                    $return_array['updated_serialized_data'] = serialize($show_files);
-                    
-                    $return_value = 1;
-                }
             }  
+
+
+            if ( $show_files !== false ) {
+                $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
+                $return_array['files'] = $categorizedFileList;
+                $return_array['updated_serialized_data'] = serialize($show_files);
+                
+                $return_value = 1;
+            }
         }
         
         echo $return_value == 1 ? json_encode($return_array) : false;
