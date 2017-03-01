@@ -351,15 +351,8 @@ class Package {
             $filter_days = $vars['filter_days'];
             $categorized_files_serialized = serialize($categorized_files);
             $vars['categorized_files'] = "<input name='categorized-serialized-data' class='categorized-serialized-data' type='hidden' value='".$categorized_files_serialized."'>";
-            
-            // echo '<pre>';
-            // print_r($tab_attr_array);
-            // echo '</pre>';
 
-            $file_count_array = generate_file_count($categorized_files, $tab_attr_array, $filter_days);
-            // echo '<pre>';
-            // print_r($file_count_array);
-            // echo '</pre>';    
+            $file_count_array = generate_file_count($categorized_files, $tab_attr_array, $filter_days); 
 
             foreach ( $file_count_array as $file_prefix => $file_count) {
                 if ($file_count > 0) {
