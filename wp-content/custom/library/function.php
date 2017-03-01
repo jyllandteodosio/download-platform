@@ -1665,9 +1665,6 @@ if (!function_exists('generate_show_files')) {
 
         if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ) { 
             $files_limit = $_POST['limit'];
-            // $current_channel = $_POST['current_channel'];
-            $filter_triggered = $_POST['filter_triggered'];
-            // $filter_days = $_POST['filter_days'];
             $filter_days_array = $_POST['filter_days_array'];
             $show_files = unserialize( stripslashes($_POST['serialized-data']) );
             
@@ -1675,7 +1672,7 @@ if (!function_exists('generate_show_files')) {
                 $file_prefix = $_POST['prefix'];
                 $file_search_filter = $_POST['search_filter'];
 
-                if ( $filter_triggered == 'filter_select' && $file_search_filter != 'all') {
+                if ( $file_search_filter != 'all' ) {
                     $filtered_episodes = array();
 
                     foreach( $show_files['all_files'] as $file_key => $file_name ) {
