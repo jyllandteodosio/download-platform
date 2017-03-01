@@ -118,8 +118,8 @@
                     <input type='submit'  class="show-filter" value='Select All'>
 
                     <!-- custom days filter -->
-                    <!-- <span class="recent-filter-text show-page">Display latest files in the last: </span> -->
-                    <!-- [days_filter_dropdown] -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
+                    [days_filter_dropdown]
 
                     <select name="episode_code" id="episode_code" class="filter_select">
                         <option value='all'>All Episodes</option>
@@ -190,8 +190,8 @@
                     <input type='submit'  class="show-filter" value='Select All'>
 
                     <!-- custom days filter -->
-                    <!-- <span class="recent-filter-text show-page">Display latest files in the last: </span> -->
-                    <!-- [days_filter_dropdown] -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
+                    [days_filter_dropdown]
 
                     <select name="synopsis_code" id="document_synopsis_code" class="filter_select synopsis_code">
                         <option value='all'>All Episodes</option>
@@ -211,8 +211,8 @@
                     <input type='submit'  class="show-filter" value='Select All'>
 
                     <!-- custom days filter -->
-                    <!-- <span class="recent-filter-text show-page">Display latest files in the last: </span> -->
-                    <!-- [days_filter_dropdown] -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
+                    [days_filter_dropdown]
 
                    <select name="synopsis_code" id="synopsis_code" class="filter_select synopsis_code">
                     <option value='all'>All Episodes</option>

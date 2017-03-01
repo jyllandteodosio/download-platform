@@ -1637,12 +1637,6 @@ if (!function_exists('populate_global_variable')) {
                                     'post_id'              =>  $show_files['post_id'],
                                     'permalink'            =>  $show_files['permalink']
                                 );
-
-                    // if ( count($filtered_shows) > 0 ) {
-                    //     $return_array[$tab_name][$day] = serialize($file_list_data); 
-                    // } else {
-                    //     $return_array[$tab_name][$day] = null;
-                    // }
                     $return_array[$tab_name][$day] = serialize($file_list_data); 
                 
                 } // end if 
