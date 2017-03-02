@@ -1523,39 +1523,9 @@ if (!function_exists('get_all_shows')) {
 
 //* Generate new file count on change of filter value
 if(!function_exists('generate_file_count')) {
-    function generate_file_count($categorized_files, $tab_attr_array, $filter_days = 0, $prefix,$search_filter) {
+    function generate_file_count($categorized_files, $tab_attr_array, $filter_days = 0, $prefix = '', $search_filter = '') {
         
         $file_count_array = array();
-
-        // foreach($tab_attr_array as $tab_attr) {
-        //     //* Count total number of files under each category
-        //     $file_count = count($categorized_files[$tab_attr]);
-
-        //     if($file_count > 0 && $filter_days > 0) {
-        //         //* Reset counter
-        //         $file_count = 0;
-        //         $file_keys_raw = array_keys($categorized_files[$tab_attr]);
-
-        //         //* Declare variables to filter files
-        //         $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
-        //         $end_date = date('Y-m-d');
-
-        //         //* Loop through all files
-        //         foreach($file_keys_raw as $file_key) {
-        //             $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
-
-        //             if ($file_upload_date >= $start_date && $file_upload_date <= $end_date) {
-        //                 $file_count++;
-        //             }
-        //         }
-
-        //         $file_count_array[$tab_attr] = $file_count;
-            
-        //     } else {
-        //         $file_count_array[$tab_attr] = $file_count;
-        //         $file_count = 0;
-        //     }
-        // }
 
         foreach($tab_attr_array as $tab_attr) {
             //* Count total number of files under each category
@@ -1590,6 +1560,8 @@ if(!function_exists('generate_file_count')) {
                             array_push($filtered_shows, $file_name);
                         }
                     }
+
+                    $file_count_array['iwashere2'] = 'hi';
                 }
 
                 $file_count_array[$tab_attr] = count($filtered_shows);
@@ -1618,8 +1590,9 @@ if(!function_exists('generate_new_file_count')) {
 
         $tab_attr_array = array('key','epi','gallery','logo','oth','logo','elements','cm_oth','synopsis','transcript','fact','font','doth','epg','highlights','brand','boiler','catch');
         $filter_days = $_POST['filter_days'];
-        $search_filter = $_POST['search_filter'];
+        
         $prefix = $_POST['prefix'];
+        $search_filter = $_POST['search_filter'];
 
         $file_count = generate_file_count($categorized_files, $tab_attr_array, $filter_days, $prefix, $search_filter);
 
