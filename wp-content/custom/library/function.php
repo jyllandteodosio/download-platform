@@ -1531,28 +1531,33 @@ if(!function_exists('generate_file_count')) {
             //* Count total number of files under each category
             $file_count = count($categorized_files[$tab_attr]);
 
-            if($file_count > 0 && $filter_days > 0) {
+            if( $file_count > 0 ) {
                 //* Reset counter
                 $file_count = 0;
-                $file_keys_raw = $categorized_files[$tab_attr];
 
-                //* Declare variables to filter files
-                $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
-                $end_date = date('Y-m-d');
+                if ( $filter_days > 0 ) {
+                    $file_keys_raw = $categorized_files[$tab_attr];
 
-                $filtered_shows = [];
+                    //* Declare variables to filter files
+                    $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
+                    $end_date = date('Y-m-d');
 
-                //* Loop through all files
-                foreach($file_keys_raw as $file_key => $file_name) {
-                    $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+                    $filtered_shows = [];
 
-                    if ($file_upload_date >= $start_date && $file_upload_date <= $end_date) {
-                        array_push($filtered_shows, $file_name);
+                    //* Loop through all files
+                    foreach($file_keys_raw as $file_key => $file_name) {
+                        $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+
+                        if ($file_upload_date >= $start_date && $file_upload_date <= $end_date) {
+                            array_push($filtered_shows, $file_name);
+                        }
+                        // $file_count_array['iwashere'] = 'hi';
                     }
-                    $file_count_array['iwashere'] = 'hi';
+                } else {
+                    $filtered_shows = $categorized_files[$tab_attr];
                 }
 
-                if($search_filter !=  'all') {
+                if( $search_filter != '' && $search_filter !=  'all' ) {
                     $filtered_shows_copy = $filtered_shows;
                     $filtered_shows = [];
                     foreach($filtered_shows_copy as $file_name) {
@@ -1561,11 +1566,11 @@ if(!function_exists('generate_file_count')) {
                         }
                     }
 
-                    $file_count_array['iwashere2'] = 'hi';
+                    // $file_count_array['iwashere2'] = 'hi';
                 }
 
                 $file_count_array[$tab_attr] = count($filtered_shows);
-            
+
             } else {
                 $file_count_array[$tab_attr] = $file_count;
                 $file_count = 0;
