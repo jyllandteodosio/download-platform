@@ -1,6 +1,6 @@
 <!-- WPDM Template: Custom Template -->
 
-<div class="single-item-wrap" data-channel="[current_channel]" data-filter="[filter_days]">
+<div class="single-item-wrap data-div-handler" data-channel="[current_channel]" data-filter="[filter_days]">
  	<form id='table-key' class="table-files" method='post' >
         [categorized_files]
     </form>
