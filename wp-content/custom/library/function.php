@@ -1746,11 +1746,6 @@ if (!function_exists('generate_show_files')) {
                     foreach( $show_files['all_files'] as $file_key => $file_name ) {
                         $file_name = strtolower($file_name);
 
-                        // if ( ((substr_count($file_name, $file_prefix) > 0) && (substr_count($file_name, $file_search_filter) > 0)) ||
-                        //      (substr_count($file_name, $pattern) > 0 ) ) {
-                        //     $filtered_episodes[$file_key] = $file_name;
-                        // }
-
                         if ( array_key_exists($file_key, $filtered_file_info) ) {
                             $filtered_episodes[$file_key] = $file_name;
                         }
