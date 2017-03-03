@@ -1551,7 +1551,6 @@ if(!function_exists('generate_file_count')) {
                         if ($file_upload_date >= $start_date && $file_upload_date <= $end_date) {
                             array_push($filtered_shows, $file_name);
                         }
-                        // $file_count_array['iwashere'] = 'hi';
                     }
                 } else {
                     $filtered_shows = $categorized_files[$tab_attr];
@@ -1561,12 +1560,14 @@ if(!function_exists('generate_file_count')) {
                     $filtered_shows_copy = $filtered_shows;
                     $filtered_shows = [];
                     foreach($filtered_shows_copy as $file_name) {
-                        if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0)  ) {
+                        // if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0)  ) {
+                        //     array_push($filtered_shows, $file_name);
+                        // }
+
+                        if ( ($tab_attr == $prefix) && (substr_count($file_name, $search_filter) > 0)  ) {
                             array_push($filtered_shows, $file_name);
                         }
                     }
-
-                    // $file_count_array['iwashere2'] = 'hi';
                 }
 
                 $file_count_array[$tab_attr] = count($filtered_shows);
