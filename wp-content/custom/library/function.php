@@ -1744,8 +1744,6 @@ if (!function_exists('generate_show_files')) {
 
                     //* Return data from original all_files array
                     foreach( $show_files['all_files'] as $file_key => $file_name ) {
-                        $file_name = strtolower($file_name);
-
                         if ( array_key_exists($file_key, $filtered_file_info) ) {
                             $filtered_episodes[$file_key] = $file_name;
                         }
