@@ -1678,7 +1678,7 @@ if (!function_exists('populate_global_variable')) {
 
 if (!function_exists('generate_show_files')) {
     /**
-     * Ajax function for adding specific files to cart and lazy load (show files)
+     * Ajax function for adding specific files to cart and lazy loading (show page)
      */
     function generate_show_files(){
         $security_nonce = $_POST['security_nonce'];
@@ -1692,14 +1692,37 @@ if (!function_exists('generate_show_files')) {
             $show_files = unserialize( stripslashes($_POST['serialized-data']) );
             
             if ( count($show_files['all_files']) != 0 ) {
-                $file_prefix = $_POST['prefix'];
-                $file_search_filter = $_POST['search_filter'];
+                $file_prefix = strtolower($_POST['prefix']);
+                $file_search_filter = strtolower($_POST['search_filter']);
 
                 if ( $file_search_filter != 'all' ) {
                     $filtered_episodes = array();
+                    $filtered_file_info = array();
 
+                    /**
+                     * Get file keys of files with corresponding prefix and search filter
+                     * NOTE: File name is based on the editable title; NOT the original file name
+                     */
+                    foreach( $show_files['file_info'] as $file_key => $file_array ) {
+                        foreach( $file_array as $file_info => $file_name ) {
+                            $file_name = strtolower($file_name);
+                    
+                            if ( (substr_count($file_name, $file_prefix) > 0) && (substr_count($file_name, $file_search_filter) > 0) ) {
+                                $filtered_file_info[$file_key] = $file_name;
+                            }
+                        }
+                    }
+
+                    //* Return data from original all_files array
                     foreach( $show_files['all_files'] as $file_key => $file_name ) {
-                        if ( (substr_count($file_name, $file_prefix) > 0) && (substr_count($file_name, $file_search_filter) > 0)  ) {
+                        $file_name = strtolower($file_name);
+
+                        // if ( ((substr_count($file_name, $file_prefix) > 0) && (substr_count($file_name, $file_search_filter) > 0)) ||
+                        //      (substr_count($file_name, $pattern) > 0 ) ) {
+                        //     $filtered_episodes[$file_key] = $file_name;
+                        // }
+
+                        if ( array_key_exists($file_key, $filtered_file_info) ) {
                             $filtered_episodes[$file_key] = $file_name;
                         }
                     } 
