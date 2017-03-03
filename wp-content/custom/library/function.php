@@ -1732,12 +1732,12 @@ if (!function_exists('generate_show_files')) {
                      * Get file keys of files with corresponding prefix and search filter
                      * NOTE: File name is based on the editable title; NOT the original file name
                      */
-                    foreach( $show_files['file_info'] as $file_key => $file_array ) {
-                        foreach( $file_array as $file_info => $file_name ) {
-                            $file_name = strtolower($file_name);
+                    foreach( $show_files['file_info'] as $file_info_key => $file_array ) {
+                        foreach( $file_array as $file_info => $file_info_name ) {
+                            $file_info_name = strtolower($file_info_name);
                     
-                            if ( (substr_count($file_name, $file_prefix) > 0) && (substr_count($file_name, $file_search_filter) > 0) ) {
-                                $filtered_file_info[$file_key] = $file_name;
+                            if ( (substr_count($file_info_name, $file_prefix) > 0) && (substr_count($file_info_name, $file_search_filter) > 0) ) {
+                                $filtered_file_info[$file_info_key] = $file_info_name;
                             }
                         }
                     }
