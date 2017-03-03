@@ -1523,7 +1523,7 @@ if (!function_exists('get_all_shows')) {
 
 //* Generate new file count on change of filter value
 if(!function_exists('generate_file_count')) {
-    function generate_file_count($categorized_files, $tab_attr_array, $filter_days = 0, $prefix = '', $search_filter = '') {
+    function generate_file_count($categorized_files, $tab_attr_array, $filter_days = 0, $prefix = '', $filter_epi = '', $filter_syn = '') {
         
         $file_count_array = array();
 
@@ -1556,19 +1556,44 @@ if(!function_exists('generate_file_count')) {
                     $filtered_shows = $categorized_files[$tab_attr];
                 }
 
-                if( ($search_filter != '' && $search_filter !=  'all') && ( $tab_attr == 'epi' || $tab_attr == 'synopsis' ) ) {
+
+                // if( ($search_filter != '' && $search_filter !=  'all') && ( $tab_attr == 'epi' || $tab_attr == 'synopsis' ) ) {
+                //     $filtered_shows_copy = $filtered_shows;
+
+                //     if( $tab_attr == $prefix ) {
+                //         $filtered_shows = [];
+                //         foreach($filtered_shows_copy as $file_name) {
+                //             // if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0)  ) {
+                //             //     array_push($filtered_shows, $file_name);
+                //             // }
+
+                //             if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0) ) {
+                //                 array_push($filtered_shows, $file_name);
+                //             }
+                //         }
+                //     }
+                // }
+
+                if ( ($filter_epi != '' && $filter_epi != 'all') && $tab_attr == 'epi' ) {
                     $filtered_shows_copy = $filtered_shows;
                     $filtered_shows = [];
-                    foreach($filtered_shows_copy as $file_name) {
-                        // if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0)  ) {
-                        //     array_push($filtered_shows, $file_name);
-                        // }
 
-                        if ( ($tab_attr == $prefix) && (substr_count($file_name, $search_filter) > 0)  ) {
+                    foreach($filtered_shows_copy as $file_name) {
+                        if ( (substr_count($file_name, $filter_epi) > 0) ) {
+                            array_push($filtered_shows, $file_name);
+                        }
+                    }
+                } else if ( ($filter_syn != '' && $filter_syn != 'all') && $tab_attr == 'synopsis' ) {
+                    $filtered_shows_copy = $filtered_shows;
+                    $filtered_shows = [];
+
+                    foreach($filtered_shows_copy as $file_name) {
+                        if ( (substr_count($file_name, $filter_syn) > 0) ) {
                             array_push($filtered_shows, $file_name);
                         }
                     }
                 }
+
 
                 $file_count_array[$tab_attr] = count($filtered_shows);
 
@@ -1598,9 +1623,11 @@ if(!function_exists('generate_new_file_count')) {
         $filter_days = $_POST['filter_days'];
         
         $prefix = $_POST['prefix'];
-        $search_filter = $_POST['search_filter'];
+        // $search_filter = $_POST['search_filter'];
+        $filter_epi = $_POST['filter_epi'];
+        $filter_syn = $_POST['filter_syn'];
 
-        $file_count = generate_file_count($categorized_files, $tab_attr_array, $filter_days, $prefix, $search_filter);
+        $file_count = generate_file_count($categorized_files, $tab_attr_array, $filter_days, $prefix, $filter_epi, $filter_syn);
 
         echo json_encode($file_count);
         // echo json_encode($categorized_files);
