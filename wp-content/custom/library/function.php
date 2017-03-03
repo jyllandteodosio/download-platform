@@ -1682,15 +1682,16 @@ if (!function_exists('generate_show_files')) {
      * Ajax function for adding specific files to cart and lazy loading (show page)
      */
     function generate_show_files(){
+        $show_files = unserialize( stripslashes($_POST['serialized-data']) );
         $security_nonce = $_POST['security_nonce'];
+
         $return_value = 0;
         $return_array = array();
         $return_array['hidden_files_count'] = 0;
 
-        if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ) { 
+        if ( !empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ) { 
             $files_limit = $_POST['limit'];
             $filter_days_array = $_POST['filter_days_array'];
-            $show_files = unserialize( stripslashes($_POST['serialized-data']) );
             
             if ( count($show_files['all_files']) != 0 ) {
                 $file_prefix = strtolower($_POST['prefix']);
