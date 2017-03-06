@@ -467,7 +467,7 @@ class FileList
         $serialized_cart = serialize($cart_data);
 
         // Convert UNIX Timestamp to human readable date
-        $file_upload_date = $prefix != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : $pd;
+        $file_upload_date = $prefix != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : '01/27/17';
 
         // FILE PANEL CONTAINER 
         $fhtml .= "     <div class='item {$fileID} {$isFileRemovable}'>";
