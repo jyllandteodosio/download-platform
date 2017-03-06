@@ -424,16 +424,6 @@ class FileList
         $isFileRemovable = !checkFileInCart($fileID) ? "" : "added-to-cart";
         $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 48, "...");
         
-        /* Check if EPG file - will assign a special thumbnail if ever */
-        // if( contains($sfile,self::$prefix_list['channel_epg']) ){
-        //     $thumb_path = getEPGThumbnail($fileTitle, $postID, 'epg');
-
-        // }else if( contains($sfile,self::$prefix_list['channel_catchup']) ){
-        //     $thumb_path = getEPGThumbnail($fileTitle, $postID, 'catchup');
-        // }else {
-        //     $thumb_path = WPDM_CACHE_DIR.basename($thumb);
-        // }
-
         /* Check if EPG file will assign a special thumbnail if ever - Tassha Nakagawa */
         if ( contains($fileTitle,self::$prefix_list['channel_epg']) ) {
             $thumb_path = getEPGThumbnail($fileTitle, $postID, 'epg');
@@ -477,7 +467,7 @@ class FileList
         $serialized_cart = serialize($cart_data);
 
         // Convert UNIX Timestamp to human readable date
-        $file_upload_date = date('n/j/y', substr($fileID, 0, -3));
+        $file_upload_date = $prefix != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : $pd;
 
         // FILE PANEL CONTAINER 
         $fhtml .= "     <div class='item {$fileID} {$isFileRemovable}'>";
