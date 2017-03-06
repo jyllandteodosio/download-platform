@@ -1345,30 +1345,110 @@ if (!function_exists('getRecentFileUploads')){
      * @param  string $channel Either entertainment or extreme
      * @return Object          Returns recently modified shows within a month.
      */
-    function getRecentFileUploads($channel = 'entertainment'){
+    function getRecentFileUploads($channel = 'entertainment', $days){
 
+        global $wpdb;
+        global $file_count_array_home;
+        $results = $wpdb->get_results("SELECT * FROM rtl21016_postmeta WHERE meta_key = '__wpdm_fileinfo' ");
+
+        $file_count_array_home = array();
+        $filtered_shows_raw = array();
+
+        $start_date = date('Y-m-d', strtotime("- " . $days . " days"));
+        $end_date = date('Y-m-d'); 
+
+        //* Loop through shows
+        foreach ($results as $key => $value) {
+            $file_info = unserialize($value->meta_value);
+            krsort($file_info);
+
+            $file_array = array_keys($file_info);
+            $post_id = $value->post_id;
+            $file_count = 0;
+
+            //* Loop through all files
+            foreach ( $file_array as $file_key ) {
+                // Convert UNIX Timestamp to human readable date
+                $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+
+                if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                    if ( !array_key_exists($post_id, $filtered_shows_raw) ) {
+                        $filtered_shows_raw[$post_id] = $file_upload_date;
+                    }
+                    $file_count++; 
+                }
+            }
+
+            if ($file_count > 0) {
+                $file_count_array_home[$post_id] = $file_count;
+            }
+        }
+
+        //* Sort shows according to recently uploaded files
+        arsort($filtered_shows_raw);
+        $filtered_shows = array_keys($filtered_shows_raw);
+        
+        //* Wordpress query   
         $args = array(
-                    'orderby'=> 'modified',
-                    'order' => 'DESC',
-                    'post_type' => 'wpdmpro',
-                    // 'posts_per_page' => -1, 
+                    'post__in'  => $filtered_shows,
+                    'orderby'   => 'post__in',
+                    'order'     => 'DESC',
                     'tax_query' => array(
                         array(
                            'taxonomy' => 'wpdmcategory',
                            'field'    => 'slug',
                            'terms'    => 'shows-'.$channel,
                         ),
-                      ),
-                    'date_query' => array(
-                      array(
-                        'column' => 'post_modified',
-                        'after'  => '1 month ago',
-                      ))
-                  );
+                    )
+                );
         $query_shows = new WP_Query( $args );
         return $query_shows;
     }
 }
+
+// AJAX Function for Recent File Uploads
+function displayRecentFileUploads() {
+    global $file_count_array_home;
+
+    class ShowItem {
+        public $thumbnail = "";
+        public $title = "";
+        public $permalink = "";
+        public $filecount = "";
+        public $publish_date = "";
+        public $expire_date = "";
+    }
+
+    $query_shows = getRecentFileUploads($_POST['channel'], $_POST['days']);
+    $filteredShows = [];
+    
+    if($query_shows->have_posts()){
+        while($query_shows->have_posts()) { $query_shows->the_post();
+            $result = new ShowItem();
+            
+            $thumb_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];
+            $result->thumbnail = wpdm_dynamic_thumb($thumb_url, array(270, 296));
+            $result->title = get_the_title();
+            $result->permalink = get_the_permalink();
+            $result->filecount = $file_count_array_home[get_the_ID()];
+
+            $result->publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+            $result->expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+
+            $result->filter = $_POST['days'];
+
+            array_push($filteredShows, $result);
+        }
+    }
+
+    echo json_encode($filteredShows);
+    // echo json_encode($file_count_array_home['175']);
+    die();
+}
+add_action('wp_ajax_displayRecentFileUploads', 'displayRecentFileUploads');
+add_action('wp_ajax_nopriv_displayRecentFileUploads', 'displayRecentFileUploads');
+
+
 
 if (!function_exists('custom_get_shows()')) {
     /**
@@ -1418,7 +1498,7 @@ if (!function_exists('get_all_shows')) {
 
         $params = array(
             'post_type' => 'wpdmpro',
-             'orderby'     => 'modified',
+            'orderby'     => 'modified',
             'order'       => 'DESC',
             'status' => 'publish',
             'tax_query' => array(array(
@@ -1436,57 +1516,254 @@ if (!function_exists('get_all_shows')) {
         );
         
         $query = get_posts( $params );
-        // $shows = array();
-        // while($query->have_posts()) {$query->the_post();
-        //     $shows[get_the_ID()] = get_the_title();
-        // }
         return $query;
     }
 }
 
-if(!function_exists('generate_show_files')){
+
+//* Generate new file count on change of filter value
+if(!function_exists('generate_file_count')) {
+    function generate_file_count($categorized_files, $tab_attr_array, $filter_days = 0, $prefix = '', $filter_epi = '', $filter_syn = '') {
+        
+        $file_count_array = array();
+
+        foreach($tab_attr_array as $tab_attr) {
+            //* Count total number of files under each category
+            $file_count = count($categorized_files[$tab_attr]);
+
+            if( $file_count > 0 ) {
+                //* Reset counter
+                $file_count = 0;
+
+                if ( $filter_days > 0 ) {
+                    $file_keys_raw = $categorized_files[$tab_attr];
+
+                    //* Declare variables to filter files
+                    $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
+                    $end_date = date('Y-m-d');
+
+                    $filtered_shows = [];
+
+                    //* Loop through all files
+                    foreach($file_keys_raw as $file_key => $file_name) {
+                        $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+
+                        if ($file_upload_date >= $start_date && $file_upload_date <= $end_date) {
+                            array_push($filtered_shows, $file_name);
+                        }
+                    }
+                } else {
+                    $filtered_shows = $categorized_files[$tab_attr];
+                }
+
+
+                // if( ($search_filter != '' && $search_filter !=  'all') && ( $tab_attr == 'epi' || $tab_attr == 'synopsis' ) ) {
+                //     $filtered_shows_copy = $filtered_shows;
+
+                //     if( $tab_attr == $prefix ) {
+                //         $filtered_shows = [];
+                //         foreach($filtered_shows_copy as $file_name) {
+                //             // if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0)  ) {
+                //             //     array_push($filtered_shows, $file_name);
+                //             // }
+
+                //             if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0) ) {
+                //                 array_push($filtered_shows, $file_name);
+                //             }
+                //         }
+                //     }
+                // }
+
+                if ( ($filter_epi != '' && $filter_epi != 'all') && $tab_attr == 'epi' ) {
+                    $filtered_shows_copy = $filtered_shows;
+                    $filtered_shows = [];
+
+                    foreach($filtered_shows_copy as $file_name) {
+                        if ( (substr_count($file_name, $filter_epi) > 0) ) {
+                            array_push($filtered_shows, $file_name);
+                        }
+                    }
+                } else if ( ($filter_syn != '' && $filter_syn != 'all') && $tab_attr == 'synopsis' ) {
+                    $filtered_shows_copy = $filtered_shows;
+                    $filtered_shows = [];
+
+                    foreach($filtered_shows_copy as $file_name) {
+                        if ( (substr_count($file_name, $filter_syn) > 0) ) {
+                            array_push($filtered_shows, $file_name);
+                        }
+                    }
+                }
+
+
+                $file_count_array[$tab_attr] = count($filtered_shows);
+
+            } else {
+                $file_count_array[$tab_attr] = $file_count;
+                $file_count = 0;
+            }
+        }
+
+        // return $categorized_files;
+        return $file_count_array;
+    }
+}
+
+if(!function_exists('generate_new_file_count')) {
     /**
-     * Ajax function for adding specific files to cart
+     * Ajax function for generating a new file count
+     */
+    function generate_new_file_count() {
+        //* Prepare data
+        $unserialized_categorized_data = $_POST['categorized-serialized-data'];
+        $unserialized_form = unserializeForm($unserialized_categorized_data);
+        $serialized_data = $unserialized_form['categorized-serialized-data'];
+        $categorized_files = unserialize($serialized_data);
+
+        $tab_attr_array = array('key','epi','gallery','logo','oth','logo','elements','cm_oth','synopsis','transcript','fact','font','doth','epg','highlights','brand','boiler','catch');
+        $filter_days = $_POST['filter_days'];
+        
+        $prefix = $_POST['prefix'];
+        // $search_filter = $_POST['search_filter'];
+        $filter_epi = $_POST['filter_epi'];
+        $filter_syn = $_POST['filter_syn'];
+
+        $file_count = generate_file_count($categorized_files, $tab_attr_array, $filter_days, $prefix, $filter_epi, $filter_syn);
+
+        echo json_encode($file_count);
+        // echo json_encode($categorized_files);
+        die();
+    }
+    add_action('wp_ajax_generate_new_file_count', 'generate_new_file_count');
+}
+
+if (!function_exists('populate_global_variable')) {
+    function populate_global_variable() {
+        $return_array = array();
+        $filter_days_array = $_POST['filter_days_array'];
+        $serialized_array = $_POST['serialized_array'];
+
+        foreach ( $serialized_array as $tab_name => $original_data ) {
+            $show_files = unserialize( stripslashes($original_data) );
+            
+            foreach( $filter_days_array as $day ) {
+                if ( $day > 0 ) {
+                    $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
+                    $end_date = date('Y-m-d'); 
+
+                    $filtered_shows = array();
+                    //* Loop all files in the array and push them to filtered_shows
+                    foreach ( $show_files['all_files'] as $file_key => $file_name ) {
+                        //* Convert UNIX Timestamp to human reSadable date
+                        $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+
+                        if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                            //* Array format: ["File ID" : "File Name"]
+                            $filtered_shows[$file_key] = $file_name;
+                        }
+
+                    }
+
+                    $file_object = array();
+                    foreach( $show_files['file_object']['files'] as $object_key => $object_value ) {
+                        if ( array_key_exists($object_key, $filtered_shows) ) {
+                            $file_object['files'][$object_key] = $object_value;
+                        } 
+                    }
+
+                    $file_info = array();
+                    foreach( $show_files['file_info'] as $file_info_key => $file_array ) {
+                        if ( array_key_exists($file_info_key, $filtered_shows) ) {
+                            $file_info[$file_info_key] = $file_array;
+                        }
+                    }
+
+                    $file_list_data = array (
+                                    'all_files'            =>  $filtered_shows,
+                                    'prefix'               =>  $show_files['prefix'],
+                                    'category'             =>  $show_files['category'],
+                                    'file_object'          =>  $file_object,
+                                    'specific_thumbnails'  =>  $show_files['specific_thumbnails'],
+                                    'file_type'            =>  $show_files['file_type'],
+                                    'file_info'            =>  $file_info,
+                                    'post_id'              =>  $show_files['post_id'],
+                                    'permalink'            =>  $show_files['permalink']
+                                );
+                    $return_array[$tab_name][$day] = serialize($file_list_data); 
+                
+                } // end if 
+
+            } // end filter days array foreach
+             
+        } // end serialized array foreach
+
+        
+        echo json_encode($return_array);
+        die();
+    }
+    add_action('wp_ajax_populate_global_variable', 'populate_global_variable');
+}
+
+
+if (!function_exists('generate_show_files')) {
+    /**
+     * Ajax function for adding specific files to cart and lazy loading (show page)
      */
     function generate_show_files(){
+        $show_files = unserialize( stripslashes($_POST['serialized-data']) );
         $security_nonce = $_POST['security_nonce'];
+
         $return_value = 0;
         $return_array = array();
         $return_array['hidden_files_count'] = 0;
-        if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ){ 
-            $serialized_data = $_POST['serialized-data'];
+
+        if ( !empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ) { 
             $files_limit = $_POST['limit'];
-
-            $files_filtered = $_POST['filtered'];
-            $files_prefix = $_POST['prefix'];
-            $files_search_filter = $_POST['search_filter'];
-
-            $unserialized_form = unserializeForm($serialized_data);
-
-            $serialized_show_files = $unserialized_form['serialized-data'];
-            $show_files = unserialize($serialized_show_files);
-            $topreview_show_files = $show_files['all_files'];
-
-            // $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
-            if ( count($show_files['all_files']) > 0 ){
-
-                if( $files_filtered == 'true' ){
-                    $pattern = "/".$files_prefix.".*".$files_search_filter."/";
-                    $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
-                }else{
-                    $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
-                }
-                $return_array['topreview_show_files'] = $topreview_show_files;
+            $filter_days_array = $_POST['filter_days_array'];
             
-                $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
-                $return_array['show_all_files'] = $show_files['all_files'];
+            if ( count($show_files['all_files']) != 0 ) {
+                $file_prefix = strtolower($_POST['prefix']);
+                $file_search_filter = strtolower($_POST['search_filter']);
+
+                if ( $file_search_filter != 'all' ) {
+                    $filtered_episodes = array();
+                    $filtered_file_info = array();
+
+                    /**
+                     * Get file keys of files with corresponding prefix and search filter
+                     * NOTE: File name is based on the editable title; NOT the original file name
+                     */
+                    foreach( $show_files['file_info'] as $file_info_key => $file_array ) {
+                        foreach( $file_array as $file_info => $file_info_name ) {
+                            $file_info_name = strtolower($file_info_name);
+                    
+                            if ( (substr_count($file_info_name, $file_prefix) > 0) && (substr_count($file_info_name, $file_search_filter) > 0) ) {
+                                $filtered_file_info[$file_info_key] = $file_info_name;
+                            }
+                        }
+                    }
+
+                    //* Return data from original all_files array
+                    foreach( $show_files['all_files'] as $file_key => $file_name ) {
+                        if ( array_key_exists($file_key, $filtered_file_info) ) {
+                            $filtered_episodes[$file_key] = $file_name;
+                        }
+                    } 
+
+                    $show_files['all_files'] = array(); 
+                    $show_files['all_files'] = $filtered_episodes;
+                }
+
+                $return_array['topreview_show_files'] = $show_files['all_files'];
+                $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+                $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
                 
+                $return_array['show_all_files'] = $show_files['all_files'];
                 $return_array['hidden_files_count'] = count($show_files['all_files']);
-            }
+            }  
 
-            if ( $show_files !== false ){
+
+            if ( $show_files !== false ) {
                 $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-
                 $return_array['files'] = $categorizedFileList;
                 $return_array['updated_serialized_data'] = serialize($show_files);
                 
@@ -1495,10 +1772,12 @@ if(!function_exists('generate_show_files')){
         }
         
         echo $return_value == 1 ? json_encode($return_array) : false;
+        // echo json_encode($show_files['all_files']);
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
 }
+
 
 if(!function_exists('generate_recent_files')){
     /**
@@ -1506,73 +1785,18 @@ if(!function_exists('generate_recent_files')){
      */
     function generate_recent_files(){
         $security_nonce = $_POST['security_nonce'];
-        // if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ){ 
-
             echo "recent_files";
             $serialized_data = $_POST['serialized-data'];
             $files_limit = $_POST['limit'];
-
-            // $files_filtered = $_POST['filtered'];
-            // $files_prefix = $_POST['prefix'];
             $files_search_filter = $_POST['search_filter'];
 
             $unserialized_form =  unserializeForm($serialized_data);
-
 
             $serialized_show_files = $unserialized_form['serialized-data'];
             $show_files = unserialize($serialized_show_files);
             $topreview_show_files = $show_files['all_files'];
 
-            // $start_date = strtotime( $files_search_filter );
-            // $end_date = time();
-
-            // foreach ($topreview_show_files as $file_info_key => $file_info_value) {
-            //     // $file_name = $files[$file_info_key];
-            //     $file_info_key_orig = $file_info_key;
-            //     $file_info_key = substr($file_info_key, 0, -3);
-            //     $file_info_key = (int)$file_info_key;
-
-            //     if($file_info_key >= $start_date && $file_info_key <= $end_date) {
-            //         // if(checkIfImageFile($file_name, 'image')) {
-            //             $img_array[ $show_object->ID ][ $file_info_key_orig ] = $file_name;   
-            //         // } else {
-            //         //     $doc_array[ $show_object->ID ][] = $file_name;
-            //         // }
-            //     }       
-            // }
-
-            // $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
-            // if ( count($show_files['all_files']) > 0 ){
-
-            //     if( $files_filtered == 'true' ){
-            //         $pattern = "/".$files_prefix.".*".$files_search_filter."/";
-            //         $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
-            //     }else{
-            //         $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
-            //     }
-            //     $return_array['topreview_show_files'] = $topreview_show_files;
-            
-            //     $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
-            //     $return_array['show_all_files'] = $show_files['all_files'];
-                
-            //     $return_array['hidden_files_count'] = count($show_files['all_files']);
-            // }
-
-            // if ( $show_files !== false ){
-            //     $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-
-            //     $return_array['files'] = $categorizedFileList;
-            //     $return_array['updated_serialized_data'] = serialize($show_files);
-                
-            //     $return_value = 1;
-            // }
-        // }
-        // echo "tester";
-        // print_r($serialized_data);
         print_r( $unserialized_form );
-        // print_r($topreview_show_files );
-        // echo json_encode($topreview_show_files );
-        // echo $return_value == 1 ? json_encode($return_array) : false;
         die();
     }
     add_action('wp_ajax_generate_recent_files', 'generate_recent_files');
@@ -1593,19 +1817,7 @@ if(!function_exists('unserialize_php_array')){
             $show_files = unserialize($serialized_show_files);
 
             $return_value = 1;
-            // echo "it enters!";
         }
-        // echo $return_array;
-        // echo '$_POST["serialized-data"] : ';
-        // print_r( $_POST["serialized-data"] );
-        
-
-        // echo '$_POST["serialized-data"] : ';
-        // print_r( $show_files );
-        // print_r($show_files['all_files']);
-        // print_r($topreview_show_files);
-
-        // print_r($topreview_show_files);
         echo $return_value == 1 ? json_encode($show_files) : false;
         die();
     }
@@ -1631,7 +1843,6 @@ if (!function_exists('getFeaturedShows')) {
                     'post_type' => 'wpdmpro',
                     'meta_key' => 'banner_order', 
                     'orderby' => 'meta_value',
-                    //'orderby'   => 'title',
                     'order'     => 'ASC',
                     'paged' => $paged,
                     'tax_query' => array(
@@ -1649,9 +1860,10 @@ if (!function_exists('getFeaturedShows')) {
                         )
                       )
                   );
-        if ($posts_per_page != null && $posts_per_page > 0){
+        if ( $posts_per_page != null && $posts_per_page > 0 ) {
             $args ['posts_per_page'] = $posts_per_page;
         }
+
         $query_shows = new WP_Query( $args );
         return $query_shows;
     }
@@ -1690,11 +1902,12 @@ if (!function_exists('getAllShows')) {
         if($have_vimeo){
             $args['meta_query'] = $vimeo_meta_query;
         }
+
         if ($count != null && is_numeric($count)){
             $args['posts_per_page'] = $count;
         }
+
         $query_shows = new WP_Query( $args );
-        // echo "query:".$query_shows->request;
         return $query_shows;
     }
 }

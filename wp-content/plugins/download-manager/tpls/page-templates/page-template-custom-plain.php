@@ -1,5 +1,5 @@
 <!-- WPDM Template: Plain Custom Template -->
- <div class="innerpage-heading-bar">
+ <div class="innerpage-heading-bar data-div-handler" data-channel="[current_channel]">
          <h1 class="page-title">[title]</h1>
       </div><!--innerpage-heading-bar-->
       <div class="clear"></div>   

@@ -374,7 +374,7 @@ class FileList
      * @return string
      * @usage Generate file list with preview - key art images
      */
-    public static function CategorizedFileList($allfiles_sorted = array(), $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null, $post_id = null, $permalink = ""){
+    public static function CategorizedFileList($allfiles_sorted = array(), $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null, $post_id =null, $permalink = ""){
         $fhtml = '';
         if (is_array($allfiles_sorted)) {
             foreach ($allfiles_sorted as $fileID => $sfileOriginal) {

@@ -62,8 +62,12 @@ class Package {
 
         $vars = array_merge($vars, $data);
 
+        $vars['current_channel'] = $_SESSION['channel'];
+        $_GET['filter'] != null ? $vars['filter_days'] = $_GET['filter'] : $vars['filter_days'] = 0;
+        $vars['days_filter_dropdown'] = self::GenerateDaysFilter();
+
         $vars['files'] = get_post_meta($vars['ID'], '__wpdm_files', true);
-        $vars['file_count'] = count($vars['files']);
+        // $vars['file_count'] = count($vars['files']);
         if(strpos("_".$template,'[file_list]') || strpos("_".$template,'[play_list]') || strpos("_".$template,'[audio_player]')) {
             $vars['file_list'] = \WPDM\libs\FileList::Table($vars);
             $vars['play_list'] = $vars['file_list'];
@@ -91,8 +95,6 @@ class Package {
         // End of custom shortcodes from acf
         
         // @todo:: minify code
-        if(function_exists('set_last_visited_show')) set_last_visited_show();
-        // $file['ID'] = $this->ID;
         $file['files'] = maybe_unserialize($vars['files']);
         $fhtml = '';
         $files_counter = 0;
@@ -195,7 +197,7 @@ class Package {
                                     } 
                                 }   
                             }
-                        } else{
+                        } else {
                             foreach (self::$file_attr_list['document'] as $file_type => $file_category) {
                                 foreach ($file_category as $file_category_key => $tab) {
                                     $prefix = $tab['prefix'];
@@ -254,10 +256,10 @@ class Package {
                                                 }
                                             }
 
-                                        }else if ( contains($fileTitle, $current_operator_group) ){
+                                        } else if ( contains($fileTitle, $current_operator_group) ){
                                             $categorized_files[self::$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $sfileOriginal;
 
-                                        }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                        } else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
                                             $affiliate_files['channel_epg'][$fileID] = $sfileOriginal;
                                         }
                                     }
@@ -308,19 +310,17 @@ class Package {
                 } 
             } /* END of is_array( allfiles_sorted ) */
 
+
+            $tab_attr_array = array();
             foreach (self::$file_attr_list as $file_type => $file_category) {
                 foreach ($file_category as $file_category_key => $tab) {
                     foreach ($tab as $key => $tab_attr) {
-                        // Count total number of files under each category
-                        $file_flag = count($categorized_files[$tab_attr['prefix']]);
-                        if($file_flag > 0) {
-                            $vars['file_count_' . $tab_attr['prefix']] = '<span class="file-count">' . $file_flag . '</span>';
-                        } else {
-                            $vars['file_count_' . $tab_attr['prefix']] = "";
-                        }
-
-                        if( array_key_exists($tab_attr['prefix'], $categorized_files)){
-                            if(strpos("_".$template,'['.$tab_attr['template_shortcode'].']')){
+                        
+                        //* Push all file prefixes in an array
+                        array_push($tab_attr_array, $tab_attr['prefix']);
+                            
+                        if ( array_key_exists($tab_attr['prefix'], $categorized_files)) {
+                            if (strpos("_".$template,'['.$tab_attr['template_shortcode'].']')) {
                                 $file_list_data_prep = array (
                                         'all_files' => $categorized_files[$tab_attr['prefix']],
                                         'prefix' => $tab_attr['prefix'],
@@ -340,19 +340,36 @@ class Package {
                                 /* Commented out to use lazy loading feature */
                                 // $vars[$tab_attr['template_shortcode']] = \WPDM\libs\FileList::CategorizedFileList($categorized_files[$tab_attr['prefix']] ,$tab_attr['prefix'] ,$file_category_key ,$file ,$specific_thumbnails ,$file_type ,$fileinfo);
                             }
-                        }else{
+                        } else {
                             $vars[$tab_attr['template_shortcode']] = "<p class='files-status-message' style='color:black'>No files available for download.</p>";
                         }
                     }
                 }
             }
 
-        }else{
+            //* Call file counter function and generate initial filecount and shortcode
+            $filter_days = $vars['filter_days'];
+            $categorized_files_serialized = serialize($categorized_files);
+            $vars['categorized_files'] = "<input name='categorized-serialized-data' class='categorized-serialized-data' type='hidden' value='".$categorized_files_serialized."'>";
+
+            $file_count_array = generate_file_count($categorized_files, $tab_attr_array, $filter_days); 
+
+            foreach ( $file_count_array as $file_prefix => $file_count) {
+                if ($file_count > 0) {
+                    $vars['file_count_' . $file_prefix] = '<span class="file-count '.$file_prefix.'">' . $file_count . '</span>';            
+                } else {
+                    $vars['file_count_' . $file_prefix] = "";    
+                }
+            }
+            
+
+        } else {
             $vars[self::$file_attr_list['image']['show']['key_art']['template_shortcode']] = "<p style='color:black'>This package is not available for download</p>";
         }
         
         // Shows - Custom Script
         if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = '';//\WPDM\libs\FileList::getScriptFile();
+
         // End of custom 
     endif;
 
@@ -516,6 +533,31 @@ class Package {
         return $this;
     }
 
+    /** 
+     * @usage Generate dropdown based on selected filter
+     * @param null
+     * @return string
+     * Tassha Nakagawa
+     */
+    public static function GenerateDaysFilter() {
+        $_GET['filter'] != null ? $selected_days = $_GET['filter'] : 0;
+        $days_array = array(5,10,15,20,30);
+
+        $dropdown_filter = '<select class="recent-uploads-filter show-page-filter"><option value="0">All Files</option>';
+            
+        foreach ( $days_array as $cnt ) {
+            if ( $selected_days == $cnt ) {
+                $dropdown_filter .= '<option value='.$cnt.' selected>'.$cnt.' Days</option>';  
+            } else {
+                $dropdown_filter .= '<option value='.$cnt.'>'.$cnt.' Days</option>';
+            }
+        }
+
+        $dropdown_filter .= '</select>';
+
+        return $dropdown_filter;
+    }
+
     /**
      * @usage Get all or any specific package info
      * @param $ID
@@ -662,12 +704,9 @@ class Package {
      * @param $id
      * @return int
      */
-    public static function fileCount($ID){
-
+    public static function fileCount($ID) {
         $count = count(self::getFiles($ID));
-
         return $count;
-
     }
 
     /**
