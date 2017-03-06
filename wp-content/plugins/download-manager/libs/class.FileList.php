@@ -395,7 +395,7 @@ class FileList
                 $file['ID'] = null;
                 $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                 $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
-                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink);  
+                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink, $prefix);  
             }
         }
         return $fhtml;
@@ -407,7 +407,7 @@ class FileList
      * @return html
      * @usage returns html format of displayed file panel
      */
-    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null, $post_id = null, $permalink = "") {
+    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null, $post_id = null, $permalink = "", $prefix = null) {
         $fhtml = "";
         $postID = $post_id;
         // $postID = get_the_id();
@@ -477,7 +477,9 @@ class FileList
         $serialized_cart = serialize($cart_data);
 
         // Convert UNIX Timestamp to human readable date
-        $file_upload_date = date('n/j/y', substr($fileID, 0, -3));
+        // $file_upload_date = date('n/j/y', substr($fileID, 0, -3));
+        // $file_upload_date = $sfileOriginal['upload_date'];
+        $file_upload_date = $prefix != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : $sfileOriginal['upload_date'];
 
         // FILE PANEL CONTAINER 
         $fhtml .= "     <div class='item {$fileID} {$isFileRemovable}'>";
