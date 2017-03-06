@@ -395,7 +395,10 @@ class FileList
                 $file['ID'] = null;
                 $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                 $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
-                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink, $prefix);  
+                
+                $file_upload_date = $fileType != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : date('n/j/y', $sfileOriginal['upload_date']);
+                
+                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink, $file_upload_date);  
             }
         }
         return $fhtml;
@@ -407,10 +410,9 @@ class FileList
      * @return html
      * @usage returns html format of displayed file panel
      */
-    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null, $post_id = null, $permalink = "", $prefix = null) {
+    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null, $post_id = null, $permalink = "", $file_upload_date) {
         $fhtml = "";
         $postID = $post_id;
-        // $postID = get_the_id();
         $userID = get_current_user_id( );
         $channel = $_SESSION['channel'];
         $ind = \WPDM_Crypt::Encrypt($sfile);
@@ -424,16 +426,6 @@ class FileList
         $isFileRemovable = !checkFileInCart($fileID) ? "" : "added-to-cart";
         $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 48, "...");
         
-        /* Check if EPG file - will assign a special thumbnail if ever */
-        // if( contains($sfile,self::$prefix_list['channel_epg']) ){
-        //     $thumb_path = getEPGThumbnail($fileTitle, $postID, 'epg');
-
-        // }else if( contains($sfile,self::$prefix_list['channel_catchup']) ){
-        //     $thumb_path = getEPGThumbnail($fileTitle, $postID, 'catchup');
-        // }else {
-        //     $thumb_path = WPDM_CACHE_DIR.basename($thumb);
-        // }
-
         /* Check if EPG file will assign a special thumbnail if ever - Tassha Nakagawa */
         if ( contains($fileTitle,self::$prefix_list['channel_epg']) ) {
             $thumb_path = getEPGThumbnail($fileTitle, $postID, 'epg');
@@ -476,18 +468,13 @@ class FileList
         $cart_data = prepare_cart_data($cart_array);
         $serialized_cart = serialize($cart_data);
 
-        // Convert UNIX Timestamp to human readable date
-        // $file_upload_date = date('n/j/y', substr($fileID, 0, -3));
-        // $file_upload_date = $sfileOriginal['upload_date'];
-        $file_upload_date = $prefix != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : $sfileOriginal['upload_date'];
-
         // FILE PANEL CONTAINER 
         $fhtml .= "     <div class='item {$fileID} {$isFileRemovable}'>";
         $fhtml .= "         <input type='hidden' name='{$fileID}' value='{$serialized_cart}'>";
         $fhtml .=           "<div class='file-thumb'>".$file_thumb."</div>";
         $fhtml .= "         <div class='show-meta'>";
         $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
-        $fhtml .= "             <p class='file-size'>".custom_wpdm_file_size($absolute_file_path,0)." | Uploaded on $file_upload_date</p>";
+        $fhtml .= "             <p class='file-size'>".custom_wpdm_file_size($absolute_file_path,0)." | Uploaded on {$file_upload_date}</p>";
         $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID} $isFileClickable'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' data-channel='{$channel}' >{$buttonText}</a>";
         $fhtml .= "         </div>";
         $fhtml .= "         <span class='close-btn' data-file-id='{$fileID}' data-user-id='{$userID}'><i class='fa fa-lg fa-times'></i></span>";
