@@ -395,8 +395,7 @@ class FileList
                 $file['ID'] = null;
                 $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                 $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
-                
-                $file_upload_date = $fileType != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : date('n/j/y', $sfileOriginal['upload_date']);
+                $file_upload_date = $fileType != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : date('n/j/y', strtotime($sfileOriginal['upload_date']));
                 
                 $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink, $file_upload_date);  
             }
