@@ -335,8 +335,8 @@ if(!function_exists('bulk_download')){
         }
          
         $zip = new ZipArchive();
-        $date_now = date('Y-m-d');
-        $zipped = UPLOAD_DIR . 'Cart-files-'.$date_now.'.zip';
+        $date_now = date('Y m d');
+        $zipped = UPLOAD_DIR . 'RTL CBS Files '.$date_now.'.zip';
         $zip->open($zipped, ZIPARCHIVE::CREATE);
 
         foreach ($files as $file) {
@@ -351,7 +351,7 @@ if(!function_exists('bulk_download')){
         }
 
         $zip->close();
-        wpdm_download_file($zipped, 'Cart-files-'.$date_now.'.zip');
+        wpdm_download_file($zipped, 'RTL CBS Files '.$date_now.'.zip');
         @unlink($zipped);
     }
 }
