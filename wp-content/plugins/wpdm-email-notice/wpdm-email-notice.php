@@ -777,7 +777,7 @@ function send_email_notice($user = null, $files = null){
 <style type="text/css">
 body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
 </style>
- </head>
+</head>
 <body >
 <table style="height: 617px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
@@ -808,11 +808,15 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <tr>
 <td>&nbsp;</td>
 <td>
-<p>Hi '.$user->user_login.',</p>
-<p>&nbsp;</p>
+<p>Hi [user_email],</p>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>
 <p>There are new files available for download in the RTL CBS Operator Site. The files below are sent to you based on the profile you have provided.</p>
 <p>You may download relevant documents from the links below.</p>
-<p>&nbsp;</p>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1045,7 +1049,7 @@ $message .= '
 </tr>
 </tbody>
 </table>
- </body></html>
+</body></html>
 	';
 	
 	if( $email_files_counter['entertainment'] > 0 ||  $email_files_counter['extreme'] > 0 ){
