@@ -389,7 +389,7 @@ class FileList
 
 
                 // $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
-                $fileID = $sfileOriginal['id'];
+                $fileID = $fileID;
                 $thumb = "";
                 $ind = \WPDM_Crypt::Encrypt($sfile);
                 $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
