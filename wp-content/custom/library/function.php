@@ -1810,11 +1810,11 @@ if(!function_exists('unserialize_php_array')){
         $return_value = 0;
         $return_array = array();
         if (!empty($_POST) && wp_verify_nonce($security_nonce, '__unserialize_php_array_nonce__') ){ 
-            $serialized_data = $_POST['serialized-data'];
-            $unserialized_form = unserializeForm($serialized_data);
-            $serialized_show_files = $unserialized_form['serialized-data'];
-            $show_files = unserialize($serialized_show_files);
-
+            // $serialized_data = $_POST['serialized-data'];
+            // $unserialized_form = unserializeForm($serialized_data);
+            // $serialized_show_files = $unserialized_form['serialized-data'];
+            // $show_files = unserialize($serialized_show_files);
+            $show_files = unserialize( stripslashes($_POST['serialized-data']) );
             $return_value = 1;
         }
         echo $return_value == 1 ? json_encode($show_files) : false;
