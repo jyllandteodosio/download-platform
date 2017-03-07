@@ -1556,7 +1556,6 @@ if(!function_exists('generate_file_count')) {
                     $filtered_shows = $categorized_files[$tab_attr];
                 }
 
-
                 // if( ($search_filter != '' && $search_filter !=  'all') && ( $tab_attr == 'epi' || $tab_attr == 'synopsis' ) ) {
                 //     $filtered_shows_copy = $filtered_shows;
 

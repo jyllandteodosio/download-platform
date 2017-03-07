@@ -76,23 +76,7 @@
                                           
         <div class="clear"></div><!-- this will maintain the flow of elements even if the next elements were set to float -->
 
-        <div class="show-items-wrap images-tab-contents">
-            <form id='table-key' class="table-files" method='post' >
-                <div class="filter-wrap clear text-left">
-                    <input type='submit'  class="show-filter" value='Select All'>
-
-                    <!-- custom days filter -->
-                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
-                    [days_filter_dropdown]
-        
-                </div><!-- filter-wrap -->
-
-                <div class='show-items'>
-           		   [file_category,key]
-           		   <div class='clear'></div>
-           	    </div>
-            </form>
-        </div><!-- recent-tab-contents -->
+        <div class="show-items-wrap images-tab-contents"></div><!-- recent-tab-contents -->
         
         <div class="show-items-wrap keyart-tab-contents keyart-images">
             <form id='table-key' class="table-files" method='post' >
@@ -183,26 +167,7 @@
             </form>
         </div><!-- others-tab-contents -->
 
-        <div class="show-items-wrap documents-tab-contents active-tab-content">
-            <p class="show-category-note">[acf_category_note]</p>
-            <form id='table-syn' class="table-files" method='post' >
-                <div class="filter-wrap clear text-left">
-                    <input type='submit'  class="show-filter" value='Select All'>
-
-                    <!-- custom days filter -->
-                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
-                    [days_filter_dropdown]
-
-                    <select name="synopsis_code" id="document_synopsis_code" class="filter_select synopsis_code">
-                        <option value='all'>All Episodes</option>
-                    </select>
-                </div><!-- filter-wrap -->
-                <div class="show-items">
-                    [file_category,syn]
-                <div class="clear"></div>  <!-- use to clear floats for show items, this will make this container full height -->    
-                </div><!-- show-items -->
-            </form>
-        </div><!-- documents-tab-contents -->
+        <div class="show-items-wrap documents-tab-contents"></div><!-- documents-tab-contents -->
         
         <div class="show-items-wrap synopses-tab-contents">
             <p class="show-category-note">[acf_category_note]</p>
