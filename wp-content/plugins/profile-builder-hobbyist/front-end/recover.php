@@ -361,7 +361,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <br/>
 Hi <b>%1$s</b>, 
 <br/><br/> 
-You have successfully reset your password to: %2$s
+You have successfully reset your password.
 <br/><br/>
 </td>
 <td width="10">&nbsp;</td>
@@ -374,7 +374,7 @@ You have successfully reset your password to: %2$s
 </tbody>
 </table>
 </body></html>
-', 'profile-builder' ), $display_username_email, $new_pass );
+', 'profile-builder' ), $display_username_email );
 
                 $recoveruserMailMessage2  = apply_filters( 'wppb_recover_password_message_content_sent_to_user2', $recoveruserMailMessage2, $display_username_email, $new_pass, $userID );
 
