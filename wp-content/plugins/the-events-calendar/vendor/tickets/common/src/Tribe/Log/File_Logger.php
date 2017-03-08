@@ -59,14 +59,7 @@ class Tribe__Log__File_Logger implements Tribe__Log__Logger {
 	 */
 	protected function obtain_handle() {
 		$this->close_handle();
-
-		if ( ! file_exists( $this->log_file ) ) {
-			touch( $this->log_file );
-		}
-
-		if ( is_readable( $this->log_file ) ) {
-			$this->handle = fopen( $this->log_file, $this->context );
-		}
+		$this->handle = fopen( $this->log_file, $this->context );
 	}
 
 	/**
@@ -145,11 +138,6 @@ class Tribe__Log__File_Logger implements Tribe__Log__Logger {
 			$this->set_context( 'a' );
 		}
 
-		// Couldn't obtain the file handle? We'll bail out without causing further disruption
-		if ( ! $this->handle ) {
-			return;
-		}
-
 		fputcsv( $this->handle, array( date_i18n( 'Y-m-d H:i:s' ), $entry, $type, $src ) );
 	}
 
@@ -170,11 +158,6 @@ class Tribe__Log__File_Logger implements Tribe__Log__Logger {
 		// Ensure we're in 'read' mode before we try to retrieve
 		if ( 'r' !== $this->context ) {
 			$this->set_context( 'r' );
-		}
-
-		// Couldn't obtain the file handle? We'll bail out without causing further disruption
-		if ( ! $this->handle ) {
-			return array();
 		}
 
 		$rows = array();
@@ -212,15 +195,8 @@ class Tribe__Log__File_Logger implements Tribe__Log__Logger {
 		foreach ( new DirectoryIterator( $this->log_dir ) as $node ) {
 			$name = $node->getFilename();
 
-			// DirectoryIterator::getExtension() is only available on 5.3.6
-			if ( version_compare( phpversion(), '5.3.6', '>=' ) ) {
-				$ext = $node->getExtension();
-			} else {
-				$ext = pathinfo( $name, PATHINFO_EXTENSION );
-			}
-
 			// Skip unless it is a .log file with the expected prefix
-			if ( 'log' !== $ext || 0 !== strpos( $name, $basename ) ) {
+			if ( 'log' !== $node->getExtension() || 0 !== strpos( $name, $basename ) ) {
 				continue;
 			}
 

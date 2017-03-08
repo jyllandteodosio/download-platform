@@ -26,17 +26,26 @@ get_template_part('channel-setter');
 		            		$publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
 		                    $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 		                    if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
-								<div class="swiper-slide">
-									<img src="<?php the_field('featured_banner_image'); ?>" class="swiper-photo" title="<?php the_title();?>" />
+								<div class="swiper-slide" style="background-image:url('<?php the_field('featured_banner_image'); ?>');" >
+						<!-- <img src="<?php //the_field('featured_banner_image'); ?>" class="swiper-photo" title="<?php //the_title();?>" /> -->
 									<?php $banner_text_alignment = get_field('banner_text_alignment') == 'right' ? "right-info" : "left-info";?>
 									<div class="swiper-description <?php echo $banner_text_alignment; ?>">
-										<span class="day"><?php echo get_field('airing_schedule') ? date('F d, Y',get_field('airing_schedule')) : date('F d, Y');?></span>
+										<span class="day">
+											<?php
+												echo (get_field('airing_schedule_format')=="date") ? 
+				                                      (get_field('airing_schedule') ? date('F d, Y',strtotime(get_field('airing_schedule'))) : ""  ) 
+				                                      : get_field('airing_day');
+				                            ?>
+										</span>
 										<div class="time">
-											<span class="timeslot">Live at <?php echo get_field('airing_schedule') ? date('h:i a',get_field('airing_schedule')) : date('h:i a');?></span>
-											<span class="timezone">(<?php echo get_field('airing_time_jkt') ? date('h:i a',get_field('airing_time_jkt')) : date('h:i a');?> JKT/BKK)</span>
+											<span class="timeslot"><?php 
+												echo (get_field('airing_schedule_format')=="date") ? date('l',strtotime(get_field('airing_schedule')))." " : "";
+												echo get_field('airing_time') ? date('g:i a',get_field('airing_time')) : "";
+											?></span>
+											<span class="timezone"><?php echo get_field('airing_time_jkt') ? "(".date('g:i a',get_field('airing_time_jkt'))." JKT/BKK)" : "";?></span>
 										</div>
 										<span class="title"><?php the_title(); ?></span>
-										<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,300,"...");?></p>
+										<p class="description"><?php echo mb_strimwidth(get_the_excerpt(),0,180,"...");?></p>
 										<a href="<?php echo(get_site_url(2)."/".$post->post_name)?>" class="view-more">View More</a>
 									</div>	
 								</div>

@@ -92,7 +92,7 @@ if( !function_exists('getDateRange')) {
             $ending_date = date( 'Y-m-d', strtotime( 'saturday this week' ) );
         }else if($span == 'start-today'){
             /* To show trial data - for testing*/
-            // $date_try = strtotime(date('2016-07-01'));
+            // $date_try = strtotime(date('2016-12-06'));
             // $beginning_date = date( 'Y-m-d', $date_try);
             // $ending_date = date( 'Y-m-d', strtotime("+6 day", $date_try ) );
             /* To show actual data - for live */
@@ -167,10 +167,13 @@ if( !function_exists('getShowInfoByTitle')) {
             $image = wp_get_attachment_image_src( get_post_thumbnail_id( $show_info['id']), 'single-post-thumbnail' );
             $background_image = $image[0] != "" ? "background-image: url('".$image[0]."')" : "";
         endif;
-        $show_info['featured_show'] = get_field('featured_show',$show_info['id'])[0];
-        if ($current_blog_id != 1) restore_current_blog();
 
+        $show_info['featured_show'] = get_field('featured_show',$show_info['id'])[0];
         $show_info['background_image'] = $background_image;
+        $show_info['airing_time'] = get_field('airing_time', $show_info['id']) ? date('g:i a',get_field('airing_time',$show_info['id']) ) : "";
+        $show_info['airing_time_jkt'] = get_field('airing_time_jkt', $show_info['id']) ? date('g:i a',get_field('airing_time_jkt',$show_info['id']) ) : "";
+
+        if ($current_blog_id != 1) restore_current_blog();
 
         return $show_info;
     }
@@ -183,6 +186,8 @@ if ( !function_exists('checkEventCategoryByTitle') ){
         $args = array(
                     'post_type' => 'wpdmpro', 
                     's' => $show_title,
+                    'exact' => true,
+                    'sentence' => true,
                     'tax_query' => array(
                         array(
                           'taxonomy' => 'wpdmcategory',
@@ -192,9 +197,26 @@ if ( !function_exists('checkEventCategoryByTitle') ){
                       )
                   );
         $query_shows = new WP_Query( $args );
+        // echo "<br><br>".$query_shows->request;
         if ($current_blog_id != 1) restore_current_blog();
 
         return $query_shows->post_count;
+    }
+}
+
+if( !function_exists('getTermIDBySlug') ){
+    function getTermIDBySlug($slug){
+
+        $current_blog_id = get_current_blog_id();
+        if ($current_blog_id != 1) switch_to_blog( 1 );
+
+        global $wpdb;
+        $term_id = $wpdb->get_var( "SELECT term_id FROM $wpdb->terms WHERE slug = '{$slug}'" );
+
+        if ($current_blog_id != 1) restore_current_blog();
+
+
+        return $term_id;
     }
 }
 
@@ -232,7 +254,16 @@ if (!function_exists('getUsersByRole')){
     }
 }
 
-if(!function_exists('unserializeForm')){
+if( !function_exists('getPostIdBySlug') ){
+    function getPostIdBySlug($slug){
+        global $wpdb;
+        $post_id = $wpdb->get_var( "SELECT ID FROM $wpdb->posts WHERE post_name = '".$slug."'" );
+
+        return $post_id;
+    }
+}
+
+if(!function_exists('unserializeForm')){ 
     /**
      * function to unserialize a form created by jquery .serialize method.
      */
@@ -361,12 +392,78 @@ function multi_array_filter($pattern = '/.*/', $haysack = array(), $limit = null
 
 }
 
+function get_file_prefixes($type_of_list = 'categorized', $prefix = '') {
+    if($type_of_list == 'categorized') {
+        return array(
+            'image' =>  array (
+                'show'  => array (
+                    'key_art'           => array('prefix' => 'key'          , 'template_shortcode' => 'file_category,key'), 
+                    'episodic_stills'   => array('prefix' => 'epi'          , 'template_shortcode' => 'file_category,epi'), 
+                    'gallery'           => array('prefix' => 'gallery'      , 'template_shortcode' => 'file_category,gal'), 
+                    'logos'             => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,log'),
+                    'others'            => array('prefix' => 'oth'          , 'template_shortcode' => 'file_category,oth')),
+                'channel'=> array (
+                    'channel_logos'     => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,cm_log'), 
+                    'channel_elements'  => array('prefix' => 'elements'     , 'template_shortcode' => 'file_category,cm_ele'), 
+                    'channel_others'    => array('prefix' => 'cm_oth'       , 'template_shortcode' => 'file_category,cm_oth'))
+                ),
+            'document' => array (
+                'show'  => array (
+                    'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
+                    'transcripts'       => array('prefix' => 'transcript'   , 'template_shortcode' => 'file_category,epk' ),
+                    'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
+                    'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
+                    'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
+                'channel' => array (
+                    'channel_epg'       => array('prefix' => 'epg'          , 'template_shortcode' => 'file_category,cm_epg'),
+                    'channel_highlights'=> array('prefix' => 'highlights'   , 'template_shortcode' => 'file_category,cm_hig'),
+                    'channel_brand'     => array('prefix' => 'brand'        , 'template_shortcode' => 'file_category,cm_bra'),
+                    'channel_boiler'    => array('prefix' => 'boiler'       , 'template_shortcode' => 'file_category,cm_boi'),
+                    'channel_catchup'   => array('prefix' => 'catch'        , 'template_shortcode' => 'file_category,cm_cat'))
+                ),
+            'promo' => array (
+                'show'  => array (
+                    'promos'            => array('prefix' => 'promo'        , 'template_shortcode' => 'file_category,promo'))
+                )
+            );
+    } else {
+        $categories = array(
+            'key' => 'Key Art',
+            'epi' => 'Episodic Stills',
+            'gallery' => 'Gallery',
+            'logo' => 'Logos',
+            'oth' => 'Others (Image)',
+            'cm_oth' => 'Others (Image)',
+            'elements' => 'Elements',
+
+            'synopsis' => 'Synopses',
+            'transcript' => 'Transcripts/EPK',
+            'fact' => 'Fact Sheet/Press Pack',
+            'font' => 'Fonts',
+            'doth' => 'Others (Document)',
+
+            'epg' => 'EPG',
+            'highlights' => 'Highlights',
+            'brand' => 'Brand Guide',
+            'boiler' => 'Boiler Plates',
+            'catch' => 'Catch Up',
+
+            'promo' => 'Promos'
+        );
+
+        if( isset($categories[$prefix]) ) 
+            return $categories[$prefix];
+        else 
+            return '';
+    } // endif
+
+}
 
 
 
 
 
-
+ 
 
 
 

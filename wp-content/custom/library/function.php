@@ -335,8 +335,8 @@ if(!function_exists('bulk_download')){
         }
          
         $zip = new ZipArchive();
-        $date_now = date('Y-m-d');
-        $zipped = UPLOAD_DIR . 'Cart-files-'.$date_now.'.zip';
+        $date_now = date('Y m d');
+        $zipped = UPLOAD_DIR . 'RTL CBS Files '.$date_now.'.zip';
         $zip->open($zipped, ZIPARCHIVE::CREATE);
 
         foreach ($files as $file) {
@@ -351,7 +351,7 @@ if(!function_exists('bulk_download')){
         }
 
         $zip->close();
-        wpdm_download_file($zipped, 'Cart-files-'.$date_now.'.zip');
+        wpdm_download_file($zipped, 'RTL CBS Files '.$date_now.'.zip');
         @unlink($zipped);
     }
 }
@@ -496,14 +496,14 @@ if (!function_exists('checkFileInCart')){
 Custom Export Reports
 ====================================================================================================================================
  */
-function updateToExportsReports($query_string_exportsreports_list){
+function updateToExportsReports($query_string_exportsreports_list, $report_name = 'RTLList' ){
     global $wpdb;
     $return_value = $wpdb->update( 
         $wpdb->exportsreports_reports, 
         array( 
             'sql_query' => $query_string_exportsreports_list
         ), 
-        array( 'name' => 'RTLList' )
+        array( 'name' => $report_name )
     );
     return $return_value;
 }
@@ -526,6 +526,7 @@ if(!function_exists('insertToCustomReports')){
                 $user_id = get_current_user_id( );
                 $country_group = get_current_user_country_group($user_id);
                 $operator_group = get_current_user_operator_group($user_id);
+                $account_group = get_current_user_account_group($user_id);
 
                 $return_value = $wpdb->insert(
                                         $wpdb->custom_reports,
@@ -533,6 +534,7 @@ if(!function_exists('insertToCustomReports')){
                                             'user_id' => $user_id,
                                             'country_group' => $country_group,
                                             'operator_group' => $operator_group,
+                                            'account_group' => $account_group,
                                             'post_id' => $value['post_id'],
                                             'file_id' => $file_id,
                                             'file_title' => $value['file_title'],
@@ -596,6 +598,7 @@ if(!function_exists('setRtlReportList')){
                 ".$select_max_created_at_list."
                 ".$country_groups_select_case."
                 IF( r.operator_group IS NULL or r.operator_group = '','Admin',r.operator_group) as operator_group, 
+                IF( r.account_group IS NULL or r.account_group = '','',r.account_group) as account_group, 
                 u.user_email, p.post_title, r.file_title as downloaded_files
             FROM ".$wpdb->custom_reports." r 
             INNER JOIN ".$wpdb->users." u ON r.user_id = u.id
@@ -603,7 +606,7 @@ if(!function_exists('setRtlReportList')){
             WHERE ".$condition_period.
             " ORDER BY ".$period_start_label." DESC,u.user_email,p.post_title
         ";
-        // echo "<br><br>list:".$query_string_exportsreports_list;
+        echo "<br><br>list:".$query_string_exportsreports_list;
         $return_value = updateToExportsReports($query_string_exportsreports_list);
 
         return $query_string_exportsreports_list;
@@ -711,6 +714,17 @@ if( !function_exists('get_current_user_operator_group') ){
     }
 }
 
+if( !function_exists('get_current_user_account_group') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function get_current_user_account_group($user_id = NULL){
+        $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
+        return get_user_meta( $userid, 'account_group', true);
+    }
+}
+
 if( !function_exists('get_current_user_country_group') ){
     /**
      * Get current country group of logged user.
@@ -719,6 +733,31 @@ if( !function_exists('get_current_user_country_group') ){
      function get_current_user_country_group($user_id = NULL){
         $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
         return get_user_meta( $userid, 'country_group', true);
+    }
+}
+
+if( !function_exists('get_operators_by_country') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function get_operators_by_country( $country_group = NULL ){
+        global $wpdb;
+        $return_value = $wpdb->get_results("SELECT operator_group FROM $wpdb->operator_access WHERE country_group = '{$country_group}'");
+        return $return_value;
+    }
+}
+
+if( !function_exists('check_user_is_pr_group') ){
+    /**
+     * Get current operator group of logged user.
+     * @return String|bool Returns user role if logged in, else return false;
+     */
+    function check_user_is_pr_group( $user_id = NULL, $operator_group = NULL, $country_group = NULL ){
+        global $wpdb;
+        $userid = $user_id == NULL || $user_id == '' ? get_current_user_id() : $user_id;
+        $return_value = $wpdb->get_var("SELECT is_pr_group FROM $wpdb->operator_access WHERE operator_group = '{$operator_group}' AND country_group = '{$country_group}'");
+        return $return_value;
     }
 }
 
@@ -1123,6 +1162,7 @@ function wpdm_embed_category_custom($params = array('id' => '', 'operator' => 'I
 
     $params = array(
         'post_type' => 'wpdmpro',
+        'post_status' => 'publish',
         'paged' => $cp,
         'posts_per_page' => $items_per_page,
         'include_children' => false,
@@ -1271,19 +1311,30 @@ if (!function_exists('checkIfPromoIsAccessible')) {
      * @return Bool                                      Return 1 if accessibl, else 0
      */
     function checkIfPromoIsAccessible($promo_assigned_operator_group = "all"){
-        $current_user_role = strtolower(get_current_user_role());
-        $current_user_operator_group = get_current_user_operator_group();
-        if( ($current_user_role == 'administrator') || 
-                (   $current_user_role == 'operator' && 
-                    (   $promo_assigned_operator_group == $current_user_operator_group || 
-                        $promo_assigned_operator_group == 'all'
-                    )
-                )
-            ){
-                $return_value = 1;
-        }else {
-            $return_value = 0;
+        $user_id = get_current_user_id();
+        $user_role = strtolower(get_current_user_role());
+        $user_operator_group = get_current_user_operator_group();
+        $user_country_group = get_current_user_country_group();
+        $is_pr_group = check_user_is_pr_group( $user_id, $user_operator_group, $user_country_group );
+        $return_value = 0;
+
+        if( ( $user_role == 'administrator' ) ||
+            ( $user_country_group == 'all' && $is_pr_group == 'yes' ) ||
+            ( $promo_assigned_operator_group == $user_operator_group ) ||
+            ( $promo_assigned_operator_group == 'all' )
+        ){
+            $return_value = 1;
+
+        }else if ( $is_pr_group == 'yes' ){
+            $sub_operators = get_operators_by_country( $user_country_group );
+            foreach ($sub_operators as $so_key => $sub_op) {
+                if ( contains($promo_assigned_operator_group, $sub_op->operator_group ) ){
+                    $return_value = 1;
+                    break;
+                }
+            }
         }
+
         return $return_value;
     }
 }
@@ -1294,29 +1345,110 @@ if (!function_exists('getRecentFileUploads')){
      * @param  string $channel Either entertainment or extreme
      * @return Object          Returns recently modified shows within a month.
      */
-    function getRecentFileUploads($channel = 'entertainment'){
+    function getRecentFileUploads($channel = 'entertainment', $days){
 
+        global $wpdb;
+        global $file_count_array_home;
+        $results = $wpdb->get_results("SELECT * FROM rtl21016_postmeta WHERE meta_key = '__wpdm_fileinfo' ");
+
+        $file_count_array_home = array();
+        $filtered_shows_raw = array();
+
+        $start_date = date('Y-m-d', strtotime("- " . $days . " days"));
+        $end_date = date('Y-m-d'); 
+
+        //* Loop through shows
+        foreach ($results as $key => $value) {
+            $file_info = unserialize($value->meta_value);
+            krsort($file_info);
+
+            $file_array = array_keys($file_info);
+            $post_id = $value->post_id;
+            $file_count = 0;
+
+            //* Loop through all files
+            foreach ( $file_array as $file_key ) {
+                // Convert UNIX Timestamp to human readable date
+                $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+
+                if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                    if ( !array_key_exists($post_id, $filtered_shows_raw) ) {
+                        $filtered_shows_raw[$post_id] = $file_upload_date;
+                    }
+                    $file_count++; 
+                }
+            }
+
+            if ($file_count > 0) {
+                $file_count_array_home[$post_id] = $file_count;
+            }
+        }
+
+        //* Sort shows according to recently uploaded files
+        arsort($filtered_shows_raw);
+        $filtered_shows = array_keys($filtered_shows_raw);
+        
+        //* Wordpress query   
         $args = array(
-                    'orderby'=> 'modified',
-                    'order' => 'DESC',
-                    'post_type' => 'wpdmpro', 
+                    'post__in'  => $filtered_shows,
+                    'orderby'   => 'post__in',
+                    'order'     => 'DESC',
                     'tax_query' => array(
                         array(
-                          'taxonomy' => 'wpdmcategory',
-                          'field'    => 'slug',
-                          'terms'    => 'shows-'.$channel,
+                           'taxonomy' => 'wpdmcategory',
+                           'field'    => 'slug',
+                           'terms'    => 'shows-'.$channel,
                         ),
-                      ),
-                    'date_query' => array(
-                      array(
-                        'column' => 'post_modified',
-                        'after'  => '1 month ago',
-                      ))
-                  );
+                    )
+                );
         $query_shows = new WP_Query( $args );
         return $query_shows;
     }
 }
+
+// AJAX Function for Recent File Uploads
+function displayRecentFileUploads() {
+    global $file_count_array_home;
+
+    class ShowItem {
+        public $thumbnail = "";
+        public $title = "";
+        public $permalink = "";
+        public $filecount = "";
+        public $publish_date = "";
+        public $expire_date = "";
+    }
+
+    $query_shows = getRecentFileUploads($_POST['channel'], $_POST['days']);
+    $filteredShows = [];
+    
+    if($query_shows->have_posts()){
+        while($query_shows->have_posts()) { $query_shows->the_post();
+            $result = new ShowItem();
+            
+            $thumb_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];
+            $result->thumbnail = wpdm_dynamic_thumb($thumb_url, array(270, 296));
+            $result->title = get_the_title();
+            $result->permalink = get_the_permalink();
+            $result->filecount = $file_count_array_home[get_the_ID()];
+
+            $result->publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+            $result->expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+
+            $result->filter = $_POST['days'];
+
+            array_push($filteredShows, $result);
+        }
+    }
+
+    echo json_encode($filteredShows);
+    // echo json_encode($file_count_array_home['175']);
+    die();
+}
+add_action('wp_ajax_displayRecentFileUploads', 'displayRecentFileUploads');
+add_action('wp_ajax_nopriv_displayRecentFileUploads', 'displayRecentFileUploads');
+
+
 
 if (!function_exists('custom_get_shows()')) {
     /**
@@ -1354,49 +1486,283 @@ if (!function_exists('custom_get_shows()')) {
     }
 }
 
-if(!function_exists('generate_show_files')){
+
+if (!function_exists('get_all_shows')) {
     /**
-     * Ajax function for adding specific files to cart
+     * Get Shows
+     * @return array key value pair of show id and title
+     */
+    function get_all_shows(){
+        $cids = array('shows-entertainment', 'shows-extreme', 'extreme', 'entertainment');
+        $channel_materials = array('channel-materials-entertainment','channel-materials-extreme');
+
+        $params = array(
+            'post_type' => 'wpdmpro',
+            'orderby'     => 'modified',
+            'order'       => 'DESC',
+            'status' => 'publish',
+            'tax_query' => array(array(
+                    'taxonomy' => 'wpdmcategory',
+                    'field' => 'slug',
+                    'terms' => $cids,
+                    'operator' => $operator
+                ), array(
+                    'taxonomy' => 'wpdmcategory',
+                    'field' => 'slug',
+                    'terms' => $channel_materials,
+                    'operator' => 'NOT IN'
+                )
+            )
+        );
+        
+        $query = get_posts( $params );
+        return $query;
+    }
+}
+
+
+//* Generate new file count on change of filter value
+if(!function_exists('generate_file_count')) {
+    function generate_file_count($categorized_files, $tab_attr_array, $filter_days = 0, $prefix = '', $filter_epi = '', $filter_syn = '') {
+        
+        $file_count_array = array();
+
+        foreach($tab_attr_array as $tab_attr) {
+            //* Count total number of files under each category
+            $file_count = count($categorized_files[$tab_attr]);
+
+            if( $file_count > 0 ) {
+                //* Reset counter
+                $file_count = 0;
+
+                if ( $filter_days > 0 ) {
+                    $file_keys_raw = $categorized_files[$tab_attr];
+
+                    //* Declare variables to filter files
+                    $start_date = date('Y-m-d', strtotime("- " . $filter_days . " days"));
+                    $end_date = date('Y-m-d');
+
+                    $filtered_shows = [];
+
+                    //* Loop through all files
+                    foreach($file_keys_raw as $file_key => $file_name) {
+                        $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+
+                        if ($file_upload_date >= $start_date && $file_upload_date <= $end_date) {
+                            array_push($filtered_shows, $file_name);
+                        }
+                    }
+                } else {
+                    $filtered_shows = $categorized_files[$tab_attr];
+                }
+
+                // if( ($search_filter != '' && $search_filter !=  'all') && ( $tab_attr == 'epi' || $tab_attr == 'synopsis' ) ) {
+                //     $filtered_shows_copy = $filtered_shows;
+
+                //     if( $tab_attr == $prefix ) {
+                //         $filtered_shows = [];
+                //         foreach($filtered_shows_copy as $file_name) {
+                //             // if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0)  ) {
+                //             //     array_push($filtered_shows, $file_name);
+                //             // }
+
+                //             if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0) ) {
+                //                 array_push($filtered_shows, $file_name);
+                //             }
+                //         }
+                //     }
+                // }
+
+                if ( ($filter_epi != '' && $filter_epi != 'all') && $tab_attr == 'epi' ) {
+                    $filtered_shows_copy = $filtered_shows;
+                    $filtered_shows = [];
+
+                    foreach($filtered_shows_copy as $file_name) {
+                        if ( (substr_count($file_name, $filter_epi) > 0) ) {
+                            array_push($filtered_shows, $file_name);
+                        }
+                    }
+                } else if ( ($filter_syn != '' && $filter_syn != 'all') && $tab_attr == 'synopsis' ) {
+                    $filtered_shows_copy = $filtered_shows;
+                    $filtered_shows = [];
+
+                    foreach($filtered_shows_copy as $file_name) {
+                        if ( (substr_count($file_name, $filter_syn) > 0) ) {
+                            array_push($filtered_shows, $file_name);
+                        }
+                    }
+                }
+
+
+                $file_count_array[$tab_attr] = count($filtered_shows);
+
+            } else {
+                $file_count_array[$tab_attr] = $file_count;
+                $file_count = 0;
+            }
+        }
+
+        // return $categorized_files;
+        return $file_count_array;
+    }
+}
+
+if(!function_exists('generate_new_file_count')) {
+    /**
+     * Ajax function for generating a new file count
+     */
+    function generate_new_file_count() {
+        //* Prepare data
+        $unserialized_categorized_data = $_POST['categorized-serialized-data'];
+        $unserialized_form = unserializeForm($unserialized_categorized_data);
+        $serialized_data = $unserialized_form['categorized-serialized-data'];
+        $categorized_files = unserialize($serialized_data);
+
+        $tab_attr_array = array('key','epi','gallery','logo','oth','logo','elements','cm_oth','synopsis','transcript','fact','font','doth','epg','highlights','brand','boiler','catch');
+        $filter_days = $_POST['filter_days'];
+        
+        $prefix = $_POST['prefix'];
+        // $search_filter = $_POST['search_filter'];
+        $filter_epi = $_POST['filter_epi'];
+        $filter_syn = $_POST['filter_syn'];
+
+        $file_count = generate_file_count($categorized_files, $tab_attr_array, $filter_days, $prefix, $filter_epi, $filter_syn);
+
+        echo json_encode($file_count);
+        // echo json_encode($categorized_files);
+        die();
+    }
+    add_action('wp_ajax_generate_new_file_count', 'generate_new_file_count');
+}
+
+if (!function_exists('populate_global_variable')) {
+    function populate_global_variable() {
+        $return_array = array();
+        $filter_days_array = $_POST['filter_days_array'];
+        $serialized_array = $_POST['serialized_array'];
+
+        foreach ( $serialized_array as $tab_name => $original_data ) {
+            $show_files = unserialize( stripslashes($original_data) );
+            
+            foreach( $filter_days_array as $day ) {
+                if ( $day > 0 ) {
+                    $start_date = date('Y-m-d', strtotime("- " . $day . " days"));
+                    $end_date = date('Y-m-d'); 
+
+                    $filtered_shows = array();
+                    //* Loop all files in the array and push them to filtered_shows
+                    foreach ( $show_files['all_files'] as $file_key => $file_name ) {
+                        //* Convert UNIX Timestamp to human reSadable date
+                        $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
+
+                        if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
+                            //* Array format: ["File ID" : "File Name"]
+                            $filtered_shows[$file_key] = $file_name;
+                        }
+
+                    }
+
+                    $file_object = array();
+                    foreach( $show_files['file_object']['files'] as $object_key => $object_value ) {
+                        if ( array_key_exists($object_key, $filtered_shows) ) {
+                            $file_object['files'][$object_key] = $object_value;
+                        } 
+                    }
+
+                    $file_info = array();
+                    foreach( $show_files['file_info'] as $file_info_key => $file_array ) {
+                        if ( array_key_exists($file_info_key, $filtered_shows) ) {
+                            $file_info[$file_info_key] = $file_array;
+                        }
+                    }
+
+                    $file_list_data = array (
+                                    'all_files'            =>  $filtered_shows,
+                                    'prefix'               =>  $show_files['prefix'],
+                                    'category'             =>  $show_files['category'],
+                                    'file_object'          =>  $file_object,
+                                    'specific_thumbnails'  =>  $show_files['specific_thumbnails'],
+                                    'file_type'            =>  $show_files['file_type'],
+                                    'file_info'            =>  $file_info,
+                                    'post_id'              =>  $show_files['post_id'],
+                                    'permalink'            =>  $show_files['permalink']
+                                );
+                    $return_array[$tab_name][$day] = serialize($file_list_data); 
+                
+                } // end if 
+
+            } // end filter days array foreach
+             
+        } // end serialized array foreach
+
+        
+        echo json_encode($return_array);
+        die();
+    }
+    add_action('wp_ajax_populate_global_variable', 'populate_global_variable');
+}
+
+
+if (!function_exists('generate_show_files')) {
+    /**
+     * Ajax function for adding specific files to cart and lazy loading (show page)
      */
     function generate_show_files(){
+        $show_files = unserialize( stripslashes($_POST['serialized-data']) );
         $security_nonce = $_POST['security_nonce'];
+
         $return_value = 0;
         $return_array = array();
         $return_array['hidden_files_count'] = 0;
-        if (!empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ){ 
-            $serialized_data = $_POST['serialized-data'];
+
+        if ( !empty($_POST) && wp_verify_nonce($security_nonce, '__show_files_nonce__') ) { 
             $files_limit = $_POST['limit'];
-
-            $files_filtered = $_POST['filtered'];
-            $files_prefix = $_POST['prefix'];
-            $files_search_filter = $_POST['search_filter'];
-
-            $unserialized_form = unserializeForm($serialized_data);
-
-            $serialized_show_files = $unserialized_form['serialized-data'];
-            $show_files = unserialize($serialized_show_files);
-            $topreview_show_files = $show_files['all_files'];
-
-            // $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
-            if ( count($show_files['all_files']) > 0 ){
-
-                if( $files_filtered == 'true' ){
-                    $pattern = "/".$files_prefix.".*".$files_search_filter."/";
-                    $topreview_show_files = multi_array_filter($pattern, $show_files['all_files'], $files_limit);
-                }else{
-                    $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
-                }
-                $return_array['topreview_show_files'] = $topreview_show_files;
+            $filter_days_array = $_POST['filter_days_array'];
             
-                $show_files['all_files'] = array_diff_key($show_files['all_files'],$topreview_show_files);
-                $return_array['show_all_files'] = $show_files['all_files'];
+            if ( count($show_files['all_files']) != 0 ) {
+                $file_prefix = strtolower($_POST['prefix']);
+                $file_search_filter = strtolower($_POST['search_filter']);
+
+                if ( $file_search_filter != 'all' ) {
+                    $filtered_episodes = array();
+                    $filtered_file_info = array();
+
+                    /**
+                     * Get file keys of files with corresponding prefix and search filter
+                     * NOTE: File name is based on the editable title; NOT the original file name
+                     */
+                    foreach( $show_files['file_info'] as $file_info_key => $file_array ) {
+                        foreach( $file_array as $file_info => $file_info_name ) {
+                            $file_info_name = strtolower($file_info_name);
+                    
+                            if ( (substr_count($file_info_name, $file_prefix) > 0) && (substr_count($file_info_name, $file_search_filter) > 0) ) {
+                                $filtered_file_info[$file_info_key] = $file_info_name;
+                            }
+                        }
+                    }
+
+                    //* Return data from original all_files array
+                    foreach( $show_files['all_files'] as $file_key => $file_name ) {
+                        if ( array_key_exists($file_key, $filtered_file_info) ) {
+                            $filtered_episodes[$file_key] = $file_name;
+                        }
+                    } 
+
+                    $show_files['all_files'] = array(); 
+                    $show_files['all_files'] = $filtered_episodes;
+                }
+
+                $return_array['topreview_show_files'] = $show_files['all_files'];
+                $topreview_show_files = array_slice($show_files['all_files'],0,$files_limit,true);
+                $show_files['all_files'] = array_diff_key($show_files['all_files'], $topreview_show_files);
                 
+                $return_array['show_all_files'] = $show_files['all_files'];
                 $return_array['hidden_files_count'] = count($show_files['all_files']);
-            }
+            }  
 
-            if ( $show_files !== false ){
+
+            if ( $show_files !== false ) {
                 $categorizedFileList = \WPDM\libs\FileList::CategorizedFileList($topreview_show_files,$show_files['prefix'],$show_files['category'],$show_files['file_object'],$show_files['specific_thumbnails'],$show_files['file_type'],$show_files['file_info'],$show_files['post_id'],$show_files['permalink']);
-
                 $return_array['files'] = $categorizedFileList;
                 $return_array['updated_serialized_data'] = serialize($show_files);
                 
@@ -1405,9 +1771,34 @@ if(!function_exists('generate_show_files')){
         }
         
         echo $return_value == 1 ? json_encode($return_array) : false;
+        // echo json_encode($show_files['all_files']);
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
+}
+
+
+if(!function_exists('generate_recent_files')){
+    /**
+     * Ajax function for adding specific files to cart
+     */
+    function generate_recent_files(){
+        $security_nonce = $_POST['security_nonce'];
+            echo "recent_files";
+            $serialized_data = $_POST['serialized-data'];
+            $files_limit = $_POST['limit'];
+            $files_search_filter = $_POST['search_filter'];
+
+            $unserialized_form =  unserializeForm($serialized_data);
+
+            $serialized_show_files = $unserialized_form['serialized-data'];
+            $show_files = unserialize($serialized_show_files);
+            $topreview_show_files = $show_files['all_files'];
+
+        print_r( $unserialized_form );
+        die();
+    }
+    add_action('wp_ajax_generate_recent_files', 'generate_recent_files');
 }
 
 if(!function_exists('unserialize_php_array')){
@@ -1419,25 +1810,13 @@ if(!function_exists('unserialize_php_array')){
         $return_value = 0;
         $return_array = array();
         if (!empty($_POST) && wp_verify_nonce($security_nonce, '__unserialize_php_array_nonce__') ){ 
-            $serialized_data = $_POST['serialized-data'];
-            $unserialized_form = unserializeForm($serialized_data);
-            $serialized_show_files = $unserialized_form['serialized-data'];
-            $show_files = unserialize($serialized_show_files);
-
+            // $serialized_data = $_POST['serialized-data'];
+            // $unserialized_form = unserializeForm($serialized_data);
+            // $serialized_show_files = $unserialized_form['serialized-data'];
+            // $show_files = unserialize($serialized_show_files);
+            $show_files = unserialize( stripslashes($_POST['serialized-data']) );
             $return_value = 1;
-            // echo "it enters!";
         }
-        // echo $return_array;
-        // echo '$_POST["serialized-data"] : ';
-        // print_r( $_POST["serialized-data"] );
-        
-
-        // echo '$_POST["serialized-data"] : ';
-        // print_r( $show_files );
-        // print_r($show_files['all_files']);
-        // print_r($topreview_show_files);
-
-        // print_r($topreview_show_files);
         echo $return_value == 1 ? json_encode($show_files) : false;
         die();
     }
@@ -1460,8 +1839,9 @@ if (!function_exists('getFeaturedShows')) {
         $paged = ( get_query_var($query_var) ) ? get_query_var($query_var) : 1;
 
         $args = array(
-                    'post_type' => 'wpdmpro', 
-                    'orderby'   => 'title',
+                    'post_type' => 'wpdmpro',
+                    'meta_key' => 'banner_order', 
+                    'orderby' => 'meta_value',
                     'order'     => 'ASC',
                     'paged' => $paged,
                     'tax_query' => array(
@@ -1479,9 +1859,10 @@ if (!function_exists('getFeaturedShows')) {
                         )
                       )
                   );
-        if ($posts_per_page != null && $posts_per_page > 0){
+        if ( $posts_per_page != null && $posts_per_page > 0 ) {
             $args ['posts_per_page'] = $posts_per_page;
         }
+
         $query_shows = new WP_Query( $args );
         return $query_shows;
     }
@@ -1520,11 +1901,12 @@ if (!function_exists('getAllShows')) {
         if($have_vimeo){
             $args['meta_query'] = $vimeo_meta_query;
         }
+
         if ($count != null && is_numeric($count)){
             $args['posts_per_page'] = $count;
         }
+
         $query_shows = new WP_Query( $args );
-        // echo "query:".$query_shows->request;
         return $query_shows;
     }
 }
@@ -1562,10 +1944,10 @@ if (!function_exists('getMonthsPromos')) {
      * @return array
      * @usage returns an array of promo files, otherwise empty array
      */
+    
     function getMonthsPromos($category = 'on-air', $promo_filter = 'this-month'){
         wp_reset_query();
         $channel = $_SESSION['channel'];
-
 
         $args = array(
                     'post_type' => 'wpdmpro', 
@@ -1579,7 +1961,7 @@ if (!function_exists('getMonthsPromos')) {
                       )
                   );
         $query_shows = new WP_Query( $args );
-        // echo  $query_shows->request;
+        
         $promos = array();
         if($query_shows->have_posts()){
           while($query_shows->have_posts()) { 
@@ -1636,6 +2018,12 @@ if (!function_exists('getMonthsPromos')) {
     }
 }
 
+if (!function_exists('sortPromosByUploadDate')) {
+    function sortPromosByUploadDate($a, $b) {
+        return strtotime($b["upload_date"]) - strtotime($a["upload_date"]);
+    }
+}
+
 if (!function_exists('get_promos')) {
     /**
      * @usage function to get promo under a given category
@@ -1650,6 +2038,7 @@ if (!function_exists('get_promos')) {
             $category = 'all';
             $promo_filter = $_POST['promo-timeline'];
             $promos = getMonthsPromos($category, $promo_filter);
+            usort($promos, "sortPromosByUploadDate");
         }
         echo json_encode($promos);
         die();
@@ -1689,8 +2078,16 @@ if( !function_exists('getEPGThumbnail') ) {
         if( have_rows('special_thumb', $postID) ):
             while ( have_rows('special_thumb', $postID) ) : the_row();
                 $epg_month = strtolower(get_sub_field('month'));
-                $thumbnail_path = $prefix == 'epg' ? get_sub_field('epg_thumb') : get_sub_field('catch_up_thumb') ;
-                if(($epg_month!="" && $epg_month != null) && ($thumbnail_path != "" && $thumbnail_path != null)){
+                // $thumbnail_path = $prefix == 'epg' ? get_sub_field('epg_thumb') : get_sub_field('catch_up_thumb') ;
+                if ( $prefix == 'epg' ) {   
+                    $thumbnail_path = get_sub_field('epg_thumb'); // EPG
+                } elseif ( $prefix == 'catchup_img' ) {
+                    $thumbnail_path = get_sub_field('catch_up_img_thumb'); // Catch Up Images
+                } elseif ( $prefix ==  'catchup') {
+                    $thumbnail_path = get_sub_field('catch_up_thumb'); // Catch Up Documents
+                }
+
+                if (($epg_month!="" && $epg_month != null) && ($thumbnail_path != "" && $thumbnail_path != null)){
                     $epg_thumbnails[$epg_month] = $thumbnail_path;
                 }
             endwhile;
@@ -1701,43 +2098,6 @@ if( !function_exists('getEPGThumbnail') ) {
             }
         }
         return $thumb;
-    }
-}
-
-if( !function_exists('is_generate_file_panel') ){
-    /**
-     * Description:                     Check if a specific file should be visible to the user based on operator group
-     * @param  string  $prefix_general  The general prefix indicator ( e.g. Affiliate )
-     * @param  string  $fileTitle       Title of file
-     * @param  array   $allfiles_sorted Key value pair of all files sorted
-     * @param  array   $fileinfo        Key value pair of all files file title
-     * @return boolean                  Return true if file should be visible to the user, else false
-     */
-    function is_generate_file_panel( $prefix_general = '', $fileTitle = '', $allfiles_sorted = array(), $fileinfo = array() ){
-        $current_operator_group = get_current_user_operator_group();
-        $generate_file_panel = false;
-
-        if ( get_current_user_role() == "administrator"){
-            $generate_file_panel = true;
-
-        }else if(contains($fileTitle, $prefix_general)){
-            /* Commented out some confusing codes below */
-            // $exclusive_file_check = 0;
-            // foreach ($allfiles_sorted as $key => $value) {
-            //     if(contains($fileinfo[$key]['title'], $current_operator_group)){
-            //         $exclusive_file_check = 1;
-            //         break;
-            //     }
-            // }
-            // if(!$exclusive_file_check){
-                $generate_file_panel = true;
-            // }
-
-        }else if(contains($fileTitle, $current_operator_group)){
-            $generate_file_panel = true;
-        }
-
-        return $generate_file_panel;
     }
 }
 
@@ -1752,101 +2112,147 @@ if( !function_exists('getTribeEvents')) {
      * @param  Date $end_date       End date
      * @return Array                Array of events
      */
-    function getTribeEvents($start_date,$end_date){
-        $start_date = $start_date != '' || $start_date != null ? $start_date : date("Y-m-d H:i");
-        $end_date   = $end_date != '' || $end_date != null ? $end_date : date("Y-m-d H:i");
-        $events = tribe_get_events( array(
-                    'start_date'   => $start_date,
-                    'end_date'     => $end_date
-                ) );
+    function getTribeEvents($start_date,$end_date,$channel = 'entertainment', $is_featured = null, $offset = 0 ){
+        $start_date = $start_date != '' || $start_date != null ? $start_date : date("Y-m-d H:i:s");
+        $end_date   = $end_date != '' || $end_date != null ? $end_date : date("Y-m-d H:i:s");
+        
+        $events = fetch_tribe_events($start_date,$end_date,$channel, $is_featured, $offset );
+       
         return $events;
     }
 }
 
-if( !function_exists('getTribeEventsUniqueStartTime')) {
+if( !function_exists('get_tribe_events_ajax')) {
+    /**
+     * Description:                 Get all tribe events for the given date range.
+     * @param  Date $start_date     Start date
+     * @param  Date $end_date       End date
+     * @return Array                Array of events
+     */
+    function get_tribe_events_ajax(){
+        $nonce = $_POST['schednonce'];
+        if (!empty($_POST) && wp_verify_nonce($nonce, '__schedule_page_nonce__') ){
+            $events = array();
+            $channel = $_POST['channel'];
+            $offset = intval($_POST['offset']) > 0 ? intval($_POST['offset']) : 0 ;
+            $limit = intval($_POST['limit']) > 0 ? intval($_POST['limit']) : 0 ;
+            $is_featured = null;
+            $date_range   = $_POST['date_range'] != '' || $_POST['date_range'] != null ? $_POST['date_range'] : array();
+           
+            foreach ($date_range as $key => $date) {
+                $start_date = $date.' 00:00:00';
+                $end_date   = $date.' 23:59:59';
+
+                $events_tmp = fetch_tribe_events($start_date,$end_date,$channel, $is_featured, $offset, $limit );
+
+                if( count( $events_tmp ) > 0  ){
+                    $events[$date] = $events_tmp;
+                }
+            }
+            
+            echo json_encode( $events );
+        }else{
+            echo "Invalid Access";
+        }
+        die();
+    }
+
+    add_action('wp_ajax_get_tribe_events_ajax', 'get_tribe_events_ajax');
+    add_action('wp_ajax_nopriv_get_tribe_events_ajax', 'get_tribe_events_ajax');
+}
+
+function fetch_tribe_events($start_date,$end_date,$channel = 'entertainment', $is_featured = null, $offset = null, $limit = 1 ){
+    $start_date = $start_date != '' || $start_date != null ? $start_date : date("Y-m-d H:i:s");
+    $end_date   = $end_date != '' || $end_date != null ? $end_date : date("Y-m-d H:i:s");
+    $where_limit = isset($offset) ? " LIMIT $offset, $limit" : '';
+    $term_id = getTermIDBySlug('shows-'.$channel) ;
+
+    global $wpdb;
+    $where_featured = $is_featured == 'featured' ? "AND mt1.meta_key = 'featured_show' AND mt1.meta_value LIKE '%featured%' " : "";
+
+    $query_string = "
+        SELECT post_2.*, MIN(mt2.meta_value) as EventStartDate, post_1.post_name as main_post_name  
+
+        FROM rtl21016_2_posts as post_2
+        INNER JOIN rtl21016_2_postmeta AS mt2 ON ( post_2.ID = mt2.post_id ) 
+        INNER JOIN rtl21016_posts post_1 ON ( post_1.post_title = post_2.post_title )
+        INNER JOIN rtl21016_postmeta AS mt1 ON ( post_1.ID = mt1.post_id ) 
+
+        WHERE 
+         mt2.meta_key = '_EventStartDate' 
+         AND mt2.meta_value BETWEEN '{$start_date}' AND '{$end_date}'
+         
+         {$where_featured}
+         
+         AND post_2.post_type = 'tribe_events' 
+         AND post_2.post_status = 'publish'
+            
+         AND 1<= (
+            
+            SELECT COUNT(*)
+            
+            FROM rtl21016_posts post
+            INNER JOIN rtl21016_term_relationships term ON (post.ID = term.object_id) 
+            
+            WHERE 
+            term.term_taxonomy_id IN ($term_id) 
+            AND post.post_title LIKE post_2.post_title
+            AND post.post_type = 'wpdmpro' 
+            AND post.post_status = 'publish'
+         )
+
+        GROUP BY post_2.ID  
+        ORDER BY EventStartDate ASC, post_2.ID ASC 
+        {$where_limit}
+        ";
+    $events = $wpdb->get_results( $query_string, OBJECT);
+
+    return $events;
+}
+
+if( !function_exists('get_tribe_events_unique_start_time_ajax')) {
     /**
      * Decription                Will return an array of unique timeslot in ascending order 
      * @param  Array $daterange  Range of dates to query
      * @return Array             Array of unique timeslots
      */
-    function getTribeEventsUniqueStartTime($daterange = array(), $channel = 'entertainment'){
+    function get_tribe_events_unique_start_time_ajax(){
+        $daterange = $_POST['date_range'];
+        $channel = $_POST['channel'];
         $time_list_rebased = array();
+
         if(!empty($daterange)):
             $time_list = array();
             foreach($daterange as $date):
-                $events = getTribeEvents($date->format("Y-m-d").' 00:00',$date->format("Y-m-d").' 23:59');
+                $events = getTribeEvents($date.' 00:00:00',$date.' 23:59:59', $channel, null, null);
                 if(count($events) > 0):
                     foreach ($events as $event) :
-                        if( checkEventCategoryByTitle($channel, $event->post_title) > 0 ):
-                            $show_start_time = date('H:i',strtotime(tribe_get_start_date($event->ID, false, Tribe__Date_Utils::DBTIMEFORMAT)));
-                            if(!in_array($show_start_time, $time_list)){
-                                array_push($time_list, $show_start_time);
-                            }
-                        endif;
+                        $show_start_time = date('H:i',strtotime($event->EventStartDate));
+                        if(!in_array($show_start_time, $time_list)){
+                            array_push($time_list, $show_start_time);
+                        }
                     endforeach;
                 endif;
             endforeach;
             asort($time_list);
             $time_list_rebased = array_values($time_list);
         endif;
-        return $time_list_rebased;
+
+        echo json_encode($time_list_rebased);
+
+        die();
     }
+
+    add_action('wp_ajax_get_tribe_events_unique_start_time_ajax', 'get_tribe_events_unique_start_time_ajax');
+    add_action('wp_ajax_nopriv_get_tribe_events_unique_start_time_ajax', 'get_tribe_events_unique_start_time_ajax');
 }
 
-function templated_email($content){
-    $plugin_img_dir = plugins_url().'/wpdm-email-notice/images/';
-    $template = '
-
-        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-        <html>
-          <head>
-            <meta http-equiv="Content-Type" content="text/html;UTF-8" />
-          </head>
-          <body style="margin: 0px; background-color: #FFF; font-family: Helvetica, Arial, sans-serif; font-size:12px;" text="#444444" bgcolor="#F4F3F4" link="#21759B" alink="#21759B" vlink="#21759B" marginheight="0" topmargin="0" marginwidth="0" leftmargin="0">
-            <table border="0" width="599" cellspacing="0" cellpadding="0" bgcolor="#000">
-              <tbody>
-                <tr>
-
-                  <td valign="baseline"><span> <a style="text-decoration: none;" href="'.get_site_url().'" target="_blank"> <img class="" src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="645" height="140" /> </a> </span></td>
-                </tr>
-                <tr>
-                  <td style="padding: 0 15px 15px;"><center>
-                    <table style="height: 106px;" width="604" cellspacing="0" cellpadding="0" align="center" bgcolor="#ffffff">
-                      <tbody>
-                        <tr>
-                          <td align="left">
-                            <div style="border: solid 1px #d9d9d9;">
-                              <table id="content" style="margin-right: 30px; margin-left: 30px; color: #444444; line-height: 1.6; font-size: 12px; font-family: Arial, sans-serif; height: 64px;" border="0" width="540" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
-                                <tbody>
-                                  <tr>
-                                    <td colspan="2">
-                                      <div style="padding: 15px 0;">
-                                        '.$content.'
-                                      </div>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    </center></td>
-                </tr>
-                <tr>
-                  <td><center><img src="'.$plugin_img_dir.'rtl-logo-plain.png" alt="RTL CBS Logo" /></center>
-                    <p>&nbsp;</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </body>
-        </html>
-
-
-    ';
-
+function templated_email($content) {
+    // If option doesn't exist, save default option
+    if ( get_option( 'wpbe_options' ) !== false ) {
+        $email_template = get_option('wpbe_options');
+        $template = str_replace( '%content%', $content, $email_template['template'] );
+    }
     return $template;
 }
 

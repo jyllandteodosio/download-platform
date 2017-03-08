@@ -13,6 +13,7 @@
      * Function to create and update wpdm email notifier DB table upon plugin activation
      */
 	function wpdm_email_activation() {
+
 		global $wpdb;
 		global $wea_db_version;
 
@@ -127,10 +128,8 @@ if (!isset($wpdb->wpdm_email_logs)) {
 }
 
 add_action( 'pre_post_update', 'wpdm_check_new_files' );
-function wpdm_check_new_files($post_id)
-{
+function wpdm_check_new_files($post_id){
 	// trigger_email_notification_checker();
-
 	// send_email_notice();
 
     global $wpdb;
@@ -141,20 +140,19 @@ function wpdm_check_new_files($post_id)
     	$serialized_data_old = '';
     	$serialized_data_new = '';
 
-
-    	/* Check for attached show files */
+      /* Check for attached show files */
 	    $wpdm_files_old = get_post_meta($post_id, '__wpdm_files', true) != "" ? maybe_unserialize(get_post_meta($post_id, '__wpdm_files', true)) : array(); /* Old values from database */
 	    $wpdm_files_new = $_POST['file']['files'] != "" ? $_POST['file']['files'] : array(); /* New values from form */
 	    $wpdm_fileinfo_new = $_POST['file']['fileinfo'] != "" ? $_POST['file']['fileinfo'] : array(); /* New values from form */
 	    /* Derived Values */
 	    $files_diff = array_diff($wpdm_files_new,$wpdm_files_old);	/* Remove extra array at the last index */
 	    $fileinfo_intersect = array_intersect_key($wpdm_fileinfo_new, $files_diff);
-	    /* END Check for attached show files */
+	  /* END Check for attached show files */
 
-	    /* Check for attached promo files */
+	  /* Check for attached promo files */
 	    $wpdm_promos_new_id = array();
 	    $wpdm_promos_old_id = array();
-	    $wpdm_promos_old = get_field( "add_promo_files" , $promo_id) ? get_field( "add_promo_files" , $post_id) : array(); /* Old values from database */
+	    $wpdm_promos_old = get_field( "add_promo_files" , $promo_id) ? get_field( "add_promo_files" , $post_id) : array();
 	    $wpdm_promos_new = $_POST['fields']['field_56bda9692303d'];	/* New values from form */
 
 	    if($wpdm_promos_new!= null) {
@@ -167,7 +165,9 @@ function wpdm_check_new_files($post_id)
 	    			);
 		    }
 		}
-	    /* Restructure DB data of promo files into key value pair */
+	  /* END Check for attached promo files */
+
+	  /* Restructure DB data of promo files into key value pair */
 	    foreach ($wpdm_promos_old as $key => $value) {
 	        $wpdm_promos_old_id[$value['id']] = $value['file_name']; /* Old values from database (key,value) */
 	    }
@@ -180,11 +180,16 @@ function wpdm_check_new_files($post_id)
 	    			'operator_access' => $promo_data['operator_access']
 	    		);
 	    }
-	    /* END Check for attached promo files */
+	  /* END Restructure DB data of promo files into key value pair */
+	  
+	  /* Check if there are new files/promos uploaded */
 	    $email_entry = get_email_entries($post_id);
+
+	    /* Will evaluate to true if there are newly uploaded files or promos */
 	    if(count($files_diff) >= 1 || count($promos_diff) >= 1){
 	    	$structured_files_diff = categorized_files($files_diff,$wpdm_fileinfo_new);
 
+	    	/* Will evaluate to true if there are no current email entries for this show today  */
 	    	if ( count($email_entry) == 0){
 	    		$raw_data_new['raw_files']['files'] = $files_diff;
 	    		$raw_data_new['raw_files']['file_info'] = $fileinfo_intersect;
@@ -224,7 +229,6 @@ function wpdm_check_new_files($post_id)
 	    			}
 	    		}
 
-	    		
 	    		$raw_data_new['raw_files']['files'] = $raw_email_entry_new['raw_files']['files'] + $files_diff;
 	    		$raw_data_new['raw_files']['file_info'] = $raw_email_entry_new['raw_files']['file_info'] + $fileinfo_intersect;
 
@@ -243,11 +247,15 @@ function wpdm_check_new_files($post_id)
 	                        );
 	    	}
 
-	    }else if ( count($wpdm_files_old) > count($wpdm_files_new) || count($wpdm_promos_old) > count($wpdm_promos_new) ){
+	    }
+	    /* Will evaluate to true if newly uploaded files are deleted */
+	    else if ( count($wpdm_files_old) > count($wpdm_files_new) || count($wpdm_promos_old) > count($wpdm_promos_new) ){
+
+	    	/* Will evaluate to true if there are no current email entries for this show today  */
 	    	if ( count($email_entry) > 0){
 		    	$raw_email_entry_new = unserialize($email_entry->data_new);
-
 		    	$files_diff = array_diff($wpdm_files_old,$wpdm_files_new);	/* Remove extra array at the last index */
+
 			    if( count($files_diff) > 0 ){
 			    	foreach ($files_diff as $key => $value) {
 			    		if( isset($raw_email_entry_new['raw_files']['files'][$key]) && ($raw_email_entry_new['raw_files']['files'][$key]!=null) ) 
@@ -280,7 +288,7 @@ function wpdm_check_new_files($post_id)
 		    
 			}
 	    }
-
+	  /* END Check if there are new files uploaded */
 
     }
 
@@ -485,13 +493,13 @@ function trigger_email_notification_checker(){
 	$permalink = get_permalink($id);
 	$email_recipient = array();
 	foreach ($users as $user) {
-		echo "<br>user_email : ".$user->user_email;
-		echo "<br>operator_group : ".$user->operator_group;
-		echo "<br>country_group : ".$user->country_group;
+		// echo "<br>user_email : ".$user->user_email;
+		// echo "<br>operator_group : ".$user->operator_group;
+		// echo "<br>country_group : ".$user->country_group;
 		$files = array();
 		if(count($email_entries) > 0){
 			foreach ($email_entries as $key => $email_entry) {
-				echo "<br><br>Post_id:".$email_entry->post_id;
+				// echo "<br><br>Post_id:".$email_entry->post_id;
 
 				$categories_data = array();
 				$categories = array();
@@ -501,6 +509,8 @@ function trigger_email_notification_checker(){
 				}
 			    $entertainment_category_id = getCategoryIdBySlug('entertainment');
 			    $extreme_category_id = getCategoryIdBySlug('extreme');
+
+			    print_r($categories_data);
 
 				/* Check if show categories includes entertainment or extreme */
 				$is_exist_channel = array();
@@ -524,25 +534,14 @@ function trigger_email_notification_checker(){
 					    }
 					}
 			    }
-			    // echo "<pre>";
-			    // print_r($operator_access);
-			    // echo "</pre>";
+
 			    $matched_operator_access = check_user_group_access($user, $operator_access);
-			    // echo "<br>matched_operator_access : ".$matched_operator_access;
 				if($matched_operator_access){
-					echo "<br>matched_operator_access['is_pr_group']:".$matched_operator_access['is_pr_group'];
+					// echo "<br>matched_operator_access['is_pr_group']:".$matched_operator_access['is_pr_group'];
 					$uns_email_entry = unserialize($email_entry->data_new);
-					// echo "<br>uns_email_entry : ";
-					// echo "<pre>";
-					// echo "<br>".$email_entry->data_new;
 
-					// var_dump($email_entry->data_new);
-					// var_dump($uns_email_entry);
-					// echo "</pre>";	
-
-					print_r(unserialize($email_entry->data_new));
-					$files[$email_entry->post_id]['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$operator_access);
-					$files[$email_entry->post_id]['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'],$operator_access);
+					$files[$email_entry->post_id]['promo'] = get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group']);
+					$files[$email_entry->post_id]['show'] = get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group']);
 
 					
 				}
@@ -608,28 +607,30 @@ if (!function_exists('get_user_accessible_promos')){
 	 * @param  Array  $all_promos     	All current promos from the submitted form
 	 * @return Array                  	Array of promo file names
 	 */
-	function get_user_accessible_promos($user, $promo_files, $is_pr_group = '', $operator_access = array()){
+	function get_user_accessible_promos($user, $promo_files, $is_pr_group = ''){
 		$accessible_promo_files = array();
+
 		if (count($promo_files) > 0) {
 			foreach ($promo_files as $key => $value) {
-				if ( strtolower($value['operator_access']) == strtolower($user->operator_group) ||
-					strtolower($value['operator_access']) == 'all' ) {
-					array_push($accessible_promo_files, $value);
-				}else if ( $is_pr_group == 'yes' ){
-					if( strtolower($user->country_group) == 'all' ){
-						array_push($accessible_promo_files, $value);
-					}else{
-						foreach ($operator_access as $key => $operator_access_item) {
-							if( strtolower($operator_access_item['operator_group']) == strtolower($value['operator_access']) &&
-								strtolower($operator_access_item['country_group']) == strtolower($user->country_group) ){
-								array_push($accessible_promo_files, $value);
-							}
-						}
-					}
-				}
-				else{
-					continue;
-				}
+
+				if(  $user->country_group == 'all' && $is_pr_group == 'yes' ||
+					 contains($value['operator_access'], $user->operator_group) ||
+					 contains($value['operator_access'], 'all' )
+					){
+                	array_push($accessible_promo_files, $value);
+
+                }else if( $is_pr_group == 'yes'){
+
+                    $sub_operators = get_operators_by_country( $user->country_group );
+
+                    foreach ($sub_operators as $so_key => $sub_op) {
+                        if ( contains($value['operator_access'], $sub_op->operator_group ) ){
+                        	array_push($accessible_promo_files, $value);
+                            break;
+
+                        }
+                    }
+                }
 			}
 		}
 		return $accessible_promo_files;
@@ -644,24 +645,61 @@ if (!function_exists('get_user_accessible_files')){
 	 * @param  Array  $all_promos     	All current promos from the submitted form
 	 * @return Array                  	Array of promo file names
 	 */
-	function get_user_accessible_files($user, $all_files, $raw_files, $is_pr_group = '', $operator_access = array()){
-		$accessible_files = array();
+	function get_user_accessible_files($user, $all_files, $raw_files, $is_pr_group = ''){
+		$affiliate_files = array();
+		$filtered_files = array();
+		$filtered_categories = [ 'epg', 'catch' ];
+
 		if (count($raw_files) > 0) {
 			foreach ($raw_files as $key => $value) {
-				// echo "<br><br>New file:".$value;
-				if( contains($value, 'epg') || contains($value, 'catch')){
-					if ( ($is_pr_group == 'yes' && strtolower($user->country_group) == 'all') ||
-						 contains($value, 'affiliate') ||
-						 contains($value, $user->operator_group) ||
-						 (checkEPGAccessibilityViaFilename($user, $operator_access, $value ) && $is_pr_group == 'yes' ) ){
-							continue;
-	                }else{
-						if(isset($all_files['document']['epg'][$key])) unset($all_files['document']['epg'][$key]);
-						if(isset($all_files['document']['catch'][$key])) unset($all_files['document']['catch'][$key]);
-			            if(isset($all_files['document']['doth'][$key])) unset($all_files['document']['doth'][$key]);
-	                }
+
+				foreach ($filtered_categories as $fc_key => $prefix) {
+					if( contains($value, $prefix) ){
+		                if(  $user->country_group == 'all' && $is_pr_group == 'yes' ){
+		                	continue;
+		                }else if( $is_pr_group == 'yes'){
+
+	                        $sub_operators = get_operators_by_country( $user->country_group );
+
+	                        foreach ($sub_operators as $so_key => $sub_op) {
+	                            if ( contains($value, $sub_op->operator_group ) ){
+	                                $filtered_files['document'][$prefix][$key] = $value;
+	                                break;
+
+	                            }else if ( contains($value, 'affiliate' ) ) {
+	                                $affiliate_files['document'][$prefix][$key] = $value;
+	                    			unset( $all_files['document'][$prefix][$key] );
+	                    			break;
+	                            }
+	                        }
+	                        if( count( $filtered_files['document'][$prefix][$key] ) == 0 && count( $affiliate_files['document'][$prefix][$key] ) == 0 ){
+	                        	if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
+	                        }
+
+	                    }else if ( contains($value, $user->operator_group) ){
+	                    	$filtered_files['document'][$prefix][$key] = $value;
+
+	                    }else if ( contains($value, 'affiliate' ) ) {
+	                        $affiliate_files['document'][$prefix][$key] = $value;
+	                    	unset( $all_files['document'][$prefix][$key] );
+	          
+	                    }
+	                    else{
+							if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
+		                }
+					}
+				}
+				
+			}
+			/* FOR EPG and CATCH UP ONLY */  
+			foreach ($filtered_categories as $fc_key => $prefix) {
+				if( count($filtered_files['document'][$prefix]) == 0 && count($affiliate_files['document'][$prefix]) > 0 ){
+					foreach ( $affiliate_files['document'][$prefix] as $key => $value) {
+						$all_files['document'][$prefix][$key] = $value;
+					}
 				}
 			}
+
 		}
 		return $all_files;
 	}
@@ -708,6 +746,29 @@ function send_email_notice($user = null, $files = null){
 	$subject = 'RTL CBS Asia Notification - New files are available for you today!';
 	$headers = array('Content-Type: text/html; charset=UTF-8');
 
+	global $wpdb;
+
+	$get_template = $wpdb->get_results( 'SELECT option_value FROM rtl21016_options WHERE option_name = "wpbe_options"');
+	$email_template = unserialize($get_template[0]->option_value);
+	$email_template = explode('"', $email_template['template']);
+
+	$image_urls = array();
+	foreach($email_template as $value) {
+		if ( substr_count($value, '.jpeg') > 0 ) {
+			array_push($image_urls, $value);
+		} elseif ( substr_count($value, '.jpg') > 0 ) {
+			array_push($image_urls, $value);
+		} elseif ( substr_count($value, '.png') > 0 ) {
+			array_push($image_urls, $value);
+		} elseif ( substr_count($value, '.gif') > 0 ) {
+			array_push($image_urls, $value);
+		}
+	}
+
+	$header_href = $image_urls[0];
+	$header_url = $image_urls[1];
+	$footer_url = $image_urls[2];
+			
 	$message = '
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -716,7 +777,7 @@ function send_email_notice($user = null, $files = null){
 <style type="text/css">
 body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
 </style>
- </head>
+</head>
 <body >
 <table style="height: 617px; background-color: #000;" width="599" cellspacing="0" cellpadding="0">
 
@@ -725,7 +786,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <tr>
 <td valign="center">
 <!--<p>&nbsp;</p><p>&nbsp;</p>-->
-<img src="'.$plugin_img_dir.'email-banner-black.jpg" alt="RTL CBS Banner" width="599"/>
+<img src="'.$header_url.'" alt="RTL CBS Banner" width="599"/>
 
 </td>
 </tr>
@@ -747,11 +808,15 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <tr>
 <td>&nbsp;</td>
 <td>
-<p>Hi '.$user->user_login.',</p>
-<p>&nbsp;</p>
-<p>There are new files available for download in the RTL CBS Operator Site.</p>
-<p>Please find the updated assets below.</p>
-<p>&nbsp;</p>
+<p>Hi [user_email],</p>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>
+<p>There are new files available for download in the RTL CBS Operator Site. The files below are sent to you based on the profile you have provided.</p>
+<p>You may download relevant documents from the links below.</p>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -759,7 +824,6 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <td>&nbsp;</td>
 <td>
 ';
-
 
 $operator_site_link = get_home_url();
 $email_files_counter = array();
@@ -769,14 +833,12 @@ if( count($files) > 0 ):
 
 	foreach ($files as $post_id => $type) :
 		$is_channel_material = checkIfChannelMaterials($post_id);
-		// echo "<br>is_channel_material:".$is_channel_material;
+
 		if( count($type['show']) > 0 ) :
 			$show_title = get_the_title($post_id);
 
 			$show_title = $is_channel_material['is_channel_material'] != false ? $is_channel_material['channel'] : $show_title;
 			$permalink = get_permalink($post_id).$is_channel_material['channel_switcher'];
-			// echo "<br>is_channel_material : ";
-			// print_r($is_channel_material);
 			
 			$message_temp = '
 			<tr style="background-color: #3b3838; color: #fff;">
@@ -830,8 +892,6 @@ if( count($files) > 0 ):
 				$message_temp = '';
 			endforeach;
 		endif;
-
-
 		
 		if( $promo_files_control[ $is_channel_material['channel'] ] > 0 ){
 			if( count($type['promo']) > 0 ) :
@@ -839,7 +899,6 @@ if( count($files) > 0 ):
 				$is_break = false;
 				foreach ($type['promo'] as $key => $promo_info) :
 					$email_files_counter[$is_channel_material['channel']]++;
-					// echo "<br>Promo info:";print_r($promo_info);
 					$permalink = $operator_site_link.'/promos/'.$is_channel_material['channel_switcher'];
 					if( $promo_counter > 0 ) :
 						$message_temp = '
@@ -868,13 +927,9 @@ if( count($files) > 0 ):
 					}
 				endforeach;
 				$promo_files_control[ $is_channel_material['channel'] ] = $promo_counter;
-
 			endif;
-
 		}
-
 	endforeach;
-	
 endif;
 
 if( isset($message_entertainment) && $email_files_counter['entertainment'] > 0  ):
@@ -920,13 +975,7 @@ if( isset($message_entertainment) && $email_files_counter['entertainment'] > 0  
 	/* END OF PROMOS SECTION */
 endif;
 
-// $message .= $message_extreme['channel'];//count($message_extreme['channel']);
-// echo "<pre>";
-// echo "message_extreme['channel']";
-// print_r($message_extreme['channel']);
-// echo "</pre>";
 if( isset($message_extreme) && $email_files_counter['extreme'] > 0 ):
-	// echo "counter:".($email_files_counter['extreme'] > 0);
 	$message .= '<p style="color:#db302f;margin-top: 30px;" ><b>EXTREME</b></p>';
 	/* SHOWS SECTION */
 	if( isset($message_extreme['shows'])) :
@@ -969,10 +1018,7 @@ if( isset($message_extreme) && $email_files_counter['extreme'] > 0 ):
 	/* END OF PROMOS SECTION */
 endif;
 
-
-
 $message .= '
-
 <p>&nbsp;</p>
 </td>
 <td>&nbsp;</td>
@@ -980,7 +1026,8 @@ $message .= '
 <tr>
 <td>&nbsp;</td>
 <td>
-<p>To view and download the files, log on to the&nbsp;<a title="Operator Site" href="'.$operator_site_link.'" target="_blank">Operator Site</a>.</p>
+<p>To access and download the full range of assets, please log on to the&nbsp;<a title="Operator Site" href="'.$operator_site_link.'" target="_blank">Operator Site</a>.</p>
+<p>Please contact us if you wish to receive notification for other files that are uploaded.</p>
 <p>&nbsp;</p>
 <p>Thanks,</p>
 <p><strong>RTL CBS</strong></p>
@@ -995,29 +1042,32 @@ $message .= '
 </center></td>
 </tr>
 <tr>
-<td><center><img src="'.$plugin_img_dir.'rtl-logo-plain.png" alt="RTL CBS Logo" /></center>
+<td><center><img src="'.$footer_url.'" alt="RTL CBS Footer Image" /></center>
 
 <p>&nbsp;</p>
 </td>
 </tr>
 </tbody>
 </table>
- </body></html>
+</body></html>
 	';
 	
 	if( $email_files_counter['entertainment'] > 0 ||  $email_files_counter['extreme'] > 0 ){
+		/* Uncomment this group of code if you want to debug */
 		// echo $message;
+		// return true;
+		/* END Uncomment this group of code if you want to debug */
 		
-		// Start output buffering to grab smtp debugging output
+		/* Start output buffering to grab smtp debugging output*/
 		ob_start();
 
-		// Send the test mail
+		/* Send the test mail*/
 		$result = wp_mail($to,$subject,$message,$headers);
 			
-		// Grab the smtp debugging output
+		/* Grab the smtp debugging output*/
 		$smtp_debug = ob_get_clean();
 		
-		// Output the response
+		/* Output the response*/
 		return $result;
 	}
 	return false;

@@ -8,78 +8,59 @@
  * @see: http://moderntribe.github.io/products-engineering/css/
  */
 
-#tribe-app-shop {
-	max-width: 960px;
-}
-#tribe-app-shop .addon-grid {
-	width: 100%;
-}
-#tribe-app-shop .header h1 {
+.tribe-addon {
+	box-sizing: border-box;
 	display: inline-block;
-}
-#tribe-app-shop .header .button {
-	margin-top: 10px;
-}
-#tribe-app-shop .tribe-addon {
-	background-color: #fff;
-	border-bottom: 1px solid #dfdfdf;
-	display: inline-block;
-	margin: 0 15px 15px 0;
+	margin-right: 10px;
 	overflow: hidden;
-	padding: 0;
-	position: relative;
+	padding: 20px 20px 20px 0;
 	vertical-align: top;
 	width: 300px;
-	border-radius: 3px 3px 3px 3px;
-	box-sizing: border-box;
 }
-#tribe-app-shop .tribe-addon h4 {
+
+.tribe-addon .thumb img {
+	max-width: 100%;
+	width: 100%;
+}
+
+.tribe-addon h4 {
 	font-size: 1.17em;
-	margin: 15px 0;
 }
-#tribe-app-shop .tribe-addon h4 a {
+
+.tribe-addon h4 a {
 	text-decoration: none;
 }
-#tribe-app-shop .tribe-addon .button {
-	bottom: 15px;
+
+.addon-grid {
+	width: 100%;
+}
+
+.category-title {
+	clear: both;
 	display: block;
-	position: absolute;
-	width: 123px;
+	margin-bottom: 10px;
 }
-#tribe-app-shop .tribe-addon .button-disabled {
-	padding-left: 3px;
-	width: 100px;
-}
-#tribe-app-shop .tribe-addon .button-disabled .dashicons {
-	font-size: 28px;
-	padding-right: 9px;
-}
-#tribe-app-shop .tribe-addon .caption {
-	padding: 0 15px 45px 15px;
-}
-#tribe-app-shop .tribe-addon .thumb img {
-	height: 228px;
-	max-width: 100%;
-	width: 300px;
-}
-#tribe-app-shop .tribe-addon.first {
-	margin: 20px 0;
+
+.tribe-addon.first {
+	border-bottom: 1px solid #dfdfdf;
+	margin: 20px 0 10px;
 	overflow: hidden;
-	padding: 0;
-	width: 937px;
+	padding: 0 0 20px 330px;
+	width: 100%;
 }
-#tribe-app-shop .tribe-addon.first h4 {
+
+.tribe-addon.first h4 {
 	font-size: 20px;
 	line-height: 1.4;
-	margin: 15px 0 0 0;
+	margin: 0;
 }
-#tribe-app-shop .tribe-addon.first .caption {
-	display: inline-block;
-	padding-left: 20px;
-	width: 600px;
-}
-#tribe-app-shop .tribe-addon.first .thumb {
+
+.tribe-addon.first .thumb {
 	float: left;
-	height: 228px;
+	margin-left: -330px;
 	width: 300px;
+}
+
+.tribe-addon.first .description {
+	max-width: 600px;
 }

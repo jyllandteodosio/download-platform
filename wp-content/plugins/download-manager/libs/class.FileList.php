@@ -351,7 +351,8 @@ class FileList
                                     'channel_highlights'=> 'highlights',
                                     'channel_brand'     => 'brand',
                                     'channel_boiler'    => 'boiler',
-                                    'channel_catchup'   => 'catch'
+                                    'channel_catchup'   => 'catch',
+                                    'channel_catchup_img' => 'catch up images'
                                     );
     private static $operator_prefix_list = array(
                                     /* PREFIX FOR SHOW IMAGES*/
@@ -373,7 +374,7 @@ class FileList
      * @return string
      * @usage Generate file list with preview - key art images
      */
-    public static function CategorizedFileList($allfiles_sorted = array(), $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null, $post_id = null, $permalink = ""){
+    public static function CategorizedFileList($allfiles_sorted = array(), $prefix = null, $category = 'show',$file = null, $specific_thumbnails = null, $fileType = null, $fileinfo = null, $post_id =null, $permalink = ""){
         $fhtml = '';
         if (is_array($allfiles_sorted)) {
             foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
@@ -394,7 +395,9 @@ class FileList
                 $file['ID'] = null;
                 $filepath = wpdm_download_url($file) . "&ind=" . $ind;
                 $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
-                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink);  
+                $file_upload_date = $fileType != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : date('n/j/y', strtotime($sfileOriginal['upload_date']));
+                
+                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink, $file_upload_date);  
             }
         }
         return $fhtml;
@@ -406,10 +409,9 @@ class FileList
      * @return html
      * @usage returns html format of displayed file panel
      */
-    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null, $post_id = null, $permalink = "") {
+    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null, $post_id = null, $permalink = "", $file_upload_date) {
         $fhtml = "";
         $postID = $post_id;
-        // $postID = get_the_id();
         $userID = get_current_user_id( );
         $channel = $_SESSION['channel'];
         $ind = \WPDM_Crypt::Encrypt($sfile);
@@ -423,13 +425,14 @@ class FileList
         $isFileRemovable = !checkFileInCart($fileID) ? "" : "added-to-cart";
         $fileTitleTrimmed = mb_strimwidth($fileTitle, 0, 48, "...");
         
-        /* Check if EPG file - will assign a special thumbnail if ever */
-        if( contains($sfile,self::$prefix_list['channel_epg']) ){
+        /* Check if EPG file will assign a special thumbnail if ever - Tassha Nakagawa */
+        if ( contains($fileTitle,self::$prefix_list['channel_epg']) ) {
             $thumb_path = getEPGThumbnail($fileTitle, $postID, 'epg');
-
-        }else if( contains($sfile,self::$prefix_list['channel_catchup']) ){
+        } else if ( contains($fileTitle,self::$prefix_list['channel_catchup_img']) ) { 
+            $thumb_path = getEPGThumbnail($fileTitle, $postID, 'catchup_img');
+        } else if ( contains($fileTitle,self::$prefix_list['channel_catchup']) ) {
             $thumb_path = getEPGThumbnail($fileTitle, $postID, 'catchup');
-        }else {
+        } else {
             $thumb_path = WPDM_CACHE_DIR.basename($thumb);
         }
 
@@ -438,7 +441,7 @@ class FileList
             $file_thumb = '<img src="'.$thumb.'" alt="'.$fileTitle.'" title="'.$fileTitle.'" />';
         }
         /* Will assign a thumbnail preview For EPG Files */
-        else if(    ( contains($sfile,self::$prefix_list['channel_epg']) || contains($sfile,self::$prefix_list['channel_catchup']) )  
+        else if( ( contains($sfile,self::$prefix_list['channel_epg']) || contains($sfile,self::$prefix_list['channel_catchup']) )  
                     && file_exists(getFileAbsolutePathByURL($thumb_path)) ){
             $file_thumb = '<img src="'.$thumb_path.'" alt="'.$fileTitle.'" title="'.$fileTitle.'" />';
         }
@@ -463,14 +466,14 @@ class FileList
         $cart_array['channel'] = $channel;
         $cart_data = prepare_cart_data($cart_array);
         $serialized_cart = serialize($cart_data);
-        
+
         // FILE PANEL CONTAINER 
         $fhtml .= "     <div class='item {$fileID} {$isFileRemovable}'>";
         $fhtml .= "         <input type='hidden' name='{$fileID}' value='{$serialized_cart}'>";
         $fhtml .=           "<div class='file-thumb'>".$file_thumb."</div>";
         $fhtml .= "         <div class='show-meta'>";
         $fhtml .= "             <p>{$fileTitleTrimmed}</p>";
-        $fhtml .= "             <p class='file-size'>".custom_wpdm_file_size($absolute_file_path,0)."</p>";
+        $fhtml .= "             <p class='file-size'>".custom_wpdm_file_size($absolute_file_path,0)." | Uploaded on {$file_upload_date}</p>";
         $fhtml .= "             <a href='' class='add-to-cart-btn to-uppercase {$fileID} $isFileClickable'  {$isFileAdded} data-file-id='{$fileID}' data-file-title='{$fileTitle}' data-file-path='{$filepath}' data-download-url='{$downloadUrl}' data-thumb='{$thumb}' data-post-id='{$postID}' data-file-type='{$fileType}' data-user-id='{$userID}' data-channel='{$channel}' >{$buttonText}</a>";
         $fhtml .= "         </div>";
         $fhtml .= "         <span class='close-btn' data-file-id='{$fileID}' data-user-id='{$userID}'><i class='fa fa-lg fa-times'></i></span>";

@@ -213,15 +213,72 @@ function wppb_front_end_password_recovery(){
                 $key = wppb_retrieve_activation_key( $requestedUserLogin );
 
                 //send primary email message
-                $recoveruserMailMessage1  = sprintf( __('Someone requested that the password be reset for the following account: <b>%1$s</b><br/>If this was a mistake, just ignore this email and nothing will happen.<br/>To reset your password, visit the following link:%2$s', 'profile-builder'), $display_username_email, '<a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'</a>');
+                $recoveruserMailMessage1 = sprintf( __('
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;UTF-8" />
+<style type="text/css">
+body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
+</style>
+</head>
+<body >
+<table style="height: 265px; background-color: #000;" width="484" cellspacing="0" cellpadding="0">
+<tbody>
+
+<tr style="height: 20px;"><td>&nbsp;</td></tr>
+<tr><td>
+<center>
+<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280" />
+</center>
+</td></tr>
+<tr style="height: 10px;"><td>&nbsp;</td></tr>
+
+<tr><td><center>
+<table style="height:186px; background-color:#F4F3F4; color:#444444; margin-left: auto; margin-right:auto;" width="480">
+<tbody>
+<tr>
+<td width="10">&nbsp;</td>
+<td>
+<br/>
+Hi <b>%1$s</b>, 
+<br/><br/> 
+We received a request to reset your RTL CBS Operator Site password.  
+<br/>
+
+<a href="'. esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'"> 
+<center><img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/reset_button.png" /></center>
+</a>
+
+If you ignore this message, your password won\'t be changed.
+<br/><br/>
+</td>
+<td width="10">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</center></td></tr>
+<tr style="height: 2px;"><td></td></tr>
+
+</tbody>
+</table>
+</body></html>
+', 'profile-builder'), $display_username_email);
+
+                /* EMAIL LINK */
+				// If the button above does not work, please visit this <a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">link</a>.
+				// <br/><br/>
+
+                // $recoveruserMailMessage1  = sprintf( __('Someone requested that the password be reset for the following account: <b>%1$s</b><br/>If this was a mistake, just ignore this email and nothing will happen.<br/>To reset your password, visit the following link:%2$s', 'profile-builder'), $display_username_email, '<a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'</a>');
                 $recoveruserMailMessage1  = apply_filters( 'wppb_recover_password_message_content_sent_to_user1', $recoveruserMailMessage1, $requestedUserID, $requestedUserLogin, $requestedUserEmail );
 
-                $recoveruserMailMessageTitle1 = sprintf(__('Password Reset from "%1$s"', 'profile-builder'), $blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES));
+                $recoveruserMailMessageTitle1 = sprintf(__('Reset Your RTL CBS Operator Site Password', 'profile-builder'), $blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES));
                 $recoveruserMailMessageTitle1 = apply_filters('wppb_recover_password_message_title_sent_to_user1', $recoveruserMailMessageTitle1, $requestedUserLogin);
 
                 //we add this filter to enable html encoding
                 add_filter('wp_mail_content_type',create_function('', 'return "text/html"; '));
-                $recoveruserMailMessage1 = templated_email($recoveruserMailMessage1); /* Custom code by Dianne D.R. - adds email template */
+                // $recoveruserMailMessage1 = templated_email($recoveruserMailMessage1); /* Custom code by Dianne D.R. - adds email template */
+                
                 //send mail to the user notifying him of the reset request
                 if (trim($recoveruserMailMessageTitle1) != ''){
                     $sent = wp_mail($requestedUserEmail, $recoveruserMailMessageTitle1, $recoveruserMailMessage1);
@@ -273,7 +330,52 @@ function wppb_front_end_password_recovery(){
                     $display_username_email = $user_info->user_email;
 
                 //send secondary mail to the user containing the username and the new password
-                $recoveruserMailMessage2  = sprintf( __( 'You have successfully reset your password to: %1$s', 'profile-builder' ), $new_pass );
+                // $recoveruserMailMessage2  = sprintf( __( 'You have successfully reset your password to: %1$s', 'profile-builder' ), $new_pass );
+                $recoveruserMailMessage2  = sprintf( __( '
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;UTF-8" />
+<style type="text/css">
+body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:12px;text-align: left;line-height:15px;}    
+</style>
+</head>
+<body >
+<table style="height: 225px; background-color: #000;" width="484" cellspacing="0" cellpadding="0">
+<tbody>
+
+<tr style="height: 20px;"><td>&nbsp;</td></tr>
+<tr><td>
+<center>
+<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280" />
+</center>
+</td></tr>
+<tr style="height: 10px;"><td>&nbsp;</td></tr>
+
+<tr><td><center>
+<table style="height:120px; background-color:#F4F3F4; color:#444444; margin-left: auto; margin-right:auto;" width="480">
+<tbody>
+<tr>
+<td width="10">&nbsp;</td>
+<td>
+<br/>
+Hi <b>%1$s</b>, 
+<br/><br/> 
+You have successfully reset your password.
+<br/><br/>
+</td>
+<td width="10">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</center></td></tr>
+<tr style="height: 2px;"><td></td></tr>
+
+</tbody>
+</table>
+</body></html>
+', 'profile-builder' ), $display_username_email );
+
                 $recoveruserMailMessage2  = apply_filters( 'wppb_recover_password_message_content_sent_to_user2', $recoveruserMailMessage2, $display_username_email, $new_pass, $userID );
 
                 $recoveruserMailMessageTitle2 = sprintf( __('Password Successfully Reset for %1$s on "%2$s"', 'profile-builder' ), $display_username_email, $blogname = wp_specialchars_decode( get_option('blogname'), ENT_QUOTES ) );

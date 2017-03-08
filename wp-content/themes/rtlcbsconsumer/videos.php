@@ -42,7 +42,8 @@ get_template_part('channel-setter');
 				                if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):?>
 				                    <div class="video-show swiper-slide <?php echo $counter++ == 1 ? 'active':'';?>" data-vimeo-id="<?php the_field('vimeo_id'); ?>">
 										<span class="video-title"><?php the_title(); ?></span>
-										<img src="<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>" class="video-thumbnail">
+				                    	<div class="video-thumbnail" style="background-image:url('<?php echo wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0]; ?>');">
+				                    	</div>
 									</div>
 				                <?php endif;
 				            endwhile;

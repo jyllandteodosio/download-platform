@@ -8,38 +8,7 @@ class Package {
     public $PackageData = array();
 
     // Added by Dianne D.R. - custom vars
-    private static $file_attr_list = array(
-                                    'image' =>  array (
-                                        'show'  => array (
-                                            'key_art'           => array('prefix' => 'key'          , 'template_shortcode' => 'file_category,key'), 
-                                            'episodic_stills'   => array('prefix' => 'epi'          , 'template_shortcode' => 'file_category,epi'), 
-                                            'gallery'           => array('prefix' => 'gallery'      , 'template_shortcode' => 'file_category,gal'), 
-                                            'logos'             => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,log'),
-                                            'others'            => array('prefix' => 'oth'          , 'template_shortcode' => 'file_category,oth')),
-                                        'channel'=> array (
-                                            'channel_logos'     => array('prefix' => 'logo'         , 'template_shortcode' => 'file_category,cm_log'), 
-                                            'channel_elements'  => array('prefix' => 'elements'     , 'template_shortcode' => 'file_category,cm_ele'), 
-                                            'channel_others'    => array('prefix' => 'cm_oth'       , 'template_shortcode' => 'file_category,cm_oth'))
-                                        ),
-                                    'document' => array (
-                                        'show'  => array (
-                                            'synopses'          => array('prefix' => 'synopsis'     , 'template_shortcode' => 'file_category,syn' ),
-                                            'transcripts'       => array('prefix' => 'trans'        , 'template_shortcode' => 'file_category,epk' ),
-                                            'fact_sheet'        => array('prefix' => 'fact'         , 'template_shortcode' => 'file_category,fac' ),
-                                            'fonts'             => array('prefix' => 'font'         , 'template_shortcode' => 'file_category,fon' ),
-                                            'document_others'   => array('prefix' => 'doth'         , 'template_shortcode' => 'file_category,doth')),
-                                        'channel' => array (
-                                            'channel_epg'       => array('prefix' => 'epg'          , 'template_shortcode' => 'file_category,cm_epg'),
-                                            'channel_highlights'=> array('prefix' => 'highlights'   , 'template_shortcode' => 'file_category,cm_hig'),
-                                            'channel_brand'     => array('prefix' => 'brand'        , 'template_shortcode' => 'file_category,cm_bra'),
-                                            'channel_boiler'    => array('prefix' => 'boiler'       , 'template_shortcode' => 'file_category,cm_boi'),
-                                            'channel_catchup'   => array('prefix' => 'catch'        , 'template_shortcode' => 'file_category,cm_cat'))
-                                        ),
-                                    'promo' => array (
-                                        'show'  => array (
-                                            'promos'            => array('prefix' => 'promo'        , 'template_shortcode' => 'file_category,promo'))
-                                        )
-                                    );
+    private static $file_attr_list = array();                            
     private static $operator_prefix_list = array(
                                     'affiliate'         => 'Affiliate'
                                     );
@@ -47,6 +16,9 @@ class Package {
     // End of custom vars
 
     function __construct($ID = null){
+        /* Custom Code */
+        self::$file_attr_list = get_file_prefixes('categorized');   
+
         global $post;
         if(!$ID && $post->post_type == 'wpdmpro') $ID = $post->ID;
         $this->ID = $ID;
@@ -90,8 +62,12 @@ class Package {
 
         $vars = array_merge($vars, $data);
 
+        $vars['current_channel'] = $_SESSION['channel'];
+        $_GET['filter'] != null ? $vars['filter_days'] = $_GET['filter'] : $vars['filter_days'] = 0;
+        $vars['days_filter_dropdown'] = self::GenerateDaysFilter();
+
         $vars['files'] = get_post_meta($vars['ID'], '__wpdm_files', true);
-        $vars['file_count'] = count($vars['files']);
+        // $vars['file_count'] = count($vars['files']);
         if(strpos("_".$template,'[file_list]') || strpos("_".$template,'[play_list]') || strpos("_".$template,'[audio_player]')) {
             $vars['file_list'] = \WPDM\libs\FileList::Table($vars);
             $vars['play_list'] = $vars['file_list'];
@@ -119,8 +95,6 @@ class Package {
         // End of custom shortcodes from acf
         
         // @todo:: minify code
-        if(function_exists('set_last_visited_show')) set_last_visited_show();
-        // $file['ID'] = $this->ID;
         $file['files'] = maybe_unserialize($vars['files']);
         $fhtml = '';
         $files_counter = 0;
@@ -134,7 +108,7 @@ class Package {
                 $specific_thumbnails = array(); /* Thumbnails container for TIF files */
 
                 /* Sort files by file title */
-                $filename_sort = array();
+               /* $filename_sort = array();
                 foreach ($allfiles as $key => $row) {
                     if (!contains($fileinfo[$key]['title'],self::$specific_thumbs_prefix))
                         $filename_sort[$key] = $fileinfo[$key]['title'];
@@ -146,7 +120,7 @@ class Package {
                 $allfiles_sorted = array();
                 foreach ($filename_sort as $key => $value) {
                     $allfiles_sorted[$key] = $allfiles[$key];
-                }
+                }*/
 
                 /* For Promo Files */
                 if (is_array($allpromofiles)) {
@@ -164,8 +138,14 @@ class Package {
                 }
 
                /* For all WPDM Files */
-                if (is_array($allfiles_sorted)) {
-                    foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
+                if (is_array($allfiles)) {
+                    $affiliate_files = array();
+                    $user_id = get_current_user_id();
+                    $current_operator_group = get_current_user_operator_group();
+                    $current_country_group = get_current_user_country_group();
+                    $is_pr_group = check_user_is_pr_group( $user_id, $current_operator_group, $current_country_group );
+              
+                    foreach ($allfiles as $fileID => $sfileOriginal) {
                         $sfile = $sfileOriginal;
                         $fileTitle = isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
                                         $fileinfo[$sfile]['title']:
@@ -180,23 +160,23 @@ class Package {
                             foreach (self::$file_attr_list['image'] as $file_type => $file_category) {
                                 foreach ($file_category as $file_category_key => $tab) {
                                     $prefix = $tab['prefix'];
-                                    // KEY
+                                    // "KEY" - Key Art
                                     if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['key_art']['prefix']){
                                         $categorized_files[self::$file_attr_list['image']['show']['key_art']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // EPI
+                                    // "EPI" - Episodic Stills
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['episodic_stills']['prefix']){
                                         $categorized_files[self::$file_attr_list['image']['show']['episodic_stills']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // GAL
+                                    // "GALLERY" - Gallery
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['gallery']['prefix']){
                                         $categorized_files[self::$file_attr_list['image']['show']['gallery']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // LOG
+                                    // "LOGO" - Logo
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['logos']['prefix']){
                                         $categorized_files[self::$file_attr_list['image']['show']['logos']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // OTHERS
+                                    // SHOW IMAGES OTHERS
                                     else if( !contains($fileTitle, self::$file_attr_list['image']['show']['key_art']['prefix']) 
                                         && !contains($fileTitle, self::$file_attr_list['image']['show']['episodic_stills']['prefix']) 
                                         && !contains($fileTitle, self::$file_attr_list['image']['show']['gallery']['prefix']) 
@@ -205,11 +185,11 @@ class Package {
                                         $categorized_files[self::$file_attr_list['image']['show']['others']['prefix']][$fileID] = $sfileOriginal;
                                     }
                                     /* END SHOW IMAGES ======================================================================= */
-                                    // CM_ELE
+                                    // "ELEMENTS" - Elements
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['channel']['channel_elements']['prefix']){
                                         $categorized_files[self::$file_attr_list['image']['channel']['channel_elements']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // CM_OTH
+                                    // CHANNEL MATERIALS IMAGES OTHERS
                                     else if( !contains($fileTitle, self::$file_attr_list['image']['channel']['channel_logos']['prefix']) 
                                         && !contains($fileTitle, self::$file_attr_list['image']['channel']['channel_elements']['prefix']) 
                                         && $prefix == self::$file_attr_list['image']['channel']['channel_others']['prefix']){
@@ -217,28 +197,28 @@ class Package {
                                     } 
                                 }   
                             }
-                        } else{
+                        } else {
                             foreach (self::$file_attr_list['document'] as $file_type => $file_category) {
                                 foreach ($file_category as $file_category_key => $tab) {
                                     $prefix = $tab['prefix'];
 
-                                    // SYN
+                                    // "SYNOPSIS" - Synopses
                                     if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['synopses']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['synopses']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // EPK
+                                    // "TRANS" - Transcripts / EPK
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['transcripts']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['transcripts']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // FAC
+                                    // "FACT" - Fact Sheet / Press Pack
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['fact_sheet']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['fact_sheet']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // FON
+                                    // "FONT" - Fonts
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['show']['fonts']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['fonts']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // DOTH
+                                    // SHOW DOCUMENT OTHERS
                                     else if( !contains($fileTitle, self::$file_attr_list['document']['show']['synopses']['prefix']) 
                                         && !contains($fileTitle, self::$file_attr_list['document']['show']['transcripts']['prefix']) 
                                         && !contains($fileTitle, self::$file_attr_list['document']['show']['fact_sheet']['prefix']) 
@@ -246,29 +226,69 @@ class Package {
                                         && $prefix == self::$file_attr_list['document']['show']['document_others']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['show']['document_others']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // CM_HIG
+                                    // "HIGHLIGHTS" - Highlights
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_highlights']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['channel']['channel_highlights']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // CM_BRA
+                                    // "BRAND" - Brand Guide
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_brand']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['channel']['channel_brand']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                    // CM_BOI
+                                    // "BOILER" - Boiler Plates
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_boiler']['prefix']){
                                         $categorized_files[self::$file_attr_list['document']['channel']['channel_boiler']['prefix']][$fileID] = $sfileOriginal;
                                     }
-                                     // CM_EPG
+                                    // "EPG" - EPG
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_epg']['prefix']){
-                                        if ( is_generate_file_panel( self::$operator_prefix_list['affiliate'], $fileTitle, $allfiles_sorted, $fileinfo) ){
+                                        if( get_current_user_role() == "administrator" || 
+                                            ($is_pr_group == 'yes' && $current_country_group == 'all' ) ) {
+                                            $affiliate_files['channel_epg'][$fileID] = $sfileOriginal;
+
+                                        }else if( $is_pr_group == 'yes' ){
+                                            $sub_operators = get_operators_by_country( $current_country_group );
+                                            foreach ($sub_operators as $key => $sub_op) {
+
+                                                if ( contains($fileTitle, $sub_op->operator_group) ){
+                                                    $categorized_files[self::$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $sfileOriginal;
+
+                                                }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                                    $affiliate_files['channel_epg'][$fileID] = $sfileOriginal;
+                                                }
+                                            }
+
+                                        } else if ( contains($fileTitle, $current_operator_group) ){
                                             $categorized_files[self::$file_attr_list['document']['channel']['channel_epg']['prefix']][$fileID] = $sfileOriginal;
+
+                                        } else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                            $affiliate_files['channel_epg'][$fileID] = $sfileOriginal;
                                         }
                                     }
-                                    // CM_CAT
+                                    // "CATCH" - Catch Up
                                     else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_catchup']['prefix']){
-                                        if ( is_generate_file_panel( self::$operator_prefix_list['affiliate'], $fileTitle, $allfiles_sorted, $fileinfo) ){
+                                        
+                                        if( get_current_user_role() == "administrator" || 
+                                            ($is_pr_group == 'yes' && $current_country_group == 'all' ) ) {
+                                            $affiliate_files['channel_catchup'][$fileID] = $sfileOriginal;
+
+                                        }else if( $is_pr_group == 'yes' ){
+                                            $sub_operators = get_operators_by_country( $current_country_group );
+                                            foreach ($sub_operators as $key => $sub_op) {
+
+                                                if ( contains($fileTitle, $sub_op->operator_group) ){
+                                                    $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
+
+                                                }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                                    $affiliate_files['channel_catchup'][$fileID] = $sfileOriginal;
+                                                }
+                                            }
+
+                                        }else if ( contains($fileTitle, $current_operator_group) ){
                                             $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
+
+                                        }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                            $affiliate_files['channel_catchup'][$fileID] = $sfileOriginal;
                                         }
+
                                     }
                                 }
                             }
@@ -276,15 +296,31 @@ class Package {
 
 
                     }
-                }
-            }
 
+                    /* FOR EPG AND CATCHUP ONLY -  Check if specific user already have some epg/catchup files and if affilate epg/catchup temporary container is not empty. Will assign the buffered affiliate files if epg/catchup files is empty */
+                    $affiliate_categories = [ 'channel_epg', 'channel_catchup' ];
+                    foreach ($affiliate_categories as $key => $prefix) {
+                        if( count( $categorized_files[self::$file_attr_list['document']['channel'][$prefix]['prefix']] ) == 0 && 
+                            isset( $affiliate_files[$prefix] ) > 0 ){
+                            foreach ($affiliate_files[$prefix] as $fileID => $sfileOriginal) {
+                                $categorized_files[self::$file_attr_list['document']['channel'][$prefix]['prefix']][$fileID] = $sfileOriginal;
+                            }
+                        }
+                    }
+                } 
+            } /* END of is_array( allfiles_sorted ) */
+
+
+            $tab_attr_array = array();
             foreach (self::$file_attr_list as $file_type => $file_category) {
                 foreach ($file_category as $file_category_key => $tab) {
                     foreach ($tab as $key => $tab_attr) {
-                        if( array_key_exists($tab_attr['prefix'], $categorized_files)){
-                            if(strpos("_".$template,'['.$tab_attr['template_shortcode'].']')){
-
+                        
+                        //* Push all file prefixes in an array
+                        array_push($tab_attr_array, $tab_attr['prefix']);
+                            
+                        if ( array_key_exists($tab_attr['prefix'], $categorized_files)) {
+                            if (strpos("_".$template,'['.$tab_attr['template_shortcode'].']')) {
                                 $file_list_data_prep = array (
                                         'all_files' => $categorized_files[$tab_attr['prefix']],
                                         'prefix' => $tab_attr['prefix'],
@@ -304,19 +340,36 @@ class Package {
                                 /* Commented out to use lazy loading feature */
                                 // $vars[$tab_attr['template_shortcode']] = \WPDM\libs\FileList::CategorizedFileList($categorized_files[$tab_attr['prefix']] ,$tab_attr['prefix'] ,$file_category_key ,$file ,$specific_thumbnails ,$file_type ,$fileinfo);
                             }
-                        }else{
+                        } else {
                             $vars[$tab_attr['template_shortcode']] = "<p class='files-status-message' style='color:black'>No files available for download.</p>";
                         }
                     }
                 }
             }
 
-        }else{
+            //* Call file counter function and generate initial filecount and shortcode
+            $filter_days = $vars['filter_days'];
+            $categorized_files_serialized = serialize($categorized_files);
+            $vars['categorized_files'] = "<input name='categorized-serialized-data' class='categorized-serialized-data' type='hidden' value='".$categorized_files_serialized."'>";
+
+            $file_count_array = generate_file_count($categorized_files, $tab_attr_array, $filter_days); 
+
+            foreach ( $file_count_array as $file_prefix => $file_count) {
+                if ($file_count > 0) {
+                    $vars['file_count_' . $file_prefix] = '<span class="file-count '.$file_prefix.'">' . $file_count . '</span>';            
+                } else {
+                    $vars['file_count_' . $file_prefix] = "";    
+                }
+            }
+            
+
+        } else {
             $vars[self::$file_attr_list['image']['show']['key_art']['template_shortcode']] = "<p style='color:black'>This package is not available for download</p>";
         }
         
         // Shows - Custom Script
         if(strpos("_".$template,'[custom_script]')) $vars['custom_script'] = '';//\WPDM\libs\FileList::getScriptFile();
+
         // End of custom 
     endif;
 
@@ -480,6 +533,31 @@ class Package {
         return $this;
     }
 
+    /** 
+     * @usage Generate dropdown based on selected filter
+     * @param null
+     * @return string
+     * Tassha Nakagawa
+     */
+    public static function GenerateDaysFilter() {
+        $_GET['filter'] != null ? $selected_days = $_GET['filter'] : 0;
+        $days_array = array(5,10,15,20,30);
+
+        $dropdown_filter = '<select class="recent-uploads-filter show-page-filter"><option value="0">All Files</option>';
+            
+        foreach ( $days_array as $cnt ) {
+            if ( $selected_days == $cnt ) {
+                $dropdown_filter .= '<option value='.$cnt.' selected>'.$cnt.' Days</option>';  
+            } else {
+                $dropdown_filter .= '<option value='.$cnt.'>'.$cnt.' Days</option>';
+            }
+        }
+
+        $dropdown_filter .= '</select>';
+
+        return $dropdown_filter;
+    }
+
     /**
      * @usage Get all or any specific package info
      * @param $ID
@@ -626,12 +704,9 @@ class Package {
      * @param $id
      * @return int
      */
-    public static function fileCount($ID){
-
+    public static function fileCount($ID) {
         $count = count(self::getFiles($ID));
-
         return $count;
-
     }
 
     /**

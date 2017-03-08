@@ -70,6 +70,20 @@ a:hover {
 	background: #000 url('images/background-blue.png') no-repeat fixed center top;
 	background-size: cover;
 }
+
+.loading-bar {
+	background: url('images/loading-bar.gif') no-repeat center center;
+	height: 30px;
+	width: 160px;
+	margin: 0 auto;
+}
+
+.no-display {
+	display: none;
+}
+.block-display {
+	display: block;
+}
 /* BOOTSTRAP OVERRIDES
 ----------------------------------*/
 @media (min-width: 1200px) {
@@ -165,40 +179,37 @@ a:hover {
     vertical-align: middle;
 }
 
-.facebook {
+.social-icons{
 	font-size: 0;
 	display: inline-block;
-	width: 29px !important;
+	margin-left: 15px;
+	width: 31px !important;
 	height: 31px !important;
+}
+.instagram {
+	background-size: cover;
+    background-repeat: no-repeat;
+	background-image: url("images/instagram.png");
+	-pie-background: url("images/instagram.png");
+}
+
+.facebook {
 	background-position: -2px -1px;
 	background-image: url("images/flat-sprites.svg");
 	-pie-background: url("images/flat-sprites.svg");
-	margin-left: 15px;
 }
 
 .twitter {
-	font-size: 0;
-	display: inline-block;
-	width: 29px !important;
-	height: 31px !important;
-	margin-left: 15px;
 	background-position: -44px -1px;
 	background-image: url("images/flat-sprites.svg");
 	-pie-background: url("images/flat-sprites.svg");
 }
 
-.social-footer {
-	/*margin-top: 10px;*/
-	margin-bottom: 10px;
-}
-
-
-
 .social-footer span {
 	vertical-align: -5px;
 }
 
-.social-footer .social {
+.social-footer .social-icons {
 	vertical-align: top;
 }
 
@@ -397,15 +408,17 @@ a:hover {
 }
 
 #masthead .logo {
-	width: 100%;
 	height: auto;
+	width: auto;
 }
 #masthead .logo.logo-entertainment {
-	max-width: 253px;
+	max-height: 82px;
+    width: auto;
 }
 #masthead .logo.logo-extreme {
-	max-width: 151px;
-	margin-left: 20px;
+	margin-left: 15px;
+    max-height: 82px;
+    width: auto;
 }
 
 #masthead .ad-container {
@@ -869,6 +882,12 @@ a:hover {
 .spotlight-title {
 	font-size: 19px;
 	margin-top: 0;
+}
+.spotlight-title a {
+	text-decoration: none
+}
+.spotlight-title a:hover {
+	text-decoration: underline;
 }
 
 .spotlight-excerpt {
@@ -1610,6 +1629,9 @@ a:hover {
 
 .video-thumbnail {
 	width: 100%;
+	height: 85px;
+	background-size: cover;
+	background-position: center;
 }
 
 .video-playlist-container .swiper-button-next, 
@@ -1741,11 +1763,6 @@ a:hover {
 	margin-top: 15px;
 }
 
-#home-video-player .video-thumbnail {
-	font-size: 10px;
-	height: auto;
-}
-
 @media (max-width: 639px) {
 	#home-video-player .thumbnail-container,
 	.video-player-side-container .video-show {
@@ -1766,7 +1783,7 @@ a:hover {
     -moz-border-radius:5px;
     background: #fff;
     overflow:hidden;
-    padding:10px 0;
+    padding:0px;
 }
 /* Swiper
 ----------------------------------*/
@@ -1834,7 +1851,7 @@ a:hover {
 }
 
 #featured-slideshow .title {
-	font-size: 35px;
+	font-size: 32px;
 	font-weight: bold;
 	line-height: 1;
 }
@@ -1871,14 +1888,16 @@ a:hover {
 	color: #000;
 }
 
-.swiper-container-fade .swiper-slide {
-	max-height: 350px;
-    overflow: hidden;
+.swiper-container-fade .swiper-slide,
+.show-banner {
+	height: 350px;
+    background-size: cover;
 }
 
 @media (max-width: 1119px) {
-	.swiper-container-fade .swiper-slide {
-		max-height: 320px;
+	.swiper-container-fade .swiper-slide,
+	.show-banner {
+		height: 320px;
 	    overflow: hidden;
 	}
 }
@@ -1906,8 +1925,9 @@ a:hover {
 	#featured-slideshow .swiper-photo {
 		float: right;
 	}
-	.swiper-container-fade .swiper-slide {
-		max-height: 245px;
+	.swiper-container-fade .swiper-slide,
+	.show-banner {
+		height: 245px;
 	    overflow: hidden;
 	}
 }
@@ -1966,17 +1986,9 @@ a:hover {
 		max-width: 105px;
 	}
 
-	#home-video-player .thumbnail-container {
-		height: 115px;
-	    overflow: hidden;
-	}
-	#home-video-player .video-thumbnail {
-		font-size: 10px;
-		height: auto;
-		margin-bottom: 20px;
-	}
-	.swiper-container-fade .swiper-slide {
-	    max-height: 203px;
+	.swiper-container-fade .swiper-slide,
+	.show-banner {
+	    height: 203px;
 	    overflow: hidden;
 	}
 
@@ -2002,15 +2014,17 @@ a:hover {
 		font-size: 12px;
 	}
 
-	.swiper-container-fade .swiper-slide {
-	    max-height: 155px;
+	.swiper-container-fade .swiper-slide,
+	.show-banner {
+	   	height: 155px;
 	    overflow: hidden;
 	}
 }
 
 @media (max-width: 480px) {
-	.swiper-container-fade .swiper-slide {
-	    max-height: 95px;
+	.swiper-container-fade .swiper-slide,
+	.show-banner {
+	    height: 95px;
 	    overflow: hidden;
 	}
 }

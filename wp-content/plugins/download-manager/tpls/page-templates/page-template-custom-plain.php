@@ -1,10 +1,10 @@
 <!-- WPDM Template: Plain Custom Template -->
- <div class="innerpage-heading-bar">
+ <div class="innerpage-heading-bar data-div-handler" data-channel="[current_channel]">
          <h1 class="page-title">[title]</h1>
       </div><!--innerpage-heading-bar-->
       <div class="clear"></div>   
 
-      <div class="shows-listing innerpage-show-listing show-catalog">
+      <div class="shows-listing innerpage-show-listing show-catalog channel-materials-tpl">
         <div class="main-tabs">
           <div class="shows-tab tab-trigger active-tab half to-uppercase pull-left text-center documents-tab" data-target="channelepg-tab-contents" data-sub-tabs="documents-sub-tabs"><a href="#">Documents</a></div>
           <div class="shows-tab tab-trigger half to-uppercase pull-left text-center images-tab" data-target="channellogos-tab-contents" data-sub-tabs="images-sub-tabs"><a href="#">Images</a></div>
@@ -12,18 +12,26 @@
         <div class="clear red-bar-separator"></div>    
 
         <div class="sub-tabs-wrap documents-sub-tabs fullwidth" data-parent-tab="documents-tab">
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelepg-tab" data-target="channelepg-tab-contents"><a href="#">EPG</a></div>
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelhighlights-tab" data-target="channelhighlights-tab-contents"><a href="#">Highlights</a></div>
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelbrand-tab" data-target="channelbrand-tab-contents"><a href="#">Brand Guide</a></div>    
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelboiler-tab" data-target="channelboiler-tab-contents"><a href="#">Boiler Plates</a></div>    
-          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelcatch-tab" data-target="channelcatch-tab-contents"><a href="#">Catch Up</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelepg-tab" data-target="channelepg-tab-contents">
+          <a href="#">EPG</a>[file_count_epg]</div>
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelhighlights-tab" data-target="channelhighlights-tab-contents">
+          <a href="#">Highlights</a>[file_count_highlights]</div>
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelbrand-tab" data-target="channelbrand-tab-contents">
+          <a href="#">Brand Guide</a>[file_count_brand]</div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelboiler-tab" data-target="channelboiler-tab-contents">
+          <a href="#">Boiler Plates</a>[file_count_boiler]</div>    
+          <div class="shows-tab tab-trigger sub-tabs fifths to-uppercase pull-left text-center channelcatch-tab" data-target="channelcatch-tab-contents">
+          <a href="#">Catch Up</a>[file_count_catch]</div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->  
 
         <div class="sub-tabs-wrap images-sub-tabs fullwidth" data-parent-tab="images-tab">
-          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channellogos-tab" data-target="channellogos-tab-contents"><a href="#">Logos</a></div>
-          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channelelements-tab mid-tab" data-target="channelelements-tab-contents"><a href="#">Elements</a></div>
-          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channelothers-tab" data-target="channelothers-tab-contents"><a href="#">Others</a></div>    
+          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channellogos-tab" data-target="channellogos-tab-contents">
+          <a href="#">Logos</a>[file_count_logo]</div>
+          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channelelements-tab mid-tab" data-target="channelelements-tab-contents">
+          <a href="#">Elements</a>[file_count_elements]</div>
+          <div class="shows-tab tab-trigger sub-tabs thirds to-uppercase pull-left text-center channelothers-tab" data-target="channelothers-tab-contents">
+          <a href="#">Others</a>[file_count_cm_oth]</div>    
           <div class="clear"></div>     
         </div><!-- subtabs-wrap -->                 
         <div class="clear"></div><!-- this will maintain the flow of elements even if the next elements were set to float -->
