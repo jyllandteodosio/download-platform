@@ -31,7 +31,7 @@
   	</div><!--main-content-wrap-->
 
   	<!--START SINGLE ITEM CATALOG: NOTE: THIS CONTENT FROM HERE IS JUST A COPY OF CATALOG ITEMS -->
-  	<div class="shows-listing innerpage-show-listing show-catalog">        
+  	<div class="shows-listing innerpage-show-listing show-catalog show-page-tpl">        
         <div class="main-tabs">
           <div class="shows-tab tab-trigger active-tab thirds to-uppercase pull-left text-center images-tab" data-target="images-tab-contents" data-sub-tabs="images-sub-tabs"><a href="#">Images</a></div>
           <div class="shows-tab tab-trigger thirds to-uppercase pull-left text-center documents-tab" data-target="documents-tab-contents" data-sub-tabs="documents-sub-tabs"><a href="#">Documents</a></div>

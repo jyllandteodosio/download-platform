@@ -4,7 +4,7 @@
       </div><!--innerpage-heading-bar-->
       <div class="clear"></div>   
 
-      <div class="shows-listing innerpage-show-listing show-catalog">
+      <div class="shows-listing innerpage-show-listing show-catalog channel-materials-tpl">
         <div class="main-tabs">
           <div class="shows-tab tab-trigger active-tab half to-uppercase pull-left text-center documents-tab" data-target="channelepg-tab-contents" data-sub-tabs="documents-sub-tabs"><a href="#">Documents</a></div>
           <div class="shows-tab tab-trigger half to-uppercase pull-left text-center images-tab" data-target="channellogos-tab-contents" data-sub-tabs="images-sub-tabs"><a href="#">Images</a></div>
