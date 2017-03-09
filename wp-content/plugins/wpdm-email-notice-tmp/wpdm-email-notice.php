@@ -65,7 +65,7 @@ function email_notice_deactivation() {
 		$where_post_id = $post_id != null ? " AND post_id = {$post_id} " : '';
 		$limit = $post_id != null ? " LIMIT 1 " : '';
 
-		$sql_query = "SELECT id, data_new, data_old, post_id FROM $wpdb->wpdm_email WHERE status = 'pending' ".$where_post_id."ORDER BY id DESC ".$limit;
+		$sql_query = "SELECT id, data_new, post_id FROM $wpdb->wpdm_email WHERE status = 'pending' ".$where_post_id."ORDER BY id DESC ".$limit;
 
 		$email_entries = $post_id != null ? $wpdb->get_results( $sql_query)[0] : $wpdb->get_results( $sql_query);
 		return $email_entries;

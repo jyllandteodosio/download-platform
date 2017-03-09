@@ -7,33 +7,6 @@ class WPDM_Notification_Trigger {
 
 	function trigger_email_notification_checker(){
 		global $wpdb;
-
-		/* ROTATING BANNER PLUS CONTENT */
-		// $get_template = $wpdb->get_results( 'SELECT option_value FROM rtl21016_options WHERE option_name = "wpbe_options"');
-		// $email_template = unserialize($get_template[0]->option_value);
-		// $email_template = explode('"', $email_template['template']);
-
-		// $image_urls = array();
-		// foreach($email_template as $value) {
-		// 	if ( substr_count($value, '.jpeg') > 0 ) {
-		// 		array_push($image_urls, $value);
-		// 	} elseif ( substr_count($value, '.jpg') > 0 ) {
-		// 		array_push($image_urls, $value);
-		// 	} elseif ( substr_count($value, '.png') > 0 ) {
-		// 		array_push($image_urls, $value);
-		// 	} elseif ( substr_count($value, '.gif') > 0 ) {
-		// 		array_push($image_urls, $value);
-		// 	}
-		// }
-
-		// $header_href = $image_urls[0];
-		// $header_url = $image_urls[1];
-		// $footer_url = $image_urls[2];
-		
-		// echo '<pre>';
-		// echo $header_href;
-		// echo '</pre>';
-		/* END */
 		
 		$email_entries = get_email_entries();
 
@@ -41,28 +14,14 @@ class WPDM_Notification_Trigger {
 	    
 		$permalink = get_permalink($id);
 		$email_recipient = array();
-		foreach ($users as $user) {
-			// echo '<pre><br><br>';
-			/*echo $user->user_email . '<br>';
-			echo $user->country_group . '<br>';
-			echo $user->operator_group . '<br><br>';*/
-			
+		foreach ($users as $user) {			
 			$show_files_raw = $user->show_files;
 			$show_files = $show_files_raw != '' ? explode(",",$show_files_raw) : array();
-			/*echo "Shows:<br>";
-			print_r($show_files);*/
-			
 			$channel_materials_raw = $user->channel_materials;
-			$channel_materials = $channel_materials_raw != '' ? explode(",",$channel_materials_raw) : array();
-			/*echo "Channel Materials:<br>";
-			print_r($channel_materials);*/
-			
+			$channel_materials = $channel_materials_raw != '' ? explode(",",$channel_materials_raw) : array();		
 			$show_files = !empty($show_files) || !empty($channel_materials) ? array_merge($show_files, $channel_materials) : $show_files;
-			// echo "Accessible Files:<br>";
-			// print_r($show_files);
-			// echo '</pre>';
-
 			$files = array();
+			
 			if( !empty($email_entries) ){
 				foreach ($email_entries as $key => $email_entry) {
 					$post_ids = array();
@@ -106,11 +65,10 @@ class WPDM_Notification_Trigger {
 				    $matched_operator_access = $this->check_user_group_access($user, $operator_access);
 					if($matched_operator_access){
 						$uns_email_entry = unserialize($email_entry->data_new);
-						$uns_data_old = unserialize($email_entry->data_old);
 
 						$files[$email_entry->post_id]['promo'] = $this->get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$show_files,
 							$post_ids);
-						$files[$email_entry->post_id]['show'] = $this->get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'], $uns_email_entry['raw_files']['file_info'], $show_files, $uns_data_old['files']);
+						$files[$email_entry->post_id]['show'] = $this->get_user_accessible_files($user, $uns_email_entry['files'], $uns_email_entry['raw_files']['files'], $matched_operator_access['is_pr_group'], $uns_email_entry['raw_files']['file_info'], $show_files);
 					}
 				}
 			}
@@ -221,11 +179,7 @@ class WPDM_Notification_Trigger {
 	 * @param  Array  $all_promos     	All current promos from the submitted form
 	 * @return Array                  	Array of promo file names
 	 */
-	function get_user_accessible_files($user, $all_files, $raw_files, $is_pr_group = '', $file_info = array(), $show_files = array(), $old_data_files){
-		// echo '<pre>';
-		// print_r($old_data_files);
-		// echo '</pre>';
-
+	function get_user_accessible_files($user, $all_files, $raw_files, $is_pr_group = '', $file_info = array(), $show_files = array()){
 		$affiliate_files = array();
 		$filtered_files = array();
 		$filtered_categories = [ 'epg', 'catch' ];
@@ -451,7 +405,7 @@ class WPDM_Notification_Trigger {
 			if( isset($message_entertainment['shows']) ):
 				$message_table .= '
 				<p><strong>Show Assets</strong></p>
-				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
 				<tbody>';
 				$message_table .= $message_entertainment['shows'];
 				$message_table .= '
@@ -464,7 +418,7 @@ class WPDM_Notification_Trigger {
 			if( isset($message_entertainment['channel']) ):
 				$message_table .= '
 				<p><strong>Channel Materials</strong></p>
-				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
 				<tbody>';
 				$message_table .= $message_entertainment['channel'];
 				$message_table .= '
@@ -477,7 +431,7 @@ class WPDM_Notification_Trigger {
 			if( isset($message_entertainment['promos']) ):
 				$message_table .= '
 				<p><strong>Promos</strong></p>
-				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
 				<tbody>
 				<tr style="background-color: #d0cece;"> <td style="text-align: left;">On-Air/Social</td> </tr>';
 				$message_table .= $message_entertainment['promos'];
@@ -494,7 +448,7 @@ class WPDM_Notification_Trigger {
 				if( isset($message_extreme['shows'])) :
 				$message_table .= '
 				<p><strong>Show Assets</strong></p>
-				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
 				<tbody>';
 				$message_table .= $message_extreme['shows'];
 				$message_table .= '
@@ -507,7 +461,7 @@ class WPDM_Notification_Trigger {
 			if( isset($message_extreme['channel']) ):
 				$message_table .= '
 				<p><strong>Channel Materials</strong></p>
-				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
 				<tbody>';
 				$message_table .= $message_extreme['channel'];
 				$message_table .= '
@@ -520,7 +474,7 @@ class WPDM_Notification_Trigger {
 			if( isset($message_extreme['promos']) ):
 				$message_table .= '
 				<p><strong>Promos</strong></p>
-				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
 				<tbody>
 				<tr style="background-color: #d0cece;"> <td style="text-align: left;">On-Air/Social</td> </tr>';
 				$message_table .= $message_extreme['promos'];
@@ -537,7 +491,7 @@ class WPDM_Notification_Trigger {
 			$message = $this->update_email_template( $email_vars );
 
 			/* Uncomment this echo code if you are not testing  */
-			// echo $message . '<br><br><br>';
+			// echo $message;
 
 			/* Start output buffering to grab smtp debugging output*/
 			ob_start();
