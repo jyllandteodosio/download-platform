@@ -21,7 +21,7 @@ class WPDM_Notification_Trigger {
 			$channel_materials = $channel_materials_raw != '' ? explode(",",$channel_materials_raw) : array();		
 			$show_files = !empty($show_files) || !empty($channel_materials) ? array_merge($show_files, $channel_materials) : $show_files;
 			$files = array();
-			
+
 			if( !empty($email_entries) ){
 				foreach ($email_entries as $key => $email_entry) {
 					$post_ids = array();
@@ -405,7 +405,7 @@ class WPDM_Notification_Trigger {
 			if( isset($message_entertainment['shows']) ):
 				$message_table .= '
 				<p><strong>Show Assets</strong></p>
-				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
 				<tbody>';
 				$message_table .= $message_entertainment['shows'];
 				$message_table .= '
@@ -418,7 +418,7 @@ class WPDM_Notification_Trigger {
 			if( isset($message_entertainment['channel']) ):
 				$message_table .= '
 				<p><strong>Channel Materials</strong></p>
-				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
 				<tbody>';
 				$message_table .= $message_entertainment['channel'];
 				$message_table .= '
@@ -431,7 +431,7 @@ class WPDM_Notification_Trigger {
 			if( isset($message_entertainment['promos']) ):
 				$message_table .= '
 				<p><strong>Promos</strong></p>
-				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
 				<tbody>
 				<tr style="background-color: #d0cece;"> <td style="text-align: left;">On-Air/Social</td> </tr>';
 				$message_table .= $message_entertainment['promos'];
@@ -448,7 +448,7 @@ class WPDM_Notification_Trigger {
 				if( isset($message_extreme['shows'])) :
 				$message_table .= '
 				<p><strong>Show Assets</strong></p>
-				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
 				<tbody>';
 				$message_table .= $message_extreme['shows'];
 				$message_table .= '
@@ -461,7 +461,7 @@ class WPDM_Notification_Trigger {
 			if( isset($message_extreme['channel']) ):
 				$message_table .= '
 				<p><strong>Channel Materials</strong></p>
-				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
 				<tbody>';
 				$message_table .= $message_extreme['channel'];
 				$message_table .= '
@@ -474,7 +474,7 @@ class WPDM_Notification_Trigger {
 			if( isset($message_extreme['promos']) ):
 				$message_table .= '
 				<p><strong>Promos</strong></p>
-				<table style="border: 1px solid;" border="0" width="473" cellspacing="0" cellpadding="2">
+				<table style="border: 1px solid;" border="0" width="510" cellspacing="0" cellpadding="2">
 				<tbody>
 				<tr style="background-color: #d0cece;"> <td style="text-align: left;">On-Air/Social</td> </tr>';
 				$message_table .= $message_extreme['promos'];
