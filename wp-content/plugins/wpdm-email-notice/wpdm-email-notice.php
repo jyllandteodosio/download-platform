@@ -808,9 +808,7 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <tr>
 <td>&nbsp;</td>
 <td>
-<p>&nbsp;</p>
 <p>Hi [user_email],</p>
-<p>&nbsp;</p>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -819,7 +817,6 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <td>
 <p>There are new files available for download in the RTL CBS Operator Site. The files below are sent to you based on the profile you have provided.</p>
 <p>You may download relevant documents from the links below.</p>
-<p>&nbsp;</p>
 </td>
 <td>&nbsp;</td>
 </tr>
