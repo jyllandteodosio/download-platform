@@ -79,16 +79,16 @@ class WPDM_Notification_Trigger {
 		}                
 
 		/* Code to update wpdm_email and wpdm_email_logs table. */
-		// if( count($email_recipient) > 0 ){
-		// 	$email_recipient_serialized = serialize($email_recipient);
-		// 	$return_value_email = $this->setEmailEntryStatus('sent');
+		if( count($email_recipient) > 0 ){
+			$email_recipient_serialized = serialize($email_recipient);
+			$return_value_email = $this->setEmailEntryStatus('sent');
 
-		// 	if( $return_value_email === FALSE ){
-		// 		$this->addEmailLogs('failed', $email_recipient_serialized);
-		// 	}else{
-		// 		$this->addEmailLogs('success', $email_recipient_serialized);
-		// 	}
-		// }
+			if( $return_value_email === FALSE ){
+				$this->addEmailLogs('failed', $email_recipient_serialized);
+			}else{
+				$this->addEmailLogs('success', $email_recipient_serialized);
+			}
+		}
 		/* END -  Code to update wpdm_email and wpdm_email_logs table. */
 	}
 
@@ -131,12 +131,12 @@ class WPDM_Notification_Trigger {
 		if ( in_array('promo', $show_files) || in_array('cm_promo', $show_files) || empty($show_files) ) {
 			if (!empty($promo_files)) {
 				
-				echo '<pre>';
-				print_r($promo_files);
-				echo '</pre>';
-				echo '<br>Country Group: ' . $user->country_group . '<br>';
-				echo '<br>Operator Group: ' . $user->operator_group . '<br>';
-				echo '<br>PR Group: ' . $is_pr_group . '<br>';
+				// echo '<pre>';
+				// print_r($promo_files);
+				// echo '</pre>';
+				// echo '<br>Country Group: ' . $user->country_group . '<br>';
+				// echo '<br>Operator Group: ' . $user->operator_group . '<br>';
+				// echo '<br>PR Group: ' . $is_pr_group . '<br>';
 
 				foreach ($post_ids as $post_id) {
 					$is_channel_material = checkIfChannelMaterials($post_id);
@@ -519,19 +519,19 @@ class WPDM_Notification_Trigger {
 			$message = $this->update_email_template( $email_vars );
 
 			/* Uncomment this echo code if you are not testing  */
-			echo $message;
+			// echo $message;
 
 			/* Start output buffering to grab smtp debugging output*/
-			// ob_start();
+			ob_start();
 
 			/* Send the test mail*/
-			// $result = wp_mail($to,$subject,$message,$headers);
+			$result = wp_mail($to,$subject,$message,$headers);
 				
 			/* Grab the smtp debugging output*/
-			// $smtp_debug = ob_get_clean();
+			$smtp_debug = ob_get_clean();
 			
 			/* Output the response*/
-			// return $result;
+			return $result;
 		}
 		return false;
 	}
