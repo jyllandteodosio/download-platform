@@ -5,9 +5,7 @@ class WPDM_Notification_Trigger {
 	public function __construct( ) {
 	}
 
-	function trigger_email_notification_checker(){
-		global $wpdb;
-		
+	function trigger_email_notification_checker(){		
 		$email_entries = get_email_entries();
 
 		$users = getUsersByRole('Operator');
@@ -81,16 +79,16 @@ class WPDM_Notification_Trigger {
 		}                
 
 		/* Code to update wpdm_email and wpdm_email_logs table. */
-		if( count($email_recipient) > 0 ){
-			$email_recipient_serialized = serialize($email_recipient);
-			$return_value_email = $this->setEmailEntryStatus('sent');
+		// if( count($email_recipient) > 0 ){
+		// 	$email_recipient_serialized = serialize($email_recipient);
+		// 	$return_value_email = $this->setEmailEntryStatus('sent');
 
-			if( $return_value_email === FALSE ){
-				$this->addEmailLogs('failed', $email_recipient_serialized);
-			}else{
-				$this->addEmailLogs('success', $email_recipient_serialized);
-			}
-		}
+		// 	if( $return_value_email === FALSE ){
+		// 		$this->addEmailLogs('failed', $email_recipient_serialized);
+		// 	}else{
+		// 		$this->addEmailLogs('success', $email_recipient_serialized);
+		// 	}
+		// }
 		/* END -  Code to update wpdm_email and wpdm_email_logs table. */
 	}
 
@@ -132,16 +130,45 @@ class WPDM_Notification_Trigger {
 
 		if ( in_array('promo', $show_files) || in_array('cm_promo', $show_files) || empty($show_files) ) {
 			if (!empty($promo_files)) {
+				
+				echo '<pre>';
+				print_r($promo_files);
+				echo '</pre>';
+				echo '<br>Country Group: ' . $user->country_group . '<br>';
+				echo '<br>Operator Group: ' . $user->operator_group . '<br>';
+				echo '<br>PR Group: ' . $is_pr_group . '<br>';
+
 				foreach ($post_ids as $post_id) {
 					$is_channel_material = checkIfChannelMaterials($post_id);
 
 					foreach ( $promo_files as $key => $value ) {
 						// Check post if channel material
-						if ( $is_channel_material['is_channel_material'] == true && in_array('cm_promo', $show_files) ) {
-							$accessible_promo_files = $this->add_promo_file($user, $is_pr_group, $value);
-						} else if ( $is_channel_material['is_channel_material'] == false && in_array('promo', $show_files) || empty($show_files)) {
-							$accessible_promo_files = $this->add_promo_file($user, $is_pr_group, $value);
-						}
+
+						// echo '<pre>';
+						// print_r($value);
+						// echo '</pre>';
+
+						// if ( $is_channel_material['is_channel_material'] == true && in_array('cm_promo', $show_files) ) {
+						// 	$accessible_promo_files = $this->add_promo_file($user, $is_pr_group, $value);
+						// } else if ( $is_channel_material['is_channel_material'] == false && in_array('promo', $show_files) || empty($show_files)) {
+						// 	$accessible_promo_files = $this->add_promo_file($user, $is_pr_group, $value);
+						// }
+
+						if ( $user->country_group == 'all' && $is_pr_group == 'yes' || contains($value['operator_access'], $user->operator_group) || contains($value['operator_access'], 'all') ) {
+				        	
+				        	array_push($accessible_promo_files, $value);
+
+				        } else if ( $is_pr_group == 'yes') {
+				            $sub_operators = get_operators_by_country( $user->country_group );
+
+				            foreach ($sub_operators as $so_key => $sub_op) {
+				                if ( contains($value['operator_access'], $sub_op->operator_group ) ){
+				                	array_push($accessible_promo_files, $value);
+				                    break;
+				                }
+				            }
+				        }
+
 					}	
 				}
 			}
@@ -149,28 +176,29 @@ class WPDM_Notification_Trigger {
 		return $accessible_promo_files;
 	}
 
-	function add_promo_file($user, $is_pr_group = '', $value) {
-		$accessible_promo_files = array();
+	// function add_promo_file($user, $is_pr_group = '', $value) {
 
-		if (  $user->country_group == 'all' && $is_pr_group == 'yes' ||
-			contains($value['operator_access'], $user->operator_group) ||
-			contains($value['operator_access'], 'all' )
-			) {
-        	array_push($accessible_promo_files, $value);
+	// 	echo 'Operator Group: ' . $user->operator_group;
 
-        } else if( $is_pr_group == 'yes'){
+	// 	if (  $user->country_group == 'all' && $is_pr_group == 'yes' ||
+	// 		contains($value['operator_access'], $user->operator_group) ||
+	// 		contains($value['operator_access'], 'all' )
+	// 		) {
+ //        	array_push($accessible_promo_files, $value);
 
-            $sub_operators = get_operators_by_country( $user->country_group );
+ //        } else if( $is_pr_group == 'yes'){
 
-            foreach ($sub_operators as $so_key => $sub_op) {
-                if ( contains($value['operator_access'], $sub_op->operator_group ) ){
-                	array_push($accessible_promo_files, $value);
-                    break;
-                }
-            }
-        }
-        return $accessible_promo_files;
-	}
+ //            $sub_operators = get_operators_by_country( $user->country_group );
+
+ //            foreach ($sub_operators as $so_key => $sub_op) {
+ //                if ( contains($value['operator_access'], $sub_op->operator_group ) ){
+ //                	array_push($accessible_promo_files, $value);
+ //                    break;
+ //                }
+ //            }
+ //        }
+ //        return $accessible_promo_files;
+	// }
 
 	/**
 	 * Get all oerator available newly uploaded promo files
@@ -491,19 +519,19 @@ class WPDM_Notification_Trigger {
 			$message = $this->update_email_template( $email_vars );
 
 			/* Uncomment this echo code if you are not testing  */
-			// echo $message;
+			echo $message;
 
 			/* Start output buffering to grab smtp debugging output*/
-			ob_start();
+			// ob_start();
 
 			/* Send the test mail*/
-			$result = wp_mail($to,$subject,$message,$headers);
+			// $result = wp_mail($to,$subject,$message,$headers);
 				
 			/* Grab the smtp debugging output*/
-			$smtp_debug = ob_get_clean();
+			// $smtp_debug = ob_get_clean();
 			
 			/* Output the response*/
-			return $result;
+			// return $result;
 		}
 		return false;
 	}
