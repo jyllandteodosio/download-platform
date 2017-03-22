@@ -474,23 +474,11 @@ a {
 	}
 }
 
-// @media (max-width: 1199px) {
-// 	#masthead .ad-container {
-// 		width: 65%;
-// 	}
-// }
-
 @media (max-width: 991px) {
 	#masthead,
 	#masthead > a {
 		display: block;
 	}
-
-	// #masthead > .ad-container {
-	// 	display: block;
-	// 	margin-bottom: 10px;
-	// 	width: 100%;
-	// }
 }
 
 @media (max-width: 767px) {
