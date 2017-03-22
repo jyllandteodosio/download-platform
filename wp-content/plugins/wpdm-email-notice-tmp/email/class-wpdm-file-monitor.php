@@ -7,7 +7,7 @@ class WPDM_File_Monitor {
 		add_action( 'pre_post_update', array( $this, 'wpdm_check_new_files') );
 	}
 
-	function wpdm_check_new_files($post_id){
+	function wpdm_check_new_files($post_id) {
 		/* Code to test email sender trigger */
 		// require_once plugin_dir_path( dirname( __FILE__ )  ) . 'email/class-wpdm-notification-trigger.php';
 		// $notification_trigger2 = new WPDM_Notification_Trigger( );
@@ -182,16 +182,17 @@ class WPDM_File_Monitor {
 		}
 
 
-// if(!function_exists('categorized_files')){
+
 	/**
 	 * Categorize a  list of files based on file title prefixes
 	 * @param  Array $allfiles_sorted  Key/Value pair of files and their original file name
 	 * @param  Array $fileinfo         Key/Value pair of files and their new file title
 	 * @return Array                   Categorized array of files
 	 */
-	// function categorized_files($allfiles_sorted, $fileinfo, $other_files = array()){
-	function categorized_files($allfiles_sorted, $fileinfo, $other_files = array(), $post_id = null){
-		$allfiles_sorted = $allfiles_sorted + $other_files;
+	
+	function categorized_files($allfiles_sorted, $fileinfo, $other_files = array(), $post_id = null) {
+		// $allfiles_sorted = $allfiles_sorted + $other_files;
+		$allfiles_sorted = array_merge($allfiles_sorted, $other_files);
 		$categorized_files = array();
 		$file_attr_list = get_file_prefixes('categorized'); 
 
@@ -206,6 +207,7 @@ class WPDM_File_Monitor {
 			            foreach ($file_category as $file_category_key => $tab) {
 			                $prefix = $tab['prefix'];
 			                /* SHOW IMAGES ========================================================================== */
+			                
 			                // KEY
 			                if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['show']['key_art']['prefix']){
 			                    $categorized_files['image'][$file_attr_list['image']['show']['key_art']['prefix']][$fileID] = $fileTitle;
@@ -231,29 +233,19 @@ class WPDM_File_Monitor {
 			                    && $prefix == $file_attr_list['image']['show']['others']['prefix']){
 
 			                	$is_channel_materials = checkIfChannelMaterials($post_id);
-				                // echo '$post_id : '.$post_id . '<br>';
 			                	$others_type = $is_channel_materials['is_channel_material'] ? 'channel_others' : 'others';
 			                	$category_type = $is_channel_materials['is_channel_material'] ? 'channel' : 'show';
-			                	// echo '$others_type : ' . $others_type . '<br>';
 
 			                	if( $is_channel_materials['is_channel_material'] ) {
 			                		$others_type = 'channel_others';
 			                	} else {
 			                		$others_type = 'others';
 			                	}
-
-			                    // $categorized_files['image'][$file_attr_list['image']['show']['others']['prefix']][$fileID] = $fileTitle;
 			                    $categorized_files['image'][ $file_attr_list['image'][$category_type][$others_type]['prefix'] ][$fileID] = $fileTitle;
-								// echo "<pre>";
-								// print_r($file_attr_list['image']['show']);
-			     //                print_r($categorized_files);
-								// echo "</pre>";
-
-			     //                print_r($fileTitle);
-			     //                die();
 			                }
 			                /* END SHOW IMAGES ======================================================================= */
 			                /* CHANNEL IMAGES ======================================================================= */
+			                
 			                // CM_ELE
 			                else if( contains($fileTitle, $prefix) && $prefix == $file_attr_list['image']['channel']['channel_elements']['prefix']){
 			                    $categorized_files['image'][$file_attr_list['image']['channel']['channel_elements']['prefix']][$fileID] = $fileTitle;
@@ -323,11 +315,12 @@ class WPDM_File_Monitor {
 		}
 
 		return $categorized_files;
-	}
+		
+	} // categorized_files function
 
-}
+} // class WPDM_File_Monitor
 
-}
+} // if statement
 
 
 
