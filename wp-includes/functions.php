@@ -2683,10 +2683,7 @@ function _default_wp_die_handler( $message, $title = '', $args = array() ) {
 
 <body id="error-page">
 <?php endif; // ! did_action( 'admin_head' ) ?>
-<?php 
-//get_template_part('page-logout');
-echo $message;
-?>
+<?php //get_template_part('page-logout'); ?>
 </body>
 </html>
 
