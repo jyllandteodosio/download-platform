@@ -23,7 +23,6 @@ class WPDM_File_Monitor {
 		    	$serialized_data_old = '';
 		    	$serialized_data_new = '';
 
-
 		    	/* Check for attached show files */
 			    $wpdm_files_old = get_post_meta($post_id, '__wpdm_files', true) != "" ? maybe_unserialize(get_post_meta($post_id, '__wpdm_files', true)) : array(); /* Old values from database */
 			    $wpdm_files_new = $_POST['file']['files'] != "" ? $_POST['file']['files'] : array(); /* New values from form */
@@ -119,7 +118,7 @@ class WPDM_File_Monitor {
 			    		$raw_data_new['raw_files']['file_info'] = $raw_email_entry_new['raw_files']['file_info'] + $fileinfo_intersect;
 
 			    		// $merged_files_diff = $this->categorized_files($files_diff, $wpdm_fileinfo_new, $raw_email_entry_new['raw_files']['files']);
-			    		$merged_files_diff = $this->categorized_files($files_diff, $wpdm_fileinfo_new, $raw_email_entry_new['raw_files']['files'],$post_id);
+			    		$merged_files_diff = $this->categorized_files($files_diff, $wpdm_fileinfo_new, $raw_email_entry_new['raw_files']['files'], $post_id);
 			    		$raw_data_new['files'] = $merged_files_diff;
 
 			    		$raw_data_new['promos'] = $raw_email_entry_new['promos'] + $structured_promos_diff;
@@ -153,7 +152,7 @@ class WPDM_File_Monitor {
 					    	}
 
 					    	// $structured_files_diff = $this->categorized_files($raw_email_entry_new['raw_files']['files'],$raw_email_entry_new['raw_files']['file_info']);
-					    	$structured_files_diff = $this->categorized_files($raw_email_entry_new['raw_files']['files'],$raw_email_entry_new['raw_files']['file_info'],$post_id);
+					    	$structured_files_diff = $this->categorized_files($raw_email_entry_new['raw_files']['files'], $raw_email_entry_new['raw_files']['file_info'], array(), $post_id);
 						    $raw_email_entry_new['files'] = $structured_files_diff;
 					    }
 
@@ -191,8 +190,7 @@ class WPDM_File_Monitor {
 	 */
 	
 	function categorized_files($allfiles_sorted, $fileinfo, $other_files = array(), $post_id = null) {
-		// $allfiles_sorted = $allfiles_sorted + $other_files;
-		$allfiles_sorted = array_merge($allfiles_sorted, $other_files);
+		$allfiles_sorted = $allfiles_sorted + $other_files;
 		$categorized_files = array();
 		$file_attr_list = get_file_prefixes('categorized'); 
 
