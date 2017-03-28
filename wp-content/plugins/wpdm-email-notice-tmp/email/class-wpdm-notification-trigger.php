@@ -130,13 +130,6 @@ class WPDM_Notification_Trigger {
 
 		if ( in_array('promo', $show_files) || in_array('cm_promo', $show_files) || empty($show_files) ) {
 			if (!empty($promo_files)) {
-				
-				// echo '<pre>';
-				// print_r($promo_files);
-				// echo '</pre>';
-				// echo '<br>Country Group: ' . $user->country_group . '<br>';
-				// echo '<br>Operator Group: ' . $user->operator_group . '<br>';
-				// echo '<br>PR Group: ' . $is_pr_group . '<br>';
 
 				foreach ($post_ids as $post_id) {
 					$is_channel_material = checkIfChannelMaterials($post_id);
@@ -222,10 +215,7 @@ class WPDM_Notification_Trigger {
 		}
 			
 		if ( !empty($raw_files) ) {
-			// echo '<br>Country Group: ' . $user->country_group . '<br>';
-			// echo '<br>Operator Group: ' . $user->operator_group . '<br>';
-			// echo '<br>PR Group: ' . $is_pr_group . '<br>';
-
+			
 			foreach ($raw_files as $key => $value) {
 				$file_title = $file_info[$key]['title'];
 
@@ -238,15 +228,14 @@ class WPDM_Notification_Trigger {
 	                        $sub_operators = get_operators_by_country( $user->country_group );
 
 	                        foreach ($sub_operators as $so_key => $sub_op) {
-	                            if ( contains($value, $sub_op->operator_group) || contains($value, 'affiliate') ) {
+	                            if ( contains($value, $sub_op->operator_group) ) {
 	                                $filtered_files['document'][$prefix][$key] = $value;
 	                                break;
-	                            }
-	                            /*} else if ( contains($value, 'affiliate') ) {
+	                            } else if ( contains($value, 'affiliate') ) {
 	                                $affiliate_files['document'][$prefix][$key] = $value;
 	                    			unset( $all_files['document'][$prefix][$key] );
 	                    			break;
-	                            }*/
+	                            }
 	                        }
 
 	                        if( empty( $filtered_files['document'][$prefix][$key] ) && empty( $affiliate_files['document'][$prefix][$key] ) ){
