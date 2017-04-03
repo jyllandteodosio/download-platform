@@ -2,7 +2,7 @@
 /**
  * RTL CBS Maintenance Mode
  */
-define('MAINTENANCE', true); //set to true to enable maintenance mode
+define('MAINTENANCE', false); //set to true to enable maintenance mode
  
 if (!is_admin() && !current_user_can( 'manage_options' ) && MAINTENANCE) { //envoke maintenance if set
     if ( file_exists( WP_CONTENT_DIR . '/maintenance.php' ) ) {

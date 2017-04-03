@@ -1,0 +1,15 @@
+html {
+  font-family: "Open Sans", Arial, sans-serif; }
+
+.container {
+  display: block;
+  margin: 8rem auto;
+  max-width: 800px;
+  text-align: center; }
+  .container .notice {
+    padding: 4rem; }
+
+h1 {
+  color: #dc2328; }
+
+/*# sourceMappingURL=maintenance.css.map */
