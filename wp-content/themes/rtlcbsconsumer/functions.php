@@ -1,5 +1,17 @@
 <?php
 /**
+ * RTL CBS Maintenance Mode
+ */
+define('MAINTENANCE', true); //set to true to enable maintenance mode
+ 
+if (!is_admin() && !current_user_can( 'manage_options' ) && MAINTENANCE) { //envoke maintenance if set
+    if ( file_exists( WP_CONTENT_DIR . '/maintenance.php' ) ) {
+        require_once( WP_CONTENT_DIR . '/maintenance.php' );
+        die();
+    }
+}
+
+/**
  * RTL CBS Consumer's functions and definitions
  */
 if( ! function_exists( 'rtlcbsconsumer_setup' ) ) :
