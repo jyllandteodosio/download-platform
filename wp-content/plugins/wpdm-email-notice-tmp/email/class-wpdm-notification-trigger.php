@@ -6,12 +6,15 @@ class WPDM_Notification_Trigger {
 	}
 
 	function trigger_email_notification_checker(){		
+		global $wpdb;
+
 		$email_entries = get_email_entries();
 
 		$users = getUsersByRole('Operator');
 	    
 		$permalink = get_permalink($id);
 		$email_recipient = array();
+		
 		foreach ($users as $user) {			
 			$show_files_raw = $user->show_files;
 			$show_files = $show_files_raw != '' ? explode(",",$show_files_raw) : array();
@@ -548,16 +551,16 @@ class WPDM_Notification_Trigger {
 		$return_value = false;
 		if($status == 'sent'){
 			$return_value = $wpdb->update(
-				                            $wpdb->wpdm_email,
-				                            array(
-				                                'status' => 'sent',
-				                                'date_emailed' => current_time('mysql', false),
-				                                'created_at' => current_time('mysql', false)
-				                            ),
-				                            array(
-				                            	'status' => 'pending'
-				                            )
-				                        );
+			                            $wpdb->wpdm_email,
+			                            array(
+			                                'status' => 'sent',
+			                                'date_emailed' => current_time('mysql', false),
+			                                'created_at' => current_time('mysql', false)
+			                            ),
+			                            array(
+			                            	'status' => 'pending'
+			                            )
+			                        );
 		}
 		return $return_value;
 	}
@@ -565,13 +568,13 @@ class WPDM_Notification_Trigger {
 	function addEmailLogs($status = '', $recipient = ''){
 		global $wpdb;
 		$return_value = $wpdb->insert(
-				                            $wpdb->wpdm_email_logs,
-				                            array(
-				                            	'status' => $status,
-				                            	'recipient' => $recipient,
-				                                'created_at' => current_time('mysql', false)
-				                            )
-				                        );
+		                            $wpdb->wpdm_email_logs,
+		                            array(
+		                            	'status' => $status,
+		                            	'recipient' => $recipient,
+		                                'created_at' => current_time('mysql', false)
+		                            )
+		                        );
 		
 		return $return_value;
 	}
