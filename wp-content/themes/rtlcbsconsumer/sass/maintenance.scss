@@ -1,0 +1,21 @@
+$brand-red: #dc2328;
+$brand-black: #000;
+
+html {
+	font-family: "Open Sans", Arial, sans-serif;
+}
+
+.container {
+	display: block;
+	margin: 8rem auto;
+	max-width: 800px;
+	text-align: center;
+
+	.notice {
+		padding: 4rem;
+	}
+}
+
+h1 {
+	color: $brand-red;
+}
