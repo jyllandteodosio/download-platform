@@ -333,8 +333,37 @@ class Package {
                                         'permalink' => get_permalink()
                                     );
 
-                                $file_list_data_prep_serialized = serialize($file_list_data_prep);
+                                //* Remove all quotation marks from the array to prevent causing errors in serialized data
+                                $escaped_file_data = array();
+                                foreach($file_list_data_prep['all_files'] as $file_id => $file_data) {
+                                    if( $file_list_data_prep['prefix'] == 'promo' ) {
+                                        foreach($file_data as $file_info_key => $file_info) {
+                                            $escaped_file_data[$file_id][$file_info_key] = str_replace("'", "", $file_info);
+                                        }
+                                        $file_list_data_prep['all_files'] = $escaped_file_data;
+                                    } else {
+                                        $escaped_file_data[$file_id] = str_replace("'", "", $file_data);
+                                        $file_list_data_prep['all_files'] = $escaped_file_data;
+                                    }          
+                                }
 
+                                $escaped_file_data = array();
+                                foreach($file_list_data_prep['file_info'] as $file_id => $file_data) {
+                                    foreach($file_data as $file_info_key => $file_info) {
+                                        if($file_info != '') {
+                                            $escaped_file_data[$file_id][$file_info_key] = str_replace("'", "", $file_info);
+                                        } else {
+                                            $escaped_file_data[$file_id][$file_info_key] = '';
+                                        }
+                                    }
+                                    $file_list_data_prep['file_info'] = $escaped_file_data;   
+                                }
+
+                                // echo '<pre>';
+                                // print_r($file_list_data_prep);
+                                // echo '</pre>';
+
+                                $file_list_data_prep_serialized = serialize($file_list_data_prep);
                                 $vars[$tab_attr['template_shortcode']] = "<input name='serialized-data' class='serialized-data' type='hidden' value='".$file_list_data_prep_serialized."'>";
 
                                 /* Commented out to use lazy loading feature */
@@ -349,7 +378,11 @@ class Package {
 
             //* Call file counter function and generate initial filecount and shortcode
             $filter_days = $vars['filter_days'];
-            $categorized_files_serialized = serialize($categorized_files);
+            $categorized_files_prep = $categorized_files;
+            //* Remove promo files in array
+            unset($categorized_files_prep['promo']);
+            $categorized_files_serialized = serialize($categorized_files_prep);
+
             $vars['categorized_files'] = "<input name='categorized-serialized-data' class='categorized-serialized-data' type='hidden' value='".$categorized_files_serialized."'>";
 
             $file_count_array = generate_file_count($categorized_files, $tab_attr_array, $filter_days); 

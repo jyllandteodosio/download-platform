@@ -1556,23 +1556,6 @@ if(!function_exists('generate_file_count')) {
                     $filtered_shows = $categorized_files[$tab_attr];
                 }
 
-                // if( ($search_filter != '' && $search_filter !=  'all') && ( $tab_attr == 'epi' || $tab_attr == 'synopsis' ) ) {
-                //     $filtered_shows_copy = $filtered_shows;
-
-                //     if( $tab_attr == $prefix ) {
-                //         $filtered_shows = [];
-                //         foreach($filtered_shows_copy as $file_name) {
-                //             // if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0)  ) {
-                //             //     array_push($filtered_shows, $file_name);
-                //             // }
-
-                //             if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0) ) {
-                //                 array_push($filtered_shows, $file_name);
-                //             }
-                //         }
-                //     }
-                // }
-
                 if ( ($filter_epi != '' && $filter_epi != 'all') && $tab_attr == 'epi' ) {
                     $filtered_shows_copy = $filtered_shows;
                     $filtered_shows = [];
@@ -1622,7 +1605,6 @@ if(!function_exists('generate_new_file_count')) {
         $filter_days = $_POST['filter_days'];
         
         $prefix = $_POST['prefix'];
-        // $search_filter = $_POST['search_filter'];
         $filter_epi = $_POST['filter_epi'];
         $filter_syn = $_POST['filter_syn'];
 
