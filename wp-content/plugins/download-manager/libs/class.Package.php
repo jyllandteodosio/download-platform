@@ -333,7 +333,10 @@ class Package {
                                         'permalink' => get_permalink()
                                     );
 
-                                //* Remove all quotation marks from the array to prevent causing errors in serialized data
+                                /* 
+                                 * Remove all quotation marks from the array to prevent causing errors in serialized data
+                                 * all_files array
+                                 */
                                 $escaped_file_data = array();
                                 foreach($file_list_data_prep['all_files'] as $file_id => $file_data) {
                                     if( $file_list_data_prep['prefix'] == 'promo' ) {
@@ -347,6 +350,10 @@ class Package {
                                     }          
                                 }
 
+                                /* 
+                                 * Remove all quotation marks from the array to prevent causing errors in serialized data
+                                 * file_info array
+                                 */
                                 $escaped_file_data = array();
                                 foreach($file_list_data_prep['file_info'] as $file_id => $file_data) {
                                     foreach($file_data as $file_info_key => $file_info) {
