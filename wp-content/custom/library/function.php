@@ -1355,7 +1355,7 @@ if (!function_exists('getRecentFileUploads')){
         $filtered_shows_raw = array();
 
         $start_date = date('Y-m-d', strtotime("- " . $days . " days"));
-        $end_date = date('Y-m-d'); 
+        $end_date = date('Y-m-d');
 
         //* Loop through shows
         foreach ($results as $key => $value) {
@@ -1384,24 +1384,28 @@ if (!function_exists('getRecentFileUploads')){
             }
         }
 
-        //* Sort shows according to recently uploaded files
-        arsort($filtered_shows_raw);
-        $filtered_shows = array_keys($filtered_shows_raw);
-        
-        //* Wordpress query   
-        $args = array(
-                    'post__in'  => $filtered_shows,
-                    'orderby'   => 'post__in',
-                    'order'     => 'DESC',
-                    'tax_query' => array(
-                        array(
-                           'taxonomy' => 'wpdmcategory',
-                           'field'    => 'slug',
-                           'terms'    => 'shows-'.$channel,
-                        ),
-                    )
-                );
-        $query_shows = new WP_Query( $args );
+        if($filtered_shows_raw) {
+            //* Sort shows according to recently uploaded files
+            arsort($filtered_shows_raw);
+            $filtered_shows = array_keys($filtered_shows_raw);
+            
+            //* Wordpress query   
+            $args = array(
+                        'post__in'  => $filtered_shows,
+                        'orderby'   => 'post__in',
+                        'order'     => 'DESC',
+                        'tax_query' => array(
+                            array(
+                               'taxonomy' => 'wpdmcategory',
+                               'field'    => 'slug',
+                               'terms'    => 'shows-'.$channel,
+                            ),
+                        )
+                    );
+            $query_shows = new WP_Query( $args );
+        } else {
+            $query_shows = null;
+        }
         return $query_shows;
     }
 }
