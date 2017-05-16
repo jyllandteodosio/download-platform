@@ -1406,7 +1406,6 @@ if (!function_exists('getRecentFileUploads')){
         } else {
             $query_shows = null;
         }
-
         return $query_shows;
     }
 }
