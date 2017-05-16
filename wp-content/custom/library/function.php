@@ -1391,10 +1391,10 @@ if (!function_exists('getRecentFileUploads')){
             
             //* Wordpress query   
             $args = array(
-                        'post__in'  => $filtered_shows,
-                        'orderby'   => 'post__in',
-                        'order'     => 'DESC',
-                        'tax_query' => array(
+                        'post__in'      => $filtered_shows,
+                        'orderby'       => 'post__in',
+                        'order'         => 'DESC',
+                        'tax_query'     => array(
                             array(
                                'taxonomy' => 'wpdmcategory',
                                'field'    => 'slug',
@@ -1406,6 +1406,7 @@ if (!function_exists('getRecentFileUploads')){
         } else {
             $query_shows = null;
         }
+
         return $query_shows;
     }
 }
