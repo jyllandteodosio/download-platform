@@ -1375,8 +1375,8 @@ if (!function_exists('getRecentFileUploads')){
                     if ( !array_key_exists($post_id, $filtered_shows_raw) ) {
                         $filtered_shows_raw[$post_id] = $file_upload_date;
                     }
-                    $file_count++; 
-                }
+                    $file_count++;
+                 }
             }
 
             if ($file_count > 0) {
@@ -1426,22 +1426,24 @@ function displayRecentFileUploads() {
     $query_shows = getRecentFileUploads($_POST['channel'], $_POST['days']);
     $filteredShows = [];
     
-    if($query_shows->have_posts()){
-        while($query_shows->have_posts()) { $query_shows->the_post();
-            $result = new ShowItem();
-            
-            $thumb_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];
-            $result->thumbnail = wpdm_dynamic_thumb($thumb_url, array(270, 296));
-            $result->title = get_the_title();
-            $result->permalink = get_the_permalink();
-            $result->filecount = $file_count_array_home[get_the_ID()];
+    if( $query_shows ) {
+        if($query_shows->have_posts()){
+            while($query_shows->have_posts()) { $query_shows->the_post();
+                $result = new ShowItem();
+                
+                $thumb_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];
+                $result->thumbnail = wpdm_dynamic_thumb($thumb_url, array(270, 296));
+                $result->title = get_the_title();
+                $result->permalink = get_the_permalink();
+                $result->filecount = $file_count_array_home[get_the_ID()];
 
-            $result->publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
-            $result->expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+                $result->publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+                $result->expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 
-            $result->filter = $_POST['days'];
+                $result->filter = $_POST['days'];
 
-            array_push($filteredShows, $result);
+                array_push($filteredShows, $result);
+            }
         }
     }
 
