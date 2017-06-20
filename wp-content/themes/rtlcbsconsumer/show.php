@@ -50,8 +50,7 @@ $post = $tmp;
 switch_to_blog( 1 );?>
 
 <div class="section">
-	<div class="show-banner">
-		<img src="<?php the_field('banner_image'); ?>" class="img-responsive">
+	<div class="show-banner" style="background-image:url(<?php the_field('banner_image'); ?>);">
 		<div class="show-banner-video-container hide">
 			<span class="close-video">x</span>
 			<iframe class="show-banner-video" id="showInnerVid" src="//player.vimeo.com/video/<?php the_field('vimeo_id'); ?>?badge=0&amp;byline=0&amp;portrait=0&amp;title=0" width="1060" height="400" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
