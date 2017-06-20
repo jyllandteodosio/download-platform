@@ -150,7 +150,7 @@ class WordPressDownloadManagerAdmin
         $meta_boxes = array(
             'wpdm-attached-files' => array('title' => __('Attached Files', "wpdmpro"), 'callback' => array($this, 'Files'), 'position' => 'normal', 'priority' => 'core'),
             'wpdm-attached-dir' => array('title' => __('Attach Dir', "wpdmpro"), 'callback' => 'wpmp_dir_browser_metabox', 'position' => 'side', 'priority' => 'core'),
-            'wpdm-settings' => array('title' => __('Package Settings', "wpdmpro"), 'callback' => array($this, 'packageSettings'), 'position' => 'normal', 'priority' => 'low'),
+            'wpdm-settings' => array('title' => __('Package Settings', "wpdmpro"), 'callback' => array($this, 'packageSettings'), 'position' => 'normal', 'priority' => 'high'),
             'wpdm-upload-file' => array('title' => __('Attach File', "wpdmpro"), 'callback' => array($this, 'uploadFiles'), 'position' => 'side', 'priority' => 'core'),
         );
 

@@ -12,7 +12,7 @@ class WPDM_File_Monitor {
 		// require_once plugin_dir_path( dirname( __FILE__ )  ) . 'email/class-wpdm-notification-trigger.php';
 		// $notification_trigger2 = new WPDM_Notification_Trigger( );
 		// $notification_trigger2->trigger_email_notification_checker();
-		// die('fsdfs');
+		// die();
 		/* END - Code to test email sender trigger */
 
 		    global $wpdb;

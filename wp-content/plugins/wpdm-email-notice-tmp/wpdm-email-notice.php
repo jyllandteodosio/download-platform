@@ -43,7 +43,7 @@ add_action( 'plugins_loaded', 'wea_update_db_check' );
 register_activation_hook(__FILE__, 'email_notice_activation');
 function email_notice_activation() {
     if (! wp_next_scheduled ( 'email_notice_event' )) {
-		wp_schedule_event( strtotime('22:50:00'), 'daily', 'email_notice_event' );
+		wp_schedule_event( strtotime('22:30:00'), 'daily', 'email_notice_event' );
     }
 }
 

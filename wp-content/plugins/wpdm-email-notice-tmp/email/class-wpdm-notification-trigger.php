@@ -15,7 +15,7 @@ class WPDM_Notification_Trigger {
 		$permalink = get_permalink($id);
 		$email_recipient = array();
 		
-		foreach ($users as $user) {			
+		foreach($users as $user) {			
 			$show_files_raw = $user->show_files;
 			$show_files = $show_files_raw != '' ? explode(",",$show_files_raw) : array();
 			$channel_materials_raw = $user->channel_materials;
@@ -23,16 +23,22 @@ class WPDM_Notification_Trigger {
 			$show_files = !empty($show_files) || !empty($channel_materials) ? array_merge($show_files, $channel_materials) : $show_files;
 			$files = array();
 
-			if( !empty($email_entries) ){
-				foreach ($email_entries as $key => $email_entry) {
+			//* FOR DEVELOPMENT - Display user information
+			// echo '<pre>';
+			// print_r($user);
+			// echo '</pre>';
+
+			if( !empty($email_entries) ) {
+			
+				foreach($email_entries as $key => $email_entry) {
 					$post_ids = array();
 					$post_ids[] = $email_entry->post_id;
 
 					$categories_data = array();
 					$categories = array();
 					$categories_data = get_the_terms($email_entry->post_id,'wpdmcategory');
-					if (is_array( $categories_data )) {
-						foreach ($categories_data as $key => $value) {
+					if(is_array( $categories_data )) {
+						foreach($categories_data as $key => $value) {
 							$categories[$key] = $value->term_id;
 						}
 					}
@@ -47,15 +53,15 @@ class WPDM_Notification_Trigger {
 
 				    $operator_access = array();
 				    $operator_access_channel = array();
-				    foreach ($is_exist_channel as $key => $value) {
+				    foreach($is_exist_channel as $key => $value) {
 				    	if($value){
 					    	$operator_access_channel[$key] = $this->getOperatorCountryCombinationAccess($key);
 					    }
 				    }
 
 				    foreach ($operator_access_channel as $key => $value) {
-				    	if(isset($operator_access_channel[$key])){
-						    foreach ($operator_access_channel[$key] as $key => $value) {
+				    	if( isset($operator_access_channel[$key]) ) {
+						    foreach($operator_access_channel[$key] as $key => $value) {
 						    	$operator_access[$value['id']] = array(	'operator_group' => $value['operator_group'],
 						    											'country_group' => $value['country_group'],
 						    											'is_pr_group' => $value['is_pr_group'] );
@@ -64,7 +70,13 @@ class WPDM_Notification_Trigger {
 				    }
 
 				    $matched_operator_access = $this->check_user_group_access($user, $operator_access);
-					if($matched_operator_access){
+				    
+				    //* FOR DEVELOPMENT - Display operator group, country group, and is pr group
+				    // echo '<pre>';
+				    // print_r($matched_operator_access);
+				    // echo '</pre>';
+
+					if($matched_operator_access) {
 						$uns_email_entry = unserialize($email_entry->data_new);
 
 						$files[$email_entry->post_id]['promo'] = $this->get_user_accessible_promos($user, $uns_email_entry['promos'], $matched_operator_access['is_pr_group'],$show_files,
@@ -74,10 +86,11 @@ class WPDM_Notification_Trigger {
 				}
 			}
 
-			if( !empty($files) ){
+			if( !empty($files) ) {
 				$email_sent = $this->send_email_notice($user, $files);
-				if($email_sent)
+				if($email_sent) {
 					array_push($email_recipient,$user->user_email);
+				}
 			}
 		}                
 
@@ -132,65 +145,33 @@ class WPDM_Notification_Trigger {
 		$accessible_promo_files = array();
 
 		if ( in_array('promo', $show_files) || in_array('cm_promo', $show_files) || empty($show_files) ) {
-			if (!empty($promo_files)) {
+			if(!empty($promo_files)) {
 
-				foreach ($post_ids as $post_id) {
+				foreach($post_ids as $post_id) {
 					$is_channel_material = checkIfChannelMaterials($post_id);
 
-					foreach ( $promo_files as $key => $value ) {
-						// Check post if channel material
-
-						// if ( $is_channel_material['is_channel_material'] == true && in_array('cm_promo', $show_files) ) {
-						// 	$accessible_promo_files = $this->add_promo_file($user, $is_pr_group, $value);
-						// } else if ( $is_channel_material['is_channel_material'] == false && in_array('promo', $show_files) || empty($show_files)) {
-						// 	$accessible_promo_files = $this->add_promo_file($user, $is_pr_group, $value);
-						// }
-
+					foreach( $promo_files as $key => $value ) {
 						if ( $user->country_group == 'all' && $is_pr_group == 'yes' || contains($value['operator_access'], $user->operator_group) || contains($value['operator_access'], 'all') ) {
 				        	
 				        	array_push($accessible_promo_files, $value);
 
-				        } else if ( $is_pr_group == 'yes') {
+				        } else if( $is_pr_group == 'yes') {
 				            $sub_operators = get_operators_by_country( $user->country_group );
 
-				            foreach ($sub_operators as $so_key => $sub_op) {
-				                if ( contains($value['operator_access'], $sub_op->operator_group ) ){
+				            foreach($sub_operators as $so_key => $sub_op) {
+				                if( contains($value['operator_access'], $sub_op->operator_group ) ){
 				                	array_push($accessible_promo_files, $value);
 				                    break;
 				                }
 				            }
 				        }
-
 					}	
 				}
+
 			}
 		}
 		return $accessible_promo_files;
 	}
-
-	/*function add_promo_file($user, $is_pr_group = '', $value) {
-
-		echo 'Operator Group: ' . $user->operator_group;
-
-		if (  $user->country_group == 'all' && $is_pr_group == 'yes' ||
-			contains($value['operator_access'], $user->operator_group) ||
-			contains($value['operator_access'], 'all' )
-			) {
-        	array_push($accessible_promo_files, $value);
-
-        } else if( $is_pr_group == 'yes'){
-
-            $sub_operators = get_operators_by_country( $user->country_group );
-
-            foreach ($sub_operators as $so_key => $sub_op) {
-                if ( contains($value['operator_access'], $sub_op->operator_group ) ){
-                	array_push($accessible_promo_files, $value);
-                    break;
-                }
-            }
-        }
-        return $accessible_promo_files;
-	}*/
 
 	/**
 	 * Get all oerator available newly uploaded promo files
@@ -204,10 +185,10 @@ class WPDM_Notification_Trigger {
 		$filtered_files = array();
 		$filtered_categories = [ 'epg', 'catch' ];
 		$file_types = [ 'image', 'document' ];
-		
+
 		if( !empty($show_files) ) {
 			foreach( $file_types as $file_type ) {
-				if (isset($all_files[$file_type])) {
+				if( isset($all_files[$file_type]) ) {
 					foreach( $all_files[$file_type] as $key => $value ) {
 						if ( !in_array($key, $show_files) ) {
 							unset( $all_files[$file_type][$key] );
@@ -218,56 +199,89 @@ class WPDM_Notification_Trigger {
 		}
 			
 		if ( !empty($raw_files) ) {
+			//* FOR DEVELOPMENT - Flag variable
+			// $sub_operators_flag = 0;
 			
 			foreach ($raw_files as $key => $value) {
 				$file_title = $file_info[$key]['title'];
+				//* FOR DEVELOPMENT - Display file name
+				// echo $value . '<br>';
 
 				foreach ($filtered_categories as $fc_key => $prefix) {
-					if( contains($value, $prefix) ){
+					if( contains($value, $prefix) ) {
 		                if(  $user->country_group == 'all' && $is_pr_group == 'yes' ) {
 		                	continue;
 
-		                } else if( $is_pr_group == 'yes') {
+		                } else if ( $is_pr_group == 'yes') {
 	                        $sub_operators = get_operators_by_country( $user->country_group );
 
+	                        //* FOR DEVELOPMENT - Display operator groups by country
+	                        // if( $sub_operators_flag == 0 ) {
+	                        // 	echo '<pre>';
+		                       //  echo print_r($sub_operators);
+		                       //  echo '</pre>';
+
+		                       //  $sub_operators_flag = 1;
+	                        // }
+
 	                        foreach ($sub_operators as $so_key => $sub_op) {
+	                        	// echo 'Value: ' . $value . ' // Operator Group: ' . $sub_op->operator_group . '<br>';
+
+	                        	/*
+	                        	 * For EPG and Catch Up Files
+	                        	 * This code checks if the filename contains the operator group name
+	                        	 *
+	                        	 * e.g. $value = Entertainment EPG March 2017 VIVA.xlsx
+	                        	 *		$sub_op->operator_group = VIVA
+	                        	 */
 	                            if ( contains($value, $sub_op->operator_group) ) {
+	                            	// echo 'Value: ' . $value . ' // Operator Group: ' . $sub_op->operator_group . '<br>';
+
 	                                $filtered_files['document'][$prefix][$key] = $value;
 	                                break;
 	                            } else if ( contains($value, 'affiliate') ) {
 	                                $affiliate_files['document'][$prefix][$key] = $value;
-	                    			unset( $all_files['document'][$prefix][$key] );
+	                    			// unset( $all_files['document'][$prefix][$key] );
 	                    			break;
 	                            }
+	                            /*
+	                             * End
+	                             */
 	                        }
 
 	                        if( empty( $filtered_files['document'][$prefix][$key] ) && empty( $affiliate_files['document'][$prefix][$key] ) ){
-	                        	if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
+	                        	if(isset($all_files['document'][$prefix][$key])) {
+	                        		unset($all_files['document'][$prefix][$key]);
+	                        	}
 	                        }
 
 	                    } else if ( contains($value, $user->operator_group) ) {
+	                    	// echo 'Value: ' . $value . ' // Operator Group: ' . $user->operator_group . '<br>';
+
 	                    	$filtered_files['document'][$prefix][$key] = $value;
 
 	                    } else if ( contains($value, 'affiliate' ) ) {
 	                        $affiliate_files['document'][$prefix][$key] = $value;
-	                    	unset( $all_files['document'][$prefix][$key] );
+	                    	unset($all_files['document'][$prefix][$key]);
 	          
 	                    } else {
-							if(isset($all_files['document'][$prefix][$key])) unset($all_files['document'][$prefix][$key]);
+							if(isset($all_files['document'][$prefix][$key])) {
+								unset($all_files['document'][$prefix][$key]);
+		                	}
 		                }
 					}
 				}	
+			}
 
-				/* FOR EPG and CATCH UP ONLY */  
-				foreach ($filtered_categories as $fc_key => $prefix) {
-					if( empty($filtered_files['document'][$prefix]) && !empty($affiliate_files['document'][$prefix]) ) {
-						foreach ( $affiliate_files['document'][$prefix] as $key => $value) {
-							$all_files['document'][$prefix][$key] = $value;
-						}
+			/* FOR EPG and CATCH UP ONLY */
+			foreach ($filtered_categories as $fc_key => $prefix) {
+				if( empty($filtered_files['document'][$prefix]) && !empty($affiliate_files['document'][$prefix]) ) {
+					foreach ( $affiliate_files['document'][$prefix] as $key => $value) {
+						$all_files['document'][$prefix][$key] = $value;
 					}
 				}
-
 			}
+
 		}
 
 		return $all_files;

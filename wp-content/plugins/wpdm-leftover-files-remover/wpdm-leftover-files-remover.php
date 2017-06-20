@@ -3,7 +3,7 @@
     Plugin Name: WPDM Leftover Files Remover
     Description: Permanently delete the leftover files from wp download manager.
     Author: Dianne Katherine Delos Reyes
-    Version: 1.0
+    Version: 1.0.1
     */
 
 /**
@@ -90,9 +90,12 @@ class DFDLeftoverFilesRemover
         $unserialized_files = array();
         foreach ($wpdm_raw_db_files as $key => $value) {
             $unserialized_files = unserialize($value['meta_value']);
-            foreach ($unserialized_files as $key => $value) {
-                array_push($file_lists, $value);
+            if($unserialized_files) {
+                foreach ($unserialized_files as $key => $value) {
+                    array_push($file_lists, $value);
+                }      
             }
+
         }
 
         $directory_file_lists = array();

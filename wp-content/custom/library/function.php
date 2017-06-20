@@ -1355,7 +1355,7 @@ if (!function_exists('getRecentFileUploads')){
         $filtered_shows_raw = array();
 
         $start_date = date('Y-m-d', strtotime("- " . $days . " days"));
-        $end_date = date('Y-m-d'); 
+        $end_date = date('Y-m-d');
 
         //* Loop through shows
         foreach ($results as $key => $value) {
@@ -1375,8 +1375,8 @@ if (!function_exists('getRecentFileUploads')){
                     if ( !array_key_exists($post_id, $filtered_shows_raw) ) {
                         $filtered_shows_raw[$post_id] = $file_upload_date;
                     }
-                    $file_count++; 
-                }
+                    $file_count++;
+                 }
             }
 
             if ($file_count > 0) {
@@ -1384,24 +1384,28 @@ if (!function_exists('getRecentFileUploads')){
             }
         }
 
-        //* Sort shows according to recently uploaded files
-        arsort($filtered_shows_raw);
-        $filtered_shows = array_keys($filtered_shows_raw);
-        
-        //* Wordpress query   
-        $args = array(
-                    'post__in'  => $filtered_shows,
-                    'orderby'   => 'post__in',
-                    'order'     => 'DESC',
-                    'tax_query' => array(
-                        array(
-                           'taxonomy' => 'wpdmcategory',
-                           'field'    => 'slug',
-                           'terms'    => 'shows-'.$channel,
-                        ),
-                    )
-                );
-        $query_shows = new WP_Query( $args );
+        if($filtered_shows_raw) {
+            //* Sort shows according to recently uploaded files
+            arsort($filtered_shows_raw);
+            $filtered_shows = array_keys($filtered_shows_raw);
+            
+            //* Wordpress query   
+            $args = array(
+                        'post__in'      => $filtered_shows,
+                        'orderby'       => 'post__in',
+                        'order'         => 'DESC',
+                        'tax_query'     => array(
+                            array(
+                               'taxonomy' => 'wpdmcategory',
+                               'field'    => 'slug',
+                               'terms'    => 'shows-'.$channel,
+                            ),
+                        )
+                    );
+            $query_shows = new WP_Query( $args );
+        } else {
+            $query_shows = null;
+        }
         return $query_shows;
     }
 }
@@ -1422,22 +1426,24 @@ function displayRecentFileUploads() {
     $query_shows = getRecentFileUploads($_POST['channel'], $_POST['days']);
     $filteredShows = [];
     
-    if($query_shows->have_posts()){
-        while($query_shows->have_posts()) { $query_shows->the_post();
-            $result = new ShowItem();
-            
-            $thumb_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];
-            $result->thumbnail = wpdm_dynamic_thumb($thumb_url, array(270, 296));
-            $result->title = get_the_title();
-            $result->permalink = get_the_permalink();
-            $result->filecount = $file_count_array_home[get_the_ID()];
+    if( $query_shows ) {
+        if($query_shows->have_posts()){
+            while($query_shows->have_posts()) { $query_shows->the_post();
+                $result = new ShowItem();
+                
+                $thumb_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'thumbnail-size', true)[0];
+                $result->thumbnail = wpdm_dynamic_thumb($thumb_url, array(270, 296));
+                $result->title = get_the_title();
+                $result->permalink = get_the_permalink();
+                $result->filecount = $file_count_array_home[get_the_ID()];
 
-            $result->publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
-            $result->expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+                $result->publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+                $result->expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
 
-            $result->filter = $_POST['days'];
+                $result->filter = $_POST['days'];
 
-            array_push($filteredShows, $result);
+                array_push($filteredShows, $result);
+            }
         }
     }
 
@@ -1556,23 +1562,6 @@ if(!function_exists('generate_file_count')) {
                     $filtered_shows = $categorized_files[$tab_attr];
                 }
 
-                // if( ($search_filter != '' && $search_filter !=  'all') && ( $tab_attr == 'epi' || $tab_attr == 'synopsis' ) ) {
-                //     $filtered_shows_copy = $filtered_shows;
-
-                //     if( $tab_attr == $prefix ) {
-                //         $filtered_shows = [];
-                //         foreach($filtered_shows_copy as $file_name) {
-                //             // if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0)  ) {
-                //             //     array_push($filtered_shows, $file_name);
-                //             // }
-
-                //             if ( (substr_count($file_name, $prefix) > 0) && (substr_count($file_name, $search_filter) > 0) ) {
-                //                 array_push($filtered_shows, $file_name);
-                //             }
-                //         }
-                //     }
-                // }
-
                 if ( ($filter_epi != '' && $filter_epi != 'all') && $tab_attr == 'epi' ) {
                     $filtered_shows_copy = $filtered_shows;
                     $filtered_shows = [];
@@ -1622,7 +1611,6 @@ if(!function_exists('generate_new_file_count')) {
         $filter_days = $_POST['filter_days'];
         
         $prefix = $_POST['prefix'];
-        // $search_filter = $_POST['search_filter'];
         $filter_epi = $_POST['filter_epi'];
         $filter_syn = $_POST['filter_syn'];
 
@@ -1964,54 +1952,54 @@ if (!function_exists('getMonthsPromos')) {
         
         $promos = array();
         if($query_shows->have_posts()){
-          while($query_shows->have_posts()) { 
-            $query_shows->the_post();
-            $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
-            $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
-            if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
+            while($query_shows->have_posts()) { 
+                $query_shows->the_post();
+                $publish_date = get_post_meta(get_the_ID(), '__wpdm_publish_date', true);
+                $expire_date = get_post_meta(get_the_ID(), '__wpdm_expire_date', true);
+                if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
 
-              if( have_rows('add_promo_files',get_the_ID()) ):
-                while( have_rows('add_promo_files',get_the_ID()) ): the_row();
-                  $promo['operator_group'] = get_sub_field('operator_group');
-                  $promo['promo_start'] = get_sub_field('promo_start') != '' ? get_sub_field('promo_start') : date('Ymd');
-                  $promo['promo_end'] = get_sub_field('promo_end') != '' ? get_sub_field('promo_end') : date('Ymd');
-                  $operator_group_promo_access = isset($promo['operator_group']) ? $promo['operator_group'] : 'all';
+                    if( have_rows('add_promo_files',get_the_ID()) ):
+                        while( have_rows('add_promo_files',get_the_ID()) ): the_row();
+                            $promo['operator_group'] = get_sub_field('operator_group');
+                            $promo['promo_start'] = get_sub_field('promo_start') != '' ? get_sub_field('promo_start') : date('Ymd');
+                            $promo['promo_end'] = get_sub_field('promo_end') != '' ? get_sub_field('promo_end') : date('Ymd');
+                            $operator_group_promo_access = isset($promo['operator_group']) ? $promo['operator_group'] : 'all';
 
-                  if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($promo['promo_start'],$promo['promo_end'], $promo_filter)){
+                            if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($promo['promo_start'],$promo['promo_end'], $promo_filter)){
 
-                    $promo['category'] = get_sub_field('category') != '' ? get_sub_field('category') : '';
-                    $promo['upload_date'] = get_sub_field('upload_date') != '' ? date("n/d/Y", strtotime(get_sub_field('upload_date'))) : '';
-                    $promo['promo_start'] = get_sub_field('promo_start') != '' ? date("n/d/Y", strtotime(get_sub_field('promo_start'))) : '';
-                    $promo['promo_end'] = get_sub_field('promo_end') != '' ? date("n/d/Y", strtotime(get_sub_field('promo_end'))) : '';
-                    $promo['id'] = get_sub_field('id') != '' ? get_sub_field('id') : '';
-                    $promo['promo_id'] = get_sub_field('promo_id') != '' ? get_sub_field('promo_id') : '';
-                    $promo['file_name'] = get_sub_field('file_name') != '' ? get_sub_field('file_name') : '';
-                    $promo['program_tx'] = get_sub_field('program_tx') != '' ? get_sub_field('program_tx') : '';
-                    $promo['prog_title_stunts'] = get_sub_field('prog_title_stunts') != '' ? get_sub_field('prog_title_stunts') : '';
-                    $promo['version'] = get_sub_field('version') != '' ? get_sub_field('version') : '';
-                    $promo['duration'] = get_sub_field('duration') != '' ? get_sub_field('duration') : '';
-                    $promo['notes'] = get_sub_field('notes') != '' ? get_sub_field('notes') : '';
-                    $promo['attached_file'] = get_sub_field('attached_file') != '' ? get_sub_field('attached_file') : '';
-                    $promo['post_id'] = get_the_ID();
-                    $promo['user_id'] = get_current_user_id();
+                                $promo['category'] = get_sub_field('category') != '' ? get_sub_field('category') : '';
+                                $promo['upload_date'] = get_sub_field('upload_date') != '' ? date("n/d/Y", strtotime(get_sub_field('upload_date'))) : '';
+                                $promo['promo_start'] = get_sub_field('promo_start') != '' ? date("n/d/Y", strtotime(get_sub_field('promo_start'))) : '';
+                                $promo['promo_end'] = get_sub_field('promo_end') != '' ? date("n/d/Y", strtotime(get_sub_field('promo_end'))) : '';
+                                // $promo['id'] = get_sub_field('id') != '' ? get_sub_field('id') : '';
+                                // $promo['promo_id'] = get_sub_field('promo_id') != '' ? get_sub_field('promo_id') : '';
+                                $promo['file_name'] = get_sub_field('file_name') != '' ? get_sub_field('file_name') : '';
+                                // $promo['program_tx'] = get_sub_field('program_tx') != '' ? get_sub_field('program_tx') : '';
+                                $promo['prog_title_stunts'] = get_sub_field('prog_title_stunts') != '' ? get_sub_field('prog_title_stunts') : '';
+                                $promo['version'] = get_sub_field('version') != '' ? get_sub_field('version') : '';
+                                $promo['duration'] = get_sub_field('duration') != '' ? get_sub_field('duration') : '';
+                                // $promo['notes'] = get_sub_field('notes') != '' ? get_sub_field('notes') : '';
+                                $promo['attached_file'] = get_sub_field('attached_file') != '' ? get_sub_field('attached_file') : '';
+                                $promo['post_id'] = get_the_ID();
+                                $promo['user_id'] = get_current_user_id();
 
-                    $ext = strtolower(getFileExtension($promo['attached_file']));
-                    $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
-                    $promo['thumb'] = $thumb;
+                                $ext = strtolower(getFileExtension($promo['attached_file']));
+                                $thumb = WPDM_BASE_URL.'assets/file-type-icons/'.$ext.'.png';
+                                $promo['thumb'] = $thumb;
 
-                    $promo['isFileAdded'] = !checkFileInCart($promo['id']) ? "" : "disabled-links added-to-cart";
-                    $promo['buttonText'] = !checkFileInCart($promo['id']) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
+                                $promo['isFileAdded'] = !checkFileInCart($promo['id']) ? "" : "disabled-links added-to-cart";
+                                $promo['buttonText'] = !checkFileInCart($promo['id']) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
 
-                    $absolute_file_path = getFileAbsolutePathByURL($promo['attached_file']);
-                    $promo['file_size'] = custom_wpdm_file_size($absolute_file_path, 0);
+                                $absolute_file_path = getFileAbsolutePathByURL($promo['attached_file']);
+                                $promo['file_size'] = custom_wpdm_file_size($absolute_file_path, 0);
 
-                    if(strtolower($promo['category']) == $category || $category == 'all')
-                      array_push($promos, $promo);
-                  }
-                endwhile;
-              endif;
-            endif;
-          }
+                                if(strtolower($promo['category']) == $category || $category == 'all')
+                                  array_push($promos, $promo);
+                            }
+                        endwhile;
+                    endif;
+                endif;
+            }
         } 
         wp_reset_query();
         return $promos;
