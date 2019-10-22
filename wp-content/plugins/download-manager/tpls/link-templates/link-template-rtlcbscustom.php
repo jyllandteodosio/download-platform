@@ -1,4 +1,4 @@
-<!-- WPDM Link Template: RTL CBS Custom Template -->
+<!-- WPDM Link Template: Blue Ant Media Custom Template -->
 <div class="item">
     <div class='file-thumb'>[thumb_270x290]</div>
     <div class="show-meta">

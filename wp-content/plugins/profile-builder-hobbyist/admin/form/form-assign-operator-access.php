@@ -35,7 +35,7 @@
 				</tr>
 				<tr><th scope="row"><label ><h2>Assign Access</h2></label></th></tr>
 				<tr>
-					<th scope="row">RTL CBS channel</th>
+					<th scope="row">Blue Ant Media channel</th>
 					<td>
 						<?php $rtl_channels = custom_get_rtl_channels();
 						$count = 0;
@@ -64,7 +64,7 @@
 		<tr>
 			<th>Country Group</th>
 			<th>Operator Group</th>
-			<th>RTL CBS Channel</th>
+			<th>Blue Ant Media Channel</th>
 			<th>No operator group restriction</th>
 		</tr>
 		</thead>
@@ -96,7 +96,7 @@
 			<tr>
 				<th>Country Group</th>
 				<th>Operator Group</th>
-				<th>RTL CBS Channel</th>
+				<th>Blue Ant Media Channel</th>
 				<th>No operator group restriction</th>
 			</tr>
 		</tfoot>

@@ -223,16 +223,16 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </style>
 </head>
 <body >
-<table style="height: 265px; background-color: #000;" width="484" cellspacing="0" cellpadding="0">
+<table style="height: 265px; background-color: #0082ba;" width="484" cellspacing="0" cellpadding="0">
 <tbody>
 
-<tr style="height: 20px;"><td>&nbsp;</td></tr>
+<tr style="height: 10px;"><td>&nbsp;</td></tr>
 <tr><td>
 <center>
-<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280" />
+<img src="http://operator.blueantmedia.com/wp-content/uploads/2017/12/bam_white_horiz_rgb.png" alt="Blue Ant Media Banner" width="280" />
 </center>
 </td></tr>
-<tr style="height: 10px;"><td>&nbsp;</td></tr>
+<tr style="height: 5px;"><td>&nbsp;</td></tr>
 
 <tr><td><center>
 <table style="height:186px; background-color:#F4F3F4; color:#444444; margin-left: auto; margin-right:auto;" width="480">
@@ -243,13 +243,12 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 <br/>
 Hi <b>%1$s</b>, 
 <br/><br/> 
-We received a request to reset your RTL CBS Operator Site password.  
-<br/>
-
+We received a request to reset your Blue Ant Media Operator Site password.  
+<br/><br/>
 <a href="'. esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'"> 
-<center><img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/reset_button.png" /></center>
+<center><img src="http://operator.blueantmedia.com/wp-content/uploads/2017/12/Reset-Button.jpg" /></center>
 </a>
-
+<br/>
 If you ignore this message, your password won\'t be changed.
 <br/><br/>
 </td>
@@ -272,7 +271,7 @@ If you ignore this message, your password won\'t be changed.
                 // $recoveruserMailMessage1  = sprintf( __('Someone requested that the password be reset for the following account: <b>%1$s</b><br/>If this was a mistake, just ignore this email and nothing will happen.<br/>To reset your password, visit the following link:%2$s', 'profile-builder'), $display_username_email, '<a href="'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'">'.esc_url( add_query_arg( array( 'loginName' => $requestedUserNicename, 'key' => $key ), wppb_curpageurl() ) ).'</a>');
                 $recoveruserMailMessage1  = apply_filters( 'wppb_recover_password_message_content_sent_to_user1', $recoveruserMailMessage1, $requestedUserID, $requestedUserLogin, $requestedUserEmail );
 
-                $recoveruserMailMessageTitle1 = sprintf(__('Reset Your RTL CBS Operator Site Password', 'profile-builder'), $blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES));
+                $recoveruserMailMessageTitle1 = sprintf(__('Reset Your Blue Ant Media Operator Site Password', 'profile-builder'), $blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES));
                 $recoveruserMailMessageTitle1 = apply_filters('wppb_recover_password_message_title_sent_to_user1', $recoveruserMailMessageTitle1, $requestedUserLogin);
 
                 //we add this filter to enable html encoding
@@ -341,19 +340,19 @@ body, table, td {font-family: Helvetica, Arial, sans-serif !important;font-size:
 </style>
 </head>
 <body >
-<table style="height: 225px; background-color: #000;" width="484" cellspacing="0" cellpadding="0">
+<table style="height: 225px; background-color: #0082ba;" width="484" cellspacing="0" cellpadding="0">
 <tbody>
 
-<tr style="height: 20px;"><td>&nbsp;</td></tr>
+<tr style="height: 10px;"><td>&nbsp;</td></tr>
 <tr><td>
 <center>
-<img src="http://operator.rtlcbsasia.com/wp-content/uploads/2017/02/RTLCBS_ENTERTAINMENT_WHITE-SOLID.png" alt="RTL CBS Banner" width="280" />
+<img src="http://operator.blueantmedia.com/wp-content/uploads/2017/12/bam_white_horiz_rgb.png" alt="Blue Ant Media Banner" width="200" />
 </center>
 </td></tr>
-<tr style="height: 10px;"><td>&nbsp;</td></tr>
+<tr style="height: 5px;"><td>&nbsp;</td></tr>
 
 <tr><td><center>
-<table style="height:120px; background-color:#F4F3F4; color:#444444; margin-left: auto; margin-right:auto;" width="480">
+<table style="height:124px; background-color:#F4F3F4; color:#444444; margin-left: auto; margin-right:auto;" width="480">
 <tbody>
 <tr>
 <td width="10">&nbsp;</td>
@@ -369,7 +368,7 @@ You have successfully reset your password.
 </tbody>
 </table>
 </center></td></tr>
-<tr style="height: 2px;"><td></td></tr>
+<tr style="height: 1px;"><td></td></tr>
 
 </tbody>
 </table>

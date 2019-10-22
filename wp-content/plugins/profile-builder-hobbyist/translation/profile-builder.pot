@@ -3363,14 +3363,6 @@ msgstr ""
 msgid "Please check that you entered the correct email address."
 msgstr ""
 
-#: profile-builder-2.0/front-end/recover.php:216
-#, php-format
-msgid ""
-"Someone requested that the password be reset for the following account: <b>"
-"%1$s</b><br/>If this was a mistake, just ignore this email and nothing will "
-"happen.<br/>To reset your password, visit the following link:%2$s"
-msgstr ""
-
 #: profile-builder-2.0/front-end/recover.php:219
 #, php-format
 msgid "Password Reset from \"%1$s\""
@@ -3879,7 +3871,7 @@ msgid ""
 msgstr ""
 
 #: profile-builder-2.0/modules/email-customizer/user-email-customizer.php:218
-msgid "[{{site_name}}] Password Reset"
+msgid "Reset Your [{{site_name}}] Site Passsword"
 msgstr ""
 
 #: profile-builder-2.0/modules/email-customizer/user-email-customizer.php:229

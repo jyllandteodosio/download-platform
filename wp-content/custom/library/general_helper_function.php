@@ -366,10 +366,26 @@ if( !function_exists('checkIfImageFile') ){
             $imgext = array('png','jpg','jpeg', 'gif');
         } else if($fileType == 'image' && $pureImageFile == 'notpure'){
             $imgext = array('eps', 'ai', 'psd', 'psb', 'tif');
-        }else {
-            $imgext = array('png','jpg','jpeg', 'gif', 'eps', 'ai', 'psd', 'psb', 'tif');
+        } else {
+            $imgext = array('png','jpg','jpeg', 'gif', 'eps', 'ai', 'psd', 'psb', 'tif', 'zip');
         }
         return in_array($ext, $imgext) ? 1 : 0;
+    }
+}
+
+if( !function_exists('checkIfZipFile') ){
+    /**
+     * Description:                 Checks the file type of a specified file        
+     * @param  string $sfile        File name
+     * @param  string $fileType     File type (image). For future improvements, include docs etc.
+     * @param  string $pureImageFile    'pure' if files should all be an actual image file not including .EPS files
+     * @return bool           
+     */
+    function checkIfZipFile($sfile){
+        $zipext = array('zip');
+        $ext = getFileExtension($sfile);
+
+        return in_array($ext, $zipext) ? 1 : 0;
     }
 }
 

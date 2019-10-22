@@ -378,26 +378,37 @@ class FileList
         $fhtml = '';
         if (is_array($allfiles_sorted)) {
             foreach ($allfiles_sorted as $fileID => $sfileOriginal) {
-                $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
-                $fileTitle = $prefix != self::$prefix_list['promos'] ? 
-                                    isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
-                                        $fileinfo[$sfile]['title']:
-                                        (isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? 
-                                            $fileinfo[$fileID]['title']:
-                                            preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  
-                                    :  $sfileOriginal['file_name'];
-
-
-                $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
+                
+//                >>>> Previous code for promos filter 
+//                $sfile = $prefix != self::$prefix_list['promos'] ? $sfileOriginal : $sfileOriginal['attached_file'];
+//                $fileID = $prefix != self::$prefix_list['promos'] ? $fileID : $sfileOriginal['id'];
+//                $fileTitle = $prefix != self::$prefix_list['promos'] ? 
+//                                    isset($fileinfo[$sfile]['title']) && $fileinfo[$sfile]['title'] != '' ? 
+//                                        $fileinfo[$sfile]['title']:
+//                                        (isset($fileinfo[$fileID]['title']) && $fileinfo[$fileID]['title'] != '' ? 
+//                                            $fileinfo[$fileID]['title']:
+//                                            preg_replace("/([0-9]+)_/", "",wpdm_basename($sfile)))  
+//                                    :  $sfileOriginal['file_name'];
+//                $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
+//                $file_upload_date = $fileType != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : date('n/j/y', strtotime($sfileOriginal['upload_date']));
+//                <<<<
+                
+                $sfile = $sfileOriginal;
+                
+                $fileTitle = $fileinfo[$fileID]['title'];
+                $attached_file = $fileinfo[$fileID]['attached_file'];
+                
                 $thumb = "";
                 $ind = \WPDM_Crypt::Encrypt($sfile);
                 $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
                 $file['ID'] = null;
                 $filepath = wpdm_download_url($file) . "&ind=" . $ind;
-                $thumb = $prefix != self::$prefix_list['promos'] ? getImageThumbnail($sfile, $specific_thumbnails) : $sfileOriginal['thumbnail'];
-                $file_upload_date = $fileType != self::$prefix_list['promos'] ? date('n/j/y', substr($fileID, 0, -3)) : date('n/j/y', strtotime($sfileOriginal['upload_date']));
                 
-                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink, $file_upload_date);  
+                $thumb = getImageThumbnail($sfile, $specific_thumbnails);
+                
+                $file_upload_date = date('n/j/y', substr($fileID, 0, -3));
+                
+                $fhtml .= self::generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb, $file, $post_id, $permalink, $file_upload_date, $attached_file);  
             }
         }
         return $fhtml;
@@ -409,16 +420,26 @@ class FileList
      * @return html
      * @usage returns html format of displayed file panel
      */
-    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null, $post_id = null, $permalink = "", $file_upload_date) {
+    public static function generateFilePanel($sfile, $fileID, $fileTitle, $fileType, $thumb = null, $file = null, $post_id = null, $permalink = "", $file_upload_date, $attached_file) {
         $fhtml = "";
         $postID = $post_id;
         $userID = get_current_user_id( );
         $channel = $_SESSION['channel'];
         $ind = \WPDM_Crypt::Encrypt($sfile);
-        $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
-        $absolute_file_path = getFileAbsolutePathByURL($sfile);
-        $downloadUrl = $fileType != self::$prefix_list['promos'] ? $permalink."?wpdmdl=".$postID."&ind=".$ind : $sfile;
-        // $downloadUrl = $fileType != self::$prefix_list['promos'] ? wpdm_download_url($file).$postID."&ind=".$ind : $sfile;
+        
+//        >>>> Previous code for promos filter
+//        $filepath = getFilePath($sfile);
+//        $absolute_file_path = getFileAbsolutePathByURL($sfile['attached_file']);
+//        $downloadUrl = $fileType != self::$prefix_list['promos'] ? $permalink."?wpdmdl=".$postID."&ind=".$ind : $sfile;
+//        <<<<
+        
+//        $filepath = $fileType != self::$prefix_list['promos'] ? getFilePath($sfile) : $sfile;
+        $absolute_file_path = $fileType == self::$prefix_list['promos'] ? getFileAbsolutePathByURL($attached_file) : getFileAbsolutePathByURL($sfile);
+        $filepath = preg_replace('/\\\\/', '\\', $absolute_file_path);
+        
+//        $downloadUrl = $permalink."?wpdmdl=".$postID."&ind=".$ind;
+        $downloadUrl = $fileType != self::$prefix_list['promos'] ? $permalink."?wpdmdl=".$postID."&ind=".$ind : $attached_file;
+        
         $buttonText = !checkFileInCart($fileID) ? __("Add to Cart","wpdmpro") : "Added&nbsp;&nbsp;<i class='fa fa-check'></i>";
         $isFileAdded = !checkFileInCart($fileID) ? "" : "disabled";
         $isFileClickable = !checkFileInCart($fileID) ? "" : "disabled-links";

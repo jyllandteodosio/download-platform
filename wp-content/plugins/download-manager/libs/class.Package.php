@@ -123,16 +123,55 @@ class Package {
                 }*/
 
                 /* For Promo Files */
-                if (is_array($allpromofiles)) {
-                    foreach ($allpromofiles as $fileID => $sfileOriginal) {
-                        $sfile = $sfileOriginal['attached_file'];
+                if ( is_array( $allpromofiles ) ) {
+                    $promoCount = 0;
+                    
+                    foreach ( $allpromofiles as $fileID => $sfileOriginal ) {
+                        /* 
+                         * Promo files have different file IDs (created using ACF)
+                         * 
+                         * To match the WPDM File ID format, get the promo file's upload_date and convert to UNIX timestamp
+                         * 
+                         * Since a promo file's upload_date does not include time, create an hour:minute timestamp 
+                         * based on the upload order. 
+                         * 
+                         * -Jylland
+                         */
+                        
+                        // Promo file upload order
+                        $promoCount++;
+                        
+                        // Get the promo file's upload_date and convert to correct format. Require upload_date from promo files ACF
+                        $origUploadDate = $sfileOriginal['upload_date'] != '' ? $sfileOriginal['upload_date'] : $sfileOriginal['promo_start'];
+                        
+                        $date = date_create_from_format( 'Ymd', $origUploadDate );
+                        
+                        // Mutiply promoCount (file upload order) to 60 seconds (assumed interval), then convert to H:i format
+                        $orderToTime = gmdate( 'H:i',( $promoCount * 60 ) );
+                        
+                        // Append orderToTime to original upload_date to get the UNIX timestamp
+                        $uploadDate = strtotime( $date->format( 'm/d/Y' . $orderToTime ) );
+                        
+                        // Set the fileID to the generated uploadDate and append 3 zeros to match the WPDM fileID format
+                        $fileID = $uploadDate . '000';
+                        
+                        $attachedFile = $sfileOriginal['attached_file'];
                         $fileTitle = $sfileOriginal['file_name'];
-                        $fileID = $sfileOriginal['id'];
+                        
                         $thumb = "";
-                        $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
-                        if(checkIfPromoIsAccessible($operator_group_promo_access) && checkDatesIfCurrentMonth($sfileOriginal['promo_start'],$sfileOriginal['promo_end'], 'current') ) {
+                        
+                        $operator_group_promo_access = isset( $sfileOriginal['operator_group'] ) ? $sfileOriginal['operator_group'] : 'all';
+                        
+                        if( checkIfPromoIsAccessible( $operator_group_promo_access ) ) {
                             $thumb = $sfileOriginal['thumbnail'];
-                            $categorized_files[self::$file_attr_list['promo']['show']['promos']['prefix']][$fileID] = $sfileOriginal;
+                            
+                            $categorized_files[self::$file_attr_list['promo']['show']['promos']['prefix']][$fileID] = $fileTitle;
+                            
+                            // Added attached_file property to get the correct file download URL
+                            $fileinfo[$fileID] = array( 'title' => $fileTitle, 'password' => '' , 'attached_file' => $attachedFile );
+                            
+                            // Added files array to promo files array to match WPDM serialized array
+                            $file['files'][$fileID] = $fileTitle;
                         }
                     }
                 }
@@ -155,7 +194,78 @@ class Package {
                                         );
                         
                         $operator_group_promo_access = isset($sfileOriginal['operator_group']) ? $sfileOriginal['operator_group'] : 'all';
-                        if(checkIfImageFile($sfile, 'image')){
+                        if(checkIfZipFile($sfile)){
+                            //sort zip files to Documents > Catch Up or Images > Logos
+                            
+                            // Documents > Catch Up
+                            foreach (self::$file_attr_list['document'] as $file_type => $file_category) {
+                                foreach ($file_category as $file_category_key => $tab) {
+                                    $prefix = $tab['prefix'];
+                                    // "CATCH" - Catch Up
+                                    if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['document']['channel']['channel_catchup']['prefix']){
+                                        
+                                        if( get_current_user_role() == "administrator" || 
+                                            ($is_pr_group == 'yes' && $current_country_group == 'all' ) ) {
+                                            $affiliate_files['channel_catchup'][$fileID] = $sfileOriginal;
+
+                                        }else if( $is_pr_group == 'yes' ){
+                                            $sub_operators = get_operators_by_country( $current_country_group );
+                                            foreach ($sub_operators as $key => $sub_op) {
+
+                                                if ( contains($fileTitle, $sub_op->operator_group) ){
+                                                    $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
+
+                                                }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                                    $affiliate_files['channel_catchup'][$fileID] = $sfileOriginal;
+                                                }
+                                            }
+
+                                        }else if ( contains($fileTitle, $current_operator_group) ){
+                                            $categorized_files[self::$file_attr_list['document']['channel']['channel_catchup']['prefix']][$fileID] = $sfileOriginal;
+
+                                        }else if ( contains($fileTitle, self::$operator_prefix_list['affiliate'] ) ) {
+                                            $affiliate_files['channel_catchup'][$fileID] = $sfileOriginal;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // Images > Logos
+                            foreach (self::$file_attr_list['image'] as $file_type => $file_category) {
+                                foreach ($file_category as $file_category_key => $tab) {
+                                    $prefix = $tab['prefix'];
+                                    // "KEY" - Key Art
+                                    if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['key_art']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['show']['key_art']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // "EPI" - Episodic Stills
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['episodic_stills']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['show']['episodic_stills']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // "GALLERY" - Gallery
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['gallery']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['show']['gallery']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // "LOGO" - Logo
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['show']['logos']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['show']['logos']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    // SHOW IMAGES OTHERS
+                                    else if( !contains($fileTitle, self::$file_attr_list['image']['show']['key_art']['prefix']) 
+                                        && !contains($fileTitle, self::$file_attr_list['image']['show']['episodic_stills']['prefix']) 
+                                        && !contains($fileTitle, self::$file_attr_list['image']['show']['gallery']['prefix']) 
+                                        && !contains($fileTitle, self::$file_attr_list['image']['show']['logos']['prefix']) 
+                                        && $prefix == self::$file_attr_list['image']['show']['others']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['show']['others']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                    /* END SHOW IMAGES ======================================================================= */
+                                    // "ELEMENTS" - Elements
+                                    else if( contains($fileTitle, $prefix) && $prefix == self::$file_attr_list['image']['channel']['channel_elements']['prefix']){
+                                        $categorized_files[self::$file_attr_list['image']['channel']['channel_elements']['prefix']][$fileID] = $sfileOriginal;
+                                    }
+                                }   
+                            }
+                        } else if(checkIfImageFile($sfile, 'image')){
                             /* SHOW IMAGES ========================================================================== */
                             foreach (self::$file_attr_list['image'] as $file_type => $file_category) {
                                 foreach ($file_category as $file_category_key => $tab) {
@@ -298,7 +408,7 @@ class Package {
                     }
 
                     /* FOR EPG AND CATCHUP ONLY -  Check if specific user already have some epg/catchup files and if affilate epg/catchup temporary container is not empty. Will assign the buffered affiliate files if epg/catchup files is empty */
-                    $affiliate_categories = [ 'channel_epg', 'channel_catchup' ];
+                    $affiliate_categories = [ 'channel_epg', 'channel_catchup', 'channel_catchup_img' ];
                     foreach ($affiliate_categories as $key => $prefix) {
                         if( count( $categorized_files[self::$file_attr_list['document']['channel'][$prefix]['prefix']] ) == 0 && 
                             isset( $affiliate_files[$prefix] ) > 0 ){
@@ -339,15 +449,15 @@ class Package {
                                  */
                                 $escaped_file_data = array();
                                 foreach($file_list_data_prep['all_files'] as $file_id => $file_data) {
-                                    if( $file_list_data_prep['prefix'] == 'promo' ) {
-                                        foreach($file_data as $file_info_key => $file_info) {
-                                            $escaped_file_data[$file_id][$file_info_key] = str_replace("'", "", $file_info);
-                                        }
-                                        $file_list_data_prep['all_files'] = $escaped_file_data;
-                                    } else {
+//                                    if( $file_list_data_prep['prefix'] == 'promo' ) {
+//                                        foreach($file_data as $file_info_key => $file_info) {
+//                                            $escaped_file_data[$file_id][$file_info_key] = str_replace("'", "", $file_info);
+//                                        }
+//                                        $file_list_data_prep['all_files'] = $escaped_file_data;
+//                                    } else {
                                         $escaped_file_data[$file_id] = str_replace("'", "", $file_data);
                                         $file_list_data_prep['all_files'] = $escaped_file_data;
-                                    }          
+//                                    }          
                                 }
 
                                 /* 
@@ -367,7 +477,7 @@ class Package {
                                 }
 
                                 // echo '<pre>';
-                                // print_r($file_list_data_prep);
+//                                 print_r($file_list_data_prep);
                                 // echo '</pre>';
 
                                 $file_list_data_prep_serialized = serialize($file_list_data_prep);

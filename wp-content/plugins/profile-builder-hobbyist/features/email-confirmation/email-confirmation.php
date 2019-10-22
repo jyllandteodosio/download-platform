@@ -564,10 +564,10 @@ function wppb_notify_user_registration_email( $bloginfo, $user_name, $email, $se
 	//send an email to the newly registered user, if this option was selected
 	if ( isset( $send_credentials_via_email ) && ( $send_credentials_via_email == 'sending' ) ){
 		/* Commented lines of code are the original profile builder codes*/
-		$user_message_from = apply_filters( 'wppb_register_from_email_message_user_email', 'RTL CBS Asia' );
+		$user_message_from = apply_filters( 'wppb_register_from_email_message_user_email', 'Blue Ant Media' );
 		// $user_message_from = apply_filters( 'wppb_register_from_email_message_user_email', $bloginfo );
 
-		$user_message_subject = sprintf( __( 'Welcome to RTL CBS Asia - Operator Website!', 'profile-builder' ), $user_message_from, $user_name, $password );
+		$user_message_subject = sprintf( __( 'Welcome to Blue Ant Media - Operator Website!', 'profile-builder' ), $user_message_from, $user_name, $password );
 		// $user_message_subject = sprintf( __( '[%1$s] Your new account information', 'profile-builder' ), $user_message_from, $user_name, $password );
 		$user_message_subject = apply_filters( 'wppb_register_user_email_subject_without_admin_approval', $user_message_subject, $email, $password, $user_message_subject, 'wppb_user_emailc_default_registration_email_subject' );
 
@@ -575,7 +575,7 @@ function wppb_notify_user_registration_email( $bloginfo, $user_name, $email, $se
             $password = __( 'Your selected password at signup', 'profile-builder' );
         }
         $message_string = '
-        	<b>Welcome to RTL CBS Asia - Operator Website!</b>
+        	<b>Welcome to Blue Ant Media - Operator Website!</b>
 			<br/><br/>
         	A new account has been created for you using the following credentials:
 			<br/><br/>
@@ -587,7 +587,7 @@ function wppb_notify_user_registration_email( $bloginfo, $user_name, $email, $se
 			<b><a href="'.get_site_url(1).'">Log in</a></b> to check out all of the files available for you.
 			<br/><br/>
 			Thanks,<br/>
-			RTL CBS Asia Team<br/>
+			Blue Ant Media Team<br/>
         	';
 		$user_message_content = sprintf( __( $message_string, 'profile-builder' ), $user_message_from, $user_name, $password );
         if ( $password === __( 'Your selected password at signup', 'profile-builder' ) ) {

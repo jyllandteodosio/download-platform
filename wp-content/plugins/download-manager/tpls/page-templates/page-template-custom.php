@@ -264,7 +264,8 @@
                     <input type='submit'  class="show-filter" value='Select All'>
                 
                     <!-- custom days filter -->
-                    <!-- [days_filter_dropdown] -->
+                    <span class="recent-filter-text show-page">Display latest files in the last: </span>
+                    [days_filter_dropdown]
 
                 </div><!-- filter-wrap -->
                 <div class="show-items">

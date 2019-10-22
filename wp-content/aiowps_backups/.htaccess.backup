@@ -1,7 +1,18 @@
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
+<<<<<<< HEAD
+#SecFilterInheritance Off
+RewriteEngine On
+RewriteBase /
+RewriteCond %{HTTP_HOST} ^(www.)?rtlcbsasia.com$
+RewriteRule ^(.*)$ https://www.facebook.com/RTLCBSEntertainment/ [R=301,L]
+
+#RewriteCond %{HTTP_HOST} ^45.118.135.96$
+#RewriteRule ^(.*)$ https://www.google.com [R=301,NC]
+=======
 RewriteEngine On
 RewriteBase /rtlcbsasia/
+>>>>>>> 9cbd70b2b25a341ca6a42285c26af6279f23b96e
 RewriteRule ^index\.php$ - [L]
 
 # add a trailing slash to /wp-admin
@@ -10,6 +21,26 @@ RewriteRule ^([_0-9a-zA-Z-]+/)?wp-admin$ $1wp-admin/ [R=301,L]
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
+<<<<<<< HEAD
+
+#alternate test
+#RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes).*) $2 [L]
+RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes).*) - [L]
+
+RewriteRule ^([_0-9a-zA-Z-]+/)?(.*\.php)$ $2 [L]
+RewriteRule . index.php [L]
+
+</IfModule>
+# END Wordpress
+
+
+
+#Block requests to xmlrpc
+<Files xmlrpc.php>
+order deny,allow
+deny from all
+</Files>
+=======
 RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes).*) $2 [L]
 RewriteRule ^([_0-9a-zA-Z-]+/)?(.*\.php)$ $2 [L]
 RewriteRule . index.php [L]
@@ -20,4 +51,5 @@ php_value max_execution_time 300
 php_value max_input_time 300
 </IfModule>
 # END WordPress
+>>>>>>> 9cbd70b2b25a341ca6a42285c26af6279f23b96e
 

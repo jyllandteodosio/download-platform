@@ -3,7 +3,7 @@
 Contents:
 ------------------------------------------------
 - Custom database table initialization
-- General Custom Helper Fucntions
+- General Custom Helper Functions
 - General Customized
 - Custom Cart
 - Custom Export Reports
@@ -336,7 +336,7 @@ if(!function_exists('bulk_download')){
          
         $zip = new ZipArchive();
         $date_now = date('Y m d');
-        $zipped = UPLOAD_DIR . 'RTL CBS Files '.$date_now.'.zip';
+        $zipped = UPLOAD_DIR . 'Blue Ant Media Files '.$date_now.'.zip';
         $zip->open($zipped, ZIPARCHIVE::CREATE);
 
         foreach ($files as $file) {
@@ -351,7 +351,7 @@ if(!function_exists('bulk_download')){
         }
 
         $zip->close();
-        wpdm_download_file($zipped, 'RTL CBS Files '.$date_now.'.zip');
+        wpdm_download_file($zipped, 'Blue Ant Media Files '.$date_now.'.zip');
         @unlink($zipped);
     }
 }
@@ -644,7 +644,7 @@ if(!function_exists('send_monthly_report')){
         $users = get_users('role=Administrator');
         foreach ($users as $user) {
             $to = $user->user_email;//'diannekatherinedelosreyes@ymail.com';
-            $subject = 'RTL CBS Asia Monthly Report';
+            $subject = 'Blue Ant Media Monthly Report';
             $headers = array('Content-Type: text/html; charset=UTF-8');
             $mail_attachment = $file;
 
@@ -656,7 +656,7 @@ if(!function_exists('send_monthly_report')){
                 </ul>
                 You may also <a href='".get_site_url()."/rtlcbs-admin'>Log In</a> to the Operator Website to see more reports.<br><br>
                 Thanks,<br>
-                RTL CBS Asia Team
+                Blue Ant Media Team
             ";
 
             ob_start();
@@ -1062,7 +1062,7 @@ if (!function_exists('custom_wpdm_file_size')){
         else $size = 0;
         $size = $size / 1024;
         if ($size > 1024) $size = number_format($size / 1024, $decimal_place) . ' MB';
-        else $size = number_format($size, $decimal_place) . ' KB';
+        else $size = number_format($size, $decimal_place + 2) . ' KB';
         return $size;
     }
 }
@@ -1640,14 +1640,13 @@ if (!function_exists('populate_global_variable')) {
                     $filtered_shows = array();
                     //* Loop all files in the array and push them to filtered_shows
                     foreach ( $show_files['all_files'] as $file_key => $file_name ) {
-                        //* Convert UNIX Timestamp to human reSadable date
+                        //* Convert UNIX Timestamp to human readable date
                         $file_upload_date = date('Y-m-d', substr($file_key, 0, -3));
 
                         if ( $file_upload_date >= $start_date && $file_upload_date <= $end_date ) {
                             //* Array format: ["File ID" : "File Name"]
                             $filtered_shows[$file_key] = $file_name;
                         }
-
                     }
 
                     $file_object = array();
@@ -1673,7 +1672,7 @@ if (!function_exists('populate_global_variable')) {
                                     'file_type'            =>  $show_files['file_type'],
                                     'file_info'            =>  $file_info,
                                     'post_id'              =>  $show_files['post_id'],
-                                    'permalink'            =>  $show_files['permalink']
+                                    'permalink'            =>  $show_files['permalink'],
                                 );
                     $return_array[$tab_name][$day] = serialize($file_list_data); 
                 
@@ -1685,6 +1684,7 @@ if (!function_exists('populate_global_variable')) {
 
         
         echo json_encode($return_array);
+//        echo json_encode($serialized_array);
         die();
     }
     add_action('wp_ajax_populate_global_variable', 'populate_global_variable');
@@ -1759,7 +1759,6 @@ if (!function_exists('generate_show_files')) {
         }
         
         echo $return_value == 1 ? json_encode($return_array) : false;
-        // echo json_encode($show_files['all_files']);
         die();
     }
     add_action('wp_ajax_generate_show_files', 'generate_show_files');
@@ -1959,7 +1958,12 @@ if (!function_exists('getMonthsPromos')) {
                 if(checkPackageDownloadAvailabilityDate($publish_date, $expire_date)):
 
                     if( have_rows('add_promo_files',get_the_ID()) ):
+                        $promoCount = 0;
+                
                         while( have_rows('add_promo_files',get_the_ID()) ): the_row();
+                
+                            $promoCount++;
+                
                             $promo['operator_group'] = get_sub_field('operator_group');
                             $promo['promo_start'] = get_sub_field('promo_start') != '' ? get_sub_field('promo_start') : date('Ymd');
                             $promo['promo_end'] = get_sub_field('promo_end') != '' ? get_sub_field('promo_end') : date('Ymd');
@@ -1971,7 +1975,20 @@ if (!function_exists('getMonthsPromos')) {
                                 $promo['upload_date'] = get_sub_field('upload_date') != '' ? date("n/d/Y", strtotime(get_sub_field('upload_date'))) : '';
                                 $promo['promo_start'] = get_sub_field('promo_start') != '' ? date("n/d/Y", strtotime(get_sub_field('promo_start'))) : '';
                                 $promo['promo_end'] = get_sub_field('promo_end') != '' ? date("n/d/Y", strtotime(get_sub_field('promo_end'))) : '';
-                                // $promo['id'] = get_sub_field('id') != '' ? get_sub_field('id') : '';
+                                
+                                // Get the promo file's upload_date and convert to correct format. Require upload_date from promo files ACF
+                                $origUploadDate = get_sub_field('upload_date') != '' ? get_sub_field('upload_date') : get_sub_field('promo_start');
+                                $date = date_create_from_format( 'Ymd', $origUploadDate );
+
+                                // Mutiply promoCount (file upload order) to 60 seconds (assumed interval), then convert to H:i format
+                                $orderToTime = gmdate( 'H:i',( $promoCount * 60 ) );
+
+                                // Append orderToTime to original upload_date to get the UNIX timestamp
+                                $uploadDate = strtotime( $date->format( 'm/d/Y' . $orderToTime ) );
+
+                                // Set the promoID to the generated uploadDate and append 3 zeros to match the WPDM fileID format
+                                $promo['id'] = $uploadDate . '000';
+                                
                                 // $promo['promo_id'] = get_sub_field('promo_id') != '' ? get_sub_field('promo_id') : '';
                                 $promo['file_name'] = get_sub_field('file_name') != '' ? get_sub_field('file_name') : '';
                                 // $promo['program_tx'] = get_sub_field('program_tx') != '' ? get_sub_field('program_tx') : '';

@@ -140,7 +140,7 @@ class Templates
         $id = isset($id)?$id:uniqid();
         /** Commented the code below to replace the default link and page templates - added by Dianne D.R. */
         /* $default = $type == 'link'?'link-template-calltoaction3.php':'page-template-1col-flat.php'; */
-        /** Custom default link and page templates  for RTL CBS - added by Dianne D.R. */
+        /** Custom default link and page templates  for Blue Ant Media - added by Dianne D.R. */
         $default = $type == 'link'?'link-template-rtlcbscustom.php':'page-template-custom.php';
         /** END of custom code */
         $html = "<select name='$name' id='$id' class='form-control template {$type}_template' {$css}><option value='$default'>Select ".ucfirst($type)." Template</option>";
